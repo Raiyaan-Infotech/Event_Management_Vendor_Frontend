@@ -1,123 +1,35 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   Activity, Shield, Bell, Edit, Lock, MapPin, Phone, Mail,
   Briefcase, ChevronRight, Check, Save, X, Download, User,
   Key, Smartphone, AlertTriangle, FileText, RefreshCw, LogIn,
-  Settings, Archive, Camera,
+  Settings, Archive, Camera, Globe, Facebook, Twitter, Linkedin,
+  Github, MoreHorizontal, Image as ImageIcon, Users, Filter, Star,
+  Heart, Rocket, Calendar
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useVendorMe, useUpdateVendorProfile, useChangeVendorPassword } from '@/hooks/use-vendors';
+import { useVendorMe, useUpdateVendorProfile } from '@/hooks/use-vendors';
 import { useUploadMedia } from '@/hooks/use-media';
 import { resolveMediaUrl } from '@/lib/utils';
 
-const inputClass =
-  'w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent transition-all bg-muted/50 focus:bg-background';
 
-const recentActivities = [
-  { id: 1,  title: 'Password changed',           description: 'Changed from web browser (Chrome)',       date: 'March 15, 2024 10:30 AM', Icon: Key,           color: 'bg-emerald-100 text-emerald-600' },
-  { id: 2,  title: 'Login from new device',       description: 'MacBook Pro - New York, USA',             date: 'March 14, 2024 3:45 PM',  Icon: LogIn,         color: 'bg-yellow-100 text-yellow-600'  },
-  { id: 3,  title: 'Profile updated',             description: 'Updated contact information',             date: 'March 13, 2024 2:15 PM',  Icon: User,          color: 'bg-blue-100 text-blue-600'      },
-  { id: 4,  title: 'Security settings modified',  description: 'Enabled 2FA authentication',             date: 'March 12, 2024 11:20 AM', Icon: Shield,        color: 'bg-emerald-100 text-emerald-600'},
-  { id: 5,  title: 'Document downloaded',         description: 'Downloaded annual report',               date: 'March 11, 2024 9:15 AM',  Icon: FileText,      color: 'bg-orange-100 text-orange-600'  },
-  { id: 6,  title: 'Failed login attempt',        description: 'Invalid credentials from unknown IP',    date: 'March 10, 2024 8:20 PM',  Icon: AlertTriangle, color: 'bg-red-100 text-red-500'        },
-  { id: 7,  title: 'Account recovery initiated',  description: 'Password reset requested',               date: 'March 9, 2024 4:15 PM',   Icon: RefreshCw,     color: 'bg-yellow-100 text-yellow-600'  },
-  { id: 8,  title: 'New device registered',       description: 'iPhone 13 - New York, USA',              date: 'March 8, 2024 1:30 PM',   Icon: Smartphone,    color: 'bg-blue-100 text-blue-600'      },
-  { id: 9,  title: 'Security alert',              description: 'Suspicious activity detected',           date: 'March 7, 2024 10:45 AM',  Icon: AlertTriangle, color: 'bg-red-100 text-red-500'        },
-  { id: 10, title: 'Backup completed',            description: 'System backup successful',               date: 'March 6, 2024 9:00 AM',   Icon: Archive,       color: 'bg-emerald-100 text-emerald-600'},
-  { id: 11, title: 'New device registered',       description: 'Redmi note 5 - Tamilnadu, India',       date: 'March 8, 2024 1:30 PM',   Icon: Smartphone,    color: 'bg-blue-100 text-blue-600'      },
-];
+const cardClass = 'bg-white rounded-[5px] border border-[#eae8f1] overflow-hidden shadow-[-8px_12px_18px_0_#dadee8] mb-6 font-["Roboto",sans-serif]';
+const inputClass = 'w-full px-3 py-2 border border-[#eae8f1] rounded-[5px] text-sm focus:outline-none focus:ring-2 focus:ring-[#0162e8]/40 transition-all bg-[#f9fafc] focus:bg-white';
 
 export function VendorProfileContent() {
   const { data: vendor, isLoading } = useVendorMe();
   const updateProfile = useUpdateVendorProfile();
-  const changePassword = useChangeVendorPassword();
   const uploadMedia = useUploadMedia();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState('activity');
-  const [basicInfoEdit, setBasicInfoEdit] = useState(false);
-  const [editSuccess, setEditSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState('about');
   const [uploading, setUploading] = useState(false);
-  const [passwordModal, setPasswordModal] = useState(false);
-  const [twoFAModal, setTwoFAModal] = useState(false);
-  const [sessionModal, setSessionModal] = useState(false);
 
-  const [basicInfo, setBasicInfo] = useState({ name: '', contact: '', address: '', company_name: '' });
-  const [syncedVendorId, setSyncedVendorId] = useState<number | null>(null);
-
-  // Sync basicInfo from vendor data once loaded
-  if (vendor && vendor.id !== syncedVendorId) {
-    setBasicInfo({ name: vendor.name ?? '', contact: vendor.contact ?? '', address: vendor.address ?? '', company_name: vendor.company_name ?? '' });
-    setSyncedVendorId(vendor.id);
-  }
-
-  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [twoFAStatus, setTwoFAStatus] = useState(true);
-  const [twoFAVerification, setTwoFAVerification] = useState('');
-
-  const [activeSessions] = useState([
-    { id: 1, device: 'Chrome on Windows',        location: 'New York, USA',        lastActive: '2 hours ago', current: true  },
-    { id: 2, device: 'Safari on MacBook Pro',     location: 'San Francisco, USA',   lastActive: '1 day ago',   current: false },
-    { id: 3, device: 'Chrome Mobile on iPhone',   location: 'New York, USA',        lastActive: '3 days ago',  current: false },
-  ]);
-
-  const [notificationPrefs, setNotificationPrefs] = useState({
-    emailNotifications: true, securityAlerts: true, marketingEmails: false, systemNotifications: true,
-  });
-
-  const securityStatus = { lastPasswordChange: '7 days ago', securityScore: '95/100' };
-
-  const handleBasicInfoChange = (field: string, value: string) =>
-    setBasicInfo((prev) => ({ ...prev, [field]: value }));
-
-  const handleSaveBasicInfo = () => {
-    updateProfile.mutate(
-      { name: basicInfo.name, contact: basicInfo.contact, address: basicInfo.address, company_name: basicInfo.company_name },
-      {
-        onSuccess: () => {
-          setEditSuccess(true);
-          setTimeout(() => { setEditSuccess(false); setBasicInfoEdit(false); }, 2000);
-        },
-      }
-    );
-  };
-
-  const handleCancelEdit = () => {
-    setBasicInfo({ name: vendor?.name ?? '', contact: vendor?.contact ?? '', address: vendor?.address ?? '', company_name: vendor?.company_name ?? '' });
-    setBasicInfoEdit(false);
-  };
-
-  const handlePasswordChange = () => {
-    if (!passwordForm.currentPassword) { alert('Please enter your current password'); return; }
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) { alert('New passwords do not match'); return; }
-    if (passwordForm.newPassword.length < 6) { alert('Password must be at least 6 characters'); return; }
-    changePassword.mutate(
-      { current_password: passwordForm.currentPassword, new_password: passwordForm.newPassword },
-      { onSuccess: () => { setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' }); setPasswordModal(false); } }
-    );
-  };
-
-  const handleToggleTwoFA = () => {
-    if (!twoFAStatus) {
-      setTwoFAModal(true);
-    } else {
-      if (window.confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
-        setTwoFAStatus(false);
-      }
-    }
-  };
-
-  const handleEnableTwoFA = () => {
-    if (twoFAVerification.length === 6) {
-      setTwoFAStatus(true);
-      setTwoFAVerification('');
-      setTwoFAModal(false);
-    } else {
-      alert('Please enter a valid 6-digit code');
-    }
-  };
+  const initials = vendor?.name
+    ? vendor.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    : 'PC';
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -131,494 +43,350 @@ export function VendorProfileContent() {
     }
   };
 
-  const initials = vendor?.name
-    ? vendor.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : 'V';
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0162e8]" />
+    </div>
+  );
 
   return (
-    <div className="bg-muted/40 -mt-6 -mx-6 -mb-6 min-h-screen">
-      {/* Page Header */}
-      <div className="bg-card border-b border-border px-6 py-4">
-        <h1 className="text-2xl font-bold text-foreground">Profile</h1>
-        <p className="text-muted-foreground text-sm mt-0.5">Manage your profile settings and account preferences.</p>
-      </div>
+    <div className="bg-[#ecf0fa] min-h-screen -mt-6 -mx-6 -mb-6 p-8 font-['Roboto',sans-serif]">
+      {/* External Font Link (Roboto is required for Valex) */}
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-      {/* Main Content */}
-      <div className="px-6 pt-6 pb-4 min-h-[calc(100vh-120px)]">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-
-          {/* ── LEFT COLUMN ── */}
-          <div className="lg:col-span-1 flex flex-col">
-            <div className="bg-card rounded-xl border border-border overflow-hidden flex-1">
-
-              {/* Avatar & Name */}
-              <div className="flex flex-col items-center text-center px-6 pt-8 pb-6 border-b border-border/60">
-                <div className="relative cursor-pointer group mb-3" onClick={() => fileInputRef.current?.click()}>
-                  <Avatar className="w-20 h-20">
-                    <AvatarImage src={resolveMediaUrl(vendor?.profile || '')} className="object-cover" />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-400 to-blue-600 text-white font-bold text-2xl">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    {uploading
-                      ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                      : <Camera className="h-5 w-5 text-white" />}
-                  </div>
-                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-                </div>
-                <h2 className="text-xl font-bold text-foreground">{vendor?.name ?? '—'}</h2>
-                <p className="text-muted-foreground text-sm mt-0.5">{vendor?.company_name ?? 'Vendor'}</p>
-              </div>
-
-              {/* Basic Information */}
-              <div className="px-6 py-5 border-b border-border/60">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-semibold text-foreground text-sm">Basic Information</span>
-                  </div>
-                  {!basicInfoEdit && (
-                    <button
-                      onClick={() => setBasicInfoEdit(true)}
-                      className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 transition-colors"
-                    >
-                      <Edit className="w-3.5 h-3.5" /> Edit
-                    </button>
-                  )}
-                </div>
-
-                {basicInfoEdit ? (
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Full Name',    field: 'name',         type: 'text'  },
-                      { label: 'Phone',        field: 'contact',      type: 'tel'   },
-                      { label: 'Address',      field: 'address',      type: 'text'  },
-                      { label: 'Company',      field: 'company_name', type: 'text'  },
-                    ].map(({ label, field, type }) => (
-                      <div key={field}>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">{label}</label>
-                        <input
-                          type={type}
-                          value={basicInfo[field as keyof typeof basicInfo]}
-                          onChange={(e) => handleBasicInfoChange(field, e.target.value)}
-                          className={inputClass}
-                          placeholder={label}
-                        />
-                      </div>
-                    ))}
-                    <div className="flex gap-2 pt-1">
-                      <button
-                        onClick={handleSaveBasicInfo}
-                        disabled={updateProfile.isPending}
-                        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
-                      >
-                        <Save className="w-3.5 h-3.5" /> {updateProfile.isPending ? 'Saving...' : 'Save'}
-                      </button>
-                      <button
-                        onClick={handleCancelEdit}
-                        className="flex-1 bg-muted hover:bg-accent text-foreground py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5" /> Cancel
-                      </button>
-                    </div>
-                    {editSuccess && (
-                      <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-2 rounded-lg text-sm flex items-center gap-2">
-                        <Check className="w-4 h-4" /> Changes saved successfully!
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="space-y-0 divide-y divide-border/40">
-                    {[
-                      { Icon: Mail,      label: 'Email',   value: vendor?.email },
-                      { Icon: Phone,     label: 'Phone',   value: vendor?.contact || '—' },
-                      { Icon: MapPin,    label: 'Location',value: vendor?.address || '—' },
-                      { Icon: Briefcase, label: 'Company', value: vendor?.company_name },
-                    ].map(({ Icon, label, value }) => (
-                      <div key={label} className="flex items-center justify-between py-2.5">
-                        <div className="flex items-center gap-2.5 text-muted-foreground">
-                          <Icon className="w-4 h-4 shrink-0" />
-                          <span className="text-sm text-muted-foreground">{label}</span>
-                        </div>
-                        <span className="text-sm font-medium text-foreground text-right max-w-[55%] truncate">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Security Status */}
-              <div className="px-6 py-5 border-b border-border/60">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-semibold text-foreground text-sm">Security Status</span>
-                  </div>
-                  <button
-                    onClick={() => setPasswordModal(true)}
-                    className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
-                  >
-                    Change Password
-                  </button>
-                </div>
-                <div className="space-y-0 divide-y divide-border/40">
-                  <div className="flex items-center justify-between py-2.5">
-                    <span className="text-sm text-muted-foreground">2FA Status</span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${twoFAStatus ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                      {twoFAStatus ? 'Enabled' : 'Disabled'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <span className="text-sm text-muted-foreground">Last Password Change</span>
-                    <span className="text-sm font-medium text-foreground">{securityStatus.lastPasswordChange}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <span className="text-sm text-muted-foreground">Security Score</span>
-                    <span className="text-sm font-medium text-foreground">{securityStatus.securityScore}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="px-6 py-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Settings className="w-4 h-4 text-muted-foreground" />
-                  <span className="font-semibold text-foreground text-sm">Quick Actions</span>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { Icon: Edit,     label: 'Edit Profile',    onClick: () => setBasicInfoEdit(true) },
-                    { Icon: Lock,     label: 'Change Password', onClick: () => setPasswordModal(true) },
-                    { Icon: Download, label: 'Download Data',   onClick: () => alert('Downloading your profile data...') },
-                  ].map(({ Icon, label, onClick }) => (
-                    <button
-                      key={label}
-                      onClick={onClick}
-                      className="w-full flex items-center justify-between px-4 py-3 border border-border rounded-lg hover:bg-accent hover:border-border/80 transition-all group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                        <span className="text-sm font-medium text-foreground">{label}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-muted-foreground/80 transition-colors" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+      {/* --- PAGE HEADER --- */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div>
+          <h1 className="text-[#1c273c] text-[24px] font-bold leading-tight uppercase">Profile</h1>
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-[#0162e8] text-[13px] font-medium">Pages</span>
+            <span className="text-[#text-[#7987a1]] text-[13px]"> » Profile</span>
           </div>
-
-          {/* ── RIGHT COLUMN ── */}
-          <div className="lg:col-span-2 flex flex-col">
-            {/* Tab Navigation */}
-            <div className="bg-card rounded-xl border border-border mb-4 overflow-hidden sticky top-6">
-              <div className="flex">
-                {[
-                  { id: 'activity',      label: 'Activity',      Icon: Activity },
-                  { id: 'security',      label: 'Security',      Icon: Shield   },
-                  { id: 'notifications', label: 'Notifications', Icon: Bell     },
-                ].map(({ id, label, Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => setActiveTab(id)}
-                    className={`flex-1 py-4 px-6 text-sm font-medium flex items-center justify-center gap-2 border-b-2 transition-all ${
-                      activeTab === id
-                        ? 'border-primary text-primary bg-primary/5'
-                        : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* ── ACTIVITY TAB ── */}
-            {activeTab === 'activity' && (
-              <div className="bg-card rounded-xl border border-border overflow-hidden flex-1">
-                <div className="flex justify-between items-center px-6 py-4 border-b border-border/60">
-                  <h3 className="text-base font-semibold text-foreground">Recent Activity</h3>
-                  <button className="text-primary hover:text-primary/80 text-sm font-medium transition-colors">View All</button>
-                </div>
-                <div className="divide-y divide-border/40">
-                  {recentActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-center gap-4 px-6 py-3.5 hover:bg-accent/30 transition-colors">
-                      <div className={`flex-shrink-0 w-9 h-9 rounded-full ${activity.color} flex items-center justify-center`}>
-                        <activity.Icon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground leading-tight">{activity.title}</p>
-                        <p className="text-sm text-muted-foreground leading-tight mt-0.5">{activity.description}</p>
-                      </div>
-                      <div className="flex-shrink-0 text-right">
-                        <p className="text-xs text-muted-foreground whitespace-nowrap">{activity.date}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── SECURITY TAB ── */}
-            {activeTab === 'security' && (
-              <div className="bg-card rounded-xl border border-border overflow-hidden flex-1">
-                <div className="px-6 py-4 border-b border-border/60">
-                  <h3 className="text-base font-semibold text-foreground">Security Settings</h3>
-                </div>
-                <div className="divide-y divide-border/60">
-                  {/* Two-Factor Auth */}
-                  <div className="px-6 py-5">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Smartphone className="w-4 h-4 text-muted-foreground" />
-                          <h4 className="font-semibold text-foreground text-sm">Two-Factor Authentication</h4>
-                        </div>
-                        <p className="text-sm text-muted-foreground ml-6">Add an extra layer of security to your account.</p>
-                        <div className="ml-6 mt-3">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${twoFAStatus ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${twoFAStatus ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
-                            {twoFAStatus ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={handleToggleTwoFA}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors shrink-0 ${twoFAStatus ? 'bg-red-500 hover:bg-red-600' : 'bg-primary hover:bg-primary/90'}`}
-                      >
-                        {twoFAStatus ? 'Disable 2FA' : 'Enable 2FA'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div className="px-6 py-5">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Key className="w-4 h-4 text-muted-foreground" />
-                          <h4 className="font-semibold text-foreground text-sm">Password</h4>
-                        </div>
-                        <p className="text-sm text-muted-foreground ml-6">Change your password regularly to keep your account secure.</p>
-                        <p className="text-xs text-muted-foreground/60 ml-6 mt-2">Last changed: {securityStatus.lastPasswordChange}</p>
-                      </div>
-                      <button
-                        onClick={() => setPasswordModal(true)}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors shrink-0"
-                      >
-                        Change Password
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Active Sessions */}
-                  <div className="px-6 py-5">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Activity className="w-4 h-4 text-muted-foreground" />
-                          <h4 className="font-semibold text-foreground text-sm">Active Sessions</h4>
-                        </div>
-                        <p className="text-sm text-muted-foreground ml-6">Manage devices that have access to your account.</p>
-                        <p className="text-xs text-muted-foreground/60 ml-6 mt-2">{activeSessions.length} active sessions</p>
-                      </div>
-                      <button
-                        onClick={() => setSessionModal(true)}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors shrink-0"
-                      >
-                        View Sessions ({activeSessions.length})
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── NOTIFICATIONS TAB ── */}
-            {activeTab === 'notifications' && (
-              <div className="bg-card rounded-xl border border-border overflow-hidden flex-1">
-                <div className="px-6 py-4 border-b border-border/60">
-                  <h3 className="text-base font-semibold text-foreground">Notification Preferences</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">Control how and when you receive notifications.</p>
-                </div>
-                <div className="divide-y divide-border/60">
-                  {[
-                    { field: 'emailNotifications',  label: 'Email Notifications',  desc: 'Receive email updates about important activities' },
-                    { field: 'securityAlerts',       label: 'Security Alerts',       desc: 'Get notified of suspicious activities'            },
-                    { field: 'marketingEmails',      label: 'Marketing Emails',      desc: 'Receive news and updates from our team'            },
-                    { field: 'systemNotifications',  label: 'System Notifications',  desc: 'Get notified about system maintenance and updates' },
-                  ].map(({ field, label, desc }) => (
-                    <label key={field} className="flex items-center justify-between px-6 py-4 hover:bg-accent/30 cursor-pointer transition-colors">
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground">{label}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
-                      </div>
-                      <div className="relative ml-4 shrink-0">
-                        <input
-                          type="checkbox"
-                          checked={notificationPrefs[field as keyof typeof notificationPrefs]}
-                          onChange={() => setNotificationPrefs((prev) => ({ ...prev, [field]: !prev[field as keyof typeof prev] }))}
-                          className="sr-only peer"
-                        />
-                        <div className={`w-10 h-6 rounded-full transition-colors ${notificationPrefs[field as keyof typeof notificationPrefs] ? 'bg-primary' : 'bg-muted'}`} />
-                        <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${notificationPrefs[field as keyof typeof notificationPrefs] ? 'translate-x-4' : 'translate-x-0'}`} />
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+        </div>
+        <div className="flex items-center flex-wrap gap-2 mt-4 md:mt-0">
+         
+          <button className="h-9 px-4 flex items-center gap-2 bg-[#0162e8] text-white rounded-[5px] shadow-sm hover:brightness-110 text-[13px] font-medium whitespace-nowrap">
+            14 Aug 2019 <ChevronRight size={14} className="rotate-90 translate-y-0.5" />
+          </button>
         </div>
       </div>
 
-      {/* ── PASSWORD MODAL ── */}
-      {passwordModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-full">
-            <div className="flex justify-between items-center mb-5">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">Change Password</h3>
-                <p className="text-sm text-muted-foreground mt-0.5">Choose a strong, unique password.</p>
-              </div>
-              <button onClick={() => setPasswordModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all">
-                <X className="w-5 h-5" />
-              </button>
+      <div className="grid grid-cols-12 gap-6">
+        {/* --- LEFT COLUMN --- */}
+        <div className="col-span-12 lg:col-span-4 space-y-6">
+          <div className={`${cardClass} p-8 text-center`}>
+            <div className="relative inline-block mb-6">
+              <Avatar className="w-[124px] h-[124px] border border-[#eae8f1] p-[4px] bg-white rounded-full">
+                <AvatarImage src={resolveMediaUrl(vendor?.profile || '')} className="object-cover rounded-full" />
+                <AvatarFallback className="bg-gradient-to-br from-[#0162e8] to-[#0156cc] text-white font-bold text-4xl rounded-full">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
             </div>
-            <div className="space-y-4">
-              {[
-                { label: 'Current Password', field: 'currentPassword' },
-                { label: 'New Password',     field: 'newPassword'     },
-                { label: 'Confirm Password', field: 'confirmPassword' },
-              ].map(({ label, field }) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">{label}</label>
-                  <input
-                    type="password"
-                    value={passwordForm[field as keyof typeof passwordForm]}
-                    onChange={(e) => setPasswordForm((prev) => ({ ...prev, [field]: e.target.value }))}
-                    className={inputClass}
-                    placeholder={`Enter ${label.toLowerCase()}`}
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handlePasswordChange}
-                disabled={changePassword.isPending}
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60"
-              >
-                {changePassword.isPending ? 'Changing...' : 'Change Password'}
-              </button>
-              <button onClick={() => setPasswordModal(false)} className="flex-1 bg-muted hover:bg-accent text-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            <h5 className="text-[#1c273c] text-[22px] font-bold mb-1">{vendor?.name || 'Petey Cruiser'}</h5>
+            <p className="text-[#7987a1] text-[13px] mb-6">{vendor?.company_name || 'Web Designer'}</p>
 
-      {/* ── 2FA MODAL ── */}
-      {twoFAModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-full">
-            <div className="flex justify-between items-center mb-5">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">Enable Two-Factor Auth</h3>
-                <p className="text-sm text-muted-foreground mt-0.5">Scan the QR code with your authenticator app.</p>
-              </div>
-              <button onClick={() => setTwoFAModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all">
-                <X className="w-5 h-5" />
-              </button>
+            <div className="text-left mb-6">
+              <h6 className="text-[#1c273c] text-[15px] font-bold mb-2">Bio</h6>
+              <p className="text-[#7987a1] text-[13px] leading-relaxed">
+                pleasure rationally encounter but because pursue consequences that are extremely painful.occur in which toil and pain can procure him some great pleasure.. <span className="text-[#0162e8] cursor-pointer hover:underline font-medium">More</span>
+              </p>
             </div>
-            <div className="bg-muted border border-border p-6 rounded-xl mb-5 flex items-center justify-center h-44">
+
+            <div className="grid grid-cols-3 gap-0 border-t border-[#eae8f1] pt-6 mb-6">
               <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-2 font-medium uppercase tracking-wide">QR Code</p>
-                <p className="text-4xl tracking-widest">■□■□■</p>
-                <p className="text-xs text-muted-foreground mt-2">Scan with Google Authenticator</p>
+                <p className="text-[#1c273c] text-[20px] font-bold leading-none">947</p>
+                <p className="text-[#7987a1] text-[12px] mt-1">Followers</p>
+              </div>
+              <div className="text-center border-x border-gray-100">
+                <p className="text-[#1c273c] text-[20px] font-bold leading-none">583</p>
+                <p className="text-[#7987a1] text-[12px] mt-1">Tweets</p>
+              </div>
+              <div className="text-center">
+                <p className="text-[#1c273c] text-[20px] font-bold leading-none">48</p>
+                <p className="text-[#7987a1] text-[12px] mt-1">Posts</p>
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Enter 6-digit verification code</label>
-              <input
-                type="text"
-                maxLength={6}
-                value={twoFAVerification}
-                onChange={(e) => setTwoFAVerification(e.target.value.replace(/\D/g, ''))}
-                className="w-full px-3 py-3 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 text-center text-2xl tracking-[0.5em] font-mono bg-muted/50"
-                placeholder="000000"
-              />
-            </div>
-            <div className="flex gap-3 mt-5">
-              <button onClick={handleEnableTwoFA} className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors">
-                Verify & Enable
-              </button>
-              <button onClick={() => setTwoFAModal(false)} className="flex-1 bg-muted hover:bg-accent text-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* ── SESSIONS MODAL ── */}
-      {sessionModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-5">
-              <div>
-                <h3 className="text-lg font-bold text-foreground">Active Sessions</h3>
-                <p className="text-sm text-muted-foreground mt-0.5">{activeSessions.length} device{activeSessions.length !== 1 ? 's' : ''} currently signed in</p>
-              </div>
-              <button onClick={() => setSessionModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="space-y-3">
-              {activeSessions.map((session) => (
-                <div key={session.id} className="border border-border rounded-xl p-4 hover:border-border/80 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
-                        <Smartphone className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground text-sm flex items-center gap-2">
-                          {session.device}
-                          {session.current && (
-                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-medium">Current</span>
-                          )}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{session.location}</p>
-                        <p className="text-xs text-muted-foreground/60 mt-1">Last active: {session.lastActive}</p>
-                      </div>
-                    </div>
-                    {!session.current && (
-                      <button className="text-red-500 hover:text-red-600 text-xs font-semibold px-2 py-1 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors">
-                        Remove
-                      </button>
-                    )}
+            <div className="text-left space-y-4">
+              <h6 className="text-[#1c273c] text-[13px] font-bold uppercase tracking-wider">Social</h6>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 group cursor-pointer">
+                  <div className="w-9 h-9 rounded-full bg-[#f1f2f9] border border-[#f0f1f7] flex items-center justify-center text-[#0162e8] group-hover:bg-[#0162e8] group-hover:text-white transition-all"><Github size={18} /></div>
+                  <div className="overflow-hidden">
+                    <p className="text-[#1c273c] text-[13px] font-bold leading-tight">Github</p>
+                    <p className="text-[#0162e8] text-[11px] truncate">github.com/spruko</p>
                   </div>
                 </div>
-              ))}
+                <div className="flex items-center gap-3 group cursor-pointer">
+                  <div className="w-9 h-9 rounded-full bg-[#f1f2f9] border border-[#f0f1f7] flex items-center justify-center text-[#22c55e] group-hover:bg-[#22c55e] group-hover:text-white transition-all"><Twitter size={18} /></div>
+                  <div className="overflow-hidden">
+                    <p className="text-[#1c273c] text-[13px] font-bold leading-tight">Twitter</p>
+                    <p className="text-[#0162e8] text-[11px] truncate">twitter.com/spruko.me</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 group cursor-pointer">
+                  <div className="w-9 h-9 rounded-full bg-[#f1f2f9] border border-[#f0f1f7] flex items-center justify-center text-[#fbbc05] group-hover:bg-[#fbbc05] group-hover:text-white transition-all"><Linkedin size={18} /></div>
+                  <div className="overflow-hidden">
+                    <p className="text-[#1c273c] text-[13px] font-bold leading-tight">Linkedin</p>
+                    <p className="text-[#0162e8] text-[11px] truncate">linkedin.com/in/spruko</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 group cursor-pointer">
+                  <div className="w-9 h-9 rounded-full bg-[#f1f2f9] border border-[#f0f1f7] flex items-center justify-center text-[#f10075] group-hover:bg-[#f10075] group-hover:text-white transition-all"><Globe size={18} /></div>
+                  <div className="overflow-hidden">
+                    <p className="text-[#1c273c] text-[13px] font-bold leading-tight">My Portfolio</p>
+                    <p className="text-[#0162e8] text-[11px] truncate">spruko.com/</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <button onClick={() => setSessionModal(false)} className="w-full mt-4 bg-muted hover:bg-accent text-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors">
-              Close
-            </button>
+          </div>
+
+          <div className={`${cardClass} p-8`}>
+            <h6 className="text-[#1c273c] text-[15px] font-bold uppercase tracking-wider mb-6">Location</h6>
+            <div className="space-y-4">
+              <div className="rounded-[5px] border border-[#eae8f1] overflow-hidden bg-gray-50 aspect-video relative group cursor-pointer shadow-sm">
+                <img 
+                  src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80" 
+                  alt="Map Location" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-[#0162e8]/10 group-hover:bg-transparent transition-all" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <div className="w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center animate-bounce">
+                    <MapPin size={18} className="text-[#f10075]" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#f8f9fe] p-3 rounded-[5px] border border-[#f0f3ff]">
+                  <p className="text-[#7987a1] text-[10px] font-bold uppercase tracking-tight mb-0.5">Latitude</p>
+                  <p className="text-[#1c273c] text-[13px] font-bold">25.1972° N</p>
+                </div>
+                <div className="bg-[#f8f9fe] p-3 rounded-[5px] border border-[#f0f3ff]">
+                  <p className="text-[#7987a1] text-[10px] font-bold uppercase tracking-tight mb-0.5">Longitude</p>
+                  <p className="text-[#1c273c] text-[13px] font-bold">55.2744° E</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 text-[#0162e8] text-[12px] font-medium hover:underline cursor-pointer group">
+                <Globe size={14} className="group-hover:rotate-12 transition-transform" />
+                View on Google Maps
+              </div>
+            </div>
           </div>
         </div>
-      )}
+
+        {/* --- RIGHT COLUMN --- */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          {/* STATS CARDS */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { label: 'Orders', value: '1,587', icon: <FileText size={24} />, iconBg: 'bg-[#e5f0ff]', iconColor: 'text-[#0162e8]' },
+              { label: 'Revenue', value: '46,782', icon: <Briefcase size={24} />, iconBg: 'bg-[#ffe5f1]', iconColor: 'text-[#f10075]' },
+              { label: 'Product sold', value: '1,890', icon: <Rocket size={24} />, iconBg: 'bg-[#e1f5e6]', iconColor: 'text-[#22c55e]' },
+            ].map((card, i) => (
+              <div key={i} className={`${cardClass} p-8 flex items-center justify-between`}>
+                <div className={`w-[60px] h-[60px] rounded-full ${card.iconBg} ${card.iconColor} flex items-center justify-center shrink-0 shadow-inner`}>
+                  {card.icon}
+                </div>
+                <div className="text-right">
+                  <p className="text-[#7987a1] text-[13px] font-bold uppercase mb-1 tracking-tight">{card.label}</p>
+                  <h3 className="text-[#1c273c] text-[28px] font-bold leading-tight mb-1">{card.value}</h3>
+                  <p className="text-[#22c55e] text-[11px] font-medium flex items-center justify-end gap-1">
+                    <span className="w-3 h-3 rounded-full bg-[#e1f5e6] flex items-center justify-center"><ChevronRight size={10} className="rotate-[-45deg] translate-y-[-0.5px] translate-x-[0.5px]" /></span>
+                    increase
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* MAIN TABS CARD */}
+          <div className={cardClass}>
+            {/* VALEX TABS NAVIGATION */}
+            <div className="bg-[#f0f3f9] p-1.5 flex gap-1">
+              {[
+                { id: 'about', label: 'ABOUT ME', icon: <User size={15} /> },
+                { id: 'events', label: 'EVENTS', icon: <ImageIcon size={15} /> },
+                { id: 'clients', label: 'CLIENTS', icon: <Users size={15} /> },
+                { id: 'settings', label: 'SETTINGS', icon: <Settings size={15} /> },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-3.5 flex items-center justify-center gap-2 text-[12px] font-bold rounded-[3px] transition-all outline-none ${
+                    activeTab === tab.id 
+                    ? 'bg-white text-[#1c273c] shadow-sm' 
+                    : 'text-[#7987a1] hover:text-[#1c273c]'
+                  }`}
+                >
+                  {tab.icon} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="p-8 min-h-[500px]">
+              {activeTab === 'about' && (
+                <div className="animate-in fade-in duration-300">
+                  <h6 className="text-[#1c273c] text-[16px] font-bold uppercase mb-5">Bio Data</h6>
+                  <p className="text-[#7987a1] text-[14px] leading-[2] mb-10">
+                    Hi I'm Petey Cruiser,has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+                  </p>
+
+                  <h6 className="text-[#1c273c] text-[16px] font-bold uppercase mb-6">Experience</h6>
+                  <div className="space-y-8">
+                    <div className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:w-2 before:h-2 before:bg-[#0162e8] before:rounded-full">
+                      <p className="text-[#0162e8] text-[15px] font-bold hover:underline cursor-pointer">Lead designer / Developer</p>
+                      <p className="text-[#7987a1] text-[13px] mt-1 mb-2">websitename.com</p>
+                      <p className="text-[#1c273c] font-bold text-[12px] uppercase">2010 - 2015</p>
+                      <p className="text-[#7987a1] text-[14px] leading-relaxed mt-4">
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
+                      </p>
+                    </div>
+
+                    <div className="h-px bg-[#eae8f1] w-full" />
+
+                    <div className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:w-2 before:h-2 before:bg-gray-300 before:rounded-full">
+                      <p className="text-[#0162e8] text-[15px] font-bold hover:underline cursor-pointer">Senior Graphic Designer</p>
+                      <p className="text-[#7987a1] text-[13px] mt-1 mb-2">coderthemes.com</p>
+                      <p className="text-[#1c273c] font-bold text-[12px] uppercase">2007 - 2009</p>
+                      <p className="text-[#7987a1] text-[14px] leading-relaxed mt-4">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type.
+                      </p>
+                    </div>
+
+                    <div className="h-px bg-[#eae8f1] w-full" />
+
+                    <div className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:w-2 before:h-2 before:bg-gray-300 before:rounded-full">
+                      <p className="text-[#0162e8] text-[15px] font-bold hover:underline cursor-pointer">Graphic Designer</p>
+                      <p className="text-[#7987a1] text-[13px] mt-1 mb-2">softthemes.com</p>
+                      <p className="text-[#1c273c] font-bold text-[12px] uppercase">2005 - 2007</p>
+                      <p className="text-[#7987a1] text-[14px] leading-relaxed mt-4">
+                        Scrambled it to make a type specimen book. Industry's standard dummy text ever since the 1500s.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'events' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in zoom-in-95 duration-300">
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className="bg-white rounded-[5px] border border-[#eae8f1] overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer">
+                      <div className="aspect-[16/10] bg-gray-100 overflow-hidden relative">
+                        <img 
+                          src={`https://images.unsplash.com/photo-${[
+                            '1511795409834-ef04bbd61622',
+                            '1492684223066-81342ee5ff30',
+                            '1533174072545-7a4b6ad7a6c3',
+                            '1501281668745-f7f57925c3b4',
+                            '1531050171654-af7c2f9cff6a',
+                            '1470225620780-dba8ba36b745',
+                            '1514525253361-b83f83ef4a2c',
+                            '1540575861501-7ad0d02394e8',
+                            '1505236858219-8359eb29e329',
+                            '1516280440614-37939bbacd81',
+                            '1519125323398-675f0ddb6308',
+                            '1519741497674-611481863552'
+                          ][i]}?auto=format&fit=crop&w=600&q=80`}
+                          alt="events" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ImageIcon className="text-white w-8 h-8 opacity-80" />
+                        </div>
+                      </div>
+                      <div className="p-6 text-center">
+                        <h4 className="text-[#1c273c] text-[15px] font-bold mb-3 uppercase tracking-wide">Event Image</h4>
+                        <div className="w-[30px] h-[2px] bg-[#0162e8] mx-auto mb-3" />
+                        <p className="text-[#7987a1] text-[13px] font-medium italic">Photography</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'clients' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in slide-in-from-bottom-4 duration-300">
+                  {[
+                    { name: 'James Thomas', role: 'Web Designer', img: 'https://i.pravatar.cc/150?u=1' },
+                    { name: 'Reynante Labares', role: 'Web Designer', img: 'https://i.pravatar.cc/150?u=2' },
+                    { name: 'Owen Bongcaras', role: 'App Developer', img: 'https://i.pravatar.cc/150?u=3' },
+                    { name: 'Stephen Metcalfe', role: 'Administrator', img: 'https://i.pravatar.cc/150?u=4' },
+                    { name: 'Socrates Itumay', role: 'Project Manager', img: 'https://i.pravatar.cc/150?u=5' },
+                    { name: 'Petey Cruiser', role: 'Web Designer', img: 'https://i.pravatar.cc/150?u=6' },
+                    { name: 'Anna Mull', role: 'UI/UX Designer', img: 'https://i.pravatar.cc/150?u=7' },
+                    { name: 'Barb Akew', role: 'PHP Developer', img: 'https://i.pravatar.cc/150?u=8' },
+                    { name: 'Desmond Eagle', role: 'Backend Dev', img: 'https://i.pravatar.cc/150?u=9' },
+                    { name: 'Eileen Sideways', role: 'Graphic Designer', img: 'https://i.pravatar.cc/150?u=10' },
+                  ].map((friend, i) => (
+                    <div key={i} className="bg-white rounded-[5px] border border-[#eae8f1] p-8 text-center relative group hover:shadow-md transition-all">
+                      <button className="absolute top-4 right-4 text-[#7987a1] hover:text-[#1c273c]">
+                        <MoreHorizontal size={18} />
+                      </button>
+                      <div className="mb-4 flex justify-center">
+                        <Avatar className="w-[100px] h-[100px] border border-[#eae8f1] p-[2px] bg-white">
+                          <AvatarImage src={friend.img} className="rounded-full" />
+                          <AvatarFallback className="bg-gray-100 text-[#0162e8] font-bold">FR</AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <h5 className="text-[#1c273c] text-[16px] font-bold mb-1">{friend.name}</h5>
+                      <p className="text-[#7987a1] text-[13px] mb-6">{friend.role}</p>
+                      <div className="flex items-center justify-center gap-2">
+                        <button className="w-9 h-9 border border-[#eae8f1] rounded-full flex items-center justify-center text-[#0162e8] hover:bg-[#0162e8] hover:text-white transition-all"><Facebook size={16} /></button>
+                        <button className="w-9 h-9 border border-[#eae8f1] rounded-full flex items-center justify-center text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white transition-all"><X size={14} /></button>
+                        <button className="w-9 h-9 border border-[#eae8f1] rounded-full flex items-center justify-center text-[#0077b5] hover:bg-[#0077b5] hover:text-white transition-all"><Linkedin size={16} /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'settings' && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                  <div className="space-y-4 max-w-5xl">
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">Full Name</label>
+                      <input type="text" className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all" defaultValue="John Doe" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">Email</label>
+                      <input type="email" className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all" defaultValue="first.last@example.com" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">Mobile Number</label>
+                      <input type="tel" className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all" defaultValue="+123 456 7890" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">Username</label>
+                      <input type="text" className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all" defaultValue="john" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">Password</label>
+                      <input type="password" placeholder="6 - 15 Characters" className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">Re-Password</label>
+                      <input type="password" placeholder="6 - 15 Characters" className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[#1c273c] text-[14px] font-bold">About Me</label>
+                      <textarea 
+                        className="w-full px-4 py-2 bg-[#fdfdfd] border border-[#eae8f1] rounded-[5px] text-[14px] text-[#7987a1] focus:outline-none focus:border-[#0162e8] transition-all min-h-[140px] resize-none" 
+                        defaultValue="Loren gypsum dolor sit mate, consecrate disciplining lit, tied diam nonunion nib modernism tincidunt it Loretta dolor manga Amalie erst solute. Ur wise denim ad minim venial, quid"
+                      ></textarea>
+                    </div>
+                    <button className="bg-[#0162e8] text-white px-5 py-2.5 rounded-[5px] text-[13px] font-bold hover:bg-[#0156cc] transition-all shadow-sm uppercase">Save</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

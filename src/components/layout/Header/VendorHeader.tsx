@@ -31,10 +31,11 @@ import {
 import { useTheme } from "next-themes";
 import { useVendorMe, useVendorLogout } from "@/hooks/use-vendors";
 import { resolveMediaUrl } from "@/lib/utils";
+import { User, Settings, Mail, MessageSquare, Sliders, LogOut } from 'lucide-react';
 
 const MEMBERSHIP_COLORS: Record<string, string> = {
-  silver:   "bg-slate-200 text-slate-700 border-slate-300",
-  gold:     "bg-yellow-100 text-yellow-700 border-yellow-200",
+  silver: "bg-slate-200 text-slate-700 border-slate-300",
+  gold: "bg-yellow-100 text-yellow-700 border-yellow-200",
   platinum: "bg-purple-100 text-purple-700 border-purple-200",
 };
 
@@ -146,33 +147,53 @@ export default function VendorHeader() {
               </Avatar>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[220px] p-2 rounded-2xl shadow-xl mt-2 border-border">
-            <DropdownMenuLabel className="p-3">
-              <p className="font-bold text-sm text-foreground">{vendor?.name ?? "Vendor"}</p>
-              <p className="text-[11px] text-muted-foreground font-normal truncate">{vendor?.email ?? ""}</p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="p-1">
-              <DropdownMenuItem asChild className="flex items-center rounded-xl h-10 px-2 cursor-pointer font-medium text-[13px] transition-colors">
+          <DropdownMenuContent align="end" className="w-[240px] p-0 rounded-lg shadow-xl mt-2 border-[#eae8f1] overflow-hidden font-['Roboto',sans-serif]">
+            {/* VALEX BLUE HEADER */}
+            <div className="bg-[#0162e8] p-5 text-center">
+              <h6 className="font-bold text-[15px] text-white leading-tight uppercase tracking-wide">{vendor?.name || "Petey Cruiser"}</h6>
+              <span className="text-[11px] text-white/80 font-normal pt-1 block">Premium Member</span>
+            </div>
+
+            <div className="p-1.5 bg-white">
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none first:rounded-t-md">
                 <Link href="/profile">
-                  <FontAwesomeIcon icon={faUser} className="!size-3.5 mr-2" /> Profile
+                  <User size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center rounded-xl h-10 px-2 cursor-pointer font-medium text-[13px] transition-colors">
-                <Link href="/profile#change-password">
-                  <FontAwesomeIcon icon={faKey} className="!size-3.5 mr-2" /> Change Password
+
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+                <Link href="/profile#edit">
+                  <Settings size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Edit Profile
                 </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+                <Link href="/inbox">
+                  <Mail size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Inbox
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+                <Link href="/messages">
+                  <MessageSquare size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Messages
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+                <Link href="/settings">
+                  <Sliders size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Account Settings
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group rounded-b-md"
+                onClick={() => logout.mutate()}
+                disabled={logout.isPending}
+              >
+                <LogOut size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" />
+                {logout.isPending ? "Signing Out..." : "Sign Out"}
               </DropdownMenuItem>
             </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="flex items-center rounded-xl h-10 px-2 text-rose-500 focus:bg-rose-500/10 focus:text-rose-600 cursor-pointer font-bold text-[13px] m-1 transition-colors"
-              onClick={() => logout.mutate()}
-              disabled={logout.isPending}
-            >
-              <FontAwesomeIcon icon={faSignOutAlt} className="!size-3.5 mr-2" />
-              {logout.isPending ? "Logging out..." : "Logout"}
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
