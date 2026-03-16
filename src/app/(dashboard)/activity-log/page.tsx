@@ -2,51 +2,15 @@
 
 import { useState, useMemo } from 'react';
 import {
-  Key, LogIn, User, Shield, FileText, RefreshCw,
-  Smartphone, AlertTriangle, Archive, Search, Filter,
+  Key, LogIn, LogOut, User, Shield,
+  Smartphone, AlertTriangle, Search, Filter,
   Download, Calendar, ChevronLeft, ChevronRight,
-  Activity, Lock, Bell, Settings,
+  Activity, Lock, Loader2,
 } from 'lucide-react';
+import { useVendorActivityLog, type VendorActivityLog } from '@/hooks/use-vendors';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type ActivityCategory = 'all' | 'auth' | 'security' | 'profile' | 'system';
-
-interface ActivityEntry {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  Icon: React.ElementType;
-  color: string;
-  category: ActivityCategory;
-  ip?: string;
-  device?: string;
-}
-
-// ── Data ───────────────────────────────────────────────────────────────────
-const ALL_ACTIVITIES: ActivityEntry[] = [
-  { id: 1,  title: 'Password changed',           description: 'Changed from web browser (Chrome)',        date: 'Mar 15, 2024', time: '10:30 AM', Icon: Key,           color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400', category: 'security', ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 2,  title: 'Login from new device',       description: 'MacBook Pro — New York, USA',              date: 'Mar 14, 2024', time: '3:45 PM',  Icon: LogIn,         color: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-950/40 dark:text-yellow-400',   category: 'auth',     ip: '203.0.113.42',  device: 'Safari on MacBook Pro' },
-  { id: 3,  title: 'Profile updated',             description: 'Updated contact information',              date: 'Mar 13, 2024', time: '2:15 PM',  Icon: User,          color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',           category: 'profile',  ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 4,  title: 'Security settings modified',  description: 'Enabled 2FA authentication',              date: 'Mar 12, 2024', time: '11:20 AM', Icon: Shield,        color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400', category: 'security', ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 5,  title: 'Document downloaded',         description: 'Downloaded annual report',                date: 'Mar 11, 2024', time: '9:15 AM',  Icon: FileText,      color: 'bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',   category: 'system',   ip: '192.168.1.1',   device: 'Firefox on Windows' },
-  { id: 6,  title: 'Failed login attempt',        description: 'Invalid credentials from unknown IP',     date: 'Mar 10, 2024', time: '8:20 PM',  Icon: AlertTriangle, color: 'bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-400',               category: 'auth',     ip: '198.51.100.7',  device: 'Unknown Browser' },
-  { id: 7,  title: 'Account recovery initiated',  description: 'Password reset requested',                date: 'Mar 9, 2024',  time: '4:15 PM',  Icon: RefreshCw,     color: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-950/40 dark:text-yellow-400',   category: 'security', ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 8,  title: 'New device registered',       description: 'iPhone 13 — New York, USA',               date: 'Mar 8, 2024',  time: '1:30 PM',  Icon: Smartphone,    color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',           category: 'auth',     ip: '203.0.113.10',  device: 'Safari on iPhone' },
-  { id: 9,  title: 'Security alert',              description: 'Suspicious activity detected',             date: 'Mar 7, 2024',  time: '10:45 AM', Icon: AlertTriangle, color: 'bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-400',               category: 'security', ip: '198.51.100.99', device: 'Unknown' },
-  { id: 10, title: 'Backup completed',            description: 'System backup successful',                 date: 'Mar 6, 2024',  time: '9:00 AM',  Icon: Archive,       color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400', category: 'system',   ip: '—',             device: 'System' },
-  { id: 11, title: 'New device registered',       description: 'Redmi Note 5 — Tamil Nadu, India',        date: 'Mar 5, 2024',  time: '1:30 PM',  Icon: Smartphone,    color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',           category: 'auth',     ip: '103.21.245.12', device: 'Chrome on Android' },
-  { id: 12, title: 'Notification settings saved', description: 'Email notifications enabled',             date: 'Mar 4, 2024',  time: '3:00 PM',  Icon: Bell,          color: 'bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',   category: 'profile',  ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 13, title: 'Successful login',            description: 'Logged in from Chrome on Windows',        date: 'Mar 3, 2024',  time: '9:10 AM',  Icon: LogIn,         color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400', category: 'auth',     ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 14, title: 'Profile photo updated',       description: 'Uploaded new profile picture',            date: 'Mar 2, 2024',  time: '11:45 AM', Icon: User,          color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',           category: 'profile',  ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 15, title: 'Password policy accepted',    description: 'Agreed to updated security policy',       date: 'Mar 1, 2024',  time: '8:00 AM',  Icon: Lock,          color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400', category: 'security', ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 16, title: 'App settings changed',        description: 'Dashboard layout preference updated',     date: 'Feb 28, 2024', time: '5:20 PM',  Icon: Settings,      color: 'bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',   category: 'system',   ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 17, title: 'Failed login attempt',        description: '3 consecutive failed logins blocked',     date: 'Feb 27, 2024', time: '2:35 PM',  Icon: AlertTriangle, color: 'bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-400',               category: 'auth',     ip: '198.51.100.7',  device: 'Unknown Browser' },
-  { id: 18, title: 'Report exported',             description: 'Quarterly sales report exported as PDF',  date: 'Feb 26, 2024', time: '10:05 AM', Icon: Download,      color: 'bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',   category: 'system',   ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 19, title: '2FA verification passed',     description: 'OTP verified successfully',               date: 'Feb 25, 2024', time: '7:50 AM',  Icon: Shield,        color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400', category: 'security', ip: '192.168.1.1',   device: 'Chrome on Windows' },
-  { id: 20, title: 'System maintenance notice',   description: 'Scheduled downtime acknowledged',         date: 'Feb 24, 2024', time: '12:00 PM', Icon: Archive,       color: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-950/40 dark:text-yellow-400',   category: 'system',   ip: '—',             device: 'System' },
-];
 
 const CATEGORIES: { id: ActivityCategory; label: string }[] = [
   { id: 'all',      label: 'All Activity' },
@@ -56,76 +20,123 @@ const CATEGORIES: { id: ActivityCategory; label: string }[] = [
   { id: 'system',   label: 'System' },
 ];
 
+const MODULE_MAP: Record<ActivityCategory, string | undefined> = {
+  all:      undefined,
+  auth:     'vendor_auth',
+  security: 'vendor_security',
+  profile:  'vendor_profile',
+  system:   'vendor_system',
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function getIconAndColor(action: string) {
+  switch (action) {
+    case 'login':
+      return { Icon: LogIn,    color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' };
+    case 'logout':
+      return { Icon: LogOut,   color: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' };
+    case 'update_profile':
+      return { Icon: User,     color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' };
+    case 'change_password':
+      return { Icon: Key,      color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' };
+    case 'failed_login':
+      return { Icon: AlertTriangle, color: 'bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-400' };
+    case 'new_device':
+      return { Icon: Smartphone, color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' };
+    case '2fa':
+      return { Icon: Shield,   color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' };
+    default:
+      return { Icon: Activity, color: 'bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400' };
+  }
+}
+
+function getCategoryFromModule(module: string): ActivityCategory {
+  if (module === 'vendor_auth')     return 'auth';
+  if (module === 'vendor_security') return 'security';
+  if (module === 'vendor_profile')  return 'profile';
+  return 'system';
+}
+
+function formatActionTitle(action: string): string {
+  return action.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function parseDevice(userAgent: string | null): string {
+  if (!userAgent) return '—';
+  if (/iPhone/i.test(userAgent))  return 'Safari on iPhone';
+  if (/Android/i.test(userAgent)) return 'Chrome on Android';
+  if (/iPad/i.test(userAgent))    return 'Safari on iPad';
+  if (/Chrome/i.test(userAgent) && /Windows/i.test(userAgent))  return 'Chrome on Windows';
+  if (/Chrome/i.test(userAgent) && /Mac/i.test(userAgent))      return 'Chrome on Mac';
+  if (/Firefox/i.test(userAgent)) return 'Firefox';
+  if (/Safari/i.test(userAgent))  return 'Safari';
+  return 'Unknown Browser';
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return {
+    date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    time: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+  };
+}
+
 const PAGE_SIZE = 8;
 
-// ── Stat cards data ────────────────────────────────────────────────────────
-function buildStats(data: ActivityEntry[]) {
-  return [
+// ── Page ───────────────────────────────────────────────────────────────────
+export default function ActivityLogPage() {
+  const [search, setSearch]     = useState('');
+  const [category, setCategory] = useState<ActivityCategory>('all');
+  const [page, setPage]         = useState(1);
+  const [detailEntry, setDetailEntry] = useState<VendorActivityLog | null>(null);
+
+  const { data, isLoading, isError } = useVendorActivityLog({
+    limit: 200,
+    module: MODULE_MAP[category],
+    search: search || undefined,
+  });
+
+  const activities = data?.data ?? [];
+
+  // Client-side pagination over the fetched results
+  const totalPages  = Math.max(1, Math.ceil(activities.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated   = activities.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  // Stats from full dataset
+  const stats = useMemo(() => [
     {
       label: 'Total Events',
-      value: data.length,
+      value: data?.pagination.total ?? 0,
       Icon: Activity,
-      bg: 'bg-blue-50 dark:bg-blue-950/30',
+      bg:   'bg-blue-50 dark:bg-blue-950/30',
       icon: 'text-blue-600 dark:text-blue-400',
     },
     {
       label: 'Auth Events',
-      value: data.filter((a) => a.category === 'auth').length,
+      value: activities.filter((a) => getCategoryFromModule(a.module) === 'auth').length,
       Icon: LogIn,
-      bg: 'bg-yellow-50 dark:bg-yellow-950/30',
+      bg:   'bg-yellow-50 dark:bg-yellow-950/30',
       icon: 'text-yellow-600 dark:text-yellow-400',
     },
     {
       label: 'Security Events',
-      value: data.filter((a) => a.category === 'security').length,
+      value: activities.filter((a) => getCategoryFromModule(a.module) === 'security').length,
       Icon: Shield,
-      bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+      bg:   'bg-emerald-50 dark:bg-emerald-950/30',
       icon: 'text-emerald-600 dark:text-emerald-400',
     },
     {
       label: 'Alerts',
-      value: data.filter((a) => a.Icon === AlertTriangle).length,
+      value: activities.filter((a) => a.action === 'failed_login').length,
       Icon: AlertTriangle,
-      bg: 'bg-red-50 dark:bg-red-950/30',
+      bg:   'bg-red-50 dark:bg-red-950/30',
       icon: 'text-red-500 dark:text-red-400',
     },
-  ];
-}
+  ], [activities, data?.pagination.total]);
 
-// ── Page ───────────────────────────────────────────────────────────────────
-export default function ActivityLogPage() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<ActivityCategory>('all');
-  const [page, setPage] = useState(1);
-  const [detailEntry, setDetailEntry] = useState<ActivityEntry | null>(null);
-
-  const filtered = useMemo(() => {
-    return ALL_ACTIVITIES.filter((a) => {
-      const matchCat = category === 'all' || a.category === category;
-      const q = search.toLowerCase();
-      const matchQ =
-        !q ||
-        a.title.toLowerCase().includes(q) ||
-        a.description.toLowerCase().includes(q) ||
-        (a.device ?? '').toLowerCase().includes(q);
-      return matchCat && matchQ;
-    });
-  }, [search, category]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-  const stats = buildStats(ALL_ACTIVITIES);
-
-  const handleCategoryChange = (c: ActivityCategory) => {
-    setCategory(c);
-    setPage(1);
-  };
-
-  const handleSearch = (v: string) => {
-    setSearch(v);
-    setPage(1);
-  };
+  const handleCategoryChange = (c: ActivityCategory) => { setCategory(c); setPage(1); };
+  const handleSearch         = (v: string)            => { setSearch(v);   setPage(1); };
 
   return (
     <div className="bg-muted/40 -mt-6 -mx-6 -mb-6 min-h-screen">
@@ -159,7 +170,6 @@ export default function ActivityLogPage() {
 
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-border/60">
-            {/* Search */}
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -171,7 +181,6 @@ export default function ActivityLogPage() {
               />
             </div>
 
-            {/* Category filter + export */}
             <div className="flex items-center gap-2 flex-wrap">
               <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
               {CATEGORIES.map(({ id, label }) => (
@@ -197,7 +206,7 @@ export default function ActivityLogPage() {
           {/* Result count */}
           <div className="flex items-center justify-between px-6 py-2.5 bg-muted/30 border-b border-border/40">
             <span className="text-xs text-muted-foreground">
-              Showing <span className="font-semibold text-foreground">{filtered.length}</span> event{filtered.length !== 1 ? 's' : ''}
+              Showing <span className="font-semibold text-foreground">{activities.length}</span> event{activities.length !== 1 ? 's' : ''}
               {category !== 'all' && (
                 <> in <span className="font-semibold text-primary">{CATEGORIES.find((c) => c.id === category)?.label}</span></>
               )}
@@ -208,8 +217,19 @@ export default function ActivityLogPage() {
             </span>
           </div>
 
-          {/* Activity List */}
-          {paginated.length === 0 ? (
+          {/* States */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3">
+              <Loader2 className="w-8 h-8 animate-spin opacity-40" />
+              <p className="text-sm">Loading activity…</p>
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3">
+              <AlertTriangle className="w-10 h-10 opacity-30" />
+              <p className="text-sm font-medium">Failed to load activity</p>
+              <p className="text-xs">Please try again later.</p>
+            </div>
+          ) : paginated.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3">
               <Search className="w-10 h-10 opacity-30" />
               <p className="text-sm font-medium">No activity found</p>
@@ -217,45 +237,46 @@ export default function ActivityLogPage() {
             </div>
           ) : (
             <div className="divide-y divide-border/40">
-              {paginated.map((activity) => (
-                <div
-                  key={activity.id}
-                  onClick={() => setDetailEntry(activity)}
-                  className="flex items-center gap-4 px-6 py-3.5 hover:bg-accent/30 transition-colors cursor-pointer group"
-                >
-                  {/* Icon */}
-                  <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center ${activity.color}`}>
-                    <activity.Icon className="w-4 h-4" />
+              {paginated.map((activity) => {
+                const { Icon, color } = getIconAndColor(activity.action);
+                const { date, time }  = formatDate(activity.created_at);
+                const cat             = getCategoryFromModule(activity.module);
+                const device          = parseDevice(activity.user_agent);
+
+                return (
+                  <div
+                    key={activity.id}
+                    onClick={() => setDetailEntry(activity)}
+                    className="flex items-center gap-4 px-6 py-3.5 hover:bg-accent/30 transition-colors cursor-pointer group"
+                  >
+                    <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center ${color}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground leading-tight">{formatActionTitle(activity.action)}</p>
+                      <p className="text-sm text-muted-foreground leading-tight mt-0.5">{activity.description ?? '—'}</p>
+                      <p className="text-xs text-muted-foreground/60 mt-0.5">{device}</p>
+                    </div>
+
+                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-muted text-muted-foreground capitalize shrink-0">
+                      {cat}
+                    </span>
+
+                    <div className="flex-shrink-0 text-right">
+                      <p className="text-xs text-muted-foreground whitespace-nowrap">{date}</p>
+                      <p className="text-xs text-muted-foreground/60 mt-0.5">{time}</p>
+                    </div>
+
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors shrink-0" />
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground leading-tight">{activity.title}</p>
-                    <p className="text-sm text-muted-foreground leading-tight mt-0.5">{activity.description}</p>
-                    {activity.device && (
-                      <p className="text-xs text-muted-foreground/60 mt-0.5">{activity.device}</p>
-                    )}
-                  </div>
-
-                  {/* Category badge */}
-                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-muted text-muted-foreground capitalize shrink-0">
-                    {activity.category}
-                  </span>
-
-                  {/* Date/time */}
-                  <div className="flex-shrink-0 text-right">
-                    <p className="text-xs text-muted-foreground whitespace-nowrap">{activity.date}</p>
-                    <p className="text-xs text-muted-foreground/60 mt-0.5">{activity.time}</p>
-                  </div>
-
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors shrink-0" />
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!isLoading && totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-border/60">
               <span className="text-xs text-muted-foreground">
                 Page {currentPage} of {totalPages}
@@ -268,7 +289,7 @@ export default function ActivityLogPage() {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPage(p)}
@@ -295,57 +316,64 @@ export default function ActivityLogPage() {
       </div>
 
       {/* Detail Modal */}
-      {detailEntry && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setDetailEntry(null)}
-        >
+      {detailEntry && (() => {
+        const { Icon, color } = getIconAndColor(detailEntry.action);
+        const { date, time }  = formatDate(detailEntry.created_at);
+        const cat             = getCategoryFromModule(detailEntry.module);
+        const device          = parseDevice(detailEntry.user_agent);
+
+        return (
           <div
-            className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-full"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setDetailEntry(null)}
           >
-            <div className="flex items-start justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${detailEntry.color}`}>
-                  <detailEntry.Icon className="w-5 h-5" />
+            <div
+              className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-foreground leading-tight">{formatActionTitle(detailEntry.action)}</h3>
+                    <span className="text-xs text-muted-foreground capitalize">{cat}</span>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-foreground leading-tight">{detailEntry.title}</h3>
-                  <span className="text-xs text-muted-foreground capitalize">{detailEntry.category}</span>
-                </div>
+                <button
+                  onClick={() => setDetailEntry(null)}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+                >
+                  ✕
+                </button>
               </div>
+
+              <div className="space-y-0 divide-y divide-border/40">
+                {[
+                  { label: 'Description', value: detailEntry.description ?? '—' },
+                  { label: 'Date',        value: date },
+                  { label: 'Time',        value: time },
+                  { label: 'Device',      value: device },
+                  { label: 'IP Address',  value: detailEntry.ip_address ?? '—' },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-center justify-between py-3">
+                    <span className="text-sm text-muted-foreground">{label}</span>
+                    <span className="text-sm font-medium text-foreground text-right max-w-[60%] truncate">{value}</span>
+                  </div>
+                ))}
+              </div>
+
               <button
                 onClick={() => setDetailEntry(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+                className="w-full mt-5 bg-muted hover:bg-accent text-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors"
               >
-                ✕
+                Close
               </button>
             </div>
-
-            <div className="space-y-0 divide-y divide-border/40">
-              {[
-                { label: 'Description', value: detailEntry.description },
-                { label: 'Date',        value: detailEntry.date },
-                { label: 'Time',        value: detailEntry.time },
-                { label: 'Device',      value: detailEntry.device ?? '—' },
-                { label: 'IP Address',  value: detailEntry.ip ?? '—' },
-              ].map(({ label, value }) => (
-                <div key={label} className="flex items-center justify-between py-3">
-                  <span className="text-sm text-muted-foreground">{label}</span>
-                  <span className="text-sm font-medium text-foreground text-right max-w-[60%] truncate">{value}</span>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setDetailEntry(null)}
-              className="w-full mt-5 bg-muted hover:bg-accent text-foreground py-2.5 rounded-xl font-semibold text-sm transition-colors"
-            >
-              Close
-            </button>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

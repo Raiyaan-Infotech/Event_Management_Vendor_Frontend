@@ -8,6 +8,11 @@ const VENDOR_ME_KEY = ['vendor-me'] as const;
 export interface Vendor {
   id: number;
   company_name: string;
+  company_logo: string | null;
+  country_id: number | null;
+  state_id: number | null;
+  city_id: number | null;
+  pincode_id: number | null;
   reg_no: string | null;
   gst_no: string | null;
   company_address: string | null;
@@ -33,6 +38,7 @@ export interface Vendor {
   status: 'active' | 'inactive';
   company_id: number | null;
   created_at: string;
+  cityRef?: { name: string; pincode: string } | null;
 }
 
 // Get current logged-in vendor profile
@@ -92,6 +98,43 @@ export const useUpdateVendorProfile = () => {
       const err = error as { response?: { data?: { message?: string } } };
       toast.error(err.response?.data?.message || 'Failed to update profile');
     },
+  });
+};
+
+export interface VendorActivityLog {
+  id: number;
+  action: string;
+  module: string;
+  description: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
+
+export interface VendorActivityResponse {
+  data: VendorActivityLog[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export const useVendorActivityLog = (params?: {
+  page?: number;
+  limit?: number;
+  module?: string;
+  search?: string;
+}) => {
+  return useQuery({
+    queryKey: ['vendor-activity', params],
+    queryFn: async () => {
+      const res = await apiClient.get('/vendors/auth/activity', { params });
+      return res.data.data as VendorActivityResponse;
+    },
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: false,
   });
 };
 
