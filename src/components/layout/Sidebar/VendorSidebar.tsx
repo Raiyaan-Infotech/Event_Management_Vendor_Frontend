@@ -21,6 +21,8 @@ import {
   faClock,
   faCircleQuestion,
   faGlobe,
+  faList,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -61,7 +63,14 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Analytics", href: "/analytics", icon: faChartLine },
     ],
   },
-  { label: "Clients",      href: "/clients",      icon: faUsers },
+  { 
+    label: "Clients",      
+    icon: faUsers,
+    children: [
+      { label: "Clients List", href: "/clients", icon: faList },
+      { label: "Add Client",   href: "/clients/add", icon: faUserPlus },
+    ]
+  },
   { label: "Payments",     href: "/payments",     icon: faCreditCard },
   { label: "Reports",      href: "/reports",      icon: faChartBar },
   { label: "Activity Log", href: "/activity-log", icon: faClipboardList },
@@ -107,7 +116,11 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
   const toggleOpen = (label: string) => {
     setOpenItems((prev) => {
       const next = new Set(prev);
-      next.has(label) ? next.delete(label) : next.add(label);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
       return next;
     });
   };

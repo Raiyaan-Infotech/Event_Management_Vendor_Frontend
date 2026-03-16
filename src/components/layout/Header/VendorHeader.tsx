@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -11,9 +12,6 @@ import {
   faSun,
   faBell,
   faClock,
-  faUser,
-  faKey,
-  faSignOutAlt,
   faCheckDouble,
 } from "@fortawesome/free-solid-svg-icons";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -25,21 +23,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { useVendorMe, useVendorLogout } from "@/hooks/use-vendors";
 import { resolveMediaUrl } from "@/lib/utils";
 import { User, Settings, Mail, MessageSquare, Sliders, LogOut } from 'lucide-react';
 
-const MEMBERSHIP_COLORS: Record<string, string> = {
-  silver: "bg-slate-200 text-slate-700 border-slate-300",
-  gold: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  platinum: "bg-purple-100 text-purple-700 border-purple-200",
-};
 
-const ICON_BTN = "w-8 h-8 flex items-center justify-center rounded-full border border-border dark:border-white/10 bg-transparent text-muted-foreground hover:bg-accent dark:hover:bg-white/5 hover:text-primary dark:hover:text-white transition-all duration-200";
+
+const ICON_BTN = "w-8 h-8 flex items-center justify-center rounded-full border border-border dark:border-white/10 bg-transparent text-muted-foreground hover:bg-accent dark:hover:bg-card/5 hover:text-primary dark:hover:text-white transition-all duration-200";
 
 export default function VendorHeader() {
   const { theme, setTheme } = useTheme();
@@ -87,7 +79,7 @@ export default function VendorHeader() {
 
         {/* Language */}
         <Button variant="ghost" size="icon" className={`${ICON_BTN} hidden sm:flex`}>
-          <img src="https://flagcdn.com/us.svg" className="w-5 h-3.5 rounded-sm" alt="US" />
+          <Image src="https://flagcdn.com/us.svg" width={20} height={14} className="w-5 h-3.5 rounded-sm" alt="US" />
         </Button>
 
         {/* Fullscreen */}
@@ -147,50 +139,50 @@ export default function VendorHeader() {
               </Avatar>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[240px] p-0 rounded-lg shadow-xl mt-2 border-[#eae8f1] overflow-hidden font-['Roboto',sans-serif]">
+          <DropdownMenuContent align="end" className="w-[240px] p-0 rounded-lg shadow-xl mt-2 border-border overflow-hidden font-['Roboto',sans-serif]">
             {/* VALEX BLUE HEADER */}
-            <div className="bg-[#0162e8] p-5 text-center">
+            <div className="bg-primary p-5 text-center">
               <h6 className="font-bold text-[15px] text-white leading-tight uppercase tracking-wide">{vendor?.name || "Petey Cruiser"}</h6>
               <span className="text-[11px] text-white/80 font-normal pt-1 block">Premium Member</span>
             </div>
 
-            <div className="p-1.5 bg-white">
-              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none first:rounded-t-md">
+            <div className="p-1.5 bg-card">
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none first:rounded-t-md">
                 <Link href="/profile">
-                  <User size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Profile
+                  <User size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Profile
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
-                <Link href="/profile#edit">
-                  <Settings size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Edit Profile
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
+                <Link href="/profile/edit">
+                  <Settings size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Edit Profile
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
                 <Link href="/inbox">
-                  <Mail size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Inbox
+                  <Mail size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Inbox
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
                 <Link href="/messages">
-                  <MessageSquare size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Messages
+                  <MessageSquare size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Messages
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group border-b border-gray-50 rounded-none">
+              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
                 <Link href="/settings">
-                  <Sliders size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" /> Account Settings
+                  <Sliders size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Account Settings
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                className="flex items-center h-11 px-4 cursor-pointer text-[#1c273c] text-[13px] font-medium hover:bg-[#f2f4fb] focus:bg-[#f2f4fb] outline-none group rounded-b-md"
+                className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group rounded-b-md"
                 onClick={() => logout.mutate()}
                 disabled={logout.isPending}
               >
-                <LogOut size={16} className="mr-3 text-[#7987a1] group-hover:text-[#0162e8]" />
+                <LogOut size={16} className="mr-3 text-muted-foreground group-hover:text-primary" />
                 {logout.isPending ? "Signing Out..." : "Sign Out"}
               </DropdownMenuItem>
             </div>

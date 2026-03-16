@@ -18,6 +18,7 @@ const navLabels: Record<string, string> = {
   create:       "Create",
   edit:         "Edit",
   view:         "View",
+  add:          "Add Client",
 };
 
 export default function VendorBreadcrumb() {
@@ -50,7 +51,7 @@ export default function VendorBreadcrumb() {
   if (pathname === "/dashboard") return null;
 
   return (
-    <div className="h-[30px] flex items-center bg-white dark:bg-[#09090b] border-b border-border dark:border-[#27272a] w-full px-2 md:px-4 min-w-0 overflow-hidden">
+    <div className="h-[30px] flex items-center bg-card dark:bg-[#09090b] border-b border-border dark:border-[#27272a] w-full px-2 md:px-4 min-w-0 overflow-hidden">
       <div className="flex-1 flex items-center min-w-0 text-[10px]">
         <div className="flex items-center gap-1 font-medium truncate min-w-0">
           {breadcrumbItems.map((item, index) => (

@@ -81,37 +81,37 @@
 }
 
 .dark {
-  --background: hsl(225 15% 96%);
-  --foreground: hsl(222.2 84% 4.9%);
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(222.2 84% 4.9%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222.2 84% 4.9%);
+  --background: hsl(240 10% 4%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(240 10% 6%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(240 10% 6%);
+  --popover-foreground: hsl(0 0% 98%);
   --primary: hsl(228 64% 51%);
   --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(210 40% 96.1%);
-  --secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --muted: hsl(210 40% 96.1%);
-  --muted-foreground: hsl(215.4 16.3% 46.9%);
-  --accent: hsl(210 40% 96.1%);
-  --accent-foreground: hsl(222.2 47.4% 11.2%);
-  --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(210 40% 98%);
-  --border: hsl(214.3 32% 91%);
-  --input: hsl(214.3 32% 91%);
+  --secondary: hsl(240 5% 12%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(240 5% 12%);
+  --muted-foreground: hsl(240 5% 65%);
+  --accent: hsl(240 5% 15%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 5% 15%);
+  --input: hsl(240 5% 15%);
   --ring: hsl(228 64% 51%);
   --chart-1: hsl(220 70% 50%);
   --chart-2: hsl(160 60% 45%);
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar: hsl(240 10% 6%);
+  --sidebar-foreground: hsl(240 5% 85%);
+  --sidebar-primary: hsl(228 64% 51%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-accent: hsl(240 5% 15%);
+  --sidebar-accent-foreground: hsl(0 0% 98%);
+  --sidebar-border: hsl(240 5% 15%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
@@ -209,8 +209,8 @@
 
 /* Custom Scrollbar for specific containers */
 .chat-scrollbar::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 .chat-scrollbar::-webkit-scrollbar-track {
@@ -218,18 +218,18 @@
 }
 
 .chat-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #0162e8;
   border-radius: 10px;
 }
 
 .chat-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #0156cc;
 }
 
 /* Firefox Support */
 .chat-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #0162e8 transparent;
 }
 
 /* Ensure overflow triggers scrollbars */
@@ -239,8 +239,8 @@
 
 /* Global Scrollbar fallback */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -248,12 +248,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: #0162e8;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: #0156cc;
 }
 
 /* Animations */

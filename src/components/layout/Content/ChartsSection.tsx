@@ -211,15 +211,15 @@ export default function ChartsSection() {
           <Card className="bg-primary text-white border-none relative overflow-hidden h-[180px] flex flex-col justify-between shadow-[0_4px_24px_rgba(52,84,209,0.3)]">
             <CardContent className="p-6 h-full flex flex-col justify-between relative z-10">
               {/* Decorative Background Elements */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12 blur-xl" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-card/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-card/5 rounded-full -ml-12 -mb-12 blur-xl" />
 
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-3xl font-extrabold">30,569</p>
                   <p className="text-[13px] font-bold opacity-80 uppercase tracking-wider mt-1">Total Sales Overall</p>
                 </div>
-                <Badge className="bg-white/20 hover:bg-white/30 text-white border-transparent text-[11px] font-extrabold">
+                <Badge className="bg-card/20 hover:bg-card/30 text-white border-transparent text-[11px] font-extrabold">
                   +12.5%
                 </Badge>
               </div>

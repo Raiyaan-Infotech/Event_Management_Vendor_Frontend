@@ -5,7 +5,7 @@ import {
   Key, LogIn, LogOut, User, Shield,
   Smartphone, AlertTriangle, Search, Filter,
   Download, Calendar, ChevronLeft, ChevronRight,
-  Activity, Lock, Loader2,
+  Activity, Loader2,
 } from 'lucide-react';
 import { useVendorActivityLog, type VendorActivityLog } from '@/hooks/use-vendors';
 
@@ -96,7 +96,7 @@ export default function ActivityLogPage() {
     search: search || undefined,
   });
 
-  const activities = data?.data ?? [];
+  const activities = useMemo(() => data?.data ?? [], [data?.data]);
 
   // Client-side pagination over the fetched results
   const totalPages  = Math.max(1, Math.ceil(activities.length / PAGE_SIZE));
