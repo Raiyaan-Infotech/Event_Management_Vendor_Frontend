@@ -1,23 +1,32 @@
-import { Inbox, Star, Bookmark, Send, Edit, AlertCircle, Trash2, Folder, X, Github } from 'lucide-react';
+import Link from 'next/link';
+import { 
+  Inbox, Star, Clock, Bookmark, Send, Edit, AlertCircle, 
+  MessageSquare, Mail, Users, Trash2, Folder 
+} from 'lucide-react';
 
 const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
 
-export function InboxSidebar() {
+export function MailSidebar() {
   return (
     <div className="w-full lg:w-[260px] xl:w-[280px] shrink-0 flex flex-col">
       <div className={`${cardClass} p-6 h-full mb-0`}>
-        <button className="w-full bg-primary text-white py-2.5 rounded-[5px] text-[13px] font-bold tracking-wider hover:bg-primary/90 transition-all mb-6 shadow-sm">
-          COMPOSE
-        </button>
+        <Link href="/mail/compose">
+          <button className="w-full bg-primary text-white py-2.5 rounded-[5px] text-[13px] font-bold tracking-wider hover:bg-primary/90 transition-all mb-6 shadow-sm">
+            COMPOSE
+          </button>
+        </Link>
+
 
         <ul className="space-y-1 mb-8">
           <li>
-            <button className="w-full flex items-center justify-between px-3 py-2 text-primary bg-muted rounded-[3px] transition-all font-bold">
-              <div className="flex items-center gap-3 text-[14px]">
-                <Inbox size={18} /> Inbox
-              </div>
-              <span className="text-[13px]">20</span>
-            </button>
+            <Link href="/mail">
+              <button className="w-full flex items-center justify-between px-3 py-2 text-primary bg-muted rounded-[3px] transition-all font-bold">
+                <div className="flex items-center gap-3 text-[14px]">
+                  <Inbox size={18} /> Inbox
+                </div>
+                <span className="text-[13px]">20</span>
+              </button>
+            </Link>
           </li>
           <li>
             <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
@@ -25,6 +34,14 @@ export function InboxSidebar() {
                 <Star size={18} /> Starred
               </div>
               <span className="text-[13px]">3</span>
+            </button>
+          </li>
+          <li>
+            <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
+              <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
+                <Clock size={18} /> Snoozed
+              </div>
+              <span className="text-[13px]">6</span>
             </button>
           </li>
           <li>
@@ -57,6 +74,30 @@ export function InboxSidebar() {
                 <AlertCircle size={18} /> Spam
               </div>
               <span className="text-[13px]">128</span>
+            </button>
+          </li>
+          <li>
+            <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
+              <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
+                <MessageSquare size={18} /> Chats
+              </div>
+              <span className="text-[13px]">14</span>
+            </button>
+          </li>
+          <li>
+            <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px) transition-all font-medium group">
+              <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
+                <Mail size={18} /> All Mail
+              </div>
+              <span className="text-[13px]">652</span>
+            </button>
+          </li>
+          <li>
+            <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
+              <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
+                <Users size={18} /> Contacts
+              </div>
+              <span className="text-[13px]">547</span>
             </button>
           </li>
           <li>
@@ -99,35 +140,7 @@ export function InboxSidebar() {
           </ul>
         </div>
 
-        <div>
-          <h6 className="text-muted-foreground text-[11px] font-bold uppercase tracking-wider mb-4 px-3">TAGS</h6>
-          <ul className="space-y-1">
-            <li>
-              <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
-                <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
-                  <X size={16} /> Twitter  {/* Approximation of the brand icon seen in Valex */}
-                </div>
-                <span className="text-[13px]">2</span>
-              </button>
-            </li>
-            <li>
-              <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
-                <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
-                  <Github size={16} /> Github
-                </div>
-                <span className="text-[13px]">32</span>
-              </button>
-            </li>
-            <li>
-              <button className="w-full flex items-center justify-between px-3 py-2 text-muted-foreground hover:bg-muted rounded-[3px] transition-all font-medium group">
-                <div className="flex items-center gap-3 text-[14px] group-hover:text-foreground">
-                  <span className="font-bold text-[16px] leading-[16px]">G+</span> Google
-                </div>
-                <span className="text-[13px]">7</span>
-              </button>
-            </li>
-          </ul>
-        </div>
+
       </div>
     </div>
   );

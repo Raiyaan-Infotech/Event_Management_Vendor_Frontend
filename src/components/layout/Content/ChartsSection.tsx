@@ -232,9 +232,9 @@ export default function ChartsSection() {
           <Card className="flex-1 border-border shadow-sm overflow-hidden p-0 bg-card">
             <CardContent className="p-0 divide-y divide-border">
               {[
-                { img: "https://www.google.com/s2/favicons?sz=64&domain=shopify.com", name: "Shopify eCommerce", type: "Sales", amount: "$1,200", trend: "+12%" },
-                { img: "https://www.google.com/s2/favicons?sz=64&domain=apple.com", name: "iOS App Store", type: "Sales", amount: "$1,450", trend: "+8%" },
-                { img: "https://www.google.com/s2/favicons?sz=64&domain=figma.com", name: "Figma Platform", type: "Sales", amount: "$1,250", trend: "+5%" },
+                { img: "/images/project-icon-shopify.png", name: "Shopify eCommerce", type: "Sales", amount: "$1,200", trend: "+12%" },
+                { img: "/images/project-icon-apple.png", name: "iOS App Store", type: "Sales", amount: "$1,450", trend: "+8%" },
+                { img: "/images/project-icon-figma.png", name: "Figma Platform", type: "Sales", amount: "$1,250", trend: "+5%" },
               ].map((item) => (
                 <div key={item.name} className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer group">
                   <div className="relative size-10 shrink-0 shadow-sm border border-border rounded-xl overflow-hidden p-2 bg-background">

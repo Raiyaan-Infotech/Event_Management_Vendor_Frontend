@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   description: "Vendor Management Portal",
 };
 
+import { NavigationLoader } from "@/components/ui/navigation-loader";
+
 export default function RootLayout({
   children,
 }: {
@@ -35,7 +37,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            {children}
+            <NavigationLoader>
+              {children}
+            </NavigationLoader>
             <Toaster position="top-right" offset="80px" richColors />
           </QueryProvider>
         </ThemeProvider>

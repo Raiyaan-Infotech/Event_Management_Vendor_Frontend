@@ -8,17 +8,17 @@ export function SettingsTab() {
           <label className="block text-foreground text-[14px] font-bold">Full Name</label>
           <input type="text" className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-muted-foreground focus:outline-none focus:border-primary transition-all" defaultValue="John Doe" />
         </div>
-        <div className="space-y-2">
-          <label className="block text-foreground text-[14px] font-bold">Email</label>
-          <input type="email" className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-muted-foreground focus:outline-none focus:border-primary transition-all" defaultValue="first.last@example.com" />
+           <div className="space-y-2">
+          <label className="block text-foreground text-[14px] font-bold">Username</label>
+          <input type="text" className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-muted-foreground focus:outline-none focus:border-primary transition-all" defaultValue="john" />
         </div>
-        <div className="space-y-2">
+         <div className="space-y-2">
           <label className="block text-foreground text-[14px] font-bold">Mobile Number</label>
           <input type="tel" className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-muted-foreground focus:outline-none focus:border-primary transition-all" defaultValue="+123 456 7890" />
         </div>
         <div className="space-y-2">
-          <label className="block text-foreground text-[14px] font-bold">Username</label>
-          <input type="text" className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-muted-foreground focus:outline-none focus:border-primary transition-all" defaultValue="john" />
+          <label className="block text-foreground text-[14px] font-bold">Email</label>
+          <input type="email" className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-muted-foreground focus:outline-none focus:border-primary transition-all" defaultValue="first.last@example.com" />
         </div>
         <div className="space-y-2">
           <label className="block text-foreground text-[14px] font-bold">Password</label>

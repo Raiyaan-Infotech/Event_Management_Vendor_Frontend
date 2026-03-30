@@ -9,32 +9,58 @@ export function EventsTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [showCityMenu, setShowCityMenu] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const allEvents = [
-    { imgId: '1511795409834-ef04bbd61622', name: 'Wedding Event', location: 'Chennai' },
-    { imgId: '1492684223066-81342ee5ff30', name: 'Corporate Event', location: 'Coimbatore' },
-    { imgId: '1533174072545-7a4b6ad7a6c3', name: 'Product Launch', location: 'Madurai' },
-    { imgId: '1501281668745-f7f57925c3b4', name: 'Birthday Party', location: 'Trichy' },
-    { imgId: '1492684223066-81342ee5ff30', name: 'Tech Conference', location: 'Chennai' },
-    { imgId: '1470225620780-dba8ba36b745', name: 'Music Concert', location: 'Coimbatore' },
-    { imgId: '1492684223066-81342ee5ff30', name: 'Art Exhibition', location: 'Madurai' },
-    { imgId: '1511795409834-ef04bbd61622', name: 'Charity Gala', location: 'Trichy' },
-    { imgId: '1505236858219-8359eb29e329', name: 'Fashion Show', location: 'Chennai' },
-    { imgId: '1516280440614-37939bbacd81', name: 'Sports Tournament', location: 'Coimbatore' },
-    { imgId: '1511795409834-ef04bbd61622', name: 'Food Festival', location: 'Madurai' },
-    { imgId: '1492684223066-81342ee5ff30', name: 'Trade Fair', location: 'Trichy' }
+    { imgId: 'wedding-event', name: 'Wedding Event', location: 'Chennai' },
+    { imgId: 'corporate-event', name: 'Corporate Event', location: 'Coimbatore' },
+    { imgId: 'product-launch', name: 'Product Launch', location: 'Madurai' },
+    { imgId: 'birthday-party', name: 'Birthday Party', location: 'Trichy' },
+    { imgId: 'corporate-event', name: 'Tech Conference', location: 'Chennai' },
+    { imgId: 'music-concert', name: 'Music Concert', location: 'Coimbatore' },
+    { imgId: 'corporate-event', name: 'Art Exhibition', location: 'Madurai' },
+    { imgId: 'wedding-event', name: 'Charity Gala', location: 'Trichy' },
+    { imgId: 'fashion-show', name: 'Fashion Show', location: 'Chennai' },
+    { imgId: 'sports-tournament', name: 'Sports Tournament', location: 'Coimbatore' },
+    { imgId: 'wedding-event', name: 'Food Festival', location: 'Madurai' },
+    { imgId: 'corporate-event', name: 'Trade Fair', location: 'Trichy' },
+    { imgId: 'wedding-event', name: 'Music Festival', location: 'Chennai' },
+    { imgId: 'product-launch', name: 'Startup Pitch', location: 'Bangalore' },
   ];
 
-  const filteredEvents = allEvents.filter(event =>
-    event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredEvents = allEvents.filter(event => {
+    const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCity = !selectedCity || event.location === selectedCity;
+    return matchesSearch && matchesCity;
+  });
+
+  const cities = Array.from(new Set(allEvents.map(event => event.location))).sort();
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     if (sortOrder === 'asc') return a.name.localeCompare(b.name);
     if (sortOrder === 'desc') return b.name.localeCompare(a.name);
     return 0;
   });
+
+  // Pagination Logic
+  const totalPages = Math.ceil(sortedEvents.length / itemsPerPage);
+  const currentEvents = sortedEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 300, behavior: 'smooth' }); // Smooth scroll back to top of section
+  };
+
+  // Reset to first page on search/filter
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="space-y-6 animate-in zoom-in-95 duration-300">
@@ -45,7 +71,7 @@ export function EventsTab() {
               type="text"
               placeholder="Search events by name or location..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full px-4 py-3 border border-border rounded-[5px] text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all bg-card focus:bg-muted"
             />
             <svg
@@ -74,7 +100,7 @@ export function EventsTab() {
           </div>
 
           <div className="relative">
-            <button onClick={() => setShowSortMenu(!showSortMenu)}
+            <button onClick={() => { setShowSortMenu(!showSortMenu); setShowCityMenu(false); }}
               className={`h-10 px-4 flex items-center justify-center gap-2 rounded-[5px] text-[13px] font-bold uppercase transition-all ${
                 sortOrder ? 'bg-primary text-white shadow-sm' : 'bg-card text-muted-foreground border border-border hover:text-foreground'
               }`}
@@ -83,19 +109,30 @@ export function EventsTab() {
             </button>
 
             {showSortMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-[5px] shadow-lg z-50 overflow-hidden">
-                <button onClick={() => { setSortOrder(null); setShowSortMenu(false); }} className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between">
-                  <span>No Sort</span>{sortOrder === null && <Check size={16} className="text-primary" />}
+              <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-[5px] shadow-lg z-50 max-h-[250px] overflow-y-auto custom-scrollbar">
+                <button onClick={() => { setSelectedCity(null); setShowSortMenu(false); setCurrentPage(1); }} className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between">
+                  <span>All Cities</span>{selectedCity === null && <Check size={16} className="text-primary" />}
+                </button>
+                {cities.map(city => (
+                  <div key={city}>
+                    <div className="h-px bg-border" />
+                    <button 
+                      onClick={() => { setSelectedCity(city); setShowSortMenu(false); setCurrentPage(1); }} 
+                      className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between group"
+                    >
+                      <span>{city}</span>{selectedCity === city && <Check size={16} className="text-primary" />}
+                    </button>
+                  </div>
+                ))}
+                
+                <div className="h-[2px] bg-primary/20" /> {/* Distinct Separator */}
+                
+                <button onClick={() => { setSortOrder('asc'); setShowSortMenu(false); setCurrentPage(1); }} className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between group">
+                  <span>Sort A-Z</span>{sortOrder === 'asc' && <Check size={16} className="text-primary" />}
                 </button>
                 <div className="h-px bg-border" />
-                <button onClick={() => { setSortOrder('asc'); setShowSortMenu(false); }} className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between group">
-                  <span>Ascending A-Z</span>{sortOrder === 'asc' && <Check size={16} className="text-primary" />}
-                  <ChevronRight size={14} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-                <div className="h-px bg-border" />
-                <button onClick={() => { setSortOrder('desc'); setShowSortMenu(false); }} className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between group">
-                  <span>Descending Z-A</span>{sortOrder === 'desc' && <Check size={16} className="text-primary" />}
-                  <ChevronRight size={14} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button onClick={() => { setSortOrder('desc'); setShowSortMenu(false); setCurrentPage(1); }} className="w-full px-4 py-3 text-left text-[13px] text-muted-foreground hover:bg-accent hover:text-foreground font-medium transition-all flex items-center justify-between group">
+                  <span>Sort Z-A</span>{sortOrder === 'desc' && <Check size={16} className="text-primary" />}
                 </button>
               </div>
             )}
@@ -103,21 +140,19 @@ export function EventsTab() {
         </div>
 
         <div className="text-[12px] text-muted-foreground font-medium">
-          Showing <span className="font-bold text-foreground">{sortedEvents.length}</span> of <span className="font-bold text-foreground">{allEvents.length}</span> events
+          Showing <span className="font-bold text-foreground">{(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, sortedEvents.length)}</span> of <span className="font-bold text-foreground">{allEvents.length}</span> events
           {searchQuery && ` • Filtered by: "${searchQuery}"`}
-          {sortOrder && ` • Sorted: ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'}`}
+          {selectedCity && ` • City: ${selectedCity}`}
+          {sortOrder && ` • Sorted: ${sortOrder === 'asc' ? 'Name A-Z' : 'Name Z-A'}`}
         </div>
       </div>
 
       {viewMode === 'grid' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {sortedEvents.map((event, i) => (
+          {currentEvents.map((event, i) => (
             <div key={i} className="bg-card rounded-[5px] border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer">
               <div className="aspect-[16/10] bg-muted overflow-hidden relative">
-                <Image src={`https://images.unsplash.com/photo-${event.imgId}?auto=format&fit=crop&w=600&q=80`} width={600} height={400} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <ImageIcon className="text-white w-8 h-8 opacity-80" />
-                </div>
+                <Image src={`/images/${event.imgId}-600.jpg`} width={600} height={400} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-6 text-center">
                 <h4 className="text-foreground text-[15px] font-bold mb-3 uppercase tracking-wide">{event.name}</h4>
@@ -131,10 +166,10 @@ export function EventsTab() {
 
       {viewMode === 'list' && (
         <div className="space-y-3">
-          {sortedEvents.map((event, i) => (
+          {currentEvents.map((event, i) => (
             <div key={i} className="bg-card rounded-[5px] border border-border p-4 flex gap-4 hover:shadow-md transition-all group cursor-pointer">
               <div className="w-[120px] h-[80px] bg-muted overflow-hidden rounded-[3px] shrink-0">
-                <Image src={`https://images.unsplash.com/photo-${event.imgId}?auto=format&fit=crop&w=200&q=80`} width={200} height={133} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src={`/images/${event.imgId}-200.jpg`} width={200} height={133} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="flex-1 flex items-center justify-between">
                 <div>
@@ -146,10 +181,44 @@ export function EventsTab() {
                     </div>
                   </div>
                 </div>
-                <ImageIcon size={20} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-8">
+          <button 
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="w-10 h-10 flex items-center justify-center border border-border rounded-[5px] text-muted-foreground hover:text-primary hover:border-primary disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:border-border transition-all"
+          >
+            <ChevronRight size={18} className="rotate-180" />
+          </button>
+          
+          {[...Array(totalPages)].map((_, i) => (
+            <button 
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className={`w-10 h-10 flex items-center justify-center rounded-[5px] text-[13px] font-bold transition-all ${
+                currentPage === i + 1 
+                  ? 'bg-primary text-white shadow-sm' 
+                  : 'bg-card text-muted-foreground border border-border hover:text-foreground hover:border-primary'
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button 
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="w-10 h-10 flex items-center justify-center border border-border rounded-[5px] text-muted-foreground hover:text-primary hover:border-primary disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:border-border transition-all"
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
       )}
 

@@ -9,7 +9,7 @@ import { Fragment, useMemo } from "react";
 const navLabels: Record<string, string> = {
   dashboard:    "Dashboard",
   profile:      "Profile",
-  clients:      "Clients",
+  clients:      "Client",
   events:       "Events",
   payments:     "Payments",
   reports:      "Reports",
@@ -25,25 +25,31 @@ export default function VendorBreadcrumb() {
   const pathname = usePathname();
 
   const breadcrumbItems = useMemo(() => {
-    const items: { label: string; url: string; isLast: boolean }[] = [
-      { label: "Dashboard", url: "/dashboard", isLast: false },
-    ];
+    const segments = pathname.split("/").filter(Boolean);
+    const items: { label: string; url: string; isLast: boolean }[] = [];
+    
+    // Always show Dashboard as the starting point if not already the first segment
+    if (segments[0] !== "dashboard") {
+      items.push({ label: "Dashboard", url: "/dashboard", isLast: false });
+    }
 
-    const segments = pathname
-      .split("/")
-      .filter(Boolean)
-      .filter((s) => s !== "dashboard" && isNaN(Number(s)));
-
-    segments.forEach((segment, index) => {
-      const url = `/dashboard/${segments.slice(0, index + 1).join("/")}`;
-      const label =
-        navLabels[segment] ??
-        segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
-      items.push({ label, url, isLast: index === segments.length - 1 });
+    let accumulatedPath = "";
+    segments.forEach((segment) => {
+      accumulatedPath += `/${segment}`;
+      
+      // Skip numeric segments (IDs)
+      if (isNaN(Number(segment))) {
+        const label = navLabels[segment] ?? 
+          segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
+        
+        items.push({ label, url: accumulatedPath, isLast: false });
+      }
     });
 
-    // Mark last item
-    items.forEach((it, i) => (it.isLast = i === items.length - 1));
+    // Mark last item for styling
+    if (items.length > 0) {
+      items[items.length - 1].isLast = true;
+    }
 
     return items;
   }, [pathname]);

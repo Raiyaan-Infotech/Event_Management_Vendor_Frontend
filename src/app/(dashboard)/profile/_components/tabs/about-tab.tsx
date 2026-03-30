@@ -10,6 +10,16 @@ export function AboutTab() {
 
       <h6 className="text-foreground text-[16px] font-bold uppercase mb-6">Experience</h6>
       <div className="space-y-8">
+            <div className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:w-2 before:h-2 before:bg-primary before:rounded-full">
+          <p className="text-primary text-[15px] font-bold hover:underline cursor-pointer">Lead designer / Developer</p>
+          <p className="text-muted-foreground text-[13px] mt-1 mb-2">websitename.com</p>
+          <p className="text-foreground font-bold text-[12px] uppercase">2015 - 2025</p>
+          <p className="text-muted-foreground text-[14px] leading-relaxed mt-4">
+            &quot;Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s.&quot;
+          </p>
+        </div>
+
+        <div className="h-px bg-border w-full" />
         <div className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:w-2 before:h-2 before:bg-primary before:rounded-full">
           <p className="text-primary text-[15px] font-bold hover:underline cursor-pointer">Lead designer / Developer</p>
           <p className="text-muted-foreground text-[13px] mt-1 mb-2">websitename.com</p>

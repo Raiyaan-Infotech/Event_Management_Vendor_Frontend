@@ -8,23 +8,10 @@ async function forwardRequest(request: NextRequest, path: string, method: string
     const searchParams = request.nextUrl.search;
     const backendUrl = `${BACKEND_URL}/${strippedPath}${searchParams}`;
 
+    // Forward the raw body as a Blob to ensure no re-encoding happens
     let body: BodyInit | undefined;
-    try {
-      if (method !== 'GET' && method !== 'HEAD') {
-        const contentType = request.headers.get('content-type') || '';
-        if (contentType.includes('multipart/form-data')) {
-          const formData = await request.formData();
-          const targetFormData = new FormData();
-          formData.forEach((value, key) => {
-            targetFormData.append(key, value);
-          });
-          body = targetFormData;
-        } else {
-          body = await request.arrayBuffer();
-        }
-      }
-    } catch {
-      body = undefined;
+    if (method !== 'GET' && method !== 'HEAD') {
+      body = await request.blob();
     }
 
     const headers = new Headers(request.headers);
@@ -32,10 +19,6 @@ async function forwardRequest(request: NextRequest, path: string, method: string
     headers.delete('connection');
     headers.delete('content-length');
 
-    const isMultipart = headers.get('content-type')?.includes('multipart/form-data');
-    if (isMultipart) {
-      headers.delete('content-type');
-    }
 
     // Explicitly rebuild Cookie header — Next.js may not include it in request.headers
     const allCookies = request.cookies.getAll();
@@ -43,21 +26,16 @@ async function forwardRequest(request: NextRequest, path: string, method: string
       headers.set('cookie', allCookies.map(c => `${c.name}=${c.value}`).join('; '));
     }
 
-    const fetchOptions: RequestInit & { duplex?: string } = {
+    const fetchOptions: RequestInit = {
       method,
       headers,
-      body: body || undefined,
+      body,
       credentials: 'include',
     };
-
-    if (body) {
-      fetchOptions.duplex = 'half';
-    }
 
     const backendResponse = await fetch(backendUrl, fetchOptions);
 
     console.log(`[Proxy] Forwarding ${method} to ${backendUrl}`);
-    console.log(`[Proxy] Headers:`, Object.fromEntries(headers.entries()));
 
     const responseHeaders = new Headers();
     backendResponse.headers.forEach((value, key) => {
@@ -74,21 +52,7 @@ async function forwardRequest(request: NextRequest, path: string, method: string
       });
     }
 
-    const responseData = await backendResponse.arrayBuffer();
-
-    if (backendResponse.status >= 400) {
-      const errorText = new TextDecoder().decode(responseData);
-      console.error(`[Backend Error ${backendResponse.status}]`, errorText);
-      try {
-        const errorJson = JSON.parse(errorText);
-        return NextResponse.json(errorJson, { status: backendResponse.status });
-      } catch {
-        return NextResponse.json(
-          { success: false, message: errorText || backendResponse.statusText },
-          { status: backendResponse.status }
-        );
-      }
-    }
+    const responseData = await backendResponse.blob();
 
     return new NextResponse(responseData, {
       status: backendResponse.status,

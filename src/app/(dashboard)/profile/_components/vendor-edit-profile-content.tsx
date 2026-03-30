@@ -45,25 +45,10 @@ export function VendorEditProfileContent() {
         </div>
 
         {/* --- RIGHT COLUMN (2) --- Form Content */}
-        <div className="flex-1 min-w-0 lg:max-h-[1170px] flex flex-col">
+        <div className="flex-1 min-w-0 lg:max-h-[1234px] flex flex-col">
           <div className={`${cardClass} flex-1 flex flex-col mb-0 overflow-hidden`}>
             <div className="flex-1 overflow-y-auto p-8 chat-scrollbar">
               <form className="space-y-6">
-                
-                {/* PERSONAL INFORMATION */}
-                <div>
-                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5">PERSONAL INFORMATION</h6>
-                  <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4 mb-[18px]">
-                    <label className="text-[14px] text-foreground font-normal md:col-span-1">Language</label>
-                    <div className="md:col-span-3">
-                      <select className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-                        <option>Us English</option>
-                        <option>Arabic</option>
-                        <option>Korean</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
 
                 {/* NAME */}
                 <div>
@@ -76,25 +61,14 @@ export function VendorEditProfileContent() {
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">First Name</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Full Name</label>
                       <div className="md:col-span-3">
                         <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Petey" />
                       </div>
                     </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">last Name</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Pechon" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Nick Name</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Petey" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Designation</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Job Title</label>
                       <div className="md:col-span-3">
                         <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Web Designer" />
                       </div>
@@ -106,24 +80,19 @@ export function VendorEditProfileContent() {
                 <div>
                   <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">CONTACT INFO</h6>
                   <div className="space-y-[18px]">
+                      <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Mobile Number</label>
+                      <div className="md:col-span-3">
+                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="+245 354 654" />
+                      </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
                       <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Email<span className="italic text-[13px]">(required)</span></label>
                       <div className="md:col-span-3">
                         <input type="email" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="info@Valex.in" />
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Website</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="@spruko.w" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Phone</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="+245 354 654" />
-                      </div>
-                    </div>
+              
                     <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
                       <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Address</label>
                       <div className="md:col-span-3">
@@ -137,34 +106,42 @@ export function VendorEditProfileContent() {
                 <div>
                   <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">SOCIAL INFO</h6>
                   <div className="space-y-[18px]">
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Twitter</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="twitter.com/spruko.me" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Facebook</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="https://www.facebook.com/Redash" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Google+</label>
+                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Website</label>
                       <div className="md:col-span-3">
                         <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="spruko.com" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Linked in</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Youtube</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="linkedin.com/in/spruko" />
+                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="youtube.com/spruko" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Github</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Facebook</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="github.com/sprukos" />
+                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="facebook.com/spruko" />
+                      </div>
+                    </div>
+                
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Twitter</label>
+                      <div className="md:col-span-3">
+                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="twitter.com/spruko" />
+                      </div>
+                    </div>
+                   <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">LinkedIn</label>
+                      <div className="md:col-span-3">
+                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="linkedin.com/spruko" />
+                      </div>
+                    </div>
+                
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Instagram</label>
+                      <div className="md:col-span-3">
+                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="instagram.com/spruko" />
                       </div>
                     </div>
                   </div>

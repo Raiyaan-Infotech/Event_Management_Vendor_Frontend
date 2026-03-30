@@ -91,7 +91,7 @@ export function VendorProfileContent() {
               ))}
             </div>
 
-            <div className="p-8 h-[903px] overflow-y-auto custom-scrollbar">
+            <div className="p-8 h-[957px] overflow-y-auto custom-scrollbar">
               {activeTab === 'about' && <AboutTab />}
               {activeTab === 'events' && <EventsTab />}
               {activeTab === 'clients' && <ClientsTab />}

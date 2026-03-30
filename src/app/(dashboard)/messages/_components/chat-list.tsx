@@ -1,106 +1,215 @@
+import React, { useState } from 'react';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { MoreVertical, Trash2, Search } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const cardClass = 'bg-card rounded-[5px] border border-border shadow-sm dark:shadow-none font-["Roboto",sans-serif]';
 
-export function ChatList() {
+interface ChatItem {
+  id: number;
+  name: string;
+  image: string;
+  unread: number;
+  time: string;
+  message: string;
+}
+
+interface ChatListProps {
+  chats: ChatItem[];
+  selectedId: number | null;
+  onSelect: (id: number) => void;
+  onDelete: (id: number) => void;
+  onStartConversation: (contact: { id: number, name: string, image: string }) => void;
+}
+
+const ALL_CONTACTS = [
+  { id: 1, name: 'Socrates Itumay', image: '/images/user-avatar-12.jpg', status: 'Online' },
+  { id: 2, name: 'Dexter dela Cruz', image: '/images/user-avatar-33.jpg', status: 'Online' },
+  { id: 3, name: 'Reynante Labares', image: '/images/user-avatar-44.jpg', status: 'Offline' },
+  { id: 4, name: 'Joyce Chua', image: '/images/user-avatar-52.jpg', status: 'Online' },
+  { id: 101, name: 'Adrian Monino', image: '/images/user-avatar-a1.jpg', status: 'Online' },
+  { id: 102, name: 'Barney Shrew', image: '/images/user-avatar-a2.jpg', status: 'Offline' },
+  { id: 103, name: 'Charlene Reed', image: '/images/user-avatar-a3.jpg', status: 'Online' },
+  { id: 104, name: 'Denis Rose', image: '/images/user-avatar-a4.jpg', status: 'Online' },
+  { id: 105, name: 'Eddie Lobanovskiy', image: '/images/user-avatar-a5.jpg', status: 'Offline' },
+  { id: 106, name: 'Fiona Glenanne', image: '/images/user-avatar-a6.jpg', status: 'Online' },
+  { id: 107, name: 'George Costanza', image: '/images/user-avatar-a7.jpg', status: 'Away' },
+];
+
+export function ChatList({ chats, selectedId, onSelect, onDelete, onStartConversation }: ChatListProps) {
+  const [activeTab, setActiveTab] = useState<'recent' | 'contacts'>('recent');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleDelete = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(id);
+  };
+
+  const filteredContacts = ALL_CONTACTS.filter(contact => 
+    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className={`w-full lg:w-[300px] xl:w-[320px] shrink-0 flex flex-col ${cardClass} overflow-hidden min-h-0`}>
+    <div className={`w-full lg:w-[400px] xl:w-[420px] shrink-0 flex flex-col ${cardClass} overflow-hidden min-h-0`}>
       {/* Tabs */}
       <div className="flex px-4 pt-2 border-b border-border shrink-0">
-        <button className="px-5 py-3 text-[14px] font-bold text-primary border-b-2 border-primary">
+        <button 
+          onClick={() => setActiveTab('recent')}
+          className={`px-5 py-3 text-[14px] font-bold transition-all duration-200 ${
+            activeTab === 'recent' 
+              ? 'text-primary border-b-2 border-primary' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
           Recent Chat
         </button>
-        <button className="px-5 py-3 text-[14px] font-medium text-muted-foreground hover:text-foreground transition-colors">
-          Groups
+        <button 
+          onClick={() => setActiveTab('contacts')}
+          className={`px-5 py-3 text-[14px] font-bold transition-all duration-200 ${
+            activeTab === 'contacts' 
+              ? 'text-primary border-b-2 border-primary' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Contacts
         </button>
       </div>
-      <div className="px-6 py-3 border-b border-border shrink-0">
-         <span className="text-foreground font-medium text-[14px]">Calls</span>
-      </div>
+
+      {activeTab === 'contacts' && (
+        <div className="px-4 py-3 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search contacts..." 
+              className="pl-9 h-9 text-[13px] bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'recent' && (
+        <div className="px-6 py-3 border-b border-border shrink-0">
+           <span className="text-foreground font-medium text-[14px]">Calls</span>
+        </div>
+      )}
 
       {/* Chat List Items */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        {/* Item 1 */}
-        <div className="flex gap-3 p-[18px] border-b border-border hover:bg-muted cursor-pointer transition-colors relative">
-          <div className="relative shrink-0">
-            <Avatar className="w-[40px] h-[40px]">
-              <AvatarImage src="https://i.pravatar.cc/150?u=12" className="object-cover" />
-            </Avatar>
-            <div className="absolute -top-1 -right-1 w-[18px] h-[18px] bg-destructive text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-              2
-            </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-0.5">
-              <h6 className="text-foreground text-[14px] font-bold truncate">Socrates Itumay</h6>
-              <span className="text-[12px] text-muted-foreground shrink-0 ml-2">2 hours</span>
-            </div>
-            <p className="text-[13px] text-muted-foreground leading-tight line-clamp-2">
-              Nam quam nunc, blandit vel aecenas et ante tincid
-            </p>
-          </div>
-        </div>
+        {activeTab === 'recent' ? (
+          <>
+            {chats.map((chat) => (
+              <div 
+                key={chat.id}
+                onClick={() => onSelect(chat.id)}
+                className={`flex gap-3 p-[18px] border-b border-border transition-colors relative group/item cursor-pointer ${
+                  selectedId === chat.id ? 'bg-primary/5' : 'hover:bg-muted'
+                }`}
+              >
+                {selectedId === chat.id && (
+                  <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary"></div>
+                )}
+                
+                <div className="relative shrink-0">
+                  <Avatar className="w-[40px] h-[40px]">
+                    <AvatarImage src={chat.image} className="object-cover" />
+                  </Avatar>
+                  {chat.unread > 0 && (
+                    <div className="absolute -top-1 -right-1 w-[18px] h-[18px] bg-destructive text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                      {chat.unread}
+                    </div>
+                  )}
+                </div>
 
-        {/* Item 2 */}
-        <div className="flex gap-3 p-[18px] border-b border-border hover:bg-muted cursor-pointer transition-colors relative">
-          <div className="relative shrink-0">
-            <Avatar className="w-[40px] h-[40px]">
-              <AvatarImage src="https://i.pravatar.cc/150?u=33" className="object-cover" />
-            </Avatar>
-            <div className="absolute -top-1 -right-1 w-[18px] h-[18px] bg-destructive text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-              1
-            </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-0.5">
-              <h6 className="text-foreground text-[14px] font-bold truncate">Dexter dela Cruz</h6>
-              <span className="text-[12px] text-muted-foreground shrink-0 ml-2">3 hours</span>
-            </div>
-            <p className="text-[13px] text-muted-foreground leading-tight line-clamp-2">
-              Maec enas tempus, tellus eget con dime ntum rhoncus, sem quam
-            </p>
-          </div>
-        </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <h6 className="text-foreground text-[14px] font-bold truncate">{chat.name}</h6>
+                    <div className="flex flex-col items-end shrink-0 ml-2">
+                      <span className="text-[12px] text-muted-foreground">{chat.time}</span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 mt-1 text-muted-foreground hover:text-primary">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem 
+                            className="text-destructive focus:text-destructive cursor-pointer"
+                            onClick={(e) => handleDelete(chat.id, e)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                  <p className="text-[13px] text-muted-foreground leading-tight line-clamp-2">
+                    {chat.message}
+                  </p>
+                </div>
+              </div>
+            ))}
 
-        {/* Item 3 (Selected) */}
-        <div className="flex gap-3 p-[18px] border-b border-border bg-primary/10 cursor-pointer relative">
-          {/* Active left border indicator (based on valex style usually blue) */}
-          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary"></div>
-          
-          <div className="relative shrink-0 pl-1">
-            <Avatar className="w-[40px] h-[40px]">
-              <AvatarImage src="https://i.pravatar.cc/150?u=44" className="object-cover" />
-            </Avatar>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-0.5">
-              <h6 className="text-foreground text-[14px] font-bold truncate">Reynante Labares</h6>
-              <span className="text-[12px] text-muted-foreground shrink-0 ml-2">10 hours</span>
-            </div>
-            <p className="text-[13px] text-muted-foreground leading-tight line-clamp-2">
-              Nam quam nunc, bl ndit vel aecenas et ante tincid
-            </p>
-          </div>
-        </div>
-
-        {/* Item 4 */}
-        <div className="flex gap-3 p-[18px] border-b border-border hover:bg-muted cursor-pointer transition-colors relative">
-          <div className="relative shrink-0 flex items-center">
-            <Avatar className="w-[40px] h-[40px]">
-              <AvatarImage src="https://i.pravatar.cc/150?u=52" className="object-cover" />
-            </Avatar>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-0.5">
-              <h6 className="text-foreground text-[14px] font-bold truncate">Joyce Chua</h6>
-              <span className="text-[12px] text-muted-foreground shrink-0 ml-2">2 days</span>
-            </div>
-            <p className="text-[13px] text-muted-foreground leading-tight line-clamp-2">
-              Ma ecenas tempus, tellus eget con dimen tum rhoncus, sem quam
-            </p>
-          </div>
-        </div>
-
+            {chats.length === 0 && (
+              <div className="p-8 text-center text-muted-foreground">
+                No recent chats available.
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {filteredContacts.map((contact) => (
+              <div 
+                key={contact.id}
+                onClick={() => {
+                  setActiveTab('recent');
+                  onStartConversation(contact);
+                }}
+                className="flex items-center gap-3 p-4 border-b border-border hover:bg-muted cursor-pointer transition-colors"
+              >
+                <div className="relative shrink-0">
+                  <Avatar className="w-[40px] h-[40px]">
+                    <AvatarImage src={contact.image} className="object-cover" />
+                  </Avatar>
+                  <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-card ${
+                    contact.status === 'Online' ? 'bg-green-500' : 
+                    contact.status === 'Away' ? 'bg-yellow-500' : 'bg-gray-400'
+                  }`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h6 className="text-foreground text-[14px] font-bold truncate">{contact.name}</h6>
+                  <span className="text-[12px] text-muted-foreground">{contact.status}</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-primary text-[11px] font-bold hover:bg-primary/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveTab('recent');
+                    onStartConversation(contact);
+                  }}
+                >
+                  CHAT
+                </Button>
+              </div>
+            ))}
+            {filteredContacts.length === 0 && (
+              <div className="p-8 text-center text-muted-foreground text-[13px]">
+                No contacts found matching "{searchQuery}"
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

@@ -23,6 +23,8 @@ import {
   faGlobe,
   faList,
   faUserPlus,
+  faCalendar,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -64,17 +66,21 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   { 
-    label: "Clients",      
-    icon: faUsers,
-    children: [
-      { label: "Clients List", href: "/clients", icon: faList },
-      { label: "Add Client",   href: "/clients/add", icon: faUserPlus },
-    ]
+    label: "Client",      
+    href: "/clients",
+    icon: faUsers
   },
   { label: "Payments",     href: "/payments",     icon: faCreditCard },
   { label: "Reports",      href: "/reports",      icon: faChartBar },
   { label: "Activity Log", href: "/activity-log", icon: faClipboardList },
   { label: "Transactions",       href: "/transactions", icon: faReceipt },
+  {
+    label: "Event",
+    icon: faCalendar,
+    children: [
+      { label: "Create an event", href: "/events/create", icon: faPlus },
+    ],
+  },
   {
     label: "Settings",
     icon: faGear,

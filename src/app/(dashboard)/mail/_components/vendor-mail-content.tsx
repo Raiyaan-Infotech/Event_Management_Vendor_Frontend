@@ -8,7 +8,7 @@ import {
   Paperclip
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { InboxSidebar } from './inbox-sidebar';
+import { MailSidebar } from './mail-sidebar';
 
 const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
 
@@ -30,7 +30,7 @@ const initialEmails: Email[] = [
   {
     id: 1,
     sender: 'Adrian Monino',
-    avatar: 'https://i.pravatar.cc/150?u=12',
+    avatar: '/images/user-avatar-12.jpg',
     subject: 'Someone who believes in you',
     snippet: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
     time: '11:30am',
@@ -43,7 +43,7 @@ const initialEmails: Email[] = [
   {
     id: 2,
     sender: 'Albert Ansing',
-    avatar: 'https://i.pravatar.cc/150?u=13',
+    avatar: '/images/user-avatar-13.jpg',
     subject: "Here's What You Missed This Week",
     snippet: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
     time: '06:50am',
@@ -56,7 +56,7 @@ const initialEmails: Email[] = [
   {
     id: 3,
     sender: 'Carla Guden',
-    avatar: 'https://i.pravatar.cc/150?u=18',
+    avatar: '/images/user-avatar-18.jpg',
     subject: '4 Ways to Optimize Your Search',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Yesterday',
@@ -69,7 +69,7 @@ const initialEmails: Email[] = [
   {
     id: 4,
     sender: 'Reven Galeon',
-    avatar: 'https://i.pravatar.cc/150?u=24',
+    avatar: '/images/user-avatar-24.jpg',
     subject: "We're Giving a Macbook for Free",
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Yesterday',
@@ -82,7 +82,7 @@ const initialEmails: Email[] = [
   {
     id: 5,
     sender: 'Elisse Tan',
-    avatar: 'https://i.pravatar.cc/150?u=33',
+    avatar: '/images/user-avatar-33.jpg',
     subject: 'Keep Your Personal Data Safe',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 13',
@@ -95,7 +95,7 @@ const initialEmails: Email[] = [
   {
     id: 6,
     sender: 'Marianne Audrey',
-    avatar: 'https://i.pravatar.cc/150?u=41',
+    avatar: '/images/user-avatar-41.jpg',
     subject: "We've Made Some Changes",
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 13',
@@ -121,7 +121,7 @@ const initialEmails: Email[] = [
   {
     id: 8,
     sender: 'Raffy Godinez',
-    avatar: 'https://i.pravatar.cc/150?u=52',
+    avatar: '/images/user-avatar-52.jpg',
     subject: 'Just a Few Steps Away',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 05',
@@ -134,7 +134,7 @@ const initialEmails: Email[] = [
   {
     id: 9,
     sender: 'Allan Cadungog',
-    avatar: 'https://i.pravatar.cc/150?u=60',
+    avatar: '/images/user-avatar-60.jpg',
     subject: 'Credit Card Promos',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 04',
@@ -147,7 +147,7 @@ const initialEmails: Email[] = [
   {
     id: 10,
     sender: 'Alfie Salinas',
-    avatar: 'https://i.pravatar.cc/150?u=66',
+    avatar: '/images/user-avatar-66.jpg',
     subject: '4 Ways to Optimize Your Search',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 02',
@@ -160,7 +160,7 @@ const initialEmails: Email[] = [
   {
     id: 11,
     sender: 'Jove Guden',
-    avatar: 'https://i.pravatar.cc/150?u=12',
+    avatar: '/images/user-avatar-12.jpg',
     subject: 'Keep Your Personal Data Safe',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 02',
@@ -172,7 +172,7 @@ const initialEmails: Email[] = [
   }
 ];
 
-export function VendorInboxContent() {
+export function VendorMailContent() {
   const [emails, setEmails] = useState<Email[]>(initialEmails);
   const [selectAll, setSelectAll] = useState(false);
 
@@ -212,9 +212,9 @@ export function VendorInboxContent() {
 
       <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
         {/* --- LEFT NAVIGATION --- */}
-        <InboxSidebar />
+        <MailSidebar />
 
-        {/* --- RIGHT CONTENT (INBOX) --- */}
+        {/* --- RIGHT CONTENT --- */}
         <div className="flex-1 min-w-0 flex flex-col h-full">
           <div className={`${cardClass} bg-card flex-1 flex flex-col mb-0 overflow-hidden`}>
             {/* Header Area */}
@@ -278,7 +278,9 @@ export function VendorInboxContent() {
               {emails.map((email) => (
                 <div 
                   key={email.id} 
-                  className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border hover:bg-background transition-all cursor-pointer ${email.isUnread ? 'bg-card' : 'bg-muted'}`}
+                  className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border transition-all cursor-pointer ${
+                    email.selected ? 'bg-primary/5' : 'bg-card hover:bg-muted/30'
+                  }`}
                 >
                   {/* Actions */}
                   <div className="flex items-center gap-[18px] shrink-0 mt-[1px]">
@@ -315,7 +317,7 @@ export function VendorInboxContent() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-1.5">
-                        <p className={`text-[13px] leading-[13px] font-medium transition-colors truncate ${email.isUnread ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`}>
+                        <p className={`text-[13px] leading-[13px] font-bold transition-colors truncate ${email.isUnread ? 'text-foreground' : 'text-muted-foreground group-hover:text-primary'}`}>
                           {email.sender}
                         </p>
                         <div className="flex items-center gap-3 shrink-0 ml-4 -mt-0.5">

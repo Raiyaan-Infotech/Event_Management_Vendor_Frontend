@@ -19,11 +19,11 @@ import { cn } from "@/lib/utils";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const leads = [
-  { id: 1, name: "Archie Cantones", email: "arcie.tones@gmail.com", avatar: "https://i.pravatar.cc/40?img=5", proposal: "Sent", date: "11/06/2023 10:53", status: "Completed" },
-  { id: 2, name: "Holmes Cherryman", email: "golms.chan@gmail.com", avatar: "https://i.pravatar.cc/40?img=6", proposal: "New", date: "11/06/2023 10:53", status: "In Progress" },
-  { id: 3, name: "Malanie Hanvey", email: "lanie.nveyn@gmail.com", avatar: "https://i.pravatar.cc/40?img=3", proposal: "Sent", date: "11/06/2023 10:53", status: "Completed" },
-  { id: 4, name: "Kenneth Hune", email: "nneth.une@gmail.com", avatar: "https://i.pravatar.cc/40?img=4", proposal: "Returning", date: "11/06/2023 10:53", status: "Not Interested" },
-  { id: 5, name: "Valentine Maton", email: "alenine.aton@gmail.com", avatar: "https://i.pravatar.cc/40?img=2", proposal: "Sent", date: "11/06/2023 10:53", status: "Completed" },
+  { id: 1, name: "Archie Cantones", email: "arcie.tones@gmail.com", avatar: "/images/user-avatar-5.jpg", proposal: "Sent", date: "11/06/2023 10:53", status: "Completed" },
+  { id: 2, name: "Holmes Cherryman", email: "golms.chan@gmail.com", avatar: "/images/user-avatar-6.jpg", proposal: "New", date: "11/06/2023 10:53", status: "In Progress" },
+  { id: 3, name: "Malanie Hanvey", email: "lanie.nveyn@gmail.com", avatar: "/images/user-avatar-3.jpg", proposal: "Sent", date: "11/06/2023 10:53", status: "Completed" },
+  { id: 4, name: "Kenneth Hune", email: "nneth.une@gmail.com", avatar: "/images/user-avatar-4.jpg", proposal: "Returning", date: "11/06/2023 10:53", status: "Not Interested" },
+  { id: 5, name: "Valentine Maton", email: "alenine.aton@gmail.com", avatar: "/images/user-avatar-2.jpg", proposal: "Sent", date: "11/06/2023 10:53", status: "Completed" },
 ];
 
 const schedule = [
@@ -34,18 +34,18 @@ const schedule = [
 ];
 
 const projects = [
-  { name: "Apps Development", type: "Applications", percent: 54, img: "https://www.google.com/s2/favicons?sz=64&domain=apple.com" },
-  { name: "Dashboard Design", type: "App UI Kit", percent: 86, img: "https://www.google.com/s2/favicons?sz=64&domain=figma.com" },
-  { name: "Facebook Marketing", type: "Marketing", percent: 90, img: "https://www.google.com/s2/favicons?sz=64&domain=facebook.com" },
-  { name: "React Dashboard Github", type: "Dashboard", percent: 37, img: "https://www.google.com/s2/favicons?sz=64&domain=github.com" },
-  { name: "Paypal Payment Gateway", type: "Payment", percent: 29, img: "https://www.google.com/s2/favicons?sz=64&domain=paypal.com" },
+  { name: "Apps Development", type: "Applications", percent: 54, img: "/images/project-icon-apple.png" },
+  { name: "Dashboard Design", type: "App UI Kit", percent: 86, img: "/images/project-icon-figma.png" },
+  { name: "Facebook Marketing", type: "Marketing", percent: 90, img: "/images/project-icon-facebook.png" },
+  { name: "React Dashboard Github", type: "Dashboard", percent: 37, img: "/images/project-icon-github.png" },
+  { name: "Paypal Payment Gateway", type: "Payment", percent: 29, img: "/images/project-icon-paypal.png" },
 ];
 
 const team = [
-  { name: "Alexandra Della", role: "Frontend Developer", avatar: "https://i.pravatar.cc/40?img=1", progress: 75, color: "bg-primary" },
-  { name: "Archie Cantones", role: "UI/UX Designer", avatar: "https://i.pravatar.cc/40?img=5", progress: 90, color: "bg-emerald-500" },
-  { name: "Malanie Hanvey", role: "Backend Developer", avatar: "https://i.pravatar.cc/40?img=3", progress: 68, color: "bg-amber-500" },
-  { name: "Kenneth Hune", role: "Digital Marketer", avatar: "https://i.pravatar.cc/40?img=4", progress: 55, color: "bg-violet-500" },
+  { name: "Alexandra Della", role: "Frontend Developer", avatar: "/images/user-avatar-1.jpg", progress: 75, color: "bg-primary" },
+  { name: "Archie Cantones", role: "UI/UX Designer", avatar: "/images/user-avatar-5.jpg", progress: 90, color: "bg-emerald-500" },
+  { name: "Malanie Hanvey", role: "Backend Developer", avatar: "/images/user-avatar-3.jpg", progress: 68, color: "bg-amber-500" },
+  { name: "Kenneth Hune", role: "Digital Marketer", avatar: "/images/user-avatar-4.jpg", progress: 55, color: "bg-violet-500" },
 ];
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -162,7 +162,7 @@ export default function TablesSection() {
                   <div className="flex -space-x-1.5 mt-2">
                     {event.avatars.map((n) => (
                       <Avatar key={n} className="size-6 border-2 border-background">
-                        <AvatarImage src={`https://i.pravatar.cc/40?img=${n}`} />
+                        <AvatarImage src={`/images/user-avatar-${n}.jpg`} />
                         <AvatarFallback>U</AvatarFallback>
                       </Avatar>
                     ))}

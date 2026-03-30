@@ -92,7 +92,7 @@ export default function VendorLoginPage() {
           <div className="h-14 w-14 rounded-lg bg-card p-1 shadow-md border border-border/50 overflow-hidden relative">
             <div className="h-full w-full relative rounded-md overflow-hidden">
               <Image
-                src="/ra_logo.png"
+                src="/vendor-logo.png"
                 alt="Vendor Portal"
                 fill
                 priority

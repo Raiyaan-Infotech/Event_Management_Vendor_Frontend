@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Camera, Facebook, Twitter, Linkedin, Youtube, Instagram } from 'lucide-react';
+import { Camera,  Globe, Facebook, Twitter, Linkedin, Youtube, Instagram } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUploadMedia } from '@/hooks/use-media';
 import { useUpdateVendorProfile } from '@/hooks/use-vendors';
@@ -81,7 +81,7 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
       <div className="grid grid-cols-3 gap-0 border-t border-border pt-6 mb-6">
         <div className="text-center">
           <p className="text-foreground text-[20px] font-bold leading-none">947</p>
-          <p className="text-muted-foreground text-[12px] mt-1">Followers</p>
+          <p className="text-muted-foreground text-[12px] mt-1">Clients</p>
         </div>
         <div className="text-center border-x border-border">
           <p className="text-foreground text-[20px] font-bold leading-none">583</p>
@@ -96,6 +96,20 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
       <div className="text-left space-y-4">
         <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider">Social</h6>
         <div className="space-y-3">
+             <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center text-[#1877f2] group-hover:bg-[#1877f2] group-hover:text-white transition-all"><Globe size={18} /></div>
+            <div className="overflow-hidden">
+              <p className="text-foreground text-[13px] font-bold leading-tight">Website</p>
+              <a
+                href="https://spruko.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary text-[11px] truncate"
+              >
+                spruko.com
+              </a>
+            </div>
+          </div>
           <div className="flex items-center gap-3 group cursor-pointer">
             <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center text-[#ff0000] group-hover:bg-[#ff0000] group-hover:text-white transition-all"><Youtube size={18} /></div>
             <div className="overflow-hidden">

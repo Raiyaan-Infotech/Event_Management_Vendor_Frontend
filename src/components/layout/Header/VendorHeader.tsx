@@ -79,7 +79,7 @@ export default function VendorHeader() {
 
         {/* Language */}
         <Button variant="ghost" size="icon" className={`${ICON_BTN} hidden sm:flex`}>
-          <Image src="https://flagcdn.com/us.svg" width={20} height={14} className="w-5 h-3.5 rounded-sm" alt="US" />
+          <Image src="/images/us.svg" width={20} height={14} className="w-5 h-3.5 rounded-sm" alt="US" />
         </Button>
 
         {/* Fullscreen */}
@@ -160,8 +160,8 @@ export default function VendorHeader() {
               </DropdownMenuItem>
 
               <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
-                <Link href="/inbox">
-                  <Mail size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Inbox
+                <Link href="/mail">
+                  <Mail size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Mail
                 </Link>
               </DropdownMenuItem>
 
@@ -170,13 +170,6 @@ export default function VendorHeader() {
                   <MessageSquare size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Messages
                 </Link>
               </DropdownMenuItem>
-
-              <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
-                <Link href="/settings">
-                  <Sliders size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Account Settings
-                </Link>
-              </DropdownMenuItem>
-
               <DropdownMenuItem
                 className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group rounded-b-md"
                 onClick={() => logout.mutate()}
