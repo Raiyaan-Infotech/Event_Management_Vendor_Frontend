@@ -13,6 +13,9 @@ import {
   faBell,
   faClock,
   faCheckDouble,
+  faComment,
+  faEnvelope,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -79,7 +82,7 @@ export default function VendorHeader() {
 
         {/* Language */}
         <Button variant="ghost" size="icon" className={`${ICON_BTN} hidden sm:flex`}>
-          <Image src="/images/us.svg" width={20} height={14} className="w-5 h-3.5 rounded-sm" alt="US" />
+          <Image src="/images/us.png" width={24} height={18} className="w-6 h-4 rounded-sm" alt="US" />
         </Button>
 
         {/* Fullscreen */}
@@ -119,7 +122,34 @@ export default function VendorHeader() {
               </Button>
             </div>
             <ScrollArea className="h-[200px]">
-              <div className="p-4 text-center text-sm text-muted-foreground">No notifications yet</div>
+              <div className="p-2 space-y-1">
+                {[
+                  { id: 1, type: 'chat', title: 'New Message', from: 'Socrates Itumay', text: 'Great. Let me send you the updated guest list.', time: '2 mins ago', href: '/communication/chat', isRead: true },
+                  { id: 2, type: 'chat', title: 'Chat Response', from: 'Dexter dela Cruz', text: "Thank you Dexter. I received the confirmation email.", time: '3 hours ago', href: '/communication/chat', isRead: false }
+                ].map((notif) => (
+                  <Link key={notif.id} href={notif.href} className="flex gap-3 p-3 rounded-lg hover:bg-muted transition-all group relative">
+                    <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center border ${
+                      notif.type === 'chat' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : 
+                      notif.type === 'mail' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
+                      'bg-purple-500/10 text-purple-500 border-purple-500/20'
+                    }`}>
+                      <FontAwesomeIcon icon={notif.type === 'chat' ? faComment : notif.type === 'mail' ? faEnvelope : faUsers} className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                           <span className={`text-[13px] font-bold text-foreground group-hover:text-primary transition-colors ${!notif.isRead ? "" : "opacity-70"}`}>{notif.title}</span>
+                           {!notif.isRead && <span className="size-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
+                        </div>
+                        <span className="text-[11px] text-muted-foreground whitespace-nowrap">{notif.time}</span>
+                      </div>
+                      <p className={`text-[12px] text-muted-foreground truncate italic ${!notif.isRead ? "" : "opacity-60"}`}>
+                        <span className="font-bold text-foreground/80 not-italic">{notif.from}</span> {notif.text}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </ScrollArea>
             <div className="p-3 text-center border-t border-border bg-card">
               <Button variant="link" className="text-xs text-primary font-bold h-auto p-0">View All Notifications</Button>
@@ -160,14 +190,14 @@ export default function VendorHeader() {
               </DropdownMenuItem>
 
               <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
-                <Link href="/mail">
-                  <Mail size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Mail
+                <Link href="/communication/email">
+                  <Mail size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Email
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem asChild className="flex items-center h-11 px-4 cursor-pointer text-foreground text-[13px] font-medium hover:bg-accent focus:bg-accent outline-none group border-b border-border/50 rounded-none">
-                <Link href="/messages">
-                  <MessageSquare size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Messages
+                <Link href="/communication/chat">
+                  <MessageSquare size={16} className="mr-3 text-muted-foreground group-hover:text-primary" /> Chat
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem

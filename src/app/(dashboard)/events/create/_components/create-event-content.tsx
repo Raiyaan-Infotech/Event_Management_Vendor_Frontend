@@ -114,7 +114,8 @@ export default function CreateEventContent() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 pb-20">
+    <div className="h-[calc(100vh-86px)] overflow-y-auto px-4 sm:px-6 lg:px-8 pt-2 pb-10 custom-scrollbar">
+      <div className="flex flex-col lg:flex-row gap-6">
       {/* Left Column */}
       <div className="flex-1 min-w-0 space-y-6">
         {/* Event Details Card */}
@@ -127,7 +128,7 @@ export default function CreateEventContent() {
           </div>
           <div className="p-6 space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Event Type</Label>
+              <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Event Type</Label>
               <Select value={formData.eventType} onValueChange={(v) => updateForm("eventType", v)}>
                 <SelectTrigger className="w-full h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10">
                   <SelectValue placeholder="Select type" />
@@ -141,7 +142,7 @@ export default function CreateEventContent() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Event Topic</Label>
+              <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Event Topic</Label>
               <Select value={formData.eventTopic} onValueChange={(v) => updateForm("eventTopic", v)}>
                 <SelectTrigger className="w-full h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10">
                   <SelectValue placeholder="Select topic" />
@@ -155,7 +156,7 @@ export default function CreateEventContent() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Event Name</Label>
+              <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Event Name</Label>
               <Input 
                 value={formData.eventName}
                 onChange={(e) => updateForm("eventName", e.target.value)}
@@ -164,12 +165,12 @@ export default function CreateEventContent() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Event URL</Label>
+              <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Event URL</Label>
               <div className="relative group">
                 <Input 
                   value={formData.eventUrl}
                   onChange={(e) => updateForm("eventUrl", e.target.value)}
-                  placeholder="event-link-slug" 
+                  placeholder="Enter URL slug" 
                   className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10 pr-14" 
                 />
                 <button 
@@ -272,7 +273,7 @@ export default function CreateEventContent() {
               <Textarea 
                 value={formData.description}
                 onChange={(e) => updateForm("description", e.target.value)}
-                placeholder="Describe your event..." 
+                placeholder="Enter event description" 
                 className={`min-h-[220px] border-none focus-visible:ring-0 p-0 text-[15px] leading-relaxed resize-none text-gray-600 ${formData.__bold ? 'font-bold' : ''} ${formData.__italic ? 'italic' : ''} ${formData.__underline ? 'underline' : ''}`}
                 style={{ 
                   textAlign: (formData.__align || 'left') as any, 
@@ -307,7 +308,7 @@ export default function CreateEventContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Start Date</Label>
+                  <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Meeting Platform</Label>
                 <Input 
                   type="date" 
                   value={formData.startDate}
@@ -316,7 +317,7 @@ export default function CreateEventContent() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Start Time</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Start Time</Label>
                 <div className="flex gap-2">
                   <Select value={formData.startHour} onValueChange={(v) => updateForm("startHour", v)}>
                     <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10 flex-1">
@@ -353,7 +354,7 @@ export default function CreateEventContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">End Date</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Event Category</Label>
                 <Input 
                   type="date" 
                   value={formData.endDate}
@@ -362,7 +363,7 @@ export default function CreateEventContent() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">End Time</Label>
+                  <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Online Link</Label>
                 <div className="flex gap-2">
                   <Select value={formData.endHour} onValueChange={(v) => updateForm("endHour", v)}>
                     <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10 flex-1">
@@ -425,7 +426,7 @@ export default function CreateEventContent() {
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="p-4 bg-gray-50/50 rounded-lg border border-gray-100 space-y-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Registration Deadline</Label>
+                      <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Registration Deadline</Label>
                       <Input 
                         type="date" 
                         value={formData.registrationDeadline}
@@ -467,7 +468,7 @@ export default function CreateEventContent() {
                   <div className="p-4 bg-gray-50/50 rounded-lg border border-gray-100 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Ticket Price ($)</Label>
+                        <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Ticket Price ($)</Label>
                         <Input 
                           type="number" 
                           value={formData.ticketPrice}
@@ -477,7 +478,7 @@ export default function CreateEventContent() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Number of Tickets</Label>
+                        <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Number of Tickets</Label>
                         <Input 
                           type="number" 
                           value={formData.ticketCount}
@@ -488,7 +489,7 @@ export default function CreateEventContent() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Payment Configuration</Label>
+                      <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Event Short Description</Label>
                       <Select value={formData.paymentConfig} onValueChange={(v) => updateForm("paymentConfig", v)}>
                         <SelectTrigger className="h-11 border-gray-200 rounded-lg bg-white">
                           <SelectValue placeholder="Select provider" />
@@ -524,7 +525,7 @@ export default function CreateEventContent() {
           </div>
           <div className="p-6 space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Venue / Address</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Venue Address</Label>
               <Input 
                 value={formData.address}
                 onChange={(e) => updateForm("address", e.target.value)}
@@ -534,20 +535,20 @@ export default function CreateEventContent() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">City</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">City</Label>
                 <Input 
                   value={formData.city}
                   onChange={(e) => updateForm("city", e.target.value)}
-                  placeholder="City" 
+                  placeholder="Enter city" 
                   className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10" 
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">State</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">State</Label>
                 <Input 
                   value={formData.state}
                   onChange={(e) => updateForm("state", e.target.value)}
-                  placeholder="State" 
+                  placeholder="Enter state" 
                   className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10" 
                 />
               </div>
@@ -630,7 +631,7 @@ export default function CreateEventContent() {
                   type="url"
                   value={formData.onlineLink}
                   onChange={(e) => updateForm("onlineLink", e.target.value)}
-                  placeholder="https://zoom.us/j/..." 
+                  placeholder="Enter meeting link" 
                   className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10 pl-10" 
                 />
               </div>
@@ -739,7 +740,7 @@ export default function CreateEventContent() {
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Organizer Name</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Organizer Name</Label>
                 <Input 
                   value={formData.organizerName}
                   onChange={(e) => updateForm("organizerName", e.target.value)}
@@ -748,11 +749,11 @@ export default function CreateEventContent() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Contact Number</Label>
+                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Contact Number</Label>
                 <Input 
                   value={formData.organizerContact}
                   onChange={(e) => updateForm("organizerContact", e.target.value)}
-                  placeholder="+1 234 567 890" 
+                  placeholder="Enter contact number" 
                   className="h-11 border-gray-200 rounded-lg" 
                 />
               </div>
@@ -770,11 +771,11 @@ export default function CreateEventContent() {
           </div>
           <div className="p-6">
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-gray-400 uppercase tracking-wider">Tags</Label>
+              <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Tags</Label>
               <Input 
                 value={formData.tags}
                 onChange={(e) => updateForm("tags", e.target.value)}
-                placeholder="e.g. music, festival, 2024" 
+                placeholder="Enter tags" 
                 className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10" 
               />
               <p className="text-[10px] text-gray-400 mt-1 italic">Press enter or use commas to separate tags</p>
@@ -969,5 +970,6 @@ export default function CreateEventContent() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

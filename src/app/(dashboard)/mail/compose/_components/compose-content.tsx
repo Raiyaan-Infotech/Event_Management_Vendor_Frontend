@@ -2,23 +2,17 @@
 
 import { ChevronRight, Paperclip, Link, Image as ImageIcon, Trash2, Send, Save, X } from 'lucide-react';
 import { MailSidebar } from '../../_components/mail-sidebar';
+import { PageHeader } from '@/components/common/PageHeader';
 
 const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none font-["Roboto",sans-serif]';
 
 export function ComposeContent() {
   return (
     <div className="bg-background min-h-screen -mt-6 -mx-6 -mb-6 p-6 font-['Roboto',sans-serif]">
-      {/* --- PAGE HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 text-[#a8b1c7]">
-        <div className="flex items-center gap-2">
-          <h1 className="text-foreground text-[24px] font-bold leading-tight uppercase">Mail Compose</h1>
-        </div>
-        <div className="flex items-center flex-wrap gap-2 mt-4 md:mt-0">
-          <button className="h-9 px-4 flex items-center gap-2 bg-primary text-white rounded-[5px] shadow-sm hover:brightness-110 text-[13px] font-medium whitespace-nowrap ml-1">
-            14 Aug 2019 <ChevronRight size={14} className="rotate-90 translate-y-0.5" />
-          </button>
-        </div>
-      </div>
+      <PageHeader 
+        title="Compose" 
+        subtitle="Draft and send a new message." 
+      />
 
       <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
         {/* --- LEFT NAVIGATION --- */}

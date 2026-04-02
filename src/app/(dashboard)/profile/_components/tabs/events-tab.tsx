@@ -169,7 +169,7 @@ export function EventsTab() {
           {currentEvents.map((event, i) => (
             <div key={i} className="bg-card rounded-[5px] border border-border p-4 flex gap-4 hover:shadow-md transition-all group cursor-pointer">
               <div className="w-[120px] h-[80px] bg-muted overflow-hidden rounded-[3px] shrink-0">
-                <Image src={`/images/${event.imgId}-200.jpg`} width={200} height={133} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src={`/images/${event.imgId}-600.jpg`} width={200} height={133} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="flex-1 flex items-center justify-between">
                 <div>

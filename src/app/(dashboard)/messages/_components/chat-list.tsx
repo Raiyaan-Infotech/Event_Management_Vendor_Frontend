@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { MoreVertical, Trash2, Search } from 'lucide-react';
+import { MoreVertical, Trash2, Search, CheckCheck, CircleDashed } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,23 +27,33 @@ interface ChatListProps {
   onSelect: (id: number) => void;
   onDelete: (id: number) => void;
   onStartConversation: (contact: { id: number, name: string, image: string }) => void;
+  onMarkAsRead: (id: number) => void;
+  onMarkAsUnread: (id: number) => void;
 }
 
 const ALL_CONTACTS = [
-  { id: 1, name: 'Socrates Itumay', image: '/images/user-avatar-12.jpg', status: 'Online' },
-  { id: 2, name: 'Dexter dela Cruz', image: '/images/user-avatar-33.jpg', status: 'Online' },
-  { id: 3, name: 'Reynante Labares', image: '/images/user-avatar-44.jpg', status: 'Offline' },
-  { id: 4, name: 'Joyce Chua', image: '/images/user-avatar-52.jpg', status: 'Online' },
-  { id: 101, name: 'Adrian Monino', image: '/images/user-avatar-a1.jpg', status: 'Online' },
-  { id: 102, name: 'Barney Shrew', image: '/images/user-avatar-a2.jpg', status: 'Offline' },
-  { id: 103, name: 'Charlene Reed', image: '/images/user-avatar-a3.jpg', status: 'Online' },
-  { id: 104, name: 'Denis Rose', image: '/images/user-avatar-a4.jpg', status: 'Online' },
-  { id: 105, name: 'Eddie Lobanovskiy', image: '/images/user-avatar-a5.jpg', status: 'Offline' },
-  { id: 106, name: 'Fiona Glenanne', image: '/images/user-avatar-a6.jpg', status: 'Online' },
-  { id: 107, name: 'George Costanza', image: '/images/user-avatar-a7.jpg', status: 'Away' },
+  { id: 1, name: 'Socrates Itumay', image: '/images/user-avatar-1.jpg', status: 'Online' },
+  { id: 2, name: 'Dexter dela Cruz', image: '/images/user-avatar-2.jpg', status: 'Online' },
+  { id: 3, name: 'Reynante Labares', image: '/images/user-avatar-3.jpg', status: 'Offline' },
+  { id: 4, name: 'Joyce Chua', image: '/images/user-avatar-4.jpg', status: 'Online' },
+  { id: 101, name: 'Adrian Monino', image: '/images/user-avatar-5.jpg', status: 'Online' },
+  { id: 102, name: 'Barney Shrew', image: '/images/user-avatar-6.jpg', status: 'Offline' },
+  { id: 103, name: 'Charlene Reed', image: '/images/user-avatar-7.jpg', status: 'Online' },
+  { id: 104, name: 'Denis Rose', image: '/images/user-avatar-8.jpg', status: 'Online' },
+  { id: 105, name: 'Eddie Lobanovskiy', image: '/images/user-avatar-9.jpg', status: 'Offline' },
+  { id: 106, name: 'Fiona Glenanne', image: '/images/user-avatar-10.jpg', status: 'Online' },
+  { id: 107, name: 'George Costanza', image: '/images/user-avatar-1.jpg', status: 'Away' },
 ];
 
-export function ChatList({ chats, selectedId, onSelect, onDelete, onStartConversation }: ChatListProps) {
+export function ChatList({ 
+  chats, 
+  selectedId, 
+  onSelect, 
+  onDelete, 
+  onStartConversation,
+  onMarkAsRead,
+  onMarkAsUnread
+}: ChatListProps) {
   const [activeTab, setActiveTab] = useState<'recent' | 'contacts'>('recent');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -109,9 +119,16 @@ export function ChatList({ chats, selectedId, onSelect, onDelete, onStartConvers
             {chats.map((chat) => (
               <div 
                 key={chat.id}
-                onClick={() => onSelect(chat.id)}
-                className={`flex gap-3 p-[18px] border-b border-border transition-colors relative group/item cursor-pointer ${
-                  selectedId === chat.id ? 'bg-primary/5' : 'hover:bg-muted'
+                onClick={() => {
+                  onSelect(chat.id);
+                  onMarkAsRead(chat.id);
+                }}
+                className={`flex gap-3 p-[18px] border-b border-border transition-all duration-200 relative group/item cursor-pointer ${
+                  selectedId === chat.id 
+                    ? 'bg-primary/5' 
+                    : chat.unread > 0 
+                      ? 'bg-primary/[0.03]' 
+                      : 'hover:bg-muted'
                 }`}
               >
                 {selectedId === chat.id && (
@@ -131,7 +148,10 @@ export function ChatList({ chats, selectedId, onSelect, onDelete, onStartConvers
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <h6 className="text-foreground text-[14px] font-bold truncate">{chat.name}</h6>
+                    <h6 className={`text-foreground text-[14px] truncate ${chat.unread > 0 ? 'font-black' : 'font-bold'}`}>
+                      {chat.name}
+                      {chat.unread > 0 && <span className="inline-block w-2 h-2 rounded-full bg-primary ml-2 animate-pulse" />}
+                    </h6>
                     <div className="flex flex-col items-end shrink-0 ml-2">
                       <span className="text-[12px] text-muted-foreground">{chat.time}</span>
                       <DropdownMenu>
@@ -141,6 +161,26 @@ export function ChatList({ chats, selectedId, onSelect, onDelete, onStartConvers
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem 
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onMarkAsRead(chat.id);
+                            }}
+                          >
+                            <CheckCheck className="mr-2 h-4 w-4" />
+                            <span>Mark as Read</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onMarkAsUnread(chat.id);
+                            }}
+                          >
+                            <CircleDashed className="mr-2 h-4 w-4" />
+                            <span>Mark as Unread</span>
+                          </DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-destructive focus:text-destructive cursor-pointer"
                             onClick={(e) => handleDelete(chat.id, e)}

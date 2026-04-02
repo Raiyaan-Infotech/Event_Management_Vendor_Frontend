@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MailSidebar } from './mail-sidebar';
+import { PageHeader } from '@/components/common/PageHeader';
 
 const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
 
@@ -30,7 +31,7 @@ const initialEmails: Email[] = [
   {
     id: 1,
     sender: 'Adrian Monino',
-    avatar: '/images/user-avatar-12.jpg',
+    avatar: '/images/user-avatar-1.jpg',
     subject: 'Someone who believes in you',
     snippet: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
     time: '11:30am',
@@ -43,7 +44,7 @@ const initialEmails: Email[] = [
   {
     id: 2,
     sender: 'Albert Ansing',
-    avatar: '/images/user-avatar-13.jpg',
+    avatar: '/images/user-avatar-2.jpg',
     subject: "Here's What You Missed This Week",
     snippet: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
     time: '06:50am',
@@ -56,7 +57,7 @@ const initialEmails: Email[] = [
   {
     id: 3,
     sender: 'Carla Guden',
-    avatar: '/images/user-avatar-18.jpg',
+    avatar: '/images/user-avatar-3.jpg',
     subject: '4 Ways to Optimize Your Search',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Yesterday',
@@ -69,7 +70,7 @@ const initialEmails: Email[] = [
   {
     id: 4,
     sender: 'Reven Galeon',
-    avatar: '/images/user-avatar-24.jpg',
+    avatar: '/images/user-avatar-4.jpg',
     subject: "We're Giving a Macbook for Free",
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Yesterday',
@@ -82,7 +83,7 @@ const initialEmails: Email[] = [
   {
     id: 5,
     sender: 'Elisse Tan',
-    avatar: '/images/user-avatar-33.jpg',
+    avatar: '/images/user-avatar-5.jpg',
     subject: 'Keep Your Personal Data Safe',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 13',
@@ -95,7 +96,7 @@ const initialEmails: Email[] = [
   {
     id: 6,
     sender: 'Marianne Audrey',
-    avatar: '/images/user-avatar-41.jpg',
+    avatar: '/images/user-avatar-6.jpg',
     subject: "We've Made Some Changes",
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 13',
@@ -108,7 +109,7 @@ const initialEmails: Email[] = [
   {
     id: 7,
     sender: 'Jane Phoebe',
-    avatar: '',
+    avatar: '/images/user-avatar-7.jpg',
     subject: 'Grab Our Holiday Deals',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 12',
@@ -121,7 +122,7 @@ const initialEmails: Email[] = [
   {
     id: 8,
     sender: 'Raffy Godinez',
-    avatar: '/images/user-avatar-52.jpg',
+    avatar: '/images/user-avatar-8.jpg',
     subject: 'Just a Few Steps Away',
     snippet: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
     time: 'Oct 05',
@@ -172,7 +173,12 @@ const initialEmails: Email[] = [
   }
 ];
 
-export function VendorMailContent() {
+interface VendorMailContentProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function VendorMailContent({ title = "Mail", subtitle = "Inbox" }: VendorMailContentProps) {
   const [emails, setEmails] = useState<Email[]>(initialEmails);
   const [selectAll, setSelectAll] = useState(false);
 
@@ -195,22 +201,15 @@ export function VendorMailContent() {
   };
 
   return (
-    <div className="bg-background min-h-screen -mt-6 -mx-6 -mb-6 p-6 font-['Roboto',sans-serif]">
+    <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar font-['Roboto',sans-serif]">
+      <div className="space-y-6 max-w-[1700px] mx-auto">
+        <PageHeader
+          title={title}
+          subtitle="Generate a new transaction record and manage financial flow for event orders."
+          total={emails.length}
+        />
 
-
-      {/* --- PAGE HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-        <div>
-          <h1 className="text-foreground text-[24px] font-bold leading-tight uppercase">Mail</h1>
-        </div>
-        <div className="flex items-center flex-wrap gap-2 mt-4 md:mt-0">
-          <button className="h-9 px-4 flex items-center gap-2 bg-primary text-white rounded-[5px] shadow-sm hover:brightness-110 text-[13px] font-medium whitespace-nowrap ml-1">
-            14 Aug 2019 <ChevronRight size={14} className="rotate-90 translate-y-0.5" />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
+        <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
         {/* --- LEFT NAVIGATION --- */}
         <MailSidebar />
 
@@ -220,7 +219,7 @@ export function VendorMailContent() {
             {/* Header Area */}
             <div className="p-6 pb-4">
               <div className="flex items-baseline justify-between mb-1">
-                <h2 className="text-foreground text-[30px] font-normal leading-tight tracking-[-0.5px]">Inbox</h2>
+                <h2 className="text-foreground text-[30px] font-normal leading-tight tracking-[-0.5px] uppercase">{subtitle}</h2>
                 <span className="text-muted-foreground text-[13px]">1-50 of 1200</span>
               </div>
               <div className="flex items-center justify-between border-b pb-4 border-transparent">
@@ -345,5 +344,6 @@ export function VendorMailContent() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

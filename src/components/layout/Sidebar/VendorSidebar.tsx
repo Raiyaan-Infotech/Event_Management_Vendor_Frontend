@@ -23,8 +23,14 @@ import {
   faGlobe,
   faList,
   faUserPlus,
+  faUserTie,
   faCalendar,
   faPlus,
+  faEnvelope,
+  faBell,
+  faComment,
+  faAddressBook,
+  faComments,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -65,14 +71,24 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Analytics", href: "/analytics", icon: faChartLine },
     ],
   },
-  { 
-    label: "Client",      
+  { label: "Client",      
     href: "/clients",
     icon: faUsers
   },
-  { label: "Payments",     href: "/payments",     icon: faCreditCard },
+  { label: "Staff",      
+    href: "/staff",
+    icon: faUserTie
+  },
+  {
+    label: "Communication",
+    icon: faComments,
+    children: [
+      { label: "Contact",      href: "/communication/contact",      icon: faAddressBook },
+      { label: "Email",        href: "/communication/email",        icon: faEnvelope },
+      { label: "Chat",         href: "/communication/chat",         icon: faComment },
+    ],
+  },
   { label: "Reports",      href: "/reports",      icon: faChartBar },
-  { label: "Activity Log", href: "/activity-log", icon: faClipboardList },
   { label: "Transactions",       href: "/transactions", icon: faReceipt },
   {
     label: "Event",
@@ -81,6 +97,7 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Create an event", href: "/events/create", icon: faPlus },
     ],
   },
+  { label: "Payment", href: "/payment-management", icon: faDollarSign },
   {
     label: "Settings",
     icon: faGear,
@@ -89,6 +106,7 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Configuration",    href: "/settings/config",   icon: faSliders },
       { label: "Currency",         href: "/settings/currency", icon: faDollarSign },
       { label: "Timezone",         href: "/settings/timezone", icon: faClock },
+      { label: "Activity Log",     href: "/activity-log",      icon: faClipboardList },
     ],
   },
   { label: "Help",               href: "/help",    icon: faCircleQuestion },

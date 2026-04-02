@@ -24,7 +24,8 @@ export function VendorProfileContent() {
   );
 
   return (
-    <div className="bg-background min-h-screen -mt-6 -mx-6 -mb-6 p-6 font-['Roboto',sans-serif]">
+    <div className="h-[calc(100vh-86px)] overflow-y-auto px-4 sm:px-6 lg:px-8 pt-2 pb-10 custom-scrollbar">
+      <div className="max-w-7xl mx-auto space-y-6 font-['Roboto',sans-serif]">
       {/* Custom Scrollbar Styling */}
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
@@ -42,19 +43,7 @@ export function VendorProfileContent() {
         }
       `}</style>
 
-
-
-      {/* --- PAGE HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-        <div>
-          <h1 className="text-foreground text-[24px] font-bold leading-tight uppercase">Profile</h1>
-        </div>
-        <div className="flex items-center flex-wrap gap-2 mt-4 md:mt-0">
-          <button className="h-9 px-4 flex items-center gap-2 bg-primary text-white rounded-[5px] shadow-sm hover:brightness-110 text-[13px] font-medium whitespace-nowrap">
-            14 Aug 2019 <ChevronRight size={14} className="rotate-90 translate-y-0.5" />
-          </button>
-        </div>
-      </div>
+      {/* --- PAGE HEADER REMOVED --- */}
 
       <div className="flex flex-col lg:flex-row gap-6 items-start mb-6">
         {/* --- LEFT COLUMN (1) --- */}
@@ -101,5 +90,6 @@ export function VendorProfileContent() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

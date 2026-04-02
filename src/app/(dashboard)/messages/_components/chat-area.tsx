@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Video, UserPlus, Paperclip, Send, MessageSquare } from 'lucide-react';
+import { Phone, Video, UserPlus, Paperclip, Send, MessageSquare, Bold, Italic, Underline } from 'lucide-react';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 
@@ -13,7 +13,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 101,
         type: 'received',
         content: 'Hello! I need to discuss the upcoming event details.',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '11:15 am',
         isFirstInGroup: true
       },
@@ -21,7 +21,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 102,
         type: 'sent',
         content: 'Hi Socrates! Sure, I am available to talk now.',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '11:20 am',
         isFirstInGroup: true
       },
@@ -29,7 +29,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 103,
         type: 'received',
         content: 'Great. Let me send you the updated guest list.',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '11:25 am',
         isFirstInGroup: true
       }
@@ -42,7 +42,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 201,
         type: 'received',
         content: 'The payment for the last project has been processed.',
-        avatar: '/images/user-avatar-33.jpg',
+        avatar: '/images/user-avatar-2.jpg',
         time: '09:00 am',
         isFirstInGroup: true
       },
@@ -50,7 +50,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 202,
         type: 'sent',
         content: 'Thank you Dexter. I received the confirmation email.',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '09:15 am',
         isFirstInGroup: true
       }
@@ -63,7 +63,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 1,
         type: 'sent',
         content: 'Nulla consequat massa quis enim. Donec pede justo, fringilla vel...',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '9:48 am',
         isFirstInGroup: true
       },
@@ -78,7 +78,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 3,
         type: 'received',
         content: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.',
-        avatar: '/images/user-avatar-44.jpg',
+        avatar: '/images/user-avatar-3.jpg',
         time: '9:32 am',
         isFirstInGroup: true
       },
@@ -86,7 +86,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 4,
         type: 'sent',
         content: 'Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '9:48 am',
         isFirstInGroup: true
       },
@@ -101,12 +101,12 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 6,
         type: 'received',
         content: 'Maecenas tempus, tellus eget condimentum rhoncus',
-        avatar: '/images/user-avatar-44.jpg',
+        avatar: '/images/user-avatar-3.jpg',
         time: '10:12 am',
         images: [
-          "/images/gallery-city.jpg",
-          "/images/gallery-ocean.jpg",
-          "/images/gallery-sunset.jpg"
+          "/images/corporate-event-600.jpg",
+          "/images/wedding-event-600.jpg",
+          "/images/birthday-party-600.jpg"
         ],
         isFirstInGroup: true
       },
@@ -114,7 +114,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 7,
         type: 'sent',
         content: 'Maecenas tempus, tellus eget condimentum rhoncus',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: '09:40 am',
         isFirstInGroup: true
       },
@@ -134,7 +134,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 401,
         type: 'received',
         content: 'Are we still on for the venue visit tomorrow?',
-        avatar: '/images/user-avatar-52.jpg',
+        avatar: '/images/user-avatar-4.jpg',
         time: 'Yesterday',
         isFirstInGroup: true
       },
@@ -142,7 +142,7 @@ const MOCK_CHATS_HISTORY: Record<number, { date: string, messages: any[] }> = {
         id: 402,
         type: 'sent',
         content: 'Yes Joyce, seeing you there at 10 am.',
-        avatar: '/images/user-avatar-12.jpg',
+        avatar: '/images/user-avatar-1.jpg',
         time: 'Yesterday',
         isFirstInGroup: true
       }
@@ -181,7 +181,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
       id: Date.now(),
       type: 'sent' as const,
       content: inputText,
-      avatar: '/images/user-avatar-12.jpg',
+      avatar: '/images/user-avatar-1.jpg',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isFirstInGroup: true
     };
@@ -287,6 +287,17 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
 
       {/* Footer (Input) */}
       <div className="p-4 border-t border-border bg-card shrink-0 flex items-center gap-3">
+         <div className="flex items-center gap-1 mr-1">
+           <button className="text-muted-foreground hover:text-primary transition-colors p-1.5 rounded-sm hover:bg-muted" title="Bold">
+             <Bold size={16} />
+           </button>
+           <button className="text-muted-foreground hover:text-primary transition-colors p-1.5 rounded-sm hover:bg-muted" title="Italic">
+             <Italic size={16} />
+           </button>
+           <button className="text-muted-foreground hover:text-primary transition-colors p-1.5 rounded-sm hover:bg-muted" title="Underline">
+             <Underline size={16} />
+           </button>
+         </div>
          <input 
            type="text" 
            placeholder="Type your message here..."
