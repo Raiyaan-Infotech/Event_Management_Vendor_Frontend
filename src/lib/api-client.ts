@@ -1,13 +1,10 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const API_URL = '/api/proxy/v1';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Response interceptor — on 401, hit /api/logout which clears HttpOnly cookies

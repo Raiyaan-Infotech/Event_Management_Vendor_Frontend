@@ -4,10 +4,12 @@ import TablesSection from "@/components/layout/Content/TablesSection";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      <StatsCards />
-      <ChartsSection />
-      <TablesSection />
+    <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar">
+      <div className="space-y-6 max-w-[1700px] mx-auto">
+        <StatsCards />
+        <ChartsSection />
+        <TablesSection />
+      </div>
     </div>
   );
 }

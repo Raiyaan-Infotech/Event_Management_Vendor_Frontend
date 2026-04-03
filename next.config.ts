@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { hostname: "ui-avatars.com" },
       { hostname: "www.google.com" },
       { hostname: "images.unsplash.com" },
+      { hostname: "flagcdn.com" },
       { hostname: "localhost" },
     ],
   },

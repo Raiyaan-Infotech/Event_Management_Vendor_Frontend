@@ -89,10 +89,10 @@ export default function VendorLoginPage() {
       <div className="w-full max-w-md relative">
         {/* Floating Logo */}
         <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
-          <div className="h-14 w-14 rounded-lg bg-white p-1 shadow-md border border-border/50 overflow-hidden relative">
+          <div className="h-14 w-14 rounded-lg bg-card p-1 shadow-md border border-border/50 overflow-hidden relative">
             <div className="h-full w-full relative rounded-md overflow-hidden">
               <Image
-                src="/ra_logo.png"
+                src="/vendor-logo.png"
                 alt="Vendor Portal"
                 fill
                 priority
@@ -104,7 +104,7 @@ export default function VendorLoginPage() {
 
         <Card className="w-full shadow-lg border-0 pt-6">
           <CardHeader className="items-center pb-0 pt-2">
-            <h4 className="text-2xl font-bold tracking-tight text-[#071437]">Vendor Login</h4>
+            <h4 className="text-2xl font-bold tracking-tight text-foreground">Vendor Login</h4>
             <p className="text-sm text-muted-foreground mt-1 text-center">
               Welcome back! Sign in to access your vendor portal.
             </p>

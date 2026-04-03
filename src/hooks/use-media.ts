@@ -14,9 +14,7 @@ export const useUploadMedia = () => {
       formData.append('file', file);
       formData.append('folder', folder);
 
-      const res = await apiClient.post('/media/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await apiClient.post('/media/upload', formData);
 
       return res.data.data as UploadResult;
     },

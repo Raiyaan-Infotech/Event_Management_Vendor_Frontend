@@ -8,13 +8,10 @@ async function forwardRequest(request: NextRequest, path: string, method: string
     const searchParams = request.nextUrl.search;
     const backendUrl = `${BACKEND_URL}/${strippedPath}${searchParams}`;
 
+    // Forward the raw body as a Blob to ensure no re-encoding happens
     let body: BodyInit | undefined;
-    try {
-      if (method !== 'GET' && method !== 'HEAD') {
-        body = await request.arrayBuffer();
-      }
-    } catch {
-      body = undefined;
+    if (method !== 'GET' && method !== 'HEAD') {
+      body = await request.blob();
     }
 
     const headers = new Headers(request.headers);
@@ -22,18 +19,23 @@ async function forwardRequest(request: NextRequest, path: string, method: string
     headers.delete('connection');
     headers.delete('content-length');
 
+
     // Explicitly rebuild Cookie header — Next.js may not include it in request.headers
     const allCookies = request.cookies.getAll();
     if (allCookies.length > 0) {
       headers.set('cookie', allCookies.map(c => `${c.name}=${c.value}`).join('; '));
     }
 
-    const backendResponse = await fetch(backendUrl, {
+    const fetchOptions: RequestInit = {
       method,
       headers,
-      body: body || undefined,
+      body,
       credentials: 'include',
-    });
+    };
+
+    const backendResponse = await fetch(backendUrl, fetchOptions);
+
+    console.log(`[Proxy] Forwarding ${method} to ${backendUrl}`);
 
     const responseHeaders = new Headers();
     backendResponse.headers.forEach((value, key) => {
@@ -50,7 +52,7 @@ async function forwardRequest(request: NextRequest, path: string, method: string
       });
     }
 
-    const responseData = await backendResponse.arrayBuffer();
+    const responseData = await backendResponse.blob();
 
     return new NextResponse(responseData, {
       status: backendResponse.status,
