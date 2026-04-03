@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter, useParams } from "next/navigation";
+import { useVendorClient } from "@/hooks/use-vendor-clients";
 
 // --- Types ---
 interface ClientEvent {
@@ -70,19 +71,9 @@ export default function ClientEventsList() {
   const clientIdFromUrl = params?.id;
   
   const [searchQuery, setSearchQuery] = useState("");
-  const [clientName, setClientName] = useState("Client");
+  const { data: clientRes } = useVendorClient(clientIdFromUrl as string);
+  const clientName = clientRes?.name || "Client";
 
-  // Sync client name from localStorage
-  React.useEffect(() => {
-    const savedData = localStorage.getItem("clients_data");
-    if (savedData && clientIdFromUrl) {
-      const clients = JSON.parse(savedData);
-      const currentClient = clients.find((c: any) => c.id.toString() === clientIdFromUrl.toString());
-      if (currentClient) {
-        setClientName(currentClient.name);
-      }
-    }
-  }, [clientIdFromUrl]);
 
   const filteredEvents = SAMPLE_EVENTS.map(event => ({
     ...event,

@@ -57,42 +57,36 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
-interface Employee {
-  id: number;
-  empId: string;
-  name: string;
-  designation: string;
-  mobile: string;
-  email: string;
-  doj: string;
-  status: string;
-  loginAccess: boolean;
-  profilePic?: string;
-}
+import { useVendorStaff, useDeleteVendorStaff, VendorStaff } from "@/hooks/use-vendor-staff";
 
-const statusStyles = {
-  Active: "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20",
-  Inactive: "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:border-amber-500/20",
-  Resigned: "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20",
-  Relieved: "bg-slate-50 text-slate-600 border-slate-100 dark:bg-slate-500/10 dark:border-slate-500/20",
+const statusStyles: Record<string, string> = {
+  active: "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20",
+  inactive: "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:border-amber-500/20",
+  resigned: "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20",
+  relieved: "bg-slate-50 text-slate-600 border-slate-100 dark:bg-slate-500/10 dark:border-slate-500/20",
 };
 
-const statusIcons = {
-  Active: <CheckCircle2 size={12} className="mr-1.5" />,
-  Inactive: <Clock size={12} className="mr-1.5" />,
-  Resigned: <XCircle size={12} className="mr-1.5" />,
-  Relieved: <XCircle size={12} className="mr-1.5" />,
+const statusLabels: Record<string, string> = {
+  active: "Active",
+  inactive: "Inactive",
+  resigned: "Resigned",
+  relieved: "Relieved",
 };
 
-type SortKeys = keyof Employee;
-type SortOrder = "asc" | "desc" | null;
+const statusIcons: Record<string, React.ReactNode> = {
+  active: <CheckCircle2 size={12} className="mr-1.5" />,
+  inactive: <Clock size={12} className="mr-1.5" />,
+  resigned: <XCircle size={12} className="mr-1.5" />,
+  relieved: <XCircle size={12} className="mr-1.5" />,
+};
+
+type SortKeys = keyof VendorStaff;
+type SortOrder = "ASC" | "DESC" | null;
 
 export default function StaffListContent() {
   const router = useRouter();
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ key: SortKeys | ""; order: SortOrder }>({ key: "", order: null });
+  const [sortConfig, setSortConfig] = useState<{ key: string; order: SortOrder }>({ key: "created_at", order: "DESC" });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filterDesignation, setFilterDesignation] = useState("All");
@@ -101,12 +95,12 @@ export default function StaffListContent() {
   // Column Visibility State
   const staffColumns = [
     { key: "id", label: "ID" },
-    { key: "empId", label: "Emp ID" },
+    { key: "emp_id", label: "Emp ID" },
     { key: "name", label: "Employee" },
     { key: "mobile", label: "Mobile" },
     { key: "doj", label: "DOJ" },
-    { key: "loginAccess", label: "Access" },
-    { key: "status", label: "Status" },
+    { key: "login_access", label: "Access" },
+    { key: "work_status", label: "Status" },
   ];
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>(staffColumns.map(c => c.key));
@@ -116,39 +110,64 @@ export default function StaffListContent() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Modals state
-  const [deleteEmployee, setDeleteEmployee] = useState<Employee | null>(null);
+  const [employeeToDelete, setEmployeeToDelete] = useState<VendorStaff | null>(null);
 
-  // Load data and column preferences from localStorage on mount
-  const loadEmployees = () => {
-    setLoading(true);
-    const savedData = localStorage.getItem("employees_data");
-    if (savedData) {
-      setEmployees(JSON.parse(savedData));
-    }
-    
-    // Load column preferences
-    const savedColumns = localStorage.getItem("staff_visible_columns");
-    if (savedColumns) {
-      try {
-        const parsed = JSON.parse(savedColumns);
-        setVisibleColumns(parsed);
-        setTempColumns(parsed);
-      } catch (e) {
-        console.error("Failed to load column preferences");
-      }
-    }
-    setLoading(false);
+  // Fetch data via hook
+  const { data: staffRes, isLoading: loading } = useVendorStaff({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchQuery,
+    work_status: filterStatus === "All" ? undefined : filterStatus.toLowerCase(),
+    designation: filterDesignation === "All" ? undefined : filterDesignation,
+    sort_by: sortConfig.key || "created_at",
+    sort_order: sortConfig.order || "DESC"
+  });
+
+  const deleteMutation = useDeleteVendorStaff();
+
+  const employees = staffRes?.data || [];
+  const totalRecords = staffRes?.pagination?.total || 0;
+  const totalPages = staffRes?.pagination?.totalPages || 0;
+
+  const handleSort = (key: string) => {
+    setSortConfig(prev => ({
+      key,
+      order: prev.key === key && prev.order === "ASC" ? "DESC" : "ASC"
+    }));
   };
 
-  React.useEffect(() => {
-    loadEmployees();
-  }, []);
+  const handleExport = () => {
+    if (employees.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
 
-  const saveColumnChanges = () => {
-    setVisibleColumns(tempColumns);
-    localStorage.setItem("staff_visible_columns", JSON.stringify(tempColumns));
-    setIsColumnDropdownOpen(false);
-    toast.success("Column visibility updated");
+    const headers = ["ID", "Emp ID", "Name", "Designation", "Mobile", "Email", "DOJ", "Status", "Login Access"];
+    const csvContent = [
+      headers.join(","),
+      ...employees.map(e => [
+        e.id,
+        `"${e.emp_id}"`,
+        `"${e.name}"`,
+        `"${e.designation}"`,
+        `"${e.mobile}"`,
+        `"${e.email}"`,
+        `"${e.doj}"`,
+        `"${e.work_status}"`,
+        e.login_access ? "Yes" : "No"
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `staff_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Staff data exported successfully");
   };
 
   const handleToggleAllColumns = () => {
@@ -165,45 +184,11 @@ export default function StaffListContent() {
     );
   };
 
-  const handleSort = (key: SortKeys) => {
-    setSortConfig(prev => ({
-      key,
-      order: prev.key === key && prev.order === "asc" ? "desc" : "asc"
-    }));
-  };
-
-  const handleExport = () => {
-    if (employees.length === 0) {
-      toast.error("No data to export");
-      return;
-    }
-
-    const headers = ["ID", "Emp ID", "Name", "Designation", "Mobile", "Email", "DOJ", "Status", "Login Access"];
-    const csvContent = [
-      headers.join(","),
-      ...employees.map(e => [
-        e.id,
-        `"${e.empId}"`,
-        `"${e.name}"`,
-        `"${e.designation}"`,
-        `"${e.mobile}"`,
-        `"${e.email}"`,
-        `"${e.doj}"`,
-        `"${e.status}"`,
-        e.loginAccess ? "Yes" : "No"
-      ].join(","))
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `staff_export_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("Staff data exported successfully");
+  const saveColumnChanges = () => {
+    setVisibleColumns(tempColumns);
+    localStorage.setItem("staff_visible_columns", JSON.stringify(tempColumns));
+    setIsColumnDropdownOpen(false);
+    toast.success("Column visibility updated");
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -215,105 +200,20 @@ export default function StaffListContent() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        const lines = text.split("\n").filter(line => line.trim());
-        if (lines.length <= 1) {
-          toast.error("CSV file is empty or missing data rows");
-          return;
-        }
-
-        const newEmployees: Employee[] = lines.slice(1).map((line, index) => {
-          const values = line.split(",").map(v => v.replace(/^"|"$/g, "").trim());
-          return {
-            id: Number(values[0]) || Date.now() + index,
-            empId: values[1] || `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
-            name: values[2] || "Unknown",
-            designation: values[3] || "Staff",
-            mobile: values[4] || "",
-            email: values[5] || "",
-            doj: values[6] || new Date().toISOString().split('T')[0],
-            status: values[7] || "Active",
-            loginAccess: values[8]?.toLowerCase() === "yes"
-          };
-        });
-
-        const mergedEmployees = [...employees];
-        newEmployees.forEach(newE => {
-          const existingIndex = mergedEmployees.findIndex(e => e.empId === newE.empId);
-          if (existingIndex > -1) {
-            mergedEmployees[existingIndex] = newE;
-          } else {
-            mergedEmployees.push(newE);
-          }
-        });
-
-        localStorage.setItem("employees_data", JSON.stringify(mergedEmployees));
-        setEmployees(mergedEmployees);
-        toast.success(`${newEmployees.length} employees imported successfully`);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      } catch (error) {
-        toast.error("Failed to parse CSV file");
-      }
-    };
-    reader.readAsText(file);
+    toast.info("Import feature is currently being migrated to API. This will be available soon.");
   };
-
-  const filteredAndSortedEmployees = useMemo(() => {
-    let result = [...employees].filter(emp => {
-      const matchesSearch = 
-        emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.empId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.designation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.email.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesDesignation = filterDesignation === "All" || emp.designation === filterDesignation;
-      const matchesStatus = filterStatus === "All" || emp.status === filterStatus;
-
-      return matchesSearch && matchesDesignation && matchesStatus;
-    });
-
-    if (sortConfig.key && sortConfig.order) {
-      result.sort((a, b) => {
-        const aValue = (a[sortConfig.key as keyof Employee] || "").toString().toLowerCase();
-        const bValue = (b[sortConfig.key as keyof Employee] || "").toString().toLowerCase();
-        
-        if (aValue < bValue) return sortConfig.order === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortConfig.order === "asc" ? 1 : -1;
-        return 0;
-      });
-    }
-
-    return result;
-  }, [employees, searchQuery, sortConfig]);
-
-  const totalPages = Math.ceil(filteredAndSortedEmployees.length / itemsPerPage);
-  const paginatedEmployees = filteredAndSortedEmployees.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handleDelete = () => {
-    if (!deleteEmployee) return;
+  const handleDelete = async () => {
+    if (!employeeToDelete) return;
     
-    const updatedEmployees = employees.filter(e => e.id !== deleteEmployee.id);
-    localStorage.setItem("employees_data", JSON.stringify(updatedEmployees));
-    setEmployees(updatedEmployees);
-    toast.success(`${deleteEmployee.name} has been removed successfully.`);
-    setDeleteEmployee(null);
-    
-    if (paginatedEmployees.length === 1 && currentPage > 1) {
-        setCurrentPage(prev => prev - 1);
-    }
+    await deleteMutation.mutateAsync(employeeToDelete.id);
+    setEmployeeToDelete(null);
   };
 
   const handleEdit = (id: number) => {
     router.push(`/staff/edit/${id}`);
   };
 
-  const handleView = (emp: Employee) => {
+  const handleView = (emp: VendorStaff) => {
     router.push(`/staff/view/${emp.id}`);
   };
 
@@ -518,28 +418,28 @@ export default function StaffListContent() {
                       Loading employee data...
                    </td>
                 </tr>
-              ) : paginatedEmployees.length > 0 ? (
-                paginatedEmployees.map((emp) => (
+              ) : employees.length > 0 ? (
+                employees.map((emp) => (
                   <tr key={emp.id} className="group hover:bg-blue-50/30 dark:hover:bg-blue-500/[0.03] transition-all relative overflow-hidden">
                     {visibleColumns.includes("id") && (
                       <td className="px-6 py-5">
                         <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">#{emp.id.toString().padStart(2, '0')}</span>
                       </td>
                     )}
-                    {visibleColumns.includes("empId") && (
+                    {visibleColumns.includes("emp_id") && (
                       <td className="px-6 py-5">
                         <Badge variant="outline" className="font-mono text-[10px] font-bold border-gray-200/60 dark:border-gray-800 text-gray-500 bg-white dark:bg-gray-800/50 py-0.5">
-                          {emp.empId}
+                          {emp.emp_id}
                         </Badge>
                       </td>
                     )}
                     {visibleColumns.includes("name") && (
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
-                          {emp.profilePic ? (
+                          {emp.profile_pic ? (
                             <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-blue-500/10 group-hover:scale-110 transition-transform duration-300 border border-gray-100 dark:border-gray-800">
                                <img 
-                                 src={emp.profilePic} 
+                                 src={emp.profile_pic} 
                                  alt={emp.name} 
                                  className="w-full h-full object-cover"
                                />
@@ -570,13 +470,13 @@ export default function StaffListContent() {
                       <td className="px-6 py-5">
                          <div className="flex items-center gap-2">
                             <Calendar size={13} className="text-gray-300" />
-                            <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400">{emp.doj}</p>
+                            <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400">{new Date(emp.doj).toLocaleDateString()}</p>
                          </div>
                       </td>
                     )}
-                    {visibleColumns.includes("loginAccess") && (
+                    {visibleColumns.includes("login_access") && (
                       <td className="px-6 py-5 text-center">
-                         {emp.loginAccess ? (
+                         {emp.login_access ? (
                             <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 shadow-sm border border-emerald-100" title="Login Access Granted">
                                <Unlock size={14} />
                             </div>
@@ -587,11 +487,11 @@ export default function StaffListContent() {
                          )}
                       </td>
                     )}
-                    {visibleColumns.includes("status") && (
+                    {visibleColumns.includes("work_status") && (
                       <td className="px-6 py-5">
-                        <div className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${statusStyles[emp.status as keyof typeof statusStyles] || statusStyles.Active}`}>
-                          {statusIcons[emp.status as keyof typeof statusIcons] || statusIcons.Active}
-                          {emp.status}
+                        <div className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${statusStyles[emp.work_status] || statusStyles.active}`}>
+                          {statusIcons[emp.work_status] || statusIcons.active}
+                          {statusLabels[emp.work_status] || emp.work_status}
                         </div>
                       </td>
                     )}
@@ -625,7 +525,7 @@ export default function StaffListContent() {
                                <DropdownMenuItem 
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setDeleteEmployee(emp);
+                                    setEmployeeToDelete(emp);
                                   }}
                                   className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50 focus:text-rose-600"
                                 >
@@ -711,7 +611,7 @@ export default function StaffListContent() {
             </div>
             
             <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider hidden sm:block">
-              Showing <span className="text-blue-600">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredAndSortedEmployees.length)}</span> of <span className="text-gray-600 dark:text-gray-200">{filteredAndSortedEmployees.length}</span> results
+              Showing <span className="text-blue-600">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalRecords)}</span> of <span className="text-gray-600 dark:text-gray-200">{totalRecords}</span> results
             </p>
           </div>
           <div className="flex items-center gap-1.5">
@@ -752,7 +652,7 @@ export default function StaffListContent() {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteEmployee} onOpenChange={(open) => !open && setDeleteEmployee(null)}>
+      <Dialog open={!!employeeToDelete} onOpenChange={(open) => !open && setEmployeeToDelete(null)}>
         <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
             <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
@@ -760,13 +660,13 @@ export default function StaffListContent() {
             </div>
             <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">Discard Employee?</DialogTitle>
             <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed max-w-[280px]">
-              You are about to permanently remove <span className="text-rose-600 underline underline-offset-4 decoration-rose-200">{deleteEmployee?.name}</span> and all associated records.
+              You are about to permanently remove <span className="text-rose-600 underline underline-offset-4 decoration-rose-200">{employeeToDelete?.name}</span> and all associated records.
             </DialogDescription>
           </div>
           <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
             <Button 
               variant="ghost" 
-              onClick={() => setDeleteEmployee(null)} 
+              onClick={() => setEmployeeToDelete(null)} 
               className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
             >
               Cancel

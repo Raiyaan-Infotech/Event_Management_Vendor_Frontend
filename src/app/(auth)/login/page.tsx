@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function VendorLoginPage() {
   const router = useRouter();
@@ -172,17 +173,22 @@ export default function VendorLoginPage() {
                 )}
               </div>
 
-              {/* Remember me */}
-              <div className="flex items-center gap-2 pt-1">
-                <Checkbox
-                  id="rememberMe"
-                  checked={rememberMe}
-                  onCheckedChange={(v) => setRememberMe(!!v)}
-                  className="w-[18px] h-[18px] rounded-[4px] data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <Label htmlFor="rememberMe" className="text-sm font-medium cursor-pointer select-none">
-                  Remember Me
-                </Label>
+              {/* Remember me + Forgot password */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onCheckedChange={(v) => setRememberMe(!!v)}
+                    className="w-[18px] h-[18px] rounded-[4px] data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label htmlFor="rememberMe" className="text-sm font-medium cursor-pointer select-none">
+                    Remember Me
+                  </Label>
+                </div>
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium">
+                  Forgot password?
+                </Link>
               </div>
 
               {/* Submit */}

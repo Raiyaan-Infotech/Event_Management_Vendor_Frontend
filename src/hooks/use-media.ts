@@ -14,9 +14,9 @@ export const useUploadMedia = () => {
       formData.append('file', file);
       formData.append('folder', folder);
 
-      const res = await apiClient.post('/media/upload', formData);
+      const res = await apiClient.post('/vendors/auth/upload', formData);
 
-      return res.data.data as UploadResult;
+      return res.data.data.file as UploadResult;
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };

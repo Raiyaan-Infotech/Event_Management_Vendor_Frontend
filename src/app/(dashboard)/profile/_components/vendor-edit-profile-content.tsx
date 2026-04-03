@@ -1,19 +1,68 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, Check } from 'lucide-react';
-import { useVendorMe } from '@/hooks/use-vendors';
+import { useState, useEffect } from 'react';
+import { useVendorMe, useUpdateVendorProfile, Vendor } from '@/hooks/use-vendors';
 import { VendorSidebarProfileCard } from './vendor-sidebar-profile-card';
 import { VendorLocationCard } from './vendor-location-card';
-
+import { toast } from 'sonner';
 
 const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
 
 export function VendorEditProfileContent() {
   const { data: vendor, isLoading } = useVendorMe();
-  const [pref1, setPref1] = useState(true);
-  const [pref2, setPref2] = useState(true);
+  const updateProfile = useUpdateVendorProfile();
+  
+  const [formData, setFormData] = useState<Partial<Vendor>>({
+    name: '',
+    email: '',
+    company_name: '',
+    company_contact: '',
+    company_email: '',
+    company_address: '',
+    website: '',
+    youtube: '',
+    facebook: '',
+    instagram: '',
+    profile: '',
+    bank_name: '',
+    acc_no: '',
+    ifsc_code: '',
+    acc_type: '' as any,
+    branch: '',
+  });
 
+  useEffect(() => {
+    if (vendor) {
+      setFormData({
+        name: vendor.name || '',
+        email: vendor.email || '',
+        company_name: vendor.company_name || '',
+        company_contact: vendor.company_contact || '',
+        company_email: vendor.company_email || '',
+        company_address: vendor.company_address || '',
+        website: vendor.website || '',
+        youtube: vendor.youtube || '',
+        facebook: vendor.facebook || '',
+        instagram: vendor.instagram || '',
+        profile: vendor.profile || '',
+        bank_name: vendor.bank_name || '',
+        acc_no: vendor.acc_no || '',
+        ifsc_code: vendor.ifsc_code || '',
+        acc_type: (vendor.acc_type || '') as any,
+        branch: vendor.branch || '',
+      });
+    }
+  }, [vendor]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfile.mutate(formData);
+  };
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-[400px]">
@@ -23,44 +72,30 @@ export function VendorEditProfileContent() {
 
   return (
     <div className="bg-background min-h-screen -mt-6 -mx-6 -mb-6 p-6 font-['Roboto',sans-serif]">
-
-
-      {/* --- PAGE HEADER REMOVED --- */}
-
       <div className="flex flex-col lg:flex-row gap-6 mb-6">
-        {/* --- LEFT COLUMN (1) --- */}
         <div className="w-full lg:w-[380px] shrink-0 space-y-6">
           <VendorSidebarProfileCard vendor={vendor} isEditMode />
           <VendorLocationCard />
         </div>
 
-        {/* --- RIGHT COLUMN (2) --- Form Content */}
         <div className="flex-1 min-w-0 lg:max-h-[1234px] flex flex-col">
           <div className={`${cardClass} flex-1 flex flex-col mb-0 overflow-hidden`}>
             <div className="flex-1 overflow-y-auto p-8 chat-scrollbar">
-              <form className="space-y-6">
-
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 {/* NAME */}
                 <div>
-                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">NAME</h6>
+                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">PERSONAL INFO</h6>
                   <div className="space-y-[18px]">
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">User Name</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Petey Cruiser" />
-                      </div>
-                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
                       <label className="text-[14px] text-foreground font-normal md:col-span-1">Full Name</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Petey" />
+                        <input name="name" type="text" value={formData.name || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Vendor Full Name" />
                       </div>
                     </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Job Title</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Name</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="Web Designer" />
+                        <input name="company_name" type="text" value={formData.company_name || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Company Name" />
                       </div>
                     </div>
                   </div>
@@ -70,123 +105,121 @@ export function VendorEditProfileContent() {
                 <div>
                   <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">CONTACT INFO</h6>
                   <div className="space-y-[18px]">
-                      <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Mobile Number</label>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Contact</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="+245 354 654" />
+                        <input name="company_contact" type="text" value={formData.company_contact || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all" placeholder="Contact number" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Email</label>
+                      <div className="md:col-span-3">
+                        <input name="company_email" type="email" value={formData.company_email || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all" placeholder="Company Email" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Email(required)</label>
+                      <div className="md:col-span-3">
+                        <input name="email" type="email" value={formData.email || ''} readOnly className="w-full px-4 py-[9px] border border-border bg-muted/50 text-muted-foreground rounded-[3px] text-[14px] cursor-not-allowed" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Email<span className="italic text-[13px]">(required)</span></label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Company Address</label>
                       <div className="md:col-span-3">
-                        <input type="email" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="info@Valex.in" />
-                      </div>
-                    </div>
-              
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Address</label>
-                      <div className="md:col-span-3">
-                        <textarea className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all min-h-[90px] resize-none" defaultValue="San Francisco, CA" />
+                        <textarea name="company_address" value={formData.company_address || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all min-h-[90px] resize-none" placeholder="Company Address" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                 {/* SOCIAL INFO */}
+                {/* SOCIAL INFO */}
                 <div>
-                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">SOCIAL INFO</h6>
+                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">SOCIAL & WEB</h6>
                   <div className="space-y-[18px]">
                      <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Website</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Website URL</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="spruko.com" />
+                        <input name="website" type="text" value={formData.website || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="https://..." />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Youtube</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Youtube Channel</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="youtube.com/spruko" />
+                        <input name="youtube" type="text" value={formData.youtube || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="YouTube Link" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Facebook</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Facebook Profile</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="facebook.com/spruko" />
+                        <input name="facebook" type="text" value={formData.facebook || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Facebook Link" />
                       </div>
                     </div>
-                
                     <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Twitter</label>
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Instagram Profile</label>
                       <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="twitter.com/spruko" />
-                      </div>
-                    </div>
-                   <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">LinkedIn</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="linkedin.com/spruko" />
-                      </div>
-                    </div>
-                
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Instagram</label>
-                      <div className="md:col-span-3">
-                        <input type="text" className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all" defaultValue="instagram.com/spruko" />
+                        <input name="instagram" type="text" value={formData.instagram || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Instagram Link" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                 {/* ABOUT YOURSELF */}
+                {/* BANK INFO */}
                 <div>
-                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">ABOUT YOURSELF</h6>
+                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">BANK INFORMATION</h6>
                   <div className="space-y-[18px]">
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Biographical Info</label>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Bank Name</label>
                       <div className="md:col-span-3">
-                        <textarea className="w-full px-4 py-[9px] border border-border bg-muted text-muted-foreground rounded-[3px] text-[14px] focus:outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition-all min-h-[100px] resize-none" defaultValue="pleasure rationally encounter but because pursue consequences that are extremely painful.occur in which toil and pain can procure him some great pleasure.." />
+                        <input name="bank_name" type="text" value={formData.bank_name || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all" placeholder="Bank Name" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Account Number</label>
+                      <div className="md:col-span-3">
+                        <input name="acc_no" type="text" value={formData.acc_no || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all" placeholder="Account Number" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">IFSC Code</label>
+                      <div className="md:col-span-3">
+                        <input name="ifsc_code" type="text" value={formData.ifsc_code || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all" placeholder="IFSC Code" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Account Type</label>
+                      <div className="md:col-span-3">
+                         <select 
+                           name="acc_type" 
+                           value={formData.acc_type || ''} 
+                           onChange={handleChange}
+                           className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all"
+                         >
+                           <option value="">Select Account Type</option>
+                           <option value="savings">Savings</option>
+                           <option value="current">Current</option>
+                           <option value="overdraft">Overdraft</option>
+                         </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
+                      <label className="text-[14px] text-foreground font-normal md:col-span-1">Branch</label>
+                      <div className="md:col-span-3">
+                        <input name="branch" type="text" value={formData.branch || ''} onChange={handleChange} className="w-full px-4 py-[9px] border border-border bg-card text-foreground rounded-[3px] text-[14px] focus:outline-none focus:border-primary transition-all" placeholder="Branch Name" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                 {/* EMAIL PREFERENCES */}
-                <div>
-                  <h6 className="text-foreground text-[13px] font-bold uppercase tracking-wider mb-5 mt-2">EMAIL PREFERENCES</h6>
-                  <div className="space-y-[18px]">
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
-                      <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-1">Verified User</label>
-                      <div className="md:col-span-3 flex flex-col gap-3">
-                         <label 
-                           className="flex items-center gap-2 cursor-pointer group select-none"
-                           onClick={() => setPref1(!pref1)}
-                         >
-                            <div className={`relative flex items-center justify-center w-[18px] h-[18px] rounded-[3px] border transition-all ${pref1 ? 'bg-primary border-primary' : 'bg-transparent border-gray-300 dark:border-gray-600'}`}>
-                               {pref1 && <Check size={12} className="text-white" />}
-                            </div>
-                            <span className="text-[14px] text-muted-foreground">Accept to receive post or page notification emails</span>
-                         </label>
-                         <label 
-                           className="flex items-center gap-2 cursor-pointer group select-none"
-                           onClick={() => setPref2(!pref2)}
-                         >
-                            <div className={`relative flex items-center justify-center w-[18px] h-[18px] rounded-[3px] border transition-all ${pref2 ? 'bg-primary border-primary' : 'bg-transparent border-gray-300 dark:border-gray-600'}`}>
-                               {pref2 && <Check size={12} className="text-white" />}
-                            </div>
-                            <span className="text-[14px] text-muted-foreground">Accept to receive email sent to multiple recipients</span>
-                         </label>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mt-8 border-t border-border pt-6">
+                  <button 
+                    type="submit"
+                    disabled={updateProfile.isPending}
+                    className="bg-primary text-white px-[30px] py-[12px] text-[14px] font-bold rounded-[5px] hover:bg-primary/90 transition-all disabled:opacity-70 shadow-lg shadow-primary/20 flex items-center gap-2"
+                  >
+                    {updateProfile.isPending ? 'Updating...' : 'Update Vendor Profile'}
+                  </button>
                 </div>
-
               </form>
-
-              <div className="mt-8">
-                <button className="bg-primary text-white px-[20px] py-[10px] text-[13px] font-medium rounded-[5px] hover:bg-primary/90 transition-all">
-                  Update Profile
-                </button>
-              </div>
             </div>
           </div>
         </div>

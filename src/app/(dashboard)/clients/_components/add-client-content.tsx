@@ -335,15 +335,23 @@ interface ClientFormProps {
   isView?: boolean;
 }
 
+import { useCreateVendorClient, useUpdateVendorClient, VendorClient } from "@/hooks/use-vendor-clients";
+
+// ... existing code ...
+
 export function AddClientContent({ initialData, isEdit = false, isView = false }: ClientFormProps) {
   const router = useRouter();
-  const [profilePic, setProfilePic] = useState<string | null>(initialData?.profilePic || null);
+  const [profilePic, setProfilePic] = useState<string | null>(initialData?.profile_pic || null);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const createMutation = useCreateVendorClient();
+  const updateMutation = useUpdateVendorClient();
+
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     mobile: initialData?.mobile || "",
     email: initialData?.email || "",
-    password: initialData?.password || (isEdit || isView ? "••••••••" : ""), 
+    password: "", 
     address: initialData?.address || "",
     country: initialData?.country || "",
     state: initialData?.state || "",
@@ -353,8 +361,8 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
     pincode: initialData?.pincode || "",
   });
 
-  const [registrationType, setRegistrationType] = useState<"Guest" | "Client">(initialData?.registrationType || "Client");
-  const [selectedPlan, setSelectedPlan] = useState<any>(initialData?.plan && initialData.plan !== "Not Subscribed" ? initialData.plan : "");
+  const [registrationType, setRegistrationType] = useState<"guest" | "client">(initialData?.registration_type || "client");
+  const [selectedPlan, setSelectedPlan] = useState<string>(initialData?.plan || "");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Dynamic Options derived from Hierarchy
@@ -375,16 +383,12 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
     return LOCATION_DATA[formData.country][formData.state][formData.district];
   }, [formData.country, formData.state, formData.district]);
 
-  // Professional Error Alert Component is now handled by FormGroup
-
-
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isView) return;
-    setErrors({}); // Reset previous errors
+    setErrors({}); 
 
     const newErrors: Record<string, string> = {};
 
-    // Check all fields
     const requiredFields = [
       { key: 'name', label: 'Full Name' },
       { key: 'mobile', label: 'Mobile Number' },
@@ -412,7 +416,7 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
       newErrors.profilePic = "Profile photo is required";
     }
 
-    if (registrationType === "Client" && !selectedPlan) {
+    if (registrationType === "client" && !selectedPlan) {
       newErrors.selectedPlan = "Subscription plan is required";
     }
 
@@ -422,61 +426,19 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
       return;
     }
 
-    // Get existing clients
-    const existingClients = JSON.parse(localStorage.getItem("clients_data") || "[]");
-    
+    const submissionData: any = {
+      ...formData,
+      profile_pic: profilePic,
+      registration_type: registrationType,
+      plan: registrationType === "guest" ? "not_subscribed" : selectedPlan,
+    };
+
     if (isEdit) {
-      // Update logic
-      const updatedClients = existingClients.map((c: any) => {
-        if (c.id === initialData.id) {
-          return {
-            ...c,
-            name: formData.name,
-            mobile: formData.mobile,
-            email: formData.email,
-            city: formData.city,
-            plan: registrationType === "Guest" ? "Not Subscribed" : selectedPlan,
-            registrationType: registrationType,
-            address: formData.address,
-            country: formData.country,
-            state: formData.state,
-            district: formData.district,
-            locality: formData.locality,
-            pincode: formData.pincode,
-            profilePic: profilePic
-          };
-        }
-        return c;
-      });
-      localStorage.setItem("clients_data", JSON.stringify(updatedClients));
-      toast.success("Client record updated successfully!");
+      await updateMutation.mutateAsync({ id: initialData.id, data: submissionData });
     } else {
-      // Create new client object
-      const newClient = {
-        id: existingClients.length > 0 ? Math.max(...existingClients.map((c: any) => c.id)) + 1 : 1,
-        clientId: `CLI-${Math.floor(1000 + Math.random() * 9000)}`,
-        name: formData.name,
-        mobile: formData.mobile,
-        email: formData.email,
-        city: formData.city,
-        plan: registrationType === "Guest" ? "Not Subscribed" : selectedPlan,
-        registrationType: registrationType,
-        status: "Active",
-        events: 0,
-        address: formData.address,
-        country: formData.country,
-        state: formData.state,
-        district: formData.district,
-        locality: formData.locality,
-        pincode: formData.pincode,
-        profilePic: profilePic
-      };
-      const updatedClients = [newClient, ...existingClients];
-      localStorage.setItem("clients_data", JSON.stringify(updatedClients));
-      toast.success("New client registration completed!");
+      await createMutation.mutateAsync(submissionData);
     }
     
-    // Redirect
     router.push("/clients");
   };
 
@@ -782,22 +744,22 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
                  <button 
                    type="button"
-                   onClick={() => !isView && setRegistrationType("Guest")}
-                   className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${registrationType === "Guest" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"} ${isView ? "cursor-default" : ""}`}
+                   onClick={() => !isView && setRegistrationType("guest")}
+                   className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${registrationType === "guest" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"} ${isView ? "cursor-default" : ""}`}
                  >
                     <User size={14} /> Guest
                  </button>
                  <button 
                     type="button"
-                    onClick={() => !isView && setRegistrationType("Client")}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${registrationType === "Client" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"} ${isView ? "cursor-default" : ""}`}
+                    onClick={() => !isView && setRegistrationType("client")}
+                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${registrationType === "client" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"} ${isView ? "cursor-default" : ""}`}
                  >
                     <Building size={14} /> Client
                  </button>
               </div>
 
               {/* Conditional Plan Selection */}
-              {registrationType === "Client" ? (
+              {registrationType === "client" ? (
                  <FormGroup label="Select Plan" error={errors.selectedPlan} required={!isView} isView={isView} className="animate-in fade-in slide-in-from-top-2 duration-300">
                     {isView ? (
                         <div className="h-10 px-4 flex items-center bg-transparent text-[13px] font-black text-gray-800 border-none shadow-none">
@@ -815,9 +777,9 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
                             <SelectValue placeholder="Select Plan" />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl border-gray-100 shadow-xl">
-                             <SelectItem value="Silver Plan" className="text-[13px] rounded-lg cursor-pointer">Silver Plan</SelectItem>
-                             <SelectItem value="Gold Plan" className="text-[13px] rounded-lg cursor-pointer">Gold Plan</SelectItem>
-                             <SelectItem value="Platinum Plan" className="text-[13px] rounded-lg cursor-pointer">Platinum Plan</SelectItem>
+                             <SelectItem value="silver" className="text-[13px] rounded-lg cursor-pointer">Silver Plan</SelectItem>
+                             <SelectItem value="gold" className="text-[13px] rounded-lg cursor-pointer">Gold Plan</SelectItem>
+                             <SelectItem value="platinum" className="text-[13px] rounded-lg cursor-pointer">Platinum Plan</SelectItem>
                           </SelectContent>
                         </Select>
                     )}

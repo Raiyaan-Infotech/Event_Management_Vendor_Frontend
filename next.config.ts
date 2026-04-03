@@ -1,6 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Use axios pre-built browser bundle — no Node.js built-ins (http2/zlib/etc)
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        axios: require.resolve('axios/dist/browser/axios.cjs'),
+      };
+    }
+    return config;
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

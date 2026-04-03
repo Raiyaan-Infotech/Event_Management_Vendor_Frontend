@@ -345,38 +345,72 @@ function SearchableSelect({
   );
 }
 
+import { useCreateVendorStaff, useUpdateVendorStaff, useVendorStaffMember, VendorStaff } from "@/hooks/use-vendor-staff";
+
 interface AddStaffContentProps {
+  initialData?: any;
+  isEdit?: boolean;
   isView?: boolean;
 }
 
-export default function AddStaffContent({ isView = false }: AddStaffContentProps) {
+export default function AddStaffContent({ initialData, isEdit = false, isView = false }: AddStaffContentProps) {
   const router = useRouter();
   const params = useParams();
-  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const id = params?.id as string;
+  
+  const createMutation = useCreateVendorStaff();
+  const updateMutation = useUpdateVendorStaff();
+  const { data: memberData, isLoading } = useVendorStaffMember(id || "");
+
+  const effectiveData = initialData || memberData;
+
+  const [profilePic, setProfilePic] = useState<string | null>(effectiveData?.profile_pic || null);
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationDate] = useState(new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
 
   const [formData, setFormData] = useState({
-    name: "",
-    designation: "",
-    mobile: "",
-    email: "",
+    name: effectiveData?.name || "",
+    designation: effectiveData?.designation || "",
+    mobile: effectiveData?.mobile || "",
+    email: effectiveData?.email || "",
     password: "",
-    address: "",
-    country: "India",
-    state: "",
-    district: "",
-    city: "",
-    locality: "",
-    pincode: "",
-    dob: "",
-    doj: "",
-    dor: "",
-    loginAccess: true,
-    status: "Active"
+    address: effectiveData?.address || "",
+    country: effectiveData?.country || "India",
+    state: effectiveData?.state || "",
+    district: effectiveData?.district || "",
+    city: effectiveData?.city || "",
+    locality: effectiveData?.locality || "",
+    pincode: effectiveData?.pincode || "",
+    dob: effectiveData?.dob || "",
+    doj: effectiveData?.doj || "",
+    login_access: effectiveData?.login_access ?? true,
+    work_status: effectiveData?.work_status || "active"
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (effectiveData) {
+      setFormData({
+        name: effectiveData.name,
+        designation: effectiveData.designation,
+        mobile: effectiveData.mobile,
+        email: effectiveData.email,
+        password: "",
+        address: effectiveData.address,
+        country: effectiveData.country,
+        state: effectiveData.state,
+        district: effectiveData.district,
+        city: effectiveData.city,
+        locality: effectiveData.locality,
+        pincode: effectiveData.pincode,
+        dob: effectiveData.dob,
+        doj: effectiveData.doj,
+        login_access: effectiveData.login_access,
+        work_status: effectiveData.work_status
+      });
+      setProfilePic(effectiveData.profile_pic || null);
+    }
+  }, [effectiveData]);
 
   // Dynamic Options derived from Hierarchy
   const countryOptions = useMemo(() => Object.keys(LOCATION_DATA), []);
@@ -396,21 +430,6 @@ export default function AddStaffContent({ isView = false }: AddStaffContentProps
     return LOCATION_DATA[formData.country][formData.state][formData.district];
   }, [formData.country, formData.state, formData.district]);
 
-  useEffect(() => {
-    const id = params?.id;
-    if (id) {
-       const savedData = localStorage.getItem("employees_data");
-       if (savedData) {
-          const employees = JSON.parse(savedData);
-          const employee = employees.find((e: any) => e.id.toString() === id.toString());
-          if (employee) {
-             setFormData(employee);
-             setProfilePic(employee.profilePic || null);
-          }
-       }
-    }
-  }, [params?.id]);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -429,7 +448,7 @@ export default function AddStaffContent({ isView = false }: AddStaffContentProps
     if (!formData.designation) newErrors.designation = "Designation is required";
     if (!formData.mobile) newErrors.mobile = "Mobile number is required";
     if (!formData.email) newErrors.email = "Email address is required";
-    if (!params.id && !formData.password) newErrors.password = "Password is required";
+    if (!id && !formData.password) newErrors.password = "Password is required";
     if (!formData.city) newErrors.city = "City is required";
     if (!formData.doj) newErrors.doj = "Joining date is required";
     if (!formData.dob) newErrors.dob = "Date of birth is required";
@@ -439,33 +458,24 @@ export default function AddStaffContent({ isView = false }: AddStaffContentProps
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
         toast.error("Please fill all required fields correctly.");
         return;
     }
 
-    const savedData = localStorage.getItem("employees_data");
-    let employees = savedData ? JSON.parse(savedData) : [];
+    const submissionData = {
+      ...formData,
+      profile_pic: profilePic
+    };
 
-    if (params.id) {
-        employees = employees.map((e: any) => 
-            e.id.toString() === params.id.toString() ? { ...formData, profilePic, id: e.id, empId: e.empId } : e
-        );
-        toast.success("Employee record updated successfully!");
+    if (id) {
+       await updateMutation.mutateAsync({ id: parseInt(id), data: submissionData });
     } else {
-        const newEmployee = {
-            ...formData,
-            profilePic,
-            id: employees.length + 1,
-            empId: `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
-        };
-        employees.push(newEmployee);
-        toast.success("New employee added successfully!");
+       await createMutation.mutateAsync(submissionData);
     }
 
-    localStorage.setItem("employees_data", JSON.stringify(employees));
     router.push("/staff");
   };
 
@@ -813,15 +823,15 @@ export default function AddStaffContent({ isView = false }: AddStaffContentProps
                  <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800">
                     <button 
                       type="button"
-                      onClick={() => !isView && setFormData({...formData, loginAccess: true})}
-                      className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${formData.loginAccess ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
+                      onClick={() => !isView && setFormData({...formData, login_access: true})}
+                      className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${formData.login_access ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
                     >
                        <ShieldCheck size={14} /> Allow
                     </button>
                     <button 
                       type="button"
-                      onClick={() => !isView && setFormData({...formData, loginAccess: false})}
-                      className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${!formData.loginAccess ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
+                      onClick={() => !isView && setFormData({...formData, login_access: false})}
+                      className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${!formData.login_access ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
                     >
                        <ShieldAlert size={14} /> Deny
                     </button>
@@ -832,18 +842,18 @@ export default function AddStaffContent({ isView = false }: AddStaffContentProps
               <div className="space-y-4">
                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">EMPLOYEE STATUS</p>
                  <Select 
-                   value={formData.status} 
-                   onValueChange={(val) => !isView && setFormData({...formData, status: val})}
+                   value={formData.work_status} 
+                   onValueChange={(val) => !isView && setFormData({...formData, work_status: val})}
                    disabled={isView}
                  >
                     <SelectTrigger className="w-full h-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl focus:ring-0 transition-all font-bold text-[13px]">
                        <SelectValue placeholder="Select Status" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-gray-100">
-                       <SelectItem value="Active" className="rounded-xl">Active</SelectItem>
-                       <SelectItem value="Inactive" className="rounded-xl">Inactive</SelectItem>
-                       <SelectItem value="Resigned" className="rounded-xl">Resigned</SelectItem>
-                       <SelectItem value="Relieved" className="rounded-xl">Relieved</SelectItem>
+                       <SelectItem value="active" className="rounded-xl">Active</SelectItem>
+                       <SelectItem value="inactive" className="rounded-xl">Inactive</SelectItem>
+                       <SelectItem value="resigned" className="rounded-xl">Resigned</SelectItem>
+                       <SelectItem value="relieved" className="rounded-xl">Relieved</SelectItem>
                     </SelectContent>
                  </Select>
               </div>

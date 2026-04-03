@@ -1,11 +1,17 @@
 'use client';
 
+import { useVendorMe } from '@/hooks/use-vendors';
+
 export function AboutTab() {
+  const { data: vendor } = useVendorMe();
+  
   return (
     <div className="animate-in fade-in duration-300">
       <h6 className="text-foreground text-[16px] font-bold uppercase mb-5">Bio Data</h6>
       <p className="text-muted-foreground text-[14px] leading-[2] mb-10">
-        Hi I&apos;m Petey Cruiser,has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+        Hi I&apos;m {vendor?.name || 'Vendor'}, specialized as a professional in the event management industry. 
+        Currently subscribed to the <span className="text-primary font-bold capitalize">{vendor?.membership || 'Basic'}</span> plan.
+        We are located at {vendor?.company_address || vendor?.address || 'Not specified'}.
       </p>
 
       <h6 className="text-foreground text-[16px] font-bold uppercase mb-6">Experience</h6>

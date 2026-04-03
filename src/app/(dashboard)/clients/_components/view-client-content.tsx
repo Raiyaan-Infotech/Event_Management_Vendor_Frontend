@@ -55,44 +55,39 @@ interface Client {
   registrationDate?: string;
 }
 
+import { useVendorClient, useDeleteVendorClient } from "@/hooks/use-vendor-clients";
+
+const planLabels: Record<string, string> = {
+  "silver": "Silver Plan",
+  "gold": "Gold Plan",
+  "platinum": "Platinum Plan",
+  "standard": "Standard",
+  "not_subscribed": "Not Subscribed",
+};
+
 export default function ViewClientContent() {
   const router = useRouter();
   const params = useParams();
-  const [client, setClient] = useState<Client | null>(null);
-  const [loading, setLoading] = useState(true);
+  const id = params.id as string;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  useEffect(() => {
-    const id = params.id;
-    if (id) {
-      const savedData = localStorage.getItem("clients_data");
-      if (savedData) {
-        const clients = JSON.parse(savedData);
-        const foundClient = clients.find((c: Client) => c.id.toString() === id.toString());
-        if (foundClient) {
-          setClient(foundClient);
-        } else {
-          toast.error("Client not found.");
-          router.push("/clients");
-        }
-      }
-    }
-    setLoading(false);
-  }, [params.id]);
+  const { data: client, isLoading, isError } = useVendorClient(id);
+  const deleteMutation = useDeleteVendorClient();
 
-  const handleDelete = () => {
-    if (!client) return;
-    const savedData = localStorage.getItem("clients_data");
-    if (savedData) {
-      const clients = JSON.parse(savedData);
-      const updatedClients = clients.filter((c: Client) => c.id !== client.id);
-      localStorage.setItem("clients_data", JSON.stringify(updatedClients));
-      toast.success("Client record deleted successfully.");
+  useEffect(() => {
+    if (isError) {
+      toast.error("Client not found.");
       router.push("/clients");
     }
+  }, [isError, router]);
+
+  const handleDelete = async () => {
+    if (!client) return;
+    await deleteMutation.mutateAsync(client.id);
+    router.push("/clients");
   };
 
-  if (loading) return (
+  if (isLoading) return (
     <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
@@ -240,7 +235,7 @@ export default function ViewClientContent() {
           <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm text-center space-y-6">
              <div className="relative w-32 h-32 mx-auto scale-110">
                 <Avatar className="w-full h-full rounded-full border-4 border-white dark:border-gray-700 shadow-2xl">
-                    <AvatarImage src={client.profilePic} />
+                    <AvatarImage src={client.profile_pic || undefined} />
                     <AvatarFallback className="bg-blue-50 text-blue-600 text-3xl font-black">{client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
              </div>
@@ -250,11 +245,11 @@ export default function ViewClientContent() {
              </div>
              <div className="flex items-center justify-center gap-2">
                 <Badge className="bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 border-none px-4 py-1.5 font-black text-[10px] tracking-widest uppercase rounded-lg">
-                   Client
+                   {client.registration_type}
                 </Badge>
-                <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none px-4 py-1.5 font-black text-[10px] tracking-widest uppercase rounded-lg flex items-center gap-1.5">
-                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                   Active
+                <Badge className={`${client.is_active === 1 ? "bg-emerald-500/10 text-emerald-500" : client.is_active === 0 ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"} hover:opacity-80 border-none px-4 py-1.5 font-black text-[10px] tracking-widest uppercase rounded-lg flex items-center gap-1.5`}>
+                   <div className={`w-1.5 h-1.5 rounded-full ${client.is_active === 1 ? "bg-emerald-500 animate-pulse" : client.is_active === 0 ? "bg-amber-500" : "bg-rose-500"}`} />
+                   {client.is_active === 1 ? "Active" : client.is_active === 0 ? "Inactive" : "Blocked"}
                 </Badge>
              </div>
           </div>
@@ -269,10 +264,10 @@ export default function ViewClientContent() {
              </div>
 
              <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-900/50 rounded-2xl border border-gray-50 dark:border-gray-800">
-                <Button variant="ghost" disabled={client.registrationType !== "Guest"} className={`h-11 rounded-xl font-black text-[11px] uppercase tracking-widest gap-2 ${client.registrationType === "Guest" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700" : "text-gray-400 opacity-50"}`}>
+                <Button variant="ghost" disabled={client.registration_type !== "guest"} className={`h-11 rounded-xl font-black text-[11px] uppercase tracking-widest gap-2 ${client.registration_type === "guest" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700" : "text-gray-400 opacity-50"}`}>
                    <User size={14} /> Guest
                 </Button>
-                <Button variant="ghost" disabled={client.registrationType !== "Client"} className={`h-11 rounded-xl font-black text-[11px] uppercase tracking-widest gap-2 ${client.registrationType === "Client" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700" : "text-gray-400 opacity-50"}`}>
+                <Button variant="ghost" disabled={client.registration_type !== "client"} className={`h-11 rounded-xl font-black text-[11px] uppercase tracking-widest gap-2 ${client.registration_type === "client" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700" : "text-gray-400 opacity-50"}`}>
                    <Building size={14} /> Client
                 </Button>
              </div>
@@ -284,7 +279,7 @@ export default function ViewClientContent() {
                         <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
                             <Building size={16} />
                         </div>
-                        <span className="text-[14px] font-black text-gray-800 dark:text-gray-200">{client.plan === "Not Subscribed" ? "GUEST" : client.plan}</span>
+                        <span className="text-[14px] font-black text-gray-800 dark:text-gray-200">{planLabels[client.plan] || client.plan}</span>
                     </div>
                     <Badge className="bg-emerald-500 text-white font-black text-[9px] px-2 rounded-md uppercase tracking-widest">Active</Badge>
                 </div>
@@ -299,7 +294,7 @@ export default function ViewClientContent() {
           <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm">
              <div className="space-y-2">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">CLIENT ID</p>
-                <h3 className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">{client.clientId}</h3>
+                <h3 className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">{client.client_id}</h3>
                 <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic pt-2">Record No. #{client.id.toString().padStart(2, '0')}</p>
              </div>
           </div>

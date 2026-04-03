@@ -6,36 +6,23 @@ import { AddClientContent } from "../../_components/add-client-content";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+import { useVendorClient } from "@/hooks/use-vendor-clients";
+
 export default function EditClientPage() {
   const params = useParams();
   const router = useRouter();
-  const [client, setClient] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const id = params.id as string;
+  
+  const { data: client, isLoading, isError } = useVendorClient(id);
 
   useEffect(() => {
-    const id = params.id;
-    if (!id) {
-        router.push("/clients");
-        return;
+    if (isError) {
+      toast.error("Client not found.");
+      router.push("/clients");
     }
+  }, [isError, router]);
 
-    const savedData = localStorage.getItem("clients_data");
-    if (savedData) {
-      const clients = JSON.parse(savedData);
-      const foundClient = clients.find((c: any) => c.id.toString() === id.toString());
-      if (foundClient) {
-        setClient(foundClient);
-      } else {
-        toast.error("Client not found.");
-        router.push("/clients");
-      }
-    } else {
-        router.push("/clients");
-    }
-    setLoading(false);
-  }, [params.id, router]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
