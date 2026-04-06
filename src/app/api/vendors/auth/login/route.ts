@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
       cookieStore.set(name, value, {
         httpOnly: attrMap['httponly'] === true,
-        secure:   false,
+        secure:   process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path:     '/',
         ...(maxAge !== undefined && !isNaN(maxAge) ? { maxAge } : {}),

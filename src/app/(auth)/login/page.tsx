@@ -46,7 +46,8 @@ export default function VendorLoginPage() {
     setLoading(true);
     try {
       // Set a short-lived pending cookie so middleware allows the redirect
-      document.cookie = "vendor_auth_pending=true; path=/; max-age=15; SameSite=Lax";
+      const secureFlag = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `vendor_auth_pending=true; path=/; max-age=15; SameSite=Lax${secureFlag}`;
 
       const res = await fetch('/api/vendors/auth/login', {
         method: 'POST',
