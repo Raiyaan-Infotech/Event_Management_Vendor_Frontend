@@ -565,15 +565,16 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
                     <FormGroup 
                       label="Email Address" icon={Mail} error={errors.email} required isView={isView}
                     >
-                          <Input 
+                          <Input
                             value={formData.email}
+                            autoComplete="off"
                             onChange={(e) => {
                               !isView && setFormData({ ...formData, email: e.target.value });
                               if (errors.email) setErrors(prev => ({ ...prev, email: "" }));
                             }}
                             readOnly={isView}
-                            placeholder="Enter email address" 
-                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`} 
+                            placeholder="Enter email address"
+                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`}
                           />
                     </FormGroup>
 
@@ -581,16 +582,17 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
                     <FormGroup 
                       label="Account Password" icon={Lock} error={errors.password} required={!params.id} isView={isView}
                     >
-                          <Input 
+                          <Input
                             type={showPassword ? "text" : "password"}
+                            autoComplete="new-password"
                             value={formData.password}
                             onChange={(e) => {
                               !isView && setFormData({ ...formData, password: e.target.value });
                               if (errors.password) setErrors(prev => ({ ...prev, password: "" }));
                             }}
                             readOnly={isView}
-                            placeholder="Enter password" 
-                            className={`h-12 pl-12 pr-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.password ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`} 
+                            placeholder="Enter password"
+                            className={`h-12 pl-12 pr-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.password ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`}
                           />
                           {!isView && (
                             <button 

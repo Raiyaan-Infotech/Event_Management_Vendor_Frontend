@@ -85,8 +85,10 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
 
       <div className="grid grid-cols-2 gap-0 border-t border-border pt-6 mb-6">
         <div className="text-center border-r border-border">
-          <p className="text-foreground text-[20px] font-bold leading-none capitalize">{vendor?.membership || 'Basic'}</p>
-          <p className="text-muted-foreground text-[12px] mt-1">Plan</p>
+          <p className="text-foreground text-[20px] font-bold leading-none">
+            {vendor?.created_at ? new Date(vendor.created_at).getFullYear() : new Date().getFullYear()}
+          </p>
+          <p className="text-muted-foreground text-[12px] mt-1">Since</p>
         </div>
         <div className="text-center">
           <p className="text-foreground text-[20px] font-bold leading-none uppercase">{vendor?.status || 'Active'}</p>
