@@ -38,6 +38,7 @@ export interface Vendor {
   status: 'active' | 'inactive';
   company_id: number | null;
   created_at: string;
+  about_us: string | null;
   cityRef?: { name: string; pincode: string } | null;
 }
 
