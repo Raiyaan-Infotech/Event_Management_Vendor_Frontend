@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV, faChartLine, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
@@ -238,7 +238,7 @@ export default function ChartsSection() {
               ].map((item) => (
                 <div key={item.name} className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer group">
                   <div className="relative size-10 shrink-0 shadow-sm border border-border rounded-xl overflow-hidden p-2 bg-background">
-                    <Image src={item.img} alt={item.name} fill className="object-contain p-2" unoptimized />
+                    <SafeImage src={item.img} alt={item.name} fill className="object-contain p-2" unoptimized />
                   </div>
                   <div className="flex-1">
                     <p className="font-extrabold text-[13.5px] text-foreground line-clamp-1">{item.name}</p>

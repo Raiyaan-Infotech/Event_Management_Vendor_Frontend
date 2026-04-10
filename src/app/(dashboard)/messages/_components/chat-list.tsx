@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MoreVertical, Trash2, Search, CheckCheck, CircleDashed } from 'lucide-react';
 import {
   DropdownMenu,
@@ -138,6 +138,7 @@ export function ChatList({
                 <div className="relative shrink-0">
                   <Avatar className="w-[40px] h-[40px]">
                     <AvatarImage src={chat.image} className="object-cover" />
+                    <AvatarFallback>{chat.name?.[0] ?? '?'}</AvatarFallback>
                   </Avatar>
                   {chat.unread > 0 && (
                     <div className="absolute -top-1 -right-1 w-[18px] h-[18px] bg-destructive text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
@@ -219,6 +220,7 @@ export function ChatList({
                 <div className="relative shrink-0">
                   <Avatar className="w-[40px] h-[40px]">
                     <AvatarImage src={contact.image} className="object-cover" />
+                    <AvatarFallback>{contact.name?.[0] ?? '?'}</AvatarFallback>
                   </Avatar>
                   <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-card ${
                     contact.status === 'Online' ? 'bg-green-500' : 

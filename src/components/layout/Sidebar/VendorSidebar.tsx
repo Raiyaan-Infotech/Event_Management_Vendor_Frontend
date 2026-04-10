@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 import { resolveMediaUrl } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
@@ -22,6 +22,8 @@ import {
   faCircleQuestion,
   faGlobe,
   faList,
+  faUserShield,
+  faLayerGroup,
   faUserPlus,
   faUserTie,
   faCalendar,
@@ -75,10 +77,18 @@ const NAV_ITEMS: NavItem[] = [
     href: "/clients",
     icon: faUsers
   },
-  { label: "Staff",      
+  { label: "Staff",
     href: "/staff",
     icon: faUserTie
   },
+  // { label: "Roles",
+  //   href: "/roles",
+  //   icon: faUserShield
+  // },
+  // { label: "Modules",
+  //   href: "/modules",
+  //   icon: faLayerGroup
+  // },
   {
     label: "Communication",
     icon: faComments,
@@ -102,6 +112,8 @@ const NAV_ITEMS: NavItem[] = [
     label: "Settings",
     icon: faGear,
     children: [
+      { label: "Roles",            href: "/roles",            icon: faUserShield,   },
+      { label: "Modules",          href: "/modules",          icon: faLayerGroup,     },
       { label: "Payment Settings", href: "/settings/payments", icon: faCreditCard },
       { label: "Configuration",    href: "/settings/config",   icon: faSliders },
       { label: "Currency",         href: "/settings/currency", icon: faDollarSign },
@@ -176,7 +188,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
               }`}
           >
             {vendor?.company_logo ? (
-              <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
+              <SafeImage src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
             ) : (
               <span className="text-[15px] font-extrabold text-primary-foreground leading-none">
                 {vendor?.company_name ? vendor.company_name.charAt(0).toUpperCase() : "V"}
@@ -189,7 +201,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
           >
             {vendor?.company_logo ? (
               <div className="relative h-9 w-32">
-                <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
+                <SafeImage src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
               </div>
             ) : (
               <span className="text-[19px] font-extrabold tracking-tight text-sidebar-foreground dark:text-gray-100 leading-none">

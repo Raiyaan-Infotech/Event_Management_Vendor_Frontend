@@ -466,10 +466,11 @@ export default function ClientsListContent() {
                         <div className="flex items-center gap-3">
                           {client.profile_pic ? (
                             <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-blue-500/10 group-hover:scale-110 transition-transform duration-300 border border-gray-100 dark:border-gray-800">
-                              <img 
-                                src={client.profile_pic} 
-                                alt={client.name} 
+                              <img
+                                src={client.profile_pic}
+                                alt={client.name}
                                 className="w-full h-full object-cover"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/placeholder.svg'; }}
                               />
                             </div>
                           ) : (

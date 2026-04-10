@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { 
   User, 
   Mail, 
@@ -363,7 +363,32 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
 
   const [registrationType, setRegistrationType] = useState<"guest" | "client">(initialData?.registration_type || "client");
   const [selectedPlan, setSelectedPlan] = useState<string>(initialData?.plan || "");
+  const [loginAccess, setLoginAccess] = useState<boolean>(Number(initialData?.login_access) === 1 || initialData?.login_access === true);
+  const [sendCredentialsToEmail, setSendCredentialsToEmail] = useState<boolean>(Number(initialData?.send_credentials_to_email) === 1 || initialData?.send_credentials_to_email === true);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (initialData) {
+      setProfilePic(initialData.profile_pic || null);
+      setFormData({
+        name: initialData.name || "",
+        mobile: initialData.mobile || "",
+        email: initialData.email || "",
+        password: "", 
+        address: initialData.address || "",
+        country: initialData.country || "",
+        state: initialData.state || "",
+        district: initialData.district || "",
+        city: initialData.city || "",
+        locality: initialData.locality || "",
+        pincode: initialData.pincode || "",
+      });
+      setRegistrationType(initialData.registration_type || "client");
+      setSelectedPlan(initialData.plan || "");
+      setLoginAccess(Number(initialData.login_access) === 1 || initialData.login_access === true);
+      setSendCredentialsToEmail(Number(initialData.send_credentials_to_email) === 1 || initialData.send_credentials_to_email === true);
+    }
+  }, [initialData]);
 
   // Dynamic Options derived from Hierarchy
   const countryOptions = useMemo(() => Object.keys(LOCATION_DATA), []);
@@ -431,6 +456,8 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
       profile_pic: profilePic,
       registration_type: registrationType,
       plan: registrationType === "guest" ? "not_subscribed" : selectedPlan,
+      login_access: loginAccess ? 1 : 0,
+      send_credentials_to_email: sendCredentialsToEmail ? 1 : 0,
     };
 
     if (isEdit) {
@@ -785,6 +812,39 @@ export function AddClientContent({ initialData, isEdit = false, isView = false }
                     )}
                  </FormGroup>
               ) : null}
+
+              {/* Login & Access Fields */}
+              <div className="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-4">
+                 <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                       <span className="text-[13px] font-bold text-gray-800 dark:text-gray-200">Login Access</span>
+                       <span className="text-[11px] text-gray-400">Allow client to log in to the portal</span>
+                    </div>
+                    <button 
+                       type="button"
+                       onClick={() => !isView && setLoginAccess(!loginAccess)}
+                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${loginAccess ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                       disabled={isView}
+                    >
+                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${loginAccess ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                 </div>
+
+                 <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                       <span className="text-[13px] font-bold text-gray-800 dark:text-gray-200">Send Credentials To Email</span>
+                       <span className="text-[11px] text-gray-400">Email password automatically</span>
+                    </div>
+                    <button 
+                       type="button"
+                       onClick={() => !isView && setSendCredentialsToEmail(!sendCredentialsToEmail)}
+                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${sendCredentialsToEmail ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                       disabled={isView}
+                    >
+                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${sendCredentialsToEmail ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                 </div>
+              </div>
            </div>
 
             {/* Action Buttons - Hide in View Mode */}

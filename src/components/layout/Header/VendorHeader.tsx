@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -82,7 +82,7 @@ export default function VendorHeader() {
 
         {/* Language */}
         <Button variant="ghost" size="icon" className={`${ICON_BTN} hidden sm:flex`}>
-          <Image src="/images/us.png" width={24} height={18} className="w-6 h-4 rounded-sm" alt="US" />
+          <SafeImage src="/images/us.png" width={24} height={18} className="w-6 h-4 rounded-sm" alt="US" />
         </Button>
 
         {/* Fullscreen */}

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisV,
@@ -191,7 +191,7 @@ export default function TablesSection() {
               <div key={i} className="py-5 first:pt-2 last:pb-2 space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="size-10 shrink-0 bg-background shadow-sm border border-border rounded-xl p-2 relative overflow-hidden">
-                    <Image src={project.img} alt={project.name} fill className="object-contain p-2" unoptimized />
+                    <SafeImage src={project.img} alt={project.name} fill className="object-contain p-2" unoptimized />
                   </div>
                   <div className="flex-1">
                     <p className="font-extrabold text-[13.5px] text-foreground leading-tight">{project.name}</p>

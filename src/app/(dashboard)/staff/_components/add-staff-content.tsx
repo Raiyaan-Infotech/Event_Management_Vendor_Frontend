@@ -345,7 +345,8 @@ function SearchableSelect({
   );
 }
 
-import { useCreateVendorStaff, useUpdateVendorStaff, useVendorStaffMember, VendorStaff } from "@/hooks/use-vendor-staff";
+import { useCreateVendorStaff, useUpdateVendorStaff, useReassignVendorStaffRole, useVendorStaffMember, VendorStaff } from "@/hooks/use-vendor-staff";
+import { useVendorRoles } from "@/hooks/use-vendor-roles";
 
 interface AddStaffContentProps {
   initialData?: any;
@@ -360,7 +361,9 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
   
   const createMutation = useCreateVendorStaff();
   const updateMutation = useUpdateVendorStaff();
+  const reassignRoleMutation = useReassignVendorStaffRole();
   const { data: memberData, isLoading } = useVendorStaffMember(id || "");
+  const { data: rolesData } = useVendorRoles({ limit: 100 });
 
   const effectiveData = initialData || memberData;
 
@@ -370,6 +373,7 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
   const [formData, setFormData] = useState({
     name: effectiveData?.name || "",
     designation: effectiveData?.designation || "",
+    role_id: effectiveData?.role_id || "",
     mobile: effectiveData?.mobile || "",
     email: effectiveData?.email || "",
     password: "",
@@ -382,8 +386,9 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
     pincode: effectiveData?.pincode || "",
     dob: effectiveData?.dob || "",
     doj: effectiveData?.doj || "",
+    dor: effectiveData?.dor || "",
     login_access: effectiveData?.login_access ?? true,
-    work_status: effectiveData?.work_status || "active"
+    work_status: effectiveData?.work_status || "active",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -393,6 +398,8 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
       setFormData({
         name: effectiveData.name,
         designation: effectiveData.designation,
+        role_id: effectiveData.role_id || "",
+        dor: effectiveData.dor || "",
         mobile: effectiveData.mobile,
         email: effectiveData.email,
         password: "",
@@ -406,7 +413,7 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
         dob: effectiveData.dob,
         doj: effectiveData.doj,
         login_access: effectiveData.login_access,
-        work_status: effectiveData.work_status
+        work_status: effectiveData.work_status,
       });
       setProfilePic(effectiveData.profile_pic || null);
     }
@@ -445,7 +452,7 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name) newErrors.name = "Full name is required";
-    if (!formData.designation) newErrors.designation = "Designation is required";
+    if (!formData.role_id) newErrors.designation = "Designation is required";
     if (!formData.mobile) newErrors.mobile = "Mobile number is required";
     if (!formData.email) newErrors.email = "Email address is required";
     if (!id && !formData.password) newErrors.password = "Password is required";
@@ -465,15 +472,18 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
         return;
     }
 
-    const submissionData = {
-      ...formData,
-      profile_pic: profilePic
-    };
-
     if (id) {
-       await updateMutation.mutateAsync({ id: parseInt(id), data: submissionData });
+      // On edit: update profile fields (role_id excluded — use dedicated endpoint)
+      const { role_id, ...profileFields } = formData;
+      await updateMutation.mutateAsync({ id: parseInt(id), data: { ...profileFields, profile_pic: profilePic } });
+
+      // If role changed, fire the dedicated role reassignment endpoint
+      const originalRoleId = effectiveData?.role_id;
+      if (role_id && String(role_id) !== String(originalRoleId)) {
+        await reassignRoleMutation.mutateAsync({ id: parseInt(id), role_id });
+      }
     } else {
-       await createMutation.mutateAsync(submissionData);
+       await createMutation.mutateAsync({ ...formData, profile_pic: profilePic });
     }
 
     router.push("/staff");
@@ -528,22 +538,6 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`} 
                          />
                    </FormGroup>
-
-                    {/* Designation */}
-                    <FormGroup 
-                      label="Designation" icon={Briefcase} error={errors.designation} required isView={isView}
-                    >
-                          <Input 
-                            value={formData.designation}
-                            onChange={(e) => {
-                              !isView && setFormData({ ...formData, designation: e.target.value });
-                              if (errors.designation) setErrors(prev => ({ ...prev, designation: "" }));
-                            }}
-                            readOnly={isView}
-                            placeholder="Enter designation" 
-                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`} 
-                          />
-                    </FormGroup>
 
                     {/* Mobile */}
                     <FormGroup 
@@ -623,20 +617,53 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
                 </div>
            </CommonCard>
 
-           <CommonCard 
-              title="Staff Information" 
-              subtitle="Joining and relieving information" 
-              icon={Calendar} 
-              iconColorClass="text-emerald-600" 
+           <CommonCard
+              title="Staff Information"
+              subtitle="Designation and employment dates"
+              icon={Briefcase}
+              iconColorClass="text-emerald-600"
               iconBgClass="bg-emerald-50 dark:bg-emerald-500/10"
               isView={isView}
            >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {/* Designation */}
+                    <FormGroup
+                      label="Designation" icon={Briefcase} error={errors.designation} required isView={isView}
+                    >
+                      {isView ? (
+                        <Input
+                          value={formData.designation}
+                          readOnly
+                          className="h-12 pl-12 focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800 rounded-2xl text-sm"
+                        />
+                      ) : (
+                        <Select
+                          value={formData.role_id ? String(formData.role_id) : ""}
+                          onValueChange={(val) => {
+                            const selectedRole = rolesData?.data?.find((r) => String(r.id) === val);
+                            setFormData({ ...formData, role_id: val, designation: selectedRole?.name || "" });
+                            if (errors.designation) setErrors(prev => ({ ...prev, designation: "" }));
+                          }}
+                        >
+                          <SelectTrigger className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm ${errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}>
+                            <SelectValue placeholder="Select designation" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(rolesData?.data ?? []).map((role) => (
+                              <SelectItem key={role.id} value={String(role.id)}>
+                                {role.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </FormGroup>
+
                     {/* DOJ */}
-                    <FormGroup 
+                    <FormGroup
                       label="Date of Joining" icon={Calendar} error={errors.doj} required isView={isView}
                     >
-                          <Input 
+                          <Input
                             type="date"
                             value={formData.doj}
                             onChange={(e) => {
@@ -644,7 +671,23 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
                               if (errors.doj) setErrors(prev => ({ ...prev, doj: "" }));
                             }}
                             readOnly={isView}
-                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.doj ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`} 
+                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.doj ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`}
+                          />
+                    </FormGroup>
+
+                    {/* DOR */}
+                    <FormGroup
+                      label="Date of Relieving" icon={Calendar} error={errors.dor} isView={isView}
+                    >
+                          <Input
+                            type="date"
+                            value={formData.dor}
+                            onChange={(e) => {
+                              !isView && setFormData({ ...formData, dor: e.target.value });
+                              if (errors.dor) setErrors(prev => ({ ...prev, dor: "" }));
+                            }}
+                            readOnly={isView}
+                            className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : (errors.dor ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5")}`}
                           />
                     </FormGroup>
                 </div>
@@ -859,6 +902,7 @@ export default function AddStaffContent({ initialData, isEdit = false, isView = 
                     </SelectContent>
                  </Select>
               </div>
+
            </div>
 
            {/* Section 6: Action Buttons */}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Grid3X3, List, Filter, Check, ChevronRight, Image as ImageIcon, MapPin } from 'lucide-react';
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export function EventsTab() {
   const [viewMode, setViewMode] = useState('grid');
@@ -152,7 +152,7 @@ export function EventsTab() {
           {currentEvents.map((event, i) => (
             <div key={i} className="bg-card rounded-[5px] border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer">
               <div className="aspect-[16/10] bg-muted overflow-hidden relative">
-                <Image src={`/images/${event.imgId}-600.jpg`} width={600} height={400} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <SafeImage src={`/images/${event.imgId}-600.jpg`} width={600} height={400} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-6 text-center">
                 <h4 className="text-foreground text-[15px] font-bold mb-3 uppercase tracking-wide">{event.name}</h4>
@@ -169,7 +169,7 @@ export function EventsTab() {
           {currentEvents.map((event, i) => (
             <div key={i} className="bg-card rounded-[5px] border border-border p-4 flex gap-4 hover:shadow-md transition-all group cursor-pointer">
               <div className="w-[120px] h-[80px] bg-muted overflow-hidden rounded-[3px] shrink-0">
-                <Image src={`/images/${event.imgId}-600.jpg`} width={200} height={133} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <SafeImage src={`/images/${event.imgId}-600.jpg`} width={200} height={133} alt={event.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="flex-1 flex items-center justify-between">
                 <div>

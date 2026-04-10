@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Phone, Video, UserPlus, Paperclip, Send, MessageSquare, Bold, Italic, Underline } from 'lucide-react';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { SafeImage } from '@/components/ui/safe-image';
 
 const cardClass = 'bg-card rounded-[5px] border border-border shadow-sm dark:shadow-none font-["Roboto",sans-serif]';
 
@@ -210,6 +210,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
         <div className="flex items-center gap-3">
           <Avatar className="w-[40px] h-[40px]">
             <AvatarImage src={selectedChat.image} className="object-cover" />
+            <AvatarFallback>{selectedChat.name?.[0] ?? '?'}</AvatarFallback>
           </Avatar>
           <div>
             <h5 className="text-foreground text-[15px] font-bold leading-tight">{selectedChat.name}</h5>
@@ -239,6 +240,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                 {!isSent && msg.isFirstInGroup && (
                   <Avatar className="w-[36px] h-[36px] shrink-0 mt-0.5">
                     <AvatarImage src={msg.avatar} className="object-cover" />
+                    <AvatarFallback>{msg.name?.[0] ?? '?'}</AvatarFallback>
                   </Avatar>
                 )}
                 {!isSent && !msg.isFirstInGroup && <div className="w-[36px] shrink-0"></div>}
@@ -255,7 +257,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                     <div className="flex gap-2 flex-wrap">
                       {msg.images.map((img: string, i: number) => (
                         <div key={i} className="w-[90px] h-[65px] rounded-[5px] overflow-hidden">
-                          <Image src={img} width={90} height={65} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300 cursor-pointer" alt="attachment" />
+                          <SafeImage src={img} width={90} height={65} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300 cursor-pointer" alt="attachment" />
                         </div>
                       ))}
                     </div>
@@ -265,6 +267,7 @@ export function ChatArea({ selectedChat }: ChatAreaProps) {
                 {isSent && msg.isFirstInGroup && (
                   <Avatar className="w-[36px] h-[36px] shrink-0 mt-0.5">
                     <AvatarImage src={msg.avatar} className="object-cover" />
+                    <AvatarFallback>{msg.name?.[0] ?? '?'}</AvatarFallback>
                   </Avatar>
                 )}
                 {isSent && !msg.isFirstInGroup && <div className="w-[36px] shrink-0"></div>}

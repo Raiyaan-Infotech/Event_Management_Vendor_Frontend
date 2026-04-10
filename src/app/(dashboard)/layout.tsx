@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <VendorHeader />
         <VendorBreadcrumb />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden h-full">
-          <div className="flex-1 overflow-hidden h-full">
+          <div className="flex-1 overflow-auto h-full">
             {children}
           </div>
         </div>

@@ -6,6 +6,7 @@ export interface VendorStaff {
   id: number;
   emp_id: string;
   vendor_id: number;
+  role_id: number | null;
   name: string;
   email: string;
   mobile: string;
@@ -122,11 +123,29 @@ export const useDeleteVendorStaff = () => {
   });
 };
 
+export const useReassignVendorStaffRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, role_id }: { id: number | string; role_id: number | string }) => {
+      const res = await apiClient.put(`/vendors/staff/${id}/role`, { role_id });
+      return res.data.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: STAFF_KEY });
+      queryClient.invalidateQueries({ queryKey: [...STAFF_KEY, variables.id] });
+      toast.success('Staff role updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update staff role');
+    },
+  });
+};
+
 export const useUpdateVendorStaffStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, is_active }: { id: number | string; is_active: number }) => {
-      const res = await apiClient.patch(`/vendors/staff/${id}`, { is_active });
+      const res = await apiClient.patch(`/vendors/staff/${id}/status`, { is_active });
       return res.data.data;
     },
     onSuccess: (_, variables) => {

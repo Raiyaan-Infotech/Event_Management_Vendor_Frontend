@@ -51,13 +51,14 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { 
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
-import { useVendorStaff, useDeleteVendorStaff, VendorStaff } from "@/hooks/use-vendor-staff";
+import { useVendorStaff, useDeleteVendorStaff, useUpdateVendorStaffStatus, VendorStaff } from "@/hooks/use-vendor-staff";
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20",
@@ -91,6 +92,7 @@ export default function StaffListContent() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filterDesignation, setFilterDesignation] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
+  const updateStatusMutation = useUpdateVendorStaffStatus();
   
   // Column Visibility State
   const staffColumns = [
@@ -100,7 +102,7 @@ export default function StaffListContent() {
     { key: "mobile", label: "Mobile" },
     { key: "doj", label: "DOJ" },
     { key: "login_access", label: "Access" },
-    { key: "work_status", label: "Status" },
+    { key: "is_active", label: "Status" },
   ];
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>(staffColumns.map(c => c.key));
@@ -395,7 +397,7 @@ export default function StaffListContent() {
                   { key: "mobile", label: "Mobile"},
                   { key: "doj", label: "DOJ"},
                   { key: "loginAccess", label: "Access", align: "center" },
-                  { key: "status", label: "Status"},
+                  { key: "is_active", label: "Status"},
                 ].filter(h => visibleColumns.includes(h.key)).map((header) => (
                   <th 
                     key={header.key} 
@@ -438,10 +440,11 @@ export default function StaffListContent() {
                         <div className="flex items-center gap-3">
                           {emp.profile_pic ? (
                             <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-blue-500/10 group-hover:scale-110 transition-transform duration-300 border border-gray-100 dark:border-gray-800">
-                               <img 
-                                 src={emp.profile_pic} 
-                                 alt={emp.name} 
+                               <img
+                                 src={emp.profile_pic}
+                                 alt={emp.name}
                                  className="w-full h-full object-cover"
+                                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/placeholder.svg'; }}
                                />
                             </div>
                           ) : (
@@ -487,11 +490,18 @@ export default function StaffListContent() {
                          )}
                       </td>
                     )}
-                    {visibleColumns.includes("work_status") && (
+                    {visibleColumns.includes("is_active") && (
                       <td className="px-6 py-5">
-                        <div className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold border transition-all ${statusStyles[emp.work_status] || statusStyles.active}`}>
-                          {statusIcons[emp.work_status] || statusIcons.active}
-                          {statusLabels[emp.work_status] || emp.work_status}
+                        <div className="flex items-center gap-3">
+                          <Switch
+                            checked={emp.is_active === 1}
+                            onCheckedChange={() => updateStatusMutation.mutate({ id: emp.id, is_active: emp.is_active === 1 ? 0 : 1 })}
+                            disabled={updateStatusMutation.isPending}
+                            className="transition-all"
+                          />
+                          <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+                            {emp.is_active === 1 ? 'Active' : 'Inactive'}
+                          </span>
                         </div>
                       </td>
                     )}
