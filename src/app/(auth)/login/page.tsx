@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +24,8 @@ export default function VendorLoginPage() {
 
   const validateEmail = (v: string) => {
     if (!v.trim()) return "Email is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())) return "Enter a valid email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()))
+      return "Enter a valid email address.";
     return "";
   };
 
@@ -46,12 +46,12 @@ export default function VendorLoginPage() {
     setLoading(true);
     try {
       // Set a short-lived pending cookie so middleware allows the redirect
-      const secureFlag = location.protocol === 'https:' ? '; Secure' : '';
+      const secureFlag = location.protocol === "https:" ? "; Secure" : "";
       document.cookie = `vendor_auth_pending=true; path=/; max-age=15; SameSite=Lax${secureFlag}`;
 
-      const res = await fetch('/api/vendors/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/vendors/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
@@ -62,10 +62,11 @@ export default function VendorLoginPage() {
       toast.success("Login successful! Redirecting...");
       setTimeout(() => router.push("/dashboard"), 300);
     } catch (err: unknown) {
-      document.cookie = "vendor_auth_pending=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
+      document.cookie =
+        "vendor_auth_pending=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
       const message =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        "Invalid email or password.";
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Invalid email or password.";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -106,7 +107,9 @@ export default function VendorLoginPage() {
 
         <Card className="w-full shadow-lg border-0 pt-6">
           <CardHeader className="items-center pb-0 pt-2">
-            <h4 className="text-2xl font-bold tracking-tight text-foreground">Vendor Login</h4>
+            <h4 className="text-2xl font-bold tracking-tight text-foreground">
+              Vendor Login
+            </h4>
             <p className="text-sm text-muted-foreground mt-1 text-center">
               Welcome back! Sign in to access your vendor portal.
             </p>
@@ -114,10 +117,11 @@ export default function VendorLoginPage() {
 
           <CardContent className="pb-6">
             <form onSubmit={handleSubmit} noValidate className="space-y-3 mt-4">
-
               {/* Email */}
               <div className="space-y-0.5">
-                <Label htmlFor="email" className="text-xs">Email</Label>
+                <Label htmlFor="email" className="text-xs">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -140,7 +144,9 @@ export default function VendorLoginPage() {
 
               {/* Password */}
               <div className="space-y-0.5">
-                <Label htmlFor="password" className="text-xs">Password</Label>
+                <Label htmlFor="password" className="text-xs">
+                  Password
+                </Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -149,11 +155,15 @@ export default function VendorLoginPage() {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      if (errors.password) setErrors((p) => ({ ...p, password: "" }));
+                      if (errors.password)
+                        setErrors((p) => ({ ...p, password: "" }));
                     }}
                     onBlur={() => {
                       setTouched((p) => ({ ...p, password: true }));
-                      setErrors((p) => ({ ...p, password: validatePassword(password) }));
+                      setErrors((p) => ({
+                        ...p,
+                        password: validatePassword(password),
+                      }));
                     }}
                     className={`pr-10 ${fieldClass("password")}`}
                   />
@@ -164,9 +174,11 @@ export default function VendorLoginPage() {
                     onClick={() => setShowPassword((p) => !p)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showPassword
-                      ? <FontAwesomeIcon icon={faEye} />
-                      : <FontAwesomeIcon icon={faEyeSlash} />}
+                    {showPassword ? (
+                      <Eye className="size-4" />
+                    ) : (
+                      <EyeOff className="size-4" />
+                    )}
                   </button>
                 </div>
                 {touched.password && errors.password && (
@@ -183,11 +195,17 @@ export default function VendorLoginPage() {
                     onCheckedChange={(v) => setRememberMe(!!v)}
                     className="w-[18px] h-[18px] rounded-[4px] data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <Label htmlFor="rememberMe" className="text-sm font-medium cursor-pointer select-none">
+                  <Label
+                    htmlFor="rememberMe"
+                    className="text-sm font-medium cursor-pointer select-none"
+                  >
                     Remember Me
                   </Label>
                 </div>
-                <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-primary hover:underline font-medium"
+                >
                   Forgot password?
                 </Link>
               </div>

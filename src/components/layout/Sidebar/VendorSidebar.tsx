@@ -2,39 +2,41 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { SafeImage } from "@/components/ui/safe-image";
+import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChartPie,
-  faChartLine,
-  faUsers,
-  faCreditCard,
-  faChartBar,
-  faClipboardList,
-  faReceipt,
-  faGear,
-  faSliders,
-  faDollarSign,
-  faClock,
-  faCircleQuestion,
-  faGlobe,
-  faList,
-  faUserShield,
-  faLayerGroup,
-  faUserPlus,
-  faUserTie,
-  faCalendar,
-  faPlus,
-  faEnvelope,
-  faBell,
-  faComment,
-  faAddressBook,
-  faComments,
-} from "@fortawesome/free-solid-svg-icons";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+  LayoutDashboard,
+  LineChart,
+  Users,
+  UserRound,
+  MessagesSquare,
+  Contact,
+  Mail,
+  MessageCircle,
+  Bell,
+  BarChart3,
+  Receipt,
+  Calendar,
+  Plus,
+  DollarSign,
+  Settings,
+  CreditCard,
+  Sliders,
+  Clock,
+  ClipboardList,
+  HelpCircle,
+  Globe,
+  List,
+  Home,
+  Images,
+  Briefcase,
+  Layers,
+  Star,
+  Building2,
+  type LucideIcon,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -51,16 +53,23 @@ import {
 } from "@/components/ui/collapsible";
 import { useVendorMe } from "@/hooks/use-vendors";
 
-interface ChildItem {
+interface SubChildItem {
   label: string;
   href: string;
-  icon: IconDefinition;
+  icon: LucideIcon;
+}
+
+interface ChildItem {
+  label: string;
+  href?: string;
+  icon: LucideIcon;
+  children?: SubChildItem[];
 }
 
 interface NavItem {
   label: string;
   href?: string;
-  icon: IconDefinition;
+  icon: LucideIcon;
   children?: ChildItem[];
 }
 
@@ -68,72 +77,101 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
-    icon: faChartPie,
+    icon: LayoutDashboard,
     children: [
-      { label: "Analytics", href: "/analytics", icon: faChartLine },
+      { label: "Analytics", href: "/analytics", icon: LineChart },
     ],
   },
-  { label: "Client",      
+  { label: "Client",
     href: "/clients",
-    icon: faUsers
+    icon: Users,
   },
   { label: "Staff",
     href: "/staff",
-    icon: faUserTie
+    icon: UserRound,
   },
   // { label: "Roles",
   //   href: "/roles",
-  //   icon: faUserShield
+  //   icon: ShieldCheck,
   // },
   // { label: "Modules",
   //   href: "/modules",
-  //   icon: faLayerGroup
+  //   icon: Layers,
   // },
   {
     label: "Communication",
-    icon: faComments,
+    icon: MessagesSquare,
     children: [
-      { label: "Contact",      href: "/communication/contact",      icon: faAddressBook },
-      { label: "Email",        href: "/communication/email",        icon: faEnvelope },
-      { label: "Chat",         href: "/communication/chat",         icon: faComment },
+      { label: "Contact",      href: "/communication/contact",      icon: Contact },
+      { label: "Email",        href: "/communication/email",        icon: Mail },
+      { label: "Chat",         href: "/communication/chat",         icon: MessageCircle },
+      { label: "Notification", href: "/communication/notification", icon: Bell },
     ],
   },
-  { label: "Reports",      href: "/reports",      icon: faChartBar },
-  { label: "Transactions",       href: "/transactions", icon: faReceipt },
+  { label: "Reports",      href: "/reports",      icon: BarChart3 },
+  { label: "Transactions", href: "/transactions", icon: Receipt },
   {
     label: "Event",
-    icon: faCalendar,
+    icon: Calendar,
     children: [
-      { label: "Create an event", href: "/events/create", icon: faPlus },
+      { label: "Create an event", href: "/events/create", icon: Plus },
     ],
   },
-  { label: "Payment", href: "/payment-management", icon: faDollarSign },
+  { label: "Payment", href: "/payment-management", icon: DollarSign },
   {
     label: "Settings",
-    icon: faGear,
+    icon: Settings,
     children: [
-      { label: "Roles",            href: "/roles",            icon: faUserShield,   },
-      { label: "Modules",          href: "/modules",          icon: faLayerGroup,     },
-      { label: "Payment Settings", href: "/settings/payments", icon: faCreditCard },
-      { label: "Configuration",    href: "/settings/config",   icon: faSliders },
-      { label: "Currency",         href: "/settings/currency", icon: faDollarSign },
-      { label: "Timezone",         href: "/settings/timezone", icon: faClock },
-      { label: "Activity Log",     href: "/activity-log",      icon: faClipboardList },
+      { label: "Roles",            href: "/roles",             icon: Layers      },
+      { label: "Modules",          href: "/modules",           icon: ClipboardList },
+      { label: "Payment Settings", href: "/settings/payments", icon: CreditCard  },
+      { label: "Configuration",    href: "/settings/config",   icon: Sliders     },
+      { label: "Currency",         href: "/settings/currency", icon: DollarSign  },
+      { label: "Timezone",         href: "/settings/timezone", icon: Clock       },
+      { label: "Activity Log",     href: "/activity-log",      icon: ClipboardList },
     ],
   },
-  { label: "Help",               href: "/help",    icon: faCircleQuestion },
-  { label: "Website Management", href: "/website", icon: faGlobe },
+  { label: "Help", href: "/help", icon: HelpCircle },
+  {
+    label: "Website Management",
+    icon: Globe,
+    children: [
+      { label: "About Company",  href: "/website/about-company",            icon: Building2 },
+      { label: "Pages",          href: "/website/pages",                    icon: List      },
+      { label: "Menu",           href: "/website/menu",                     icon: List      },
+      { label: "Home",           href: "/website/home",                     icon: Home      },
+      { label: "Home Slider",    href: "/website/home-slider",              icon: Sliders   },
+      { label: "Gallery",        href: "/website/gallery",                  icon: Images    },
+      { label: "Portfolio",      href: "/website/portfolio-management",     icon: Briefcase },
+      { label: "Events",         href: "/website/events-management",        icon: Calendar  },
+      { label: "Subscription",   href: "/website/subscription-management",  icon: CreditCard },
+      { label: "Testimonial",    href: "/website/testimonial-management",   icon: Star      },
+      { label: "Contact Us",     href: "/website/contact-us-management",    icon: Mail      },
+      { label: "Footer",         href: "/website/footer",                   icon: Layers    },
+    ],
+  },
 ];
 
 function isItemActive(item: NavItem, pathname: string): boolean {
   if (item.href && (pathname === item.href || pathname.startsWith(item.href + "/"))) return true;
-  return item.children?.some((c) => pathname === c.href || pathname.startsWith(c.href + "/")) ?? false;
+  if (item.children) {
+    return item.children.some((c) => {
+      if (c.href && (pathname === c.href || pathname.startsWith(c.href + "/"))) return true;
+      if (c.children) {
+        return c.children.some(
+          (sub) => pathname === sub.href || pathname.startsWith(sub.href + "/"),
+        );
+      }
+      return false;
+    });
+  }
+  return false;
 }
 
 export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
-  const router   = useRouter();
-  const { state } = useSidebar();
+  const pathname    = usePathname();
+  const router      = useRouter();
+  const { state }   = useSidebar();
   const isCollapsed = state === "collapsed";
   const [mounted, setMounted] = React.useState(false);
   const { data: vendor } = useVendorMe();
@@ -141,7 +179,19 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
   const [openItems, setOpenItems] = React.useState<Set<string>>(() => {
     const initial = new Set<string>();
     NAV_ITEMS.forEach((item) => {
-      if (item.children && isItemActive(item, pathname)) initial.add(item.label);
+      if (item.children && isItemActive(item, pathname)) {
+        initial.add(item.label);
+        item.children.forEach((child) => {
+          if (
+            child.children &&
+            child.children.some(
+              (sub) => pathname === sub.href || pathname.startsWith(sub.href + "/"),
+            )
+          ) {
+            initial.add(child.label);
+          }
+        });
+      }
     });
     return initial;
   });
@@ -161,14 +211,13 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
     });
   };
 
-  // ── exact same active/inactive classes as original ──
   const activeClass   = "text-primary-foreground dark:text-white font-bold bg-primary dark:bg-primary drop-shadow-sm";
   const inactiveClass = "bg-transparent text-sidebar-foreground/70 dark:text-gray-400 hover:bg-sidebar-accent dark:hover:bg-white/10 hover:text-sidebar-accent-foreground dark:hover:text-white";
   const btnBase       = "h-[34px] rounded-sm transition-all duration-200 !outline-none !ring-0 focus-visible:ring-0 active:bg-transparent";
 
   return (
     <Sidebar collapsible="icon" className="border-none bg-sidebar" {...props}>
-      {/* Header / Logo — unchanged */}
+      {/* Header / Logo */}
       <SidebarHeader
         className={`sticky top-0 z-50 min-h-[56px] border-none flex flex-col justify-center bg-sidebar/95 backdrop-blur-sm transition-all duration-300 ${
           isCollapsed ? "px-1.5 py-3" : "pl-3 pr-4 py-3"
@@ -188,7 +237,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
               }`}
           >
             {vendor?.company_logo ? (
-              <SafeImage src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
+              <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
             ) : (
               <span className="text-[15px] font-extrabold text-primary-foreground leading-none">
                 {vendor?.company_name ? vendor.company_name.charAt(0).toUpperCase() : "V"}
@@ -201,7 +250,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
           >
             {vendor?.company_logo ? (
               <div className="relative h-9 w-32">
-                <SafeImage src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
+                <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
               </div>
             ) : (
               <span className="text-[19px] font-extrabold tracking-tight text-sidebar-foreground dark:text-gray-100 leading-none">
@@ -234,7 +283,6 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
               const isOpen      = openItems.has(item.label);
 
               if (!hasChildren) {
-                // ── original flat item — zero changes ──
                 return (
                   <SidebarMenuItem key={item.label}>
                     <SidebarMenuButton
@@ -246,9 +294,8 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                     >
                       <Link href={item.href!} className="flex items-center gap-2.5 w-full">
                         <div className={`flex items-center justify-center ${isCollapsed ? "w-full px-1" : "gap-0.5"}`}>
-                          <FontAwesomeIcon
-                            icon={item.icon}
-                            className={`!size-[14px] transition-colors ${
+                          <item.icon
+                            className={`size-3.5 transition-colors ${
                               active
                                 ? "text-primary-foreground dark:text-white"
                                 : "text-sidebar-foreground/70 dark:text-gray-400 group-hover:text-sidebar-accent-foreground dark:group-hover:text-white"
@@ -264,7 +311,6 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                 );
               }
 
-              // ── collapsible parent — same button style as flat items ──
               return (
                 <Collapsible
                   key={item.label}
@@ -283,9 +329,8 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                       }`}
                     >
                       <div className={`flex items-center justify-center ${isCollapsed ? "w-full px-1" : "gap-0.5"}`}>
-                        <FontAwesomeIcon
-                          icon={item.icon}
-                          className={`!size-[14px] transition-colors ${
+                        <item.icon
+                          className={`size-3.5 transition-colors ${
                             active
                               ? "text-primary-foreground dark:text-white"
                               : "text-sidebar-foreground/70 dark:text-gray-400 group-hover:text-sidebar-accent-foreground dark:group-hover:text-white"
@@ -306,30 +351,112 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                   <CollapsibleContent>
                     <div className="mt-0.5 flex flex-col gap-1">
                       {item.children!.map((child) => {
-                        const childActive = pathname === child.href || pathname.startsWith(child.href + "/");
+                        const hasSubChildren = !!child.children?.length;
+                        const isChildOpen    = openItems.has(child.label);
+                        const childActive    = child.href
+                          ? pathname === child.href || pathname.startsWith(child.href + "/")
+                          : (child.children?.some(
+                              (sub) => pathname === sub.href || pathname.startsWith(sub.href + "/"),
+                            ) ?? false);
+
+                        if (!hasSubChildren) {
+                          return (
+                            <SidebarMenuItem key={child.label}>
+                              <SidebarMenuButton
+                                asChild
+                                tooltip={child.label}
+                                className={`${btnBase} ${childActive ? activeClass : inactiveClass} ${
+                                  isCollapsed ? "px-0 justify-center" : "px-3.5 pl-8"
+                                }`}
+                              >
+                                <Link href={child.href!} className="flex items-center gap-2.5 w-full">
+                                  <div className={`flex items-center justify-center ${isCollapsed ? "w-full px-1" : "gap-0.5"}`}>
+                                    <child.icon
+                                      className={`size-3.5 transition-colors ${
+                                        childActive
+                                          ? "text-primary-foreground dark:text-white"
+                                          : "text-sidebar-foreground/70 dark:text-gray-400 group-hover:text-sidebar-accent-foreground dark:group-hover:text-white"
+                                      }`}
+                                    />
+                                  </div>
+                                  <span className="text-[12px] font-semibold group-data-[collapsible=icon]:hidden">
+                                    {child.label}
+                                  </span>
+                                </Link>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          );
+                        }
 
                         return (
-                          <SidebarMenuItem key={child.label}>
-                            <SidebarMenuButton
-                              asChild
-                              tooltip={child.label}
-                              className={`${btnBase} ${childActive ? activeClass : inactiveClass} ${isCollapsed ? "px-0 justify-center" : "px-3.5 pl-8"}`}
-                            >
-                              <Link href={child.href} className="flex items-center gap-2.5 w-full">
+                          <Collapsible
+                            key={child.label}
+                            open={isChildOpen}
+                            onOpenChange={() => toggleOpen(child.label)}
+                          >
+                            <SidebarMenuItem>
+                              <SidebarMenuButton
+                                tooltip={child.label}
+                                onClick={() => {
+                                  if (child.href) router.push(child.href);
+                                  toggleOpen(child.label);
+                                }}
+                                className={`${btnBase} ${childActive ? activeClass : inactiveClass} ${
+                                  isCollapsed ? "px-0 justify-center" : "px-3.5 pl-8"
+                                }`}
+                              >
                                 <div className={`flex items-center justify-center ${isCollapsed ? "w-full px-1" : "gap-0.5"}`}>
-                                  <FontAwesomeIcon
-                                    icon={child.icon}
-                                    className={`!size-[14px] transition-colors ${
+                                  <child.icon
+                                    className={`size-3.5 transition-colors ${
                                       childActive
                                         ? "text-primary-foreground dark:text-white"
                                         : "text-sidebar-foreground/70 dark:text-gray-400 group-hover:text-sidebar-accent-foreground dark:group-hover:text-white"
                                     }`}
                                   />
                                 </div>
-                                <span className="text-[12px] font-semibold group-data-[collapsible=icon]:hidden">{child.label}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
+                                <span className="text-[12px] font-semibold group-data-[collapsible=icon]:hidden flex-1 text-left">
+                                  {child.label}
+                                </span>
+                                <ChevronRight
+                                  className={`w-3 h-3 shrink-0 transition-transform duration-200 group-data-[collapsible=icon]:hidden ${
+                                    isChildOpen ? "rotate-90" : ""
+                                  } ${childActive ? "text-primary-foreground/70 dark:text-white/70" : "text-sidebar-foreground/30"}`}
+                                />
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+
+                            <CollapsibleContent>
+                              <div className="mt-0.5 flex flex-col gap-1">
+                                {child.children!.map((sub) => {
+                                  const subActive = pathname === sub.href || pathname.startsWith(sub.href + "/");
+                                  return (
+                                    <SidebarMenuItem key={sub.label}>
+                                      <SidebarMenuButton
+                                        asChild
+                                        tooltip={sub.label}
+                                        className={`${btnBase} ${subActive ? activeClass : inactiveClass} ${
+                                          isCollapsed ? "px-0 justify-center hidden" : "px-3.5 pl-12"
+                                        }`}
+                                      >
+                                        <Link href={sub.href} className="flex items-center gap-2.5 w-full">
+                                          <div className="flex items-center justify-center gap-0.5">
+                                            <sub.icon
+                                              className={`size-3 transition-colors ${
+                                                subActive
+                                                  ? "text-primary-foreground dark:text-white"
+                                                  : "text-sidebar-foreground/70 dark:text-gray-400 group-hover:text-sidebar-accent-foreground dark:group-hover:text-white"
+                                              }`}
+                                            />
+                                          </div>
+                                          <span className="text-[11px] font-semibold">{sub.label}</span>
+                                        </Link>
+                                      </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                  );
+                                })}
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
                         );
                       })}
                     </div>
@@ -340,7 +467,6 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-
     </Sidebar>
   );
 }

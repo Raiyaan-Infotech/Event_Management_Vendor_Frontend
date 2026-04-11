@@ -1,11 +1,16 @@
 "use client";
 
 import { SafeImage } from "@/components/ui/safe-image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV, faChartLine, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { MoreVertical, TrendingUp, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -39,10 +44,14 @@ function Sparkline({
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full">
-      {fill && (
-        <path d={area} fill={color} opacity="0.15" />
-      )}
-      <polyline points={polyline} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      {fill && <path d={area} fill={color} opacity="0.15" />}
+      <polyline
+        points={polyline}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -53,7 +62,10 @@ function BarChart({ data, labels }: { data: number[]; labels: string[] }) {
   const h = 160;
 
   return (
-    <svg viewBox={`0 0 ${data.length * 40} ${h + 20}`} className="w-full h-full">
+    <svg
+      viewBox={`0 0 ${data.length * 40} ${h + 20}`}
+      className="w-full h-full"
+    >
       {data.map((v, i) => {
         const barH = (v / max) * h;
         const x = i * 40 + 8;
@@ -87,8 +99,14 @@ function BarChart({ data, labels }: { data: number[]; labels: string[] }) {
 }
 
 // ─── Donut Chart (pure SVG) ───────────────────────────────────────────────────
-function DonutChart({ segments }: { segments: { value: number; color: string }[] }) {
-  const r = 55, cx = 70, cy = 70;
+function DonutChart({
+  segments,
+}: {
+  segments: { value: number; color: string }[];
+}) {
+  const r = 55,
+    cx = 70,
+    cy = 70;
   const total = segments.reduce((a, b) => a + b.value, 0);
   const arcs = segments.map((seg, i) => {
     const prevSum = segments.slice(0, i).reduce((sum, s) => sum + s.value, 0);
@@ -113,10 +131,23 @@ function DonutChart({ segments }: { segments: { value: number; color: string }[]
         <path key={i} d={arc.d} fill={arc.color} opacity={0.9} />
       ))}
       <circle cx={cx} cy={cy} r={r * 0.55} className="fill-card" />
-      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={14} className="font-extrabold fill-foreground">
+      <text
+        x={cx}
+        y={cy}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={14}
+        className="font-extrabold fill-foreground"
+      >
         12.8K
       </text>
-      <text x={cx} y={cy + 14} textAnchor="middle" fontSize={9} className="fill-muted-foreground font-bold uppercase tracking-wider">
+      <text
+        x={cx}
+        y={cy + 14}
+        textAnchor="middle"
+        fontSize={9}
+        className="fill-muted-foreground font-bold uppercase tracking-wider"
+      >
         Total
       </text>
     </svg>
@@ -125,7 +156,17 @@ function DonutChart({ segments }: { segments: { value: number; color: string }[]
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 const paymentData = [30, 40, 45, 50, 49, 60, 70, 91, 125];
-const paymentLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+const paymentLabels = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+];
 
 const donutSegments = [
   { value: 20, color: "#3454d1" },
@@ -136,9 +177,27 @@ const donutSegments = [
 ];
 
 const miniStats = [
-  { label: "Tasks Completed", value: "22/35", percent: 28, color: "#3454d1", data: [10, 15, 12, 18, 20, 25, 22] },
-  { label: "New Leads", value: "48/100", percent: 34, color: "#10b981", data: [5, 8, 6, 10, 7, 12, 9] },
-  { label: "Average Revenue", value: "$2,245", percent: 42, color: "#e11d48", data: [20, 22, 25, 24, 28, 30, 27] },
+  {
+    label: "Tasks Completed",
+    value: "22/35",
+    percent: 28,
+    color: "#3454d1",
+    data: [10, 15, 12, 18, 20, 25, 22],
+  },
+  {
+    label: "New Leads",
+    value: "48/100",
+    percent: 34,
+    color: "#10b981",
+    data: [5, 8, 6, 10, 7, 12, 9],
+  },
+  {
+    label: "Average Revenue",
+    value: "$2,245",
+    percent: 42,
+    color: "#e11d48",
+    data: [20, 22, 25, 24, 28, 30, 27],
+  },
 ];
 
 export default function ChartsSection() {
@@ -158,9 +217,15 @@ export default function ChartsSection() {
         {/* Payment Record */}
         <Card className="lg:col-span-2 border-border shadow-sm flex flex-col overflow-hidden bg-card">
           <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
-            <CardTitle className="font-extrabold text-[15px] tracking-tight">Payment Records</CardTitle>
-            <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-primary">
-              <FontAwesomeIcon icon={faEllipsisV} className="!size-4" />
+            <CardTitle className="font-extrabold text-[15px] tracking-tight">
+              Payment Records
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 text-muted-foreground hover:text-primary"
+            >
+              <MoreVertical className="size-4" />
             </Button>
           </CardHeader>
           <CardContent className="p-6 flex-1">
@@ -172,36 +237,57 @@ export default function ChartsSection() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
               {[
                 { label: "Awaiting", value: "$5,486", color: "#3454d1", w: 81 },
-                { label: "Completed", value: "$10,275", color: "#10b981", w: 82 },
+                {
+                  label: "Completed",
+                  value: "$10,275",
+                  color: "#10b981",
+                  w: 82,
+                },
                 { label: "Rejected", value: "$3,868", color: "#e11d48", w: 68 },
-                { label: "Revenue", value: "$50,668", color: "#0f172a", darkColor: "#f8fafc", w: 75 },
-              ].map((item: { label: string; value: string; color: string; darkColor?: string; w: number }) => (
-                <div key={item.label} className="space-y-2">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                    {item.label}
-                  </p>
-                  <p className="text-[15px] font-extrabold text-foreground">
-                    {item.value}
-                  </p>
-                  <Progress
-                    value={item.w}
-                    className="h-1"
-                    indicatorClassName="transition-all duration-500"
-                    style={{ backgroundColor: 'transparent' }}
-                  />
-                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden -mt-1">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${item.w}%`,
-                        backgroundColor: item.darkColor
-                          ? (isDark ? item.darkColor : item.color)
-                          : item.color
-                      }}
+                {
+                  label: "Revenue",
+                  value: "$50,668",
+                  color: "#0f172a",
+                  darkColor: "#f8fafc",
+                  w: 75,
+                },
+              ].map(
+                (item: {
+                  label: string;
+                  value: string;
+                  color: string;
+                  darkColor?: string;
+                  w: number;
+                }) => (
+                  <div key={item.label} className="space-y-2">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                      {item.label}
+                    </p>
+                    <p className="text-[15px] font-extrabold text-foreground">
+                      {item.value}
+                    </p>
+                    <Progress
+                      value={item.w}
+                      className="h-1"
+                      indicatorClassName="transition-all duration-500"
+                      style={{ backgroundColor: "transparent" }}
                     />
+                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden -mt-1">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${item.w}%`,
+                          backgroundColor: item.darkColor
+                            ? isDark
+                              ? item.darkColor
+                              : item.color
+                            : item.color,
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </CardFooter>
         </Card>
@@ -217,14 +303,20 @@ export default function ChartsSection() {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-3xl font-extrabold">30,569</p>
-                  <p className="text-[13px] font-bold opacity-80 uppercase tracking-wider mt-1">Total Sales Overall</p>
+                  <p className="text-[13px] font-bold opacity-80 uppercase tracking-wider mt-1">
+                    Total Sales Overall
+                  </p>
                 </div>
                 <Badge className="bg-card/20 hover:bg-card/30 text-white border-transparent text-[11px] font-extrabold">
                   +12.5%
                 </Badge>
               </div>
               <div className="h-[60px] opacity-40">
-                <Sparkline data={[25, 66, 41, 89, 63, 25, 44, 12, 36]} color="#fff" fill />
+                <Sparkline
+                  data={[25, 66, 41, 89, 63, 25, 44, 12, 36]}
+                  color="#fff"
+                  fill
+                />
               </div>
             </CardContent>
           </Card>
@@ -232,21 +324,56 @@ export default function ChartsSection() {
           <Card className="flex-1 border-border shadow-sm overflow-hidden p-0 bg-card">
             <CardContent className="p-0 divide-y divide-border">
               {[
-                { img: "/images/project-icon-shopify.png", name: "Shopify eCommerce", type: "Sales", amount: "$1,200", trend: "+12%" },
-                { img: "/images/project-icon-apple.png", name: "iOS App Store", type: "Sales", amount: "$1,450", trend: "+8%" },
-                { img: "/images/project-icon-figma.png", name: "Figma Platform", type: "Sales", amount: "$1,250", trend: "+5%" },
+                {
+                  img: "/images/project-icon-shopify.png",
+                  name: "Shopify eCommerce",
+                  type: "Sales",
+                  amount: "$1,200",
+                  trend: "+12%",
+                },
+                {
+                  img: "/images/project-icon-apple.png",
+                  name: "iOS App Store",
+                  type: "Sales",
+                  amount: "$1,450",
+                  trend: "+8%",
+                },
+                {
+                  img: "/images/project-icon-figma.png",
+                  name: "Figma Platform",
+                  type: "Sales",
+                  amount: "$1,250",
+                  trend: "+5%",
+                },
               ].map((item) => (
-                <div key={item.name} className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer group">
+                <div
+                  key={item.name}
+                  className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors cursor-pointer group"
+                >
                   <div className="relative size-10 shrink-0 shadow-sm border border-border rounded-xl overflow-hidden p-2 bg-background">
-                    <SafeImage src={item.img} alt={item.name} fill className="object-contain p-2" unoptimized />
+                    <SafeImage
+                      src={item.img}
+                      alt={item.name}
+                      fill
+                      className="object-contain p-2"
+                      unoptimized
+                    />
                   </div>
                   <div className="flex-1">
-                    <p className="font-extrabold text-[13.5px] text-foreground line-clamp-1">{item.name}</p>
-                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{item.type}</p>
+                    <p className="font-extrabold text-[13.5px] text-foreground line-clamp-1">
+                      {item.name}
+                    </p>
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">
+                      {item.type}
+                    </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-extrabold text-[14px] text-foreground">{item.amount}</p>
-                    <p className="text-[11px] font-bold text-emerald-500">{item.trend}</p>
+                    <p className="font-extrabold text-[14px] text-foreground">
+                      {item.amount}
+                    </p>
+                    <p className="text-[11px] font-bold text-emerald-500">
+                      {item.trend}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -258,15 +385,25 @@ export default function ChartsSection() {
       {/* Row 2: Mini Sparkline Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {miniStats.map((s) => (
-          <Card key={s.label} className="border-border shadow-sm flex flex-col transition-all hover:-translate-y-1 bg-card">
+          <Card
+            key={s.label}
+            className="border-border shadow-sm flex flex-col transition-all hover:-translate-y-1 bg-card"
+          >
             <CardContent className="p-6 flex flex-col">
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-1">
-                  <p className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider">{s.label}</p>
-                  <p className="text-2xl font-extrabold text-foreground">{s.value}</p>
+                  <p className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider">
+                    {s.label}
+                  </p>
+                  <p className="text-2xl font-extrabold text-foreground">
+                    {s.value}
+                  </p>
                 </div>
-                <Badge variant="outline" className="flex items-center gap-1 text-[11px] font-extrabold text-emerald-500 bg-emerald-500/10 border-emerald-500/20 px-2 py-1">
-                  <FontAwesomeIcon icon={faChartLine} className="!size-3" /> {s.percent}%
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-[11px] font-extrabold text-emerald-500 bg-emerald-500/10 border-emerald-500/20 px-2 py-1"
+                >
+                  <TrendingUp className="size-3" /> {s.percent}%{s.percent}%
                 </Badge>
               </div>
               <div className="h-[60px] my-2">
@@ -284,9 +421,15 @@ export default function ChartsSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-1 border-border shadow-sm flex flex-col bg-card">
           <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
-            <CardTitle className="font-extrabold text-[15px] tracking-tight">Target Audience Overview</CardTitle>
-            <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-primary">
-              <FontAwesomeIcon icon={faEllipsisV} className="!size-4" />
+            <CardTitle className="font-extrabold text-[15px] tracking-tight">
+              Target Audience Overview
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 text-muted-foreground hover:text-primary"
+            >
+              <MoreVertical className="size-4" />
             </Button>
           </CardHeader>
           <CardContent className="p-6">
@@ -301,12 +444,22 @@ export default function ChartsSection() {
                   { label: "Qualified", value: "10K", color: "#0891b2" },
                   { label: "Working", value: "18K", color: "#10b981" },
                 ].map((item) => (
-                  <div key={item.label} className="flex flex-col items-center p-3 rounded-2xl bg-muted/50 border border-border">
+                  <div
+                    key={item.label}
+                    className="flex flex-col items-center p-3 rounded-2xl bg-muted/50 border border-border"
+                  >
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="size-2 rounded-full" style={{ background: item.color }} />
-                      <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</span>
+                      <span
+                        className="size-2 rounded-full"
+                        style={{ background: item.color }}
+                      />
+                      <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                        {item.label}
+                      </span>
                     </div>
-                    <span className="font-extrabold text-[16px] text-foreground">{item.value}</span>
+                    <span className="font-extrabold text-[16px] text-foreground">
+                      {item.value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -316,21 +469,33 @@ export default function ChartsSection() {
 
         <Card className="lg:col-span-2 border-border shadow-sm flex flex-col bg-card">
           <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
-            <CardTitle className="font-extrabold text-[15px] tracking-tight">Strategic Analytics</CardTitle>
-            <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-primary">
-              <FontAwesomeIcon icon={faEllipsisV} className="!size-4" />
+            <CardTitle className="font-extrabold text-[15px] tracking-tight">
+              Strategic Analytics
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 text-muted-foreground hover:text-primary"
+            >
+              <MoreVertical className="size-4" />
             </Button>
           </CardHeader>
           <CardContent className="p-6 flex flex-col items-center justify-center min-h-[250px] space-y-4 flex-1">
             <div className="p-4 rounded-3xl bg-muted border border-border">
-              <FontAwesomeIcon icon={faChartLine} className="!size-8 text-primary opacity-50" />
+              <TrendingUp className="size-8 text-primary opacity-50" />
             </div>
-            <h4 className="font-extrabold text-foreground">Premium Analytics Insights</h4>
+            <h4 className="font-extrabold text-foreground">
+              Premium Analytics Insights
+            </h4>
             <p className="text-[13.5px] text-muted-foreground text-center max-w-sm font-medium">
-              Unlock detailed insights into your CRM performance with Raiyaan Infotech Strategic Intelligence.
+              Unlock detailed insights into your CRM performance with Raiyaan
+              Infotech Strategic Intelligence.
             </p>
-            <Button variant="outline" className="rounded-xl font-bold text-xs uppercase tracking-widest px-8 border-primary/20 hover:bg-primary/5 hover:text-primary transition-all">
-              View Reports <FontAwesomeIcon icon={faChevronRight} className="!size-3 ml-1" />
+            <Button
+              variant="outline"
+              className="rounded-xl font-bold text-xs uppercase tracking-widest px-8 border-primary/20 hover:bg-primary/5 hover:text-primary transition-all"
+            >
+              View Reports <ChevronRight className="size-3 ml-1" />{" "}
             </Button>
           </CardContent>
         </Card>

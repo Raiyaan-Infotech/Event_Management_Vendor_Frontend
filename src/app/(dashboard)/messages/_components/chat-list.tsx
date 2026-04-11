@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-const cardClass = 'bg-card rounded-[5px] border border-border shadow-sm dark:shadow-none font-["Roboto",sans-serif]';
+const cardClass = 'bg-card rounded-[5px] border border-border shadow-sm dark:shadow-none ';
 
 interface ChatItem {
   id: number;

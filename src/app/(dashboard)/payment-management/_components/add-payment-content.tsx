@@ -7,22 +7,17 @@ import {
   Hash,
   FileText,
   User,
-  AlertCircle,
   Percent,
   TrendingDown,
   Building,
-  Download,
   CheckCircle2,
   CreditCard,
-  X,
   Check,
-  Receipt,
-  DollarSign
+  Receipt
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -174,7 +169,7 @@ export default function AddPaymentContent({ isView = false }: AddPaymentContentP
                 <FormGroup label="Payment type (Online/Offline)">
                   <Select 
                     value={formData.paymentType} 
-                    onValueChange={(val: any) => setFormData({...formData, paymentType: val})}
+                    onValueChange={(val: "Online" | "Offline") => setFormData({...formData, paymentType: val})}
                   >
                     <SelectTrigger className="h-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl focus:ring-0 transition-all font-bold text-sm">
                       <div className="flex items-center gap-2">
@@ -213,7 +208,7 @@ export default function AddPaymentContent({ isView = false }: AddPaymentContentP
                 <FormGroup label="Payment Status (Unpaid, Pending, Paid)">
                   <Select 
                     value={formData.status} 
-                    onValueChange={(val: any) => setFormData({...formData, status: val})}
+                    onValueChange={(val: "Paid" | "Pending" | "Unpaid") => setFormData({...formData, status: val})}
                   >
                     <SelectTrigger className="h-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl focus:ring-0 transition-all font-black text-sm">
                       <div className="flex items-center gap-2">
@@ -315,7 +310,7 @@ export default function AddPaymentContent({ isView = false }: AddPaymentContentP
             </CommonCard>
 
             <CommonCard title="Notes" subtitle="Internal remarks or payment details" icon={FileText} className="mt-8">
-              <FormGroup label="Remarks" icon={FileText}>
+              <FormGroup label="Remarks" icon={FileText} iconTop>
                 <textarea 
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -353,20 +348,6 @@ export default function AddPaymentContent({ isView = false }: AddPaymentContentP
               </div>
             </CommonCard>
 
-            <div className="bg-amber-50/30 dark:bg-amber-900/10 rounded-3xl border border-amber-100/50 dark:border-amber-900/20 p-8 shadow-sm space-y-6 group border-dashed">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
-                  <Download size={20} />
-                </div>
-                <h3 className="text-[12px] font-bold text-amber-800 dark:text-amber-500 uppercase tracking-widest">Download Receipt</h3>
-              </div>
-              <p className="text-[11px] font-bold text-amber-600/70 uppercase leading-relaxed italic">
-                You can generate and download the digital receipt once the payment record has been successfully committed to the database.
-              </p>
-              <Button disabled variant="outline" className="w-full border-amber-200 dark:border-amber-900 text-amber-400 bg-white/50 dark:bg-amber-900/10 font-bold text-[11px] uppercase tracking-widest h-11 rounded-xl">
-                NOT READY YET
-              </Button>
-            </div>
 
             <div className="bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm">
               <div className="space-y-4">

@@ -1,11 +1,66 @@
 @import "tailwindcss";
+@import "quill/dist/quill.snow.css";
+
+/* --- Professional Quill Editor Styles --- */
+.quill-editor-wrapper {
+  @apply rounded-xl border border-border overflow-hidden bg-white dark:bg-[#0c0c0c] transition-all;
+}
+
+.quill-editor-wrapper:focus-within {
+  @apply ring-4 ring-primary/10 border-primary/50;
+}
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  @apply bg-gray-50/50 dark:bg-white/[0.02] py-3 px-4;
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+}
+
+.ql-editor {
+  @apply text-base text-foreground font-poppins p-6;
+  min-height: inherit !important;
+  line-height: 1.6 !important;
+}
+
+.ql-editor.ql-blank::before {
+  @apply text-muted-foreground italic font-normal;
+  left: 1.5rem !important;
+}
+
+/* Dark mode overrides for icons */
+.dark .ql-snow .ql-stroke {
+  stroke: #9ca3af !important; /* gray-400 */
+}
+
+.dark .ql-snow .ql-fill {
+  fill: #9ca3af !important; /* gray-400 */
+}
+
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+  @apply !stroke-primary !fill-primary;
+}
+
+.ql-snow .ql-picker {
+  @apply text-foreground font-bold;
+}
+/* -------------------------------------- */
 
 @plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-poppins: var(--font-poppins);
+  --font-sans: var(--font-poppins);
+  --font-body: var(--font-poppins);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -122,15 +177,16 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-poppins), sans-serif !important;
+    font-family: var(--font-poppins) !important;
     font-weight: 500;
-    -webkit-font-smoothing: subpixel-antialiased;
-    -moz-osx-font-smoothing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow: hidden !important;
     height: 100vh !important;
   }
 
   html {
+    font-family: var(--font-poppins) !important;
     overflow: hidden !important;
     height: 100vh !important;
   }
@@ -212,6 +268,15 @@
   .topbar-btn {
     @apply w-10 h-10 flex items-center justify-center rounded-lg border border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-primary hover:border-primary transition-all duration-200;
   }
+
+  /* Global Tables Alternating Colors */
+  tbody tr:nth-child(even) {
+    @apply bg-[#F8FBFF] dark:bg-white/[0.03];
+  }
+
+  tbody tr:nth-child(odd) {
+    @apply bg-white dark:bg-transparent;
+  }
 }
 
 /* Custom Scrollbar Utility */
@@ -279,3 +344,12 @@ body::-webkit-scrollbar {
 .animate-gear {
   animation: gear-rotate 4s linear infinite;
 }
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}

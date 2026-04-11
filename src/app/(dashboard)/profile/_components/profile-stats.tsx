@@ -2,7 +2,7 @@
 
 import { Package, Briefcase, Rocket, ChevronRight } from 'lucide-react';
 
-const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
+const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 ';
 
 export function ProfileStats() {
   return (

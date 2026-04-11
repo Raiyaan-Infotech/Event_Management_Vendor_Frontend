@@ -1,7 +1,6 @@
 "use client";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useMemo } from "react";
@@ -29,6 +28,8 @@ const navLabels: Record<string, string> = {
   timezone: "Timezone",
   help: "Help",
   website: "Website Management",
+  "about-company": "About Company",
+  "personal-info": "Personal Info",
   create: "Create",
   edit: "Edit",
   view: "View",
@@ -41,7 +42,7 @@ export default function VendorBreadcrumb() {
   const breadcrumbItems = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
     const items: { label: string; url: string; isLast: boolean }[] = [];
-    
+
     // Always show Dashboard as the starting point if not already the first segment
     if (segments[0] !== "dashboard") {
       items.push({ label: "Dashboard", url: "/dashboard", isLast: false });
@@ -52,24 +53,33 @@ export default function VendorBreadcrumb() {
 
     segments.forEach((segment) => {
       accumulatedPath += `/${segment}`;
-      
+
       // Skip numeric segments (IDs)
       if (isNaN(Number(segment))) {
-        let label = navLabels[segment] ?? 
+        let label =
+          navLabels[segment] ??
           segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
-        
+
         // Define which segments are considered "main modules" to track context
-        const isMainModule = ["staff", "clients", "events", "payments", "payment-management"].includes(segment.toLowerCase());
+        const isMainModule = [
+          "staff",
+          "clients",
+          "events",
+          "payments",
+          "payment-management",
+        ].includes(segment.toLowerCase());
         if (isMainModule) {
           mainModuleLabel = label;
         }
 
         // Enhance labels for known sub-actions using the module context
-        const isSubAction = ["add", "edit", "view", "create"].includes(segment.toLowerCase());
+        const isSubAction = ["add", "edit", "view", "create"].includes(
+          segment.toLowerCase(),
+        );
         if (isSubAction && mainModuleLabel) {
           label = `${label} ${mainModuleLabel}`;
         }
-        
+
         items.push({ label, url: accumulatedPath, isLast: false });
       }
     });
@@ -91,12 +101,17 @@ export default function VendorBreadcrumb() {
           {breadcrumbItems.map((item, index) => (
             <Fragment key={`${item.url}-${index}`}>
               {index > 0 && (
-                <FontAwesomeIcon icon={faChevronRight} className="text-[#c8c8c8] dark:text-[#52525b] !size-2 mx-1" />
+                <ChevronRight className="text-[#c8c8c8] dark:text-[#52525b] size-2 mx-1" />
               )}
               {item.isLast ? (
-                <span className="text-primary dark:text-[#60a5fa] font-bold truncate">{item.label}</span>
+                <span className="text-primary dark:text-[#60a5fa] font-bold truncate">
+                  {item.label}
+                </span>
               ) : (
-                <Link href={item.url} className="text-[#6c757d] dark:text-[#a1a1aa] hover:text-primary dark:hover:text-[#60a5fa] transition-colors">
+                <Link
+                  href={item.url}
+                  className="text-[#6c757d] dark:text-[#a1a1aa] hover:text-primary dark:hover:text-[#60a5fa] transition-colors"
+                >
                   {item.label}
                 </Link>
               )}

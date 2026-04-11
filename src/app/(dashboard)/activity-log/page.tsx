@@ -133,7 +133,7 @@ export default function ActivityLogPage() {
       bg:   'bg-red-50 dark:bg-red-950/30',
       icon: 'text-red-500 dark:text-red-400',
     },
-  ], [activities, data?.pagination.total, data?.data]);
+  ], [activities, data?.pagination.total]);
 
   const handleCategoryChange = (c: ActivityCategory) => { setCategory(c); setPage(1); };
   const handleSearch         = (v: string)            => { setSearch(v);   setPage(1); };

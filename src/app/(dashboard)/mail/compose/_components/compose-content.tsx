@@ -1,14 +1,14 @@
 'use client';
 
-import { ChevronRight, Paperclip, Link, Image as ImageIcon, Trash2, Send, Save, X } from 'lucide-react';
+import { Paperclip, Link, Image as ImageIcon, Trash2, } from 'lucide-react';
 import { MailSidebar } from '../../_components/mail-sidebar';
 import { PageHeader } from '@/components/common/PageHeader';
 
-const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none font-["Roboto",sans-serif]';
+const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none ';
 
 export function ComposeContent() {
   return (
-    <div className="bg-background min-h-screen -mt-6 -mx-6 -mb-6 p-6 font-['Roboto',sans-serif]">
+    <div className="bg-background min-h-screen -mt-6 -mx-6 -mb-6 p-6">
       <PageHeader 
         title="Compose" 
         subtitle="Draft and send a new message." 

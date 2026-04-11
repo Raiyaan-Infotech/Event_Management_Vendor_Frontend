@@ -13,12 +13,8 @@ import {
   ChevronRight, 
   Users,
   Search,
-  MessageSquare,
-  Mail,
-  Phone
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Image from 'next/image';
 
 export function ClientsTab() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');

@@ -9,7 +9,7 @@ import { resolveMediaUrl } from '@/lib/utils';
 
 import { Vendor } from "@/hooks/use-vendors";
 
-const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
+const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 ';
 
 interface VendorSidebarProfileCardProps {
   vendor: Vendor | undefined;

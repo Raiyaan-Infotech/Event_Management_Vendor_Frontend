@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Trash2, Eye, ChevronRight } from 'lucide-react';
+import { Mail, Trash2, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/common/PageHeader';
 
-const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none font-["Roboto",sans-serif]';
+const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none';
 
 interface Inquiry {
   id: number;

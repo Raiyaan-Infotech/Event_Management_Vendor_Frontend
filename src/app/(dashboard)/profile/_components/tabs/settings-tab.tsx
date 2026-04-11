@@ -54,6 +54,7 @@ export function SettingsTab() {
           <input 
             name="name"
             type="text" 
+            placeholder='enter full name'
             value={formData.name || ''}
             onChange={handleChange}
             className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" 
@@ -64,6 +65,7 @@ export function SettingsTab() {
           <input 
             name="company_name"
             type="text" 
+              placeholder='enter company name'
             value={formData.company_name || ''}
             onChange={handleChange}
             className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" 
@@ -74,6 +76,7 @@ export function SettingsTab() {
           <input 
             name="company_contact"
             type="tel" 
+            placeholder='enter contact number'
             value={formData.company_contact || ''}
             onChange={handleChange}
             className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" 
@@ -84,6 +87,7 @@ export function SettingsTab() {
           <input 
             value={formData.email || ''}
             type="email" 
+              placeholder='enter email address'
             className="w-full px-4 py-2 bg-muted border border-border rounded-[5px] text-[14px] text-muted-foreground cursor-not-allowed shadow-none" 
             readOnly 
           />
@@ -93,10 +97,10 @@ export function SettingsTab() {
           <input 
             name="website"
             type="text" 
+              placeholder='enter website url'
             value={formData.website || ''}
             onChange={handleChange}
             className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" 
-            placeholder="https://..."
           />
         </div>
         <div className="space-y-2">
@@ -105,6 +109,7 @@ export function SettingsTab() {
             name="company_address"
             value={formData.company_address || ''}
             onChange={handleChange}
+            placeholder='enter company address or about info'
             className="w-full px-4 py-2 bg-background border border-border rounded-[5px] text-[14px] text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all min-h-[140px] resize-none shadow-sm"
           ></textarea>
         </div>

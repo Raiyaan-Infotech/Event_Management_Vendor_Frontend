@@ -4,7 +4,7 @@ import {
   MessageSquare, Mail, Users, Trash2, Folder 
 } from 'lucide-react';
 
-const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 font-["Roboto",sans-serif]';
+const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 ';
 
 export function MailSidebar() {
   return (

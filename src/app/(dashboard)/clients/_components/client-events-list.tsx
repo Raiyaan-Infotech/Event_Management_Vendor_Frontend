@@ -9,19 +9,12 @@ import {
   Calendar, 
   MapPin, 
   Eye,
-  MoreVertical,
   CheckCircle2,
   Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useRouter, useParams } from "next/navigation";
 import { useVendorClient } from "@/hooks/use-vendor-clients";
 

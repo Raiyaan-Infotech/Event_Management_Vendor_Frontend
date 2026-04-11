@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { 
   PenLine, 
   AlignLeft, 
@@ -10,28 +11,18 @@ import {
   Settings2, 
   Calendar, 
   Ticket,
-  ChevronDown,
   Upload,
-  Plus,
   Send,
   Save,
-  X,
   Bold,
   Italic,
   Underline,
-  Strikethrough,
   AlignLeft as AlignLeftIcon,
   AlignCenter,
   AlignRight,
-  AlignJustify,
   List,
-  ListOrdered,
-  Link as LinkIcon,
-  Image as ImageIconAlt,
-  Code,
   Globe,
   Monitor,
-  ArrowLeft,
   Copy,
   Check,
   Smartphone,
@@ -45,6 +36,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 import { 
   Dialog,
@@ -101,6 +93,8 @@ export default function CreateEventContent() {
     tabletImage: "",
     mobileImage: "",
     organizerPhoto: "",
+    organizerType: "client" as "client" | "admin",
+    organizerPassword: "",
     __bold: false,
     __italic: false,
     __underline: false,
@@ -109,7 +103,24 @@ export default function CreateEventContent() {
     __textColor: "#4b5563"
   });
 
-  const updateForm = (field: string, value: any) => {
+  type StaffMember = {
+    id: number;
+    name: string;
+    position?: string;
+    empId: string;
+    mobile: string;
+    profilePic?: string;
+  };
+  const [staffList, setStaffList] = React.useState<StaffMember[]>([]);
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem("employees_data");
+    if (saved) {
+      setStaffList(JSON.parse(saved));
+    }
+  }, []);
+
+  const updateForm = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -276,7 +287,7 @@ export default function CreateEventContent() {
                 placeholder="Enter event description" 
                 className={`min-h-[220px] border-none focus-visible:ring-0 p-0 text-[15px] leading-relaxed resize-none text-gray-600 ${formData.__bold ? 'font-bold' : ''} ${formData.__italic ? 'italic' : ''} ${formData.__underline ? 'underline' : ''}`}
                 style={{ 
-                  textAlign: (formData.__align || 'left') as any, 
+                  textAlign: (formData.__align || 'left') as 'left' | 'center' | 'right' | 'justify', 
                   fontSize: formData.__fontSize || '15px'
                 }} 
               />
@@ -697,67 +708,153 @@ export default function CreateEventContent() {
             <div className={iconContainerClass}>
               <Users size={16} strokeWidth={3} />
             </div>
-            <h2 className={cardTitleClass}>Organizer Details</h2>
+            <div className="flex-1 flex items-center justify-between">
+              <h2 className={cardTitleClass}>Organizer Details</h2>
+              <div className="flex items-center bg-gray-50/50 dark:bg-gray-900/50 p-1 rounded-lg border border-gray-100 dark:border-gray-800">
+                <button 
+                  onClick={() => updateForm("organizerType", "client")}
+                  className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${formData.organizerType === "client" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                >
+                  CLIENT
+                </button>
+                <button 
+                  onClick={() => updateForm("organizerType", "admin")}
+                  className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${formData.organizerType === "admin" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                >
+                  ADMIN
+                </button>
+              </div>
+            </div>
           </div>
           <div className="p-6 space-y-6">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative group">
-                <input 
-                  type="file" 
-                  id="organizer-photo-upload" 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const url = URL.createObjectURL(file);
-                      updateForm("organizerPhoto", url);
-                    }
-                  }}
-                />
-                <label 
-                  htmlFor="organizer-photo-upload"
-                  className="w-24 h-24 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-all cursor-pointer"
-                >
-                  {formData.organizerPhoto ? (
-                    <img src={formData.organizerPhoto} alt="Organizer" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-400">
-                      <Users size={24} />
-                      <span className="text-[10px] font-bold mt-1 uppercase tracking-tight">Browse</span>
-                    </div>
-                  )}
-                </label>
-                <label 
-                  htmlFor="organizer-photo-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white border-2 border-white shadow-sm hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                  <Upload size={14} />
-                </label>
-              </div>
-              <p className="text-[11px] text-gray-400 text-center font-medium">Click to upload organizer profile photo</p>
-            </div>
+            {formData.organizerType === "client" ? (
+              <>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="relative group">
+                    <input 
+                      type="file" 
+                      id="organizer-photo-upload" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = URL.createObjectURL(file);
+                          updateForm("organizerPhoto", url);
+                        }
+                      }}
+                    />
+                    <label 
+                      htmlFor="organizer-photo-upload"
+                      className="w-24 h-24 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-all cursor-pointer"
+                    >
+                      {formData.organizerPhoto ? (
+                        <Image src={formData.organizerPhoto} alt="Organizer" fill className="object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-gray-400">
+                          <Users size={24} />
+                          <span className="text-[10px] font-bold mt-1 uppercase tracking-tight">Browse</span>
+                        </div>
+                      )}
+                    </label>
+                    <label 
+                      htmlFor="organizer-photo-upload"
+                      className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white border-2 border-white shadow-sm hover:bg-blue-700 transition-colors cursor-pointer"
+                    >
+                      <Upload size={14} />
+                    </label>
+                  </div>
+                  <p className="text-[11px] text-gray-400 text-center font-medium">Click to upload organizer profile photo</p>
+                </div>
 
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Organizer Name</Label>
-                <Input 
-                  value={formData.organizerName}
-                  onChange={(e) => updateForm("organizerName", e.target.value)}
-                  placeholder="Enter name" 
-                  className="h-11 border-gray-200 rounded-lg" 
-                />
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Organizer Profile Name</Label>
+                    <Input 
+                      value={formData.organizerName}
+                      onChange={(e) => updateForm("organizerName", e.target.value)}
+                      placeholder="Enter name" 
+                      className="h-11 border-gray-200 rounded-lg" 
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Mobile No</Label>
+                    <Input 
+                      value={formData.organizerContact}
+                      onChange={(e) => updateForm("organizerContact", e.target.value)}
+                      placeholder="Enter contact number" 
+                      className="h-11 border-gray-200 rounded-lg" 
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Password</Label>
+                    <Input 
+                      type="password"
+                      value={formData.organizerPassword}
+                      onChange={(e) => updateForm("organizerPassword", e.target.value)}
+                      placeholder="••••••••" 
+                      className="h-11 border-gray-200 rounded-lg" 
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex flex-col items-center gap-4 py-2">
+                   <div className="w-24 h-24 rounded-full border border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50">
+                    {formData.organizerPhoto ? (
+                      <Image src={formData.organizerPhoto} alt="Staff" fill className="object-cover" />
+                    ) : (
+                      <Users size={32} className="text-gray-300" />
+                    )}
+                   </div>
+                   <Badge className="bg-blue-50 text-blue-600 font-bold border-blue-100">Staff Selection</Badge>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Select Organizer (Staff)</Label>
+                  <Select 
+                    onValueChange={(val) => {
+                      const staff = staffList.find(s => s.empId === val);
+                      if (staff) {
+                        updateForm("organizerName", staff.name);
+                        updateForm("organizerContact", staff.mobile);
+                        updateForm("organizerPhoto", staff.profilePic || "");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500/10">
+                      <SelectValue placeholder="Browse staff members" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {staffList.length > 0 ? (
+                        staffList.map((staff) => (
+                          <SelectItem key={staff.id} value={staff.empId}>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold">{staff.name}</span>
+                              <span className="text-[10px] text-gray-400">({staff.empId})</span>
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-staff" disabled>No staff members found</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.organizerName && (
+                  <div className="p-4 bg-gray-50/50 rounded-xl border border-gray-100 space-y-2 animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Name</span>
+                      <span className="text-[13px] font-bold text-gray-700">{formData.organizerName}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact</span>
+                      <span className="text-[13px] font-bold text-gray-700">{formData.organizerContact}</span>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest translate-x-1">Contact Number</Label>
-                <Input 
-                  value={formData.organizerContact}
-                  onChange={(e) => updateForm("organizerContact", e.target.value)}
-                  placeholder="Enter contact number" 
-                  className="h-11 border-gray-200 rounded-lg" 
-                />
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -955,6 +1052,8 @@ export default function CreateEventContent() {
               tabletImage: "",
               mobileImage: "",
               organizerPhoto: "",
+              organizerType: "client",
+              organizerPassword: "",
               privacy: "public",
               __bold: false,
               __italic: false,
