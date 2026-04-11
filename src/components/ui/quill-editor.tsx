@@ -34,6 +34,8 @@ const QuillEditor = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<import('quill').default | null>(null); // Properly typed ref
   const isUpdatingRef = useRef(false);
+  const latestValueRef = useRef(value);
+  useEffect(() => { latestValueRef.current = value; });
 
   // Initialize Quill instance on mount (Client-side only)
   useEffect(() => {
@@ -73,9 +75,10 @@ const QuillEditor = ({
 
       quillRef.current = quill;
 
-      // Set initial value
-      if (value) {
-        quill.clipboard.dangerouslyPasteHTML(value);
+      // Set initial value — use latestValueRef so we get the current value
+      // even if the prop changed while Quill was loading asynchronously
+      if (latestValueRef.current) {
+        quill.clipboard.dangerouslyPasteHTML(latestValueRef.current);
       }
 
       const editor = quill;

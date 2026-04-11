@@ -23,10 +23,19 @@ export interface Vendor {
   youtube: string | null;
   facebook: string | null;
   instagram: string | null;
+  twitter: string | null;
+  linkedin: string | null;
+  whatsapp: string | null;
+  tiktok: string | null;
+  telegram: string | null;
+  pinterest: string | null;
   name: string;
   profile: string | null;
   address: string | null;
+  alt_address: string | null;
   contact: string | null;
+  alt_contact: string | null;
+  alt_email: string | null;
   email: string;
   membership: 'basic' | 'silver' | 'gold' | 'platinum';
   bank_name: string | null;
@@ -39,7 +48,8 @@ export interface Vendor {
   company_id: number | null;
   created_at: string;
   about_us: string | null;
-  cityRef?: { name: string; pincode: string } | null;
+  poweredby: string | null;
+  copywrite: string | null;
 }
 
 // Get current logged-in vendor profile
@@ -98,6 +108,44 @@ export const useUpdateVendorProfile = () => {
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
       toast.error(err.response?.data?.message || 'Failed to update profile');
+    },
+  });
+};
+
+export interface VendorAbout extends Vendor {
+  district?: { id: number; name: string } | null;
+  locality?: { id: number; name: string; pincode: string } | null;
+}
+
+const VENDOR_ABOUT_KEY = ['vendor-about'] as const;
+
+export const useVendorAbout = () => {
+  return useQuery({
+    queryKey: VENDOR_ABOUT_KEY,
+    queryFn: async () => {
+      const res = await apiClient.get('/vendors/auth/about');
+      return res.data.data as VendorAbout;
+    },
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useUpdateVendorAbout = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: Partial<VendorAbout>) => {
+      const res = await apiClient.put('/vendors/auth/about', data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
+      toast.success('About company updated successfully');
+    },
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || 'Failed to update');
     },
   });
 };

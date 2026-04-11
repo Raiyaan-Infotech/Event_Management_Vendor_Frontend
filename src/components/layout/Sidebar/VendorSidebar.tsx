@@ -262,11 +262,11 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                 {vendor.company_name}
               </p>
             )}
-            {vendor?.cityRef?.name && (
+            {/* {vendor?.cityRef?.name && (
               <p className="text-[10px] font-bold uppercase tracking-[1px] text-muted-foreground dark:text-gray-400 m-0 p-0 mt-0.5 truncate max-w-[140px]">
                 {vendor.cityRef.name}
               </p>
-            )}
+            )} */}
           </div>
         </Link>
       </SidebarHeader>
