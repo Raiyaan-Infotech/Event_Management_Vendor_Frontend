@@ -33,13 +33,14 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { WEBSITE_CONTENT_PAGES } from "@/lib/data";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
+import { useVendorPages } from "@/hooks/use-vendor-pages";
 import apiClient from "@/lib/api-client";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface QuickLinkItem {
   id: string;
+  page_id: number;
   pageName: string;
   url: string;
 }
@@ -76,7 +77,9 @@ export default function FooterPage() {
 
   // ── API hooks (same pattern as AboutCompanyPage) ──
   const { data: vendor, isLoading } = useVendorAbout();
-  const updateMutation = useUpdateVendorAbout();
+  const updateMutation = useUpdateVendorAbout('Footer saved successfully');
+  const { data: pagesData } = useVendorPages({ limit: 100 });
+  const vendorPages = pagesData?.data ?? [];
 
   // ── Logo & Brand ──────────────────────────────────
   const [logo, setLogo] = useState<string>("");
@@ -111,9 +114,7 @@ export default function FooterPage() {
   );
 
   // ── Quick Links Columns ───────────────────────────
-  const [columns, setColumns] = useState<QuickLinkColumn[]>([
-    { id: "c1", title: "", links: [{ id: "l1", pageName: "", url: "#" }] },
-  ]);
+  const [columns, setColumns] = useState<QuickLinkColumn[]>([]);
   const [pageSearchByCol, setPageSearchByCol] = useState<{
     [key: string]: string;
   }>({});
@@ -168,6 +169,30 @@ export default function FooterPage() {
     });
   }, [vendor]);
 
+  // ── Load footer_links once both vendor + pages are ready ──
+  const [footerLinksLoaded, setFooterLinksLoaded] = useState(false);
+  useEffect(() => {
+    if (footerLinksLoaded || !vendor || !vendorPages.length) return;
+    setFooterLinksLoaded(true);
+    const raw = vendor.footer_links;
+    if (raw?.length) {
+      setColumns(
+        raw.map((col, i) => ({
+          id: `c${i}-loaded`,
+          title: col.heading,
+          links: col.page_ids
+            .map((pid, j) => {
+              const page = vendorPages.find((p) => p.id === pid);
+              return page
+                ? { id: `l${i}-${j}`, page_id: page.id, pageName: page.name, url: `/website/pages/view/${page.id}` }
+                : null;
+            })
+            .filter(Boolean) as QuickLinkItem[],
+        }))
+      );
+    }
+  }, [vendor, vendorPages, footerLinksLoaded]);
+
   // ── Logo upload (same pattern as AboutCompanyPage) ──
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -208,6 +233,11 @@ export default function FooterPage() {
       }
     }
 
+    const footer_links = columns.map((col) => ({
+      heading: col.title,
+      page_ids: col.links.map((l) => l.page_id).filter(Boolean),
+    }));
+
     await updateMutation.mutateAsync({
       company_name: companyName,
       company_logo: logoUrl,
@@ -222,6 +252,7 @@ export default function FooterPage() {
       copywrite: copyright,
       ...socialUrls,
       social_visibility: socialVisibility,
+      footer_links,
     } as never);
   };
 
@@ -233,7 +264,7 @@ export default function FooterPage() {
       {
         id: Date.now().toString(),
         title: "",
-        links: [{ id: Date.now().toString(), pageName: "", url: "#" }],
+        links: [],
       },
     ]);
   };
@@ -502,7 +533,7 @@ export default function FooterPage() {
                             </div>
                           </div>
                           <div className="max-h-[200px] overflow-y-auto custom-scrollbar p-1.5 bg-white dark:bg-sidebar">
-                            {WEBSITE_CONTENT_PAGES.filter((p) =>
+                            {vendorPages.filter((p) =>
                               p.name
                                 .toLowerCase()
                                 .includes(
@@ -540,6 +571,7 @@ export default function FooterPage() {
                                                   ...c.links,
                                                   {
                                                     id: `l-${Date.now()}`,
+                                                    page_id: page.id,
                                                     pageName: page.name,
                                                     url: `/website/pages/view/${page.id}`,
                                                   },

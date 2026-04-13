@@ -126,10 +126,30 @@ export interface SocialVisibility {
   pinterest?: boolean;
 }
 
+export interface FooterLinkColumn {
+  heading: string;
+  page_ids: number[];
+}
+
+export interface NavMenuChild {
+  page_id: number;
+  label: string;
+  order: number;
+}
+
+export interface NavMenuItem {
+  label: string;
+  page_ids: number[];
+  order: number;
+  children: NavMenuChild[];
+}
+
 export interface VendorAbout extends Vendor {
   district?: { id: number; name: string } | null;
   locality?: { id: number; name: string; pincode: string } | null;
   social_visibility?: SocialVisibility | null;
+  footer_links?: FooterLinkColumn[] | null;
+  nav_menu?: NavMenuItem[] | null;
 }
 
 const VENDOR_ABOUT_KEY = ['vendor-about'] as const;
@@ -147,7 +167,7 @@ export const useVendorAbout = () => {
   });
 };
 
-export const useUpdateVendorAbout = () => {
+export const useUpdateVendorAbout = (successMessage?: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: Partial<VendorAbout>) => {
@@ -156,7 +176,7 @@ export const useUpdateVendorAbout = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
-      toast.success('About company updated successfully');
+      toast.success(successMessage ?? 'About company updated successfully');
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
