@@ -1,441 +1,221 @@
-
 'use client';
 
- 
-
 import React, { useState } from 'react';
-
 import {
-
-  Bell, Check, Settings, Search, Filter,
-
-  ChevronDown, BarChart2, Ticket, MessageSquare,
-
-  Users, Mail
-
+  Bell, Check, Settings, Search, Filter,
+  ChevronDown, BarChart2, Ticket, MessageSquare,
+  Users, Mail
 } from 'lucide-react';
-
 import { PageHeader } from '@/components/common/PageHeader';
-
 import { Button } from '@/components/ui/button';
-
 import { Input } from '@/components/ui/input';
 
- 
-
 interface NotificationItem {
-
-  id: number;
-
-  title: string;
-
-  description: string;
-
-  type: 'Ticket' | 'Message' | 'Team' | 'Email';
-
-  date: string;
-
-  time: string;
-
-  status: 'unread' | 'read';
-
-  sender?: string;
-
-  subject?: string;
-
-  preview?: string;
-
+  id: number;
+  title: string;
+  description: string;
+  type: 'Ticket' | 'Message' | 'Team' | 'Email';
+  date: string;
+  time: string;
+  status: 'unread' | 'read';
+  sender?: string;
+  subject?: string;
+  preview?: string;
 }
 
- 
-
 const mockNotifications: NotificationItem[] = [
-
-  {
-
-    id: 1,
-
-    title: 'Adrian Monino',
-
-    sender: 'Adrian Monino',
-
-    subject: 'Someone who believes in you',
-
-    preview: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
-
-    description: 'Adrian Monino: "Someone who believes in you"',
-
-    type: 'Email',
-
-    date: '3 Apr 2026',
-
-    time: '11:30 AM',
-
-    status: 'unread',
-
-  },
-
-  {
-
-    id: 2,
-
-    title: 'Albert Ansing',
-
-    sender: 'Albert Ansing',
-
-    subject: "Here's What You Missed This Week",
-
-    preview: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
-
-    description: 'Albert Ansing: "Here\'s What You Missed This Week"',
-
-    type: 'Email',
-
-    date: '3 Apr 2026',
-
-    time: '06:50 AM',
-
-    status: 'unread',
-
-  },
-
-  {
-
-    id: 3,
-
-    title: 'Carla Guden',
-
-    sender: 'Carla Guden',
-
-    subject: '4 Ways to Optimize Your Search',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Carla Guden: "4 Ways to Optimize Your Search"',
-
-    type: 'Email',
-
-    date: '3 Apr 2026',
-
-    time: 'Yesterday',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 4,
-
-    title: 'Reven Galeon',
-
-    sender: 'Reven Galeon',
-
-    subject: "We're Giving a Macbook for Free",
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Reven Galeon: "We\'re Giving a Macbook for Free"',
-
-    type: 'Email',
-
-    date: '2 Apr 2026',
-
-    time: 'Yesterday',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 5,
-
-    title: 'Elisse Tan',
-
-    sender: 'Elisse Tan',
-
-    subject: 'Keep Your Personal Data Safe',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Elisse Tan: "Keep Your Personal Data Safe"',
-
-    type: 'Email',
-
-    date: '13 Oct 2025',
-
-    time: '11:45 AM',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 6,
-
-    title: 'Marianne Audrey',
-
-    sender: 'Marianne Audrey',
-
-    subject: "We've Made Some Changes",
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Marianne Audrey: "We\'ve Made Some Changes"',
-
-    type: 'Email',
-
-    date: '13 Oct 2025',
-
-    time: '10:10 AM',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 7,
-
-    title: 'Jane Phoebe',
-
-    sender: 'Jane Phoebe',
-
-    subject: 'Grab Our Holiday Deals',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Jane Phoebe: "Grab Our Holiday Deals"',
-
-    type: 'Email',
-
-    date: '12 Oct 2025',
-
-    time: 'Oct 12',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 8,
-
-    title: 'Raffy Godinez',
-
-    sender: 'Raffy Godinez',
-
-    subject: 'Just a Few Steps Away',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Raffy Godinez: "Just a Few Steps Away"',
-
-    type: 'Email',
-
-    date: '05 Oct 2025',
-
-    time: 'Oct 05',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 9,
-
-    title: 'Allan Cadungog',
-
-    sender: 'Allan Cadungog',
-
-    subject: 'Credit Card Promos',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Allan Cadungog: "Credit Card Promos"',
-
-    type: 'Email',
-
-    date: '04 Oct 2025',
-
-    time: 'Oct 04',
-
-    status: 'read',
-
-  },
-
-  {
-
-    id: 10,
-
-    title: 'Alfie Salinas',
-
-    sender: 'Alfie Salinas',
-
-    subject: '4 Ways to Optimize Your Search',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Alfie Salinas: "4 Ways to Optimize Your Search"',
-
-    type: 'Email',
-
-    date: '02 Oct 2025',
-
-    time: 'Oct 02',
-
-    status: 'unread',
-
-  },
-
-  {
-
-    id: 11,
-
-    title: 'Jove Guden',
-
-    sender: 'Jove Guden',
-
-    subject: 'Keep Your Personal Data Safe',
-
-    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
-
-    description: 'Jove Guden: "Keep Your Personal Data Safe"',
-
-    type: 'Email',
-
-    date: '02 Oct 2025',
-
-    time: 'Oct 02',
-
-    status: 'unread',
-
-  }
-
+  {
+    id: 1,
+    title: 'Adrian Monino',
+    sender: 'Adrian Monino',
+    subject: 'Someone who believes in you',
+    preview: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
+    description: 'Adrian Monino: "Someone who believes in you"',
+    type: 'Email',
+    date: '3 Apr 2026',
+    time: '11:30 AM',
+    status: 'unread',
+  },
+  {
+    id: 2,
+    title: 'Albert Ansing',
+    sender: 'Albert Ansing',
+    subject: "Here's What You Missed This Week",
+    preview: 'enean commodo li gula eget dolor cum socia eget dolor enean commod...',
+    description: 'Albert Ansing: "Here\'s What You Missed This Week"',
+    type: 'Email',
+    date: '3 Apr 2026',
+    time: '06:50 AM',
+    status: 'unread',
+  },
+  {
+    id: 3,
+    title: 'Carla Guden',
+    sender: 'Carla Guden',
+    subject: '4 Ways to Optimize Your Search',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Carla Guden: "4 Ways to Optimize Your Search"',
+    type: 'Email',
+    date: '3 Apr 2026',
+    time: 'Yesterday',
+    status: 'read',
+  },
+  {
+    id: 4,
+    title: 'Reven Galeon',
+    sender: 'Reven Galeon',
+    subject: "We're Giving a Macbook for Free",
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Reven Galeon: "We\'re Giving a Macbook for Free"',
+    type: 'Email',
+    date: '2 Apr 2026',
+    time: 'Yesterday',
+    status: 'read',
+  },
+  {
+    id: 5,
+    title: 'Elisse Tan',
+    sender: 'Elisse Tan',
+    subject: 'Keep Your Personal Data Safe',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Elisse Tan: "Keep Your Personal Data Safe"',
+    type: 'Email',
+    date: '13 Oct 2025',
+    time: '11:45 AM',
+    status: 'read',
+  },
+  {
+    id: 6,
+    title: 'Marianne Audrey',
+    sender: 'Marianne Audrey',
+    subject: "We've Made Some Changes",
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Marianne Audrey: "We\'ve Made Some Changes"',
+    type: 'Email',
+    date: '13 Oct 2025',
+    time: '10:10 AM',
+    status: 'read',
+  },
+  {
+    id: 7,
+    title: 'Jane Phoebe',
+    sender: 'Jane Phoebe',
+    subject: 'Grab Our Holiday Deals',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Jane Phoebe: "Grab Our Holiday Deals"',
+    type: 'Email',
+    date: '12 Oct 2025',
+    time: 'Oct 12',
+    status: 'read',
+  },
+  {
+    id: 8,
+    title: 'Raffy Godinez',
+    sender: 'Raffy Godinez',
+    subject: 'Just a Few Steps Away',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Raffy Godinez: "Just a Few Steps Away"',
+    type: 'Email',
+    date: '05 Oct 2025',
+    time: 'Oct 05',
+    status: 'read',
+  },
+  {
+    id: 9,
+    title: 'Allan Cadungog',
+    sender: 'Allan Cadungog',
+    subject: 'Credit Card Promos',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Allan Cadungog: "Credit Card Promos"',
+    type: 'Email',
+    date: '04 Oct 2025',
+    time: 'Oct 04',
+    status: 'read',
+  },
+  {
+    id: 10,
+    title: 'Alfie Salinas',
+    sender: 'Alfie Salinas',
+    subject: '4 Ways to Optimize Your Search',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Alfie Salinas: "4 Ways to Optimize Your Search"',
+    type: 'Email',
+    date: '02 Oct 2025',
+    time: 'Oct 02',
+    status: 'unread',
+  },
+  {
+    id: 11,
+    title: 'Jove Guden',
+    sender: 'Jove Guden',
+    subject: 'Keep Your Personal Data Safe',
+    preview: 'viva mus elemen tum semper nisi enean vulputat enean commodo li gul...',
+    description: 'Jove Guden: "Keep Your Personal Data Safe"',
+    type: 'Email',
+    date: '02 Oct 2025',
+    time: 'Oct 02',
+    status: 'unread',
+  }
 ];
 
- 
-
 export default function NotificationPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [notifications, setNotifications] = useState(mockNotifications);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const filteredNotifications = notifications.filter(n =>
+    n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    n.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const getTypeIcon = (type: NotificationItem['type']) => {
+    switch(type) {
+      case 'Ticket': return <Ticket className="w-4 h-4 text-white" />;
+      case 'Message': return <MessageSquare className="w-4 h-4 text-white" />;
+      case 'Team': return <Users className="w-4 h-4 text-white" />;
+      case 'Email': return <Mail className="w-4 h-4 text-white" />;
+      default: return <Bell className="w-4 h-4 text-white" />;
+    }
+  };
 
- 
+  const getIconBg = (type: NotificationItem['type']) => {
+    switch(type) {
+      case 'Ticket': return 'bg-blue-500';
+      case 'Message': return 'bg-emerald-500';
+      case 'Team': return 'bg-purple-500';
+      case 'Email': return 'bg-indigo-500';
+      default: return 'bg-gray-500';
+    }
+  };
 
-  const filteredNotifications = notifications.filter(n =>
+  const markAllRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, status: 'read' })));
+  };
 
-    n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-
-    n.description.toLowerCase().includes(searchTerm.toLowerCase())
-
-  );
-
- 
-
-  const getTypeIcon = (type: NotificationItem['type']) => {
-
-    switch(type) {
-
-      case 'Ticket': return <Ticket className="w-4 h-4 text-white" />;
-
-      case 'Message': return <MessageSquare className="w-4 h-4 text-white" />;
-
-      case 'Team': return <Users className="w-4 h-4 text-white" />;
-
-      case 'Email': return <Mail className="w-4 h-4 text-white" />;
-
-      default: return <Bell className="w-4 h-4 text-white" />;
-
-    }
-
-  };
-
- 
-
-  const getIconBg = (type: NotificationItem['type']) => {
-
-    switch(type) {
-
-      case 'Ticket': return 'bg-blue-500';
-
-      case 'Message': return 'bg-emerald-500';
-
-      case 'Team': return 'bg-purple-500';
-
-      case 'Email': return 'bg-indigo-500';
-
-      default: return 'bg-gray-500';
-
-    }
-
-  };
-
- 
-
-  const markAllRead = () => {
-
-    setNotifications(notifications.map(n => ({ ...n, status: 'read' })));
-
-  };
-
- 
-
-  return (
-
-    <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar ">
-
-      <div className="space-y-6 max-w-[1700px] mx-auto">
-
-        <PageHeader
-
-          title="Notifications"
-
-          subtitle="Stay updated with your latest activities and messages"
-
-          rightContent={
-
-            <div className="flex items-center gap-3">
-
-              <Button
-
-                onClick={markAllRead}
-
-                className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 rounded-[8px] h-10 px-4 transition-all duration-200"
-
-              >
-
-                <Check className="w-4 h-4" />
-
-                <span className="font-semibold text-sm">Mark All as Read</span>
-
-              </Button>
-
-              <Button
-
-                variant="outline"
-
-                className="border-[#e2e8f0] text-gray-700 bg-white hover:bg-gray-50 rounded-[8px] h-10 px-4 flex items-center gap-2 transition-all duration-200"
-
-              >
-
-                <Settings className="w-4 h-4" />
-
-                <span className="font-semibold text-sm">Settings</span>
-
-              </Button>
-
-            </div>
-
-          }
-
-        />
-
- 
+  return (
+    <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar">
+      <div className="space-y-6 max-w-[1700px] mx-auto">
+        <PageHeader
+          title="Notifications"
+          subtitle="Stay updated with your latest activities and messages"
+          rightContent={
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={markAllRead}
+                className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2 rounded-[8px] h-10 px-4 transition-all duration-200"
+              >
+                <Check className="w-4 h-4" />
+                <span className="font-semibold text-sm">Mark All as Read</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="border-[#e2e8f0] text-gray-700 bg-white hover:bg-gray-50 rounded-[8px] h-10 px-4 flex items-center gap-2 transition-all duration-200"
+              >
+                <Settings className="w-4 h-4" />
+                <span className="font-semibold text-sm">Settings</span>
+              </Button>
+            </div>
+          }
+        />
 
         {/* Toolbar */}
 
@@ -558,27 +338,14 @@ export default function NotificationPage() {
             </tbody>
           </table>
 
-          {filteredNotifications.length === 0 && (
-
-            <div className="py-20 flex flex-col items-center justify-center text-gray-400">
-
-              <Bell className="w-12 h-12 mb-4 opacity-20" />
-
-              <p className="text-sm font-medium">No notifications found.</p>
-
-            </div>
-
-          )}
-
-        </div>
-
-      </div>
-
-    </div>
-
-  );
-
+          {filteredNotifications.length === 0 && (
+            <div className="py-20 flex flex-col items-center justify-center text-gray-400">
+              <Bell className="w-12 h-12 mb-4 opacity-20" />
+              <p className="text-sm font-medium">No notifications found.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
-
- 
-

@@ -87,7 +87,7 @@ export default function CreateWebsitePage() {
           </div>
 
           {/* Right side: Actions & Live Preview */}
-          <div className="lg:col-span-3 space-y-4 lg:sticky lg:top-8">
+          <div className="lg:col-span-3 space-y-4">
              {/* Action Buttons */}
              <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
                  <Button 
