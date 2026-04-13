@@ -202,9 +202,12 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <Badge
       variant="outline"
-      className={`rounded-lg px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wider ${map[status] || "bg-muted text-muted-foreground"}`}
+      className={cn(
+        "rounded-lg px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wider",
+        map[status] || "bg-muted text-muted-foreground"
+      )}
     >
-            {status}
+      {status}
     </Badge>
   );
 }
@@ -213,7 +216,7 @@ function StatusBadge({ status }: { status: string }) {
 export default function TablesSection() {
   return (
     <div className="space-y-6">
-              {/* Latest Leads Table (full width) */}
+      {/* Latest Leads Table (full width) */}
       <Card className="border-border shadow-sm overflow-hidden bg-card">
         <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
           <CardTitle className="font-extrabold text-[15px] tracking-tight">
@@ -250,7 +253,6 @@ export default function TablesSection() {
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-border">
-                               {" "}
                 {leads.map((lead) => (
                   <TableRow
                     key={lead.id}
@@ -277,7 +279,7 @@ export default function TablesSection() {
                     </TableCell>
                     <TableCell className="px-6 py-4">
                       <span className="text-[13px] font-bold text-muted-foreground flex items-center gap-1.5">
-                        <Calendar className="size-3 text-muted-foreground/70" />{" "}
+                        <Calendar className="size-3 text-muted-foreground/70" />
                         {lead.date}
                       </span>
                     </TableCell>
@@ -311,7 +313,6 @@ export default function TablesSection() {
             >
               <ChevronLeft className="size-3.5" />
             </Button>
-                       {" "}
             {[1, 2, 3].map((n) => (
               <Button
                 key={n}
@@ -332,9 +333,10 @@ export default function TablesSection() {
           </div>
         </CardFooter>
       </Card>
-              {/* Bottom 3 cards row */}
+      
+      {/* Bottom 3 cards row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                {/* Upcoming Schedule */}
+        {/* Upcoming Schedule */}
         <Card className="border-border shadow-sm overflow-hidden flex flex-col bg-card">
           <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
             <CardTitle className="font-extrabold text-[15px] tracking-tight">
@@ -349,7 +351,6 @@ export default function TablesSection() {
             </Button>
           </CardHeader>
           <CardContent className="px-6 py-2 divide-y divide-border flex-1">
-                       {" "}
             {schedule.map((event, i) => (
               <div key={i} className="flex gap-4 py-5 first:pt-2 last:pb-2">
                 <div
@@ -384,7 +385,6 @@ export default function TablesSection() {
                     {event.time}
                   </p>
                   <div className="flex -space-x-1.5 mt-2">
-                                       {" "}
                     {event.avatars.map((n) => (
                       <Avatar
                         key={n}
@@ -404,12 +404,13 @@ export default function TablesSection() {
               variant="link"
               className="p-0 h-auto text-[12px] font-extrabold text-primary uppercase tracking-wider group"
             >
-                            View All Schedule{" "}
+              View All Schedule
               <ArrowRight className="ml-1 group-hover:translate-x-1 transition-transform size-3" />
             </Button>
           </CardFooter>
         </Card>
-                  {/* Project Status */}
+
+        {/* Project Status */}
         <Card className="border-border shadow-sm overflow-hidden flex flex-col bg-card">
           <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
             <CardTitle className="font-extrabold text-[15px] tracking-tight">
@@ -424,7 +425,6 @@ export default function TablesSection() {
             </Button>
           </CardHeader>
           <CardContent className="px-6 py-2 divide-y divide-border flex-1">
-                       {" "}
             {projects.map((project, i) => (
               <div key={i} className="py-5 first:pt-2 last:pb-2 space-y-3">
                 <div className="flex items-center gap-3">
@@ -468,12 +468,13 @@ export default function TablesSection() {
               variant="link"
               className="p-0 h-auto text-[12px] font-extrabold text-primary uppercase tracking-wider group"
             >
-               View All Projects{" "}
+              View All Projects
               <ArrowRight className="ml-1 group-hover:translate-x-1 transition-transform size-3" />
             </Button>
           </CardFooter>
         </Card>
-         {/* Team Progress */}
+
+        {/* Team Progress */}
         <Card className="border-border shadow-sm overflow-hidden flex flex-col bg-card">
           <CardHeader className="px-6 py-5 border-b border-border flex flex-row justify-between items-center space-y-0">
             <CardTitle className="font-extrabold text-[15px] tracking-tight">
@@ -488,7 +489,6 @@ export default function TablesSection() {
             </Button>
           </CardHeader>
           <CardContent className="px-6 py-2 divide-y divide-border flex-1">
-            {" "}
             {team.map((member, i) => (
               <div key={i} className="py-5 first:pt-2 last:pb-2 space-y-3">
                 <div className="flex items-center gap-3">
@@ -511,7 +511,7 @@ export default function TablesSection() {
                     variant="outline"
                     className="rounded-lg bg-muted text-foreground font-black border-border"
                   >
-                   {member.progress}%
+                    {member.progress}%
                   </Badge>
                 </div>
                 <Progress
@@ -527,7 +527,7 @@ export default function TablesSection() {
           </CardContent>
           <CardFooter className="px-6 py-4 border-t border-border bg-muted/10">
             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-               Last intelligence update: 12m ago
+              Last intelligence update: 12m ago
             </p>
           </CardFooter>
         </Card>

@@ -36,30 +36,21 @@ export default function RootLayout({
       className={`${poppins.variable} ${poppins.className}`}
       suppressHydrationWarning
     >
-      {" "}
       <body className="antialiased">
-        {" "}
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          {" "}
           <QueryProvider>
-            {" "}
             <NavigationLoader>
-               {children}{" "}
+               {children}
             </NavigationLoader>
-            {" "}
             <Toaster position="top-right" offset="80px" richColors />
-            {" "}
           </QueryProvider>
-          {" "}
         </ThemeProvider>
-        {" "}
       </body>
-      {" "}
     </html>
   );
 }
