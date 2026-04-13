@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { WEBSITE_CONTENT_PAGES } from "@/lib/data";
+import { useCreateVendorPage } from "@/hooks/use-vendor-pages";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
@@ -15,6 +15,7 @@ import { Plus, X, Eye, ArrowLeft } from "lucide-react";
 
 export default function CreateWebsitePage() {
   const router = useRouter();
+  const { mutate: createPage, isPending } = useCreateVendorPage();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -31,19 +32,7 @@ export default function CreateWebsitePage() {
       toast.error("Please fill in all mandatory fields");
       return;
     }
-
-    const newPage = {
-      id: WEBSITE_CONTENT_PAGES.length > 0 ? Math.max(...WEBSITE_CONTENT_PAGES.map((p) => p.id)) + 1 : 1,
-      name: formData.name,
-      createdAt: new Date().toISOString().split("T")[0],
-      status: "Published",
-      description: formData.description,
-      content: formData.content,
-    };
-
-    WEBSITE_CONTENT_PAGES.push(newPage);
-    toast.success(`Page "${formData.name}" created successfully`);
-    router.push("/website/pages");
+    createPage({ name: formData.name, description: formData.description, content: formData.content });
   };
 
   return (
@@ -109,12 +98,13 @@ export default function CreateWebsitePage() {
                    <Eye className="size-4" />
                    PREVIEW
                  </Button>
-                <Button 
-                  onClick={handleSave} 
+                <Button
+                  onClick={handleSave}
+                  disabled={isPending}
                   className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
                 >
                   <Plus className="size-4" />
-                  CREATE
+                  {isPending ? "SAVING..." : "CREATE"}
                 </Button>
                 <Button 
                   onClick={() => router.push("/website/pages")} 

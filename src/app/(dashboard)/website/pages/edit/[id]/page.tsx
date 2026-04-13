@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { WEBSITE_CONTENT_PAGES } from "@/lib/data";
+import { useVendorPage, useUpdateVendorPage } from "@/hooks/use-vendor-pages";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
@@ -21,6 +21,9 @@ export default function EditWebsitePage({ params }: EditPageProps) {
   const pageId = Number(id);
   const router = useRouter();
 
+  const { data: page, isLoading } = useVendorPage(pageId);
+  const { mutate: updatePage, isPending } = useUpdateVendorPage(pageId);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -29,18 +32,14 @@ export default function EditWebsitePage({ params }: EditPageProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   useEffect(() => {
-    const page = WEBSITE_CONTENT_PAGES.find((item) => item.id === pageId);
     if (page) {
       setFormData({
         name: page.name,
         description: page.description || "",
         content: page.content || "",
       });
-    } else {
-      toast.error("Page not found");
-      router.push("/website/pages");
     }
-  }, [pageId, router]);
+  }, [page]);
 
   const updateForm = (field: "name" | "description" | "content", value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -51,22 +50,16 @@ export default function EditWebsitePage({ params }: EditPageProps) {
       toast.error("Please fill in all mandatory fields");
       return;
     }
-
-    const pageIndex = WEBSITE_CONTENT_PAGES.findIndex((p) => p.id === pageId);
-    if (pageIndex !== -1) {
-      WEBSITE_CONTENT_PAGES[pageIndex] = {
-        ...WEBSITE_CONTENT_PAGES[pageIndex],
-        name: formData.name,
-        description: formData.description,
-        content: formData.content,
-      };
-      toast.success(`Page "${formData.name}" updated successfully`);
-      router.push("/website/pages");
-    }
+    updatePage({ name: formData.name, description: formData.description, content: formData.content });
   };
 
-  if (!formData.name && !formData.description && !formData.content) {
+  if (isLoading) {
     return <div className="h-[calc(100vh-86px)] flex items-center justify-center"><p className="text-gray-500 font-bold">Loading Editor...</p></div>;
+  }
+
+  if (!page) {
+    router.push("/website/pages");
+    return null;
   }
 
   return (
@@ -133,12 +126,13 @@ export default function EditWebsitePage({ params }: EditPageProps) {
                    <Eye className="size-4" />
                    PREVIEW
                  </Button>
-                <Button 
-                  onClick={handleSave} 
+                <Button
+                  onClick={handleSave}
+                  disabled={isPending}
                   className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
                 >
                   <Plus className="size-4" />
-                  UPDATE
+                  {isPending ? "SAVING..." : "UPDATE"}
                 </Button>
                 <Button 
                   onClick={() => router.push("/website/pages")} 

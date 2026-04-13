@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Plus, Edit2, Trash2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -9,43 +9,60 @@ import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { PaginationControls } from "@/components/common/PaginationControls";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
-import { WEBSITE_CONTENT_PAGES } from "@/lib/data";
-import { toast } from "sonner";
+import { useVendorPages, useDeleteVendorPage, VendorPage } from "@/hooks/use-vendor-pages";
 
-interface PageData {
+interface PageRow {
   id: number;
   name: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export default function PagesListContent() {
   const router = useRouter();
-  const [pages, setPages] = useState<PageData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "", order: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
-  const pageColumns: Column<PageData>[] = [
-    { 
-      key: "id", 
-      label: "ID", 
-      sortable: true, 
-      render: (item) => <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">#{item.id.toString().padStart(2, '0')}</span> 
+  const { data: pagesData, isLoading } = useVendorPages({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchQuery || undefined,
+    sort_by: sortConfig.key || undefined,
+    sort_order: sortConfig.order || undefined,
+  });
+
+  const { mutate: deletePage } = useDeleteVendorPage();
+
+  const pages: PageRow[] = useMemo(() => {
+    return (pagesData?.data ?? []).map((p: VendorPage) => ({
+      id: p.id,
+      name: p.name,
+      created_at: new Date(p.createdAt).toLocaleDateString(),
+    }));
+  }, [pagesData]);
+
+  const total = pagesData?.pagination?.total ?? 0;
+
+  const pageColumns: Column<PageRow>[] = [
+    {
+      key: "id",
+      label: "ID",
+      sortable: true,
+      render: (item) => <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">#{item.id.toString().padStart(2, '0')}</span>,
     },
-    { 
-      key: "name", 
-      label: "NAME", 
-      sortable: true, 
-      render: (item) => <p className="text-[14px] font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 transition-colors tracking-tight">{item.name}</p> 
+    {
+      key: "name",
+      label: "NAME",
+      sortable: true,
+      render: (item) => <p className="text-[14px] font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 transition-colors tracking-tight">{item.name}</p>,
     },
-    { 
-      key: "createdAt", 
-      label: "CREATED AT", 
-      sortable: true, 
-      render: (item) => <p className="text-[13px] font-medium text-gray-500 dark:text-gray-500 tracking-tight">{item.createdAt}</p> 
+    {
+      key: "created_at",
+      label: "CREATED AT",
+      sortable: true,
+      render: (item) => <p className="text-[13px] font-medium text-gray-500 dark:text-gray-500 tracking-tight">{item.created_at}</p>,
     },
   ];
 
@@ -53,39 +70,9 @@ export default function PagesListContent() {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumnKeys);
   const [tempColumns, setTempColumns] = useState<string[]>(allColumnKeys);
 
-  useEffect(() => {
-    setPages(WEBSITE_CONTENT_PAGES);
-    setLoading(false);
-  }, []);
-
-  const filteredData = useMemo(() => {
-    const result = [...pages].filter(item => {
-      const matchesSearch = Object.values(item).some(val => 
-        String(val).toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      return matchesSearch;
-    });
-
-    if (sortConfig.key && sortConfig.order) {
-      result.sort((a, b) => {
-        const aVal = String(a[sortConfig.key as keyof PageData]).toLowerCase();
-        const bVal = String(b[sortConfig.key as keyof PageData]).toLowerCase();
-        if (aVal < bVal) return sortConfig.order === "asc" ? -1 : 1;
-        if (aVal > bVal) return sortConfig.order === "asc" ? 1 : -1;
-        return 0;
-      });
-    }
-    return result;
-  }, [pages, searchQuery, sortConfig]);
-
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   return (
     <div className="flex flex-col space-y-4 pt-4 pb-10">
-      <DataTableSearch 
+      <DataTableSearch
         searchQuery={searchQuery}
         onSearchChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
         placeholder="Search pages by name..."
@@ -101,25 +88,25 @@ export default function PagesListContent() {
           </div>
         }
         columnContent={
-          <ColumnToggle 
+          <ColumnToggle
             columns={pageColumns.map(c => ({ key: c.key, label: c.label }))}
             tempColumns={tempColumns}
             onToggle={(key) => setTempColumns(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])}
             onToggleAll={() => setTempColumns(tempColumns.length === allColumnKeys.length ? [] : allColumnKeys)}
-            onSave={() => { setVisibleColumns(tempColumns); toast.success("Columns updated"); }}
+            onSave={() => setVisibleColumns(tempColumns)}
           />
         }
       />
 
-      <DataTable 
-        data={paginatedData}
+      <DataTable
+        data={pages}
         columns={pageColumns}
         visibleColumns={visibleColumns}
         selectedIds={selectedIds}
         rowIdKey="id"
-        loading={loading}
+        loading={isLoading}
         onSelect={(id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])}
-        onSelectAll={() => setSelectedIds(selectedIds.length === paginatedData.length ? [] : paginatedData.map(d => d.id))}
+        onSelectAll={() => setSelectedIds(selectedIds.length === pages.length ? [] : pages.map(d => d.id))}
         onSort={(key) => setSortConfig(prev => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
         sortConfig={sortConfig}
         actionContent={(item) => (
@@ -128,22 +115,19 @@ export default function PagesListContent() {
               onClick={() => router.push(`/website/pages/view/${item.id}`)}
               className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-700"
             >
-               <Eye size={15} className="text-violet-500" /> <span className="text-[13px] font-semibold">View</span>
+              <Eye size={15} className="text-violet-500" /> <span className="text-[13px] font-semibold">View</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push(`/website/pages/edit/${item.id}`)}
               className="gap-2.5 rounded-lg py-2 cursor-pointer"
             >
-               <Edit2 size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold text-gray-600">Edit</span>
+              <Edit2 size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold text-gray-600">Edit</span>
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
-                setPages((prev) => prev.filter((page) => page.id !== item.id));
-                toast.success(`Deleted "${item.name}" page`);
-              }}
+              onClick={() => deletePage(item.id)}
               className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
             >
-               <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
+              <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
             </DropdownMenuItem>
           </>
         )}
@@ -154,10 +138,10 @@ export default function PagesListContent() {
         }
       />
 
-      <PaginationControls 
+      <PaginationControls
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
-        totalResults={filteredData.length}
+        totalResults={total}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
       />

@@ -1,22 +1,34 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
+import { useRouter } from "next/navigation";
 import { CalendarDays, FileText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { WEBSITE_CONTENT_PAGES } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useVendorPage } from "@/hooks/use-vendor-pages";
 
 interface ViewPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ViewWebsitePage({ params }: ViewPageProps) {
-  const { id } = await params;
-  const pageId = Number(id);
-  const page = WEBSITE_CONTENT_PAGES.find((item) => item.id === pageId);
+export default function ViewWebsitePage({ params }: ViewPageProps) {
+  const { id } = use(params);
+  const router = useRouter();
+  const { data: page, isLoading } = useVendorPage(Number(id));
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-86px)] flex items-center justify-center">
+        <p className="text-gray-500 font-bold">Loading...</p>
+      </div>
+    );
+  }
 
   if (!page) {
-    notFound();
+    router.push("/website/pages");
+    return null;
   }
 
   const htmlContent = page.content || "<p>No content given.</p>";
@@ -56,7 +68,7 @@ export default async function ViewWebsitePage({ params }: ViewPageProps) {
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Created At</p>
                 <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-200 mt-1 flex items-center gap-2">
                   <CalendarDays size={14} className="text-blue-500" />
-                  {page.createdAt}
+                  {new Date(page.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -81,12 +93,12 @@ export default async function ViewWebsitePage({ params }: ViewPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 flex-1 min-h-[600px] relative bg-white relative">
-             <iframe
-               title="Isolated HTML Preview"
-               srcDoc={htmlContent}
-               sandbox="allow-scripts allow-same-origin allow-popups"
-               className="absolute inset-0 w-full h-full border-0 bg-white rounded-b-xl"
-             />
+            <iframe
+              title="Isolated HTML Preview"
+              srcDoc={htmlContent}
+              sandbox="allow-scripts allow-same-origin allow-popups"
+              className="absolute inset-0 w-full h-full border-0 bg-white rounded-b-xl"
+            />
           </CardContent>
         </Card>
       </div>

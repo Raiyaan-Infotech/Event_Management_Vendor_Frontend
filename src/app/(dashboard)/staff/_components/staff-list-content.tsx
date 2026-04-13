@@ -9,8 +9,6 @@ import {
   Upload,
   Briefcase,
   Calendar,
-  Lock,
-  Unlock,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,11 +24,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { PaginationControls } from "@/components/common/PaginationControls";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
 import { SafeImage } from "@/components/ui/safe-image";
@@ -124,17 +122,18 @@ export default function StaffListContent() {
       key: "login_access",
       label: "Access",
       sortable: true,
-      align: "center",
-      render: (item) =>
-        item.login_access ? (
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 shadow-sm border border-emerald-100" title="Login Access Granted">
-            <Unlock size={14} />
-          </div>
-        ) : (
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-600 shadow-sm border border-rose-100" title="Login Access Revoked">
-            <Lock size={14} />
-          </div>
-        ),
+      render: (item) => (
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={!!item.login_access}
+            disabled
+            className="transition-all"
+          />
+          <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+            {item.login_access ? "Allowed" : "Denied"}
+          </span>
+        </div>
+      ),
     },
     {
       key: "is_active",
@@ -142,7 +141,18 @@ export default function StaffListContent() {
       sortable: true,
       render: (item) => {
         const statusMap: Record<string, string> = { "0": "Inactive", "1": "Active", "2": "Blocked" };
-        return <StatusBadge status={statusMap[item.is_active.toString()] || "Active"} />;
+        return (
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={item.is_active === 1}
+              disabled
+              className="transition-all"
+            />
+            <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+              {statusMap[item.is_active.toString()] || "Active"}
+            </span>
+          </div>
+        );
       },
     },
   ];

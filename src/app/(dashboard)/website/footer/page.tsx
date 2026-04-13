@@ -14,31 +14,29 @@ import {
   Phone,
   Mail,
   MapPin,
+  Globe,
   Facebook,
   Twitter,
   Youtube,
   Instagram,
   Linkedin,
+  MessageCircle,
+  Music,
+  Send,
+  Pin,
   Image as ImageIcon,
   Upload,
-  Trash2,
   Layout,
   Check,
   Search,
   Copyright,
-  Eye,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { WEBSITE_CONTENT_PAGES } from "@/lib/data";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import apiClient from "@/lib/api-client";
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-interface SocialLink {
-  id: string;
-  platform: string;
-  url: string;
-}
 
 interface QuickLinkItem {
   id: string;
@@ -54,13 +52,22 @@ interface QuickLinkColumn {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PLATFORMS = [
-  { name: "Facebook", icon: Facebook },
-  { name: "Twitter", icon: Twitter },
-  { name: "Instagram", icon: Instagram },
-  { name: "LinkedIn", icon: Linkedin },
-  { name: "YouTube", icon: Youtube },
-];
+const SOCIAL_PLATFORMS = [
+  { id: "website",   label: "Website",     icon: Globe,          color: "text-blue-500" },
+  { id: "youtube",   label: "YouTube",     icon: Youtube,        color: "text-red-600" },
+  { id: "facebook",  label: "Facebook",    icon: Facebook,       color: "text-blue-600" },
+  { id: "instagram", label: "Instagram",   icon: Instagram,      color: "text-pink-600" },
+  { id: "twitter",   label: "Twitter / X", icon: Twitter,        color: "text-gray-700 dark:text-gray-200" },
+  { id: "linkedin",  label: "LinkedIn",    icon: Linkedin,       color: "text-blue-700" },
+  { id: "whatsapp",  label: "WhatsApp",    icon: MessageCircle,  color: "text-green-500" },
+  { id: "tiktok",    label: "TikTok",      icon: Music,          color: "text-black dark:text-white" },
+  { id: "telegram",  label: "Telegram",    icon: Send,           color: "text-blue-400" },
+  { id: "pinterest", label: "Pinterest",   icon: Pin,            color: "text-red-500" },
+] as const;
+
+const DEFAULT_VISIBILITY = Object.fromEntries(
+  SOCIAL_PLATFORMS.map((p) => [p.id, true])
+) as Record<string, boolean>;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -96,12 +103,12 @@ export default function FooterPage() {
   });
 
   // ── Social Links ──────────────────────────────────
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([
-    { id: "1", platform: "Facebook", url: "" },
-    { id: "2", platform: "Twitter", url: "" },
-    { id: "3", platform: "YouTube", url: "" },
-    { id: "4", platform: "LinkedIn", url: "" },
-  ]);
+  const [socialUrls, setSocialUrls] = useState<Record<string, string>>(
+    Object.fromEntries(SOCIAL_PLATFORMS.map((p) => [p.id, ""]))
+  );
+  const [socialVisibility, setSocialVisibility] = useState<Record<string, boolean>>(
+    { ...DEFAULT_VISIBILITY }
+  );
 
   // ── Quick Links Columns ───────────────────────────
   const [columns, setColumns] = useState<QuickLinkColumn[]>([
@@ -123,7 +130,7 @@ export default function FooterPage() {
 
     setLogo(vendor.company_logo || "");
     setCompanyName(vendor.company_name || "");
-    setDescription(vendor.about_us || "");
+    setDescription(vendor.short_description || "");
     setCopyright(vendor.copywrite || "");
     setPoweredBy(vendor.poweredby || "");
 
@@ -141,17 +148,24 @@ export default function FooterPage() {
       address: vendor.address || "",
     });
 
-    // Map social links from vendor fields to the socialLinks array
-    const mapped: SocialLink[] = [];
-    const add = (platform: string, url: string) => {
-      if (url) mapped.push({ id: platform, platform, url });
-    };
-    add("Facebook", vendor.facebook || "");
-    add("Twitter", vendor.twitter || "");
-    add("YouTube", vendor.youtube || "");
-    add("LinkedIn", vendor.linkedin || "");
-    add("Instagram", vendor.instagram || "");
-    if (mapped.length) setSocialLinks(mapped);
+    // Map social URLs from vendor fields
+    setSocialUrls({
+      website:   vendor.website   || "",
+      youtube:   vendor.youtube   || "",
+      facebook:  vendor.facebook  || "",
+      instagram: vendor.instagram || "",
+      twitter:   vendor.twitter   || "",
+      linkedin:  vendor.linkedin  || "",
+      whatsapp:  vendor.whatsapp  || "",
+      tiktok:    vendor.tiktok    || "",
+      telegram:  vendor.telegram  || "",
+      pinterest: vendor.pinterest || "",
+    });
+    // Map social visibility (merge with defaults so new platforms default to true)
+    setSocialVisibility({
+      ...DEFAULT_VISIBILITY,
+      ...(vendor.social_visibility ?? {}),
+    });
   }, [vendor]);
 
   // ── Logo upload (same pattern as AboutCompanyPage) ──
@@ -194,19 +208,6 @@ export default function FooterPage() {
       }
     }
 
-    // Build social media map from socialLinks array
-    const socialMap: Record<string, string> = {
-      facebook: "",
-      twitter: "",
-      youtube: "",
-      linkedin: "",
-      instagram: "",
-    };
-    socialLinks.forEach((l) => {
-      const key = l.platform.toLowerCase();
-      socialMap[key] = l.url;
-    });
-
     await updateMutation.mutateAsync({
       company_name: companyName,
       company_logo: logoUrl,
@@ -216,31 +217,13 @@ export default function FooterPage() {
       contact: altContact.mobile,
       alt_email: altContact.email,
       address: altContact.address,
-      about_us: description,
+      short_description: description,
       poweredby: poweredBy,
       copywrite: copyright,
-      ...socialMap,
+      ...socialUrls,
+      social_visibility: socialVisibility,
     } as never);
   };
-
-  // ── Social link helpers ───────────────────────────
-  const addSocialLink = () => {
-    if (socialLinks.length >= 6) return toast.error("Max 6 social links.");
-    setSocialLinks([
-      ...socialLinks,
-      { id: Date.now().toString(), platform: "Facebook", url: "" },
-    ]);
-  };
-  const removeSocialLink = (id: string) =>
-    setSocialLinks(socialLinks.filter((l) => l.id !== id));
-  const updateSocialLink = (
-    id: string,
-    field: keyof SocialLink,
-    value: string,
-  ) =>
-    setSocialLinks(
-      socialLinks.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
-    );
 
   // ── Column helpers ────────────────────────────────
   const addColumn = () => {
@@ -276,8 +259,20 @@ export default function FooterPage() {
     });
     setCopyright(vendor.copywrite || "");
     setPoweredBy(vendor.poweredby || "");
-    setDescription(vendor.about_us || "");
-    setSocialLinks([]);
+    setDescription(vendor.short_description || "");
+    setSocialUrls({
+      website:   vendor.website   || "",
+      youtube:   vendor.youtube   || "",
+      facebook:  vendor.facebook  || "",
+      instagram: vendor.instagram || "",
+      twitter:   vendor.twitter   || "",
+      linkedin:  vendor.linkedin  || "",
+      whatsapp:  vendor.whatsapp  || "",
+      tiktok:    vendor.tiktok    || "",
+      telegram:  vendor.telegram  || "",
+      pinterest: vendor.pinterest || "",
+    });
+    setSocialVisibility({ ...DEFAULT_VISIBILITY, ...(vendor.social_visibility ?? {}) });
     setColumns([]);
     toast.info("All settings reset.");
   };
@@ -392,55 +387,50 @@ export default function FooterPage() {
 
               {/* Social Links */}
               <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-bold uppercase tracking-wider text-gray-400">
-                    Social Links
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addSocialLink}
-                    className="h-8 text-xs font-bold gap-1"
-                  >
-                    <Plus size={14} /> Add link
-                  </Button>
-                </div>
+                <Label className="text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Social Links
+                </Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {socialLinks.map((link) => (
-                    <div
-                      key={link.id}
-                      className="flex gap-2 items-center bg-gray-50/50 dark:bg-white/5 p-2 rounded-lg border border-gray-100 dark:border-gray-800"
-                    >
-                      <select
-                        value={link.platform}
-                        onChange={(e) =>
-                          updateSocialLink(link.id, "platform", e.target.value)
-                        }
-                        className="bg-transparent text-sm font-semibold outline-none w-24"
+                  {SOCIAL_PLATFORMS.map((platform) => {
+                    const isOn = socialVisibility[platform.id] !== false;
+                    return (
+                      <div
+                        key={platform.id}
+                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                          isOn
+                            ? "bg-gray-50/50 dark:bg-white/5 border-gray-100 dark:border-gray-800"
+                            : "bg-gray-50/20 dark:bg-white/2 border-gray-100/50 dark:border-gray-800/50 opacity-50"
+                        }`}
                       >
-                        {PLATFORMS.map((p) => (
-                          <option key={p.name} value={p.name}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                      <Input
-                        value={link.url}
-                        onChange={(e) =>
-                          updateSocialLink(link.id, "url", e.target.value)
-                        }
-                        placeholder="URL"
-                        className="h-8 text-xs border-none bg-white dark:bg-sidebar shadow-none"
-                      />
-                      <button
-                        onClick={() => removeSocialLink(link.id)}
-                        className="text-gray-400 hover:text-red-500 px-2 transition-colors"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                        <platform.icon className={`size-4 flex-shrink-0 ${platform.color}`} />
+                        <Input
+                          value={socialUrls[platform.id] || ""}
+                          onChange={(e) =>
+                            setSocialUrls((prev) => ({ ...prev, [platform.id]: e.target.value }))
+                          }
+                          placeholder={platform.label}
+                          className="h-8 text-xs border-none bg-white dark:bg-sidebar shadow-none flex-1 min-w-0"
+                        />
+                        {/* Toggle */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSocialVisibility((prev) => ({ ...prev, [platform.id]: !isOn }))
+                          }
+                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-none ${
+                            isOn ? "bg-primary" : "bg-red-500"
+                          }`}
+                          title={isOn ? "Visible — click to hide" : "Hidden — click to show"}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transform transition-transform duration-200 ${
+                              isOn ? "translate-x-4" : "translate-x-0.5"
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -782,7 +772,7 @@ export default function FooterPage() {
                   <Label className="text-sm font-semibold">Powered By</Label>
                   <Input
                     value={poweredBy}
-                    onChange={(e) => setPoweredBy(e.target.value)}
+                    disabled
                     placeholder="Type Powered By text..."
                     className="h-11 border-gray-200 dark:border-gray-800"
                   />

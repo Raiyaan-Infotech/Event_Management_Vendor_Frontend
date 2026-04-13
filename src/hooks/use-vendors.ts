@@ -48,6 +48,7 @@ export interface Vendor {
   company_id: number | null;
   created_at: string;
   about_us: string | null;
+  short_description: string | null;
   poweredby: string | null;
   copywrite: string | null;
 }
@@ -112,9 +113,23 @@ export const useUpdateVendorProfile = () => {
   });
 };
 
+export interface SocialVisibility {
+  website?: boolean;
+  youtube?: boolean;
+  facebook?: boolean;
+  instagram?: boolean;
+  twitter?: boolean;
+  linkedin?: boolean;
+  whatsapp?: boolean;
+  tiktok?: boolean;
+  telegram?: boolean;
+  pinterest?: boolean;
+}
+
 export interface VendorAbout extends Vendor {
   district?: { id: number; name: string } | null;
   locality?: { id: number; name: string; pincode: string } | null;
+  social_visibility?: SocialVisibility | null;
 }
 
 const VENDOR_ABOUT_KEY = ['vendor-about'] as const;

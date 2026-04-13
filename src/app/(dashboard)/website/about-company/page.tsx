@@ -119,7 +119,7 @@ export default function AboutCompanyPage() {
     setIsEditing(false);
   };
 
-  const city = vendor?.district?.name ?? "";
+  const city = vendor?.locality?.name ?? "";
 
   if (isLoading) {
     return (

@@ -22,15 +22,15 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { PaginationControls } from "@/components/common/PaginationControls";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
 import { SafeImage } from "@/components/ui/safe-image";
-import { useVendorClients, useDeleteVendorClient, VendorClient } from "@/hooks/use-vendor-clients";
+import { useVendorClients, useDeleteVendorClient, useToggleVendorClientLoginAccess, useUpdateVendorClientStatus, VendorClient } from "@/hooks/use-vendor-clients";
 
 const planStyles: Record<string, string> = {
   "silver":        "bg-slate-100 text-slate-600 border-slate-200",
@@ -136,10 +136,40 @@ export default function ClientsListContent() {
       render: (item) => <p className="text-[13px] font-black text-gray-700 dark:text-gray-300 tracking-tight">{item.city}</p>,
     },
     {
+      key: "login_access",
+      label: "Login Access",
+      sortable: false,
+      render: (item) => (
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={!!item.login_access}
+            onCheckedChange={() => toggleLoginAccess.mutate({ id: item.id, login_access: item.login_access ? 0 : 1 })}
+            disabled={toggleLoginAccess.isPending}
+            className="transition-all"
+          />
+          <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+            {item.login_access ? "Allowed" : "Denied"}
+          </span>
+        </div>
+      ),
+    },
+    {
       key: "status",
       label: "Status",
       sortable: true,
-      render: (item) => <StatusBadge status={statusLabels[item.is_active.toString()] || "Active"} />,
+      render: (item) => (
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={item.is_active === 1}
+            onCheckedChange={() => updateStatusMutation.mutate({ id: item.id, is_active: item.is_active === 1 ? 0 : 1 })}
+            disabled={updateStatusMutation.isPending}
+            className="transition-all"
+          />
+          <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+            {statusLabels[item.is_active.toString()] || "Active"}
+          </span>
+        </div>
+      ),
     },
   ];
 
@@ -160,7 +190,9 @@ export default function ClientsListContent() {
     sort_order: (sortConfig.order?.toUpperCase() as "ASC" | "DESC") || "DESC",
   });
 
-  const deleteMutation = useDeleteVendorClient();
+  const deleteMutation          = useDeleteVendorClient();
+  const toggleLoginAccess       = useToggleVendorClientLoginAccess();
+  const updateStatusMutation    = useUpdateVendorClientStatus();
 
   const clients      = clientsRes?.data || [];
   const totalRecords = clientsRes?.pagination?.total || 0;

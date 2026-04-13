@@ -500,119 +500,62 @@ export default function NotificationPage() {
         <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm overflow-hidden mb-10">
 
           <table className="w-full text-left border-collapse">
-
             <thead>
-
               <tr className="border-b border-gray-50 bg-gray-50/50">
-
                 <th className="py-4 px-6 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Notification</th>
-
                 <th className="py-4 px-6 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-center">Type</th>
-
                 <th className="py-4 px-6 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-center">Date</th>
-
                 <th className="py-4 px-6 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-right">Status</th>
-
               </tr>
-
             </thead>
-
             <tbody>
-
               {filteredNotifications.map((n) => (
-
                 <tr key={n.id} className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/80 transition-colors group`}>
-
                   <td className="py-5 px-6">
-
                     <div className="flex items-center gap-4">
-
                       {/* Icon */}
-
                       <div className={`shrink-0 w-10 h-10 rounded-[8px] ${getIconBg(n.type)} flex items-center justify-center shadow-sm`}>
-
                         {getTypeIcon(n.type)}
-
                       </div>
-
                       <div className="min-w-0">
-
                         {n.type === 'Email' ? (
-
                           <div className="space-y-0.5">
-
                             <h4 className="text-[14px] font-bold text-gray-800 group-hover:text-primary transition-colors truncate">{n.sender}</h4>
-
                             <p className="text-[13px] font-semibold text-gray-700 truncate">{n.subject}</p>
-
                             <p className="text-[12px] text-gray-500 line-clamp-1 italic">{n.preview}</p>
-
                           </div>
-
                         ) : (
-
                           <>
-
                             <h4 className="text-[14px] font-bold text-gray-800 mb-0.5 group-hover:text-primary transition-colors truncate">{n.title}</h4>
-
                             <p className="text-[13px] text-gray-500 line-clamp-1">{n.description}</p>
-
                           </>
-
                         )}
-
                       </div>
-
                     </div>
-
                   </td>
-
                   <td className="py-5 px-6">
-
                     <div className="flex justify-center">
-
                       <span className="text-[12px] font-semibold text-gray-600 px-3 py-1 bg-gray-100 rounded-full">{n.type}</span>
-
                     </div>
-
                   </td>
-
                   <td className="py-5 px-6">
-
                     <div className="flex flex-col items-center justify-center">
-
                       <p className="text-foreground text-[13px] font-medium">{n.date}</p>
-
                       <p className="text-muted-foreground text-[11px]">{n.time}</p>
-
                     </div>
-
                   </td>
-
                   <td className="py-5 px-6">
-
                     <div className="flex justify-end">
-
                       <span className={`inline-flex items-center justify-center w-[70px] h-6 rounded-[3px] text-[11px] font-bold uppercase ${
-
                         n.status === 'read' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-
                       }`}>
-
                         {n.status}
-
                       </span>
-
                     </div>
-
                   </td>
-
                 </tr>
-
               ))}
-
             </tbody>
-
           </table>
 
           {filteredNotifications.length === 0 && (

@@ -13,6 +13,7 @@ export interface VendorClient {
   registration_type: 'guest' | 'client';
   plan: 'silver' | 'gold' | 'platinum' | 'standard' | 'not_subscribed';
   is_active: 0 | 1 | 2; // 0=inactive, 1=active, 2=blocked
+  login_access: 0 | 1;
   address: string | null;
   country: string | null;
   state: string | null;
@@ -114,6 +115,24 @@ export const useDeleteVendorClient = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to delete client');
+    },
+  });
+};
+
+export const useToggleVendorClientLoginAccess = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, login_access }: { id: number | string; login_access: 0 | 1 }) => {
+      const res = await apiClient.put(`/vendors/clients/${id}`, { login_access });
+      return res.data.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: CLIENTS_KEY });
+      queryClient.invalidateQueries({ queryKey: [...CLIENTS_KEY, variables.id] });
+      toast.success(`Login access ${variables.login_access ? 'granted' : 'revoked'}`);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update login access');
     },
   });
 };
