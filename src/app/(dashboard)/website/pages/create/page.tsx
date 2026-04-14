@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Plus, X, Eye, ArrowLeft } from "lucide-react";
+import { PersistenceActions } from "@/components/common/PersistenceActions";
 
 export default function CreateWebsitePage() {
   const router = useRouter();
@@ -88,33 +89,15 @@ export default function CreateWebsitePage() {
 
           {/* Right side: Actions & Live Preview */}
           <div className="lg:col-span-3 space-y-4">
-             {/* Action Buttons */}
-             <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
-                 <Button 
-                   onClick={() => setIsPreviewOpen(true)}
-                   variant="outline" 
-                   className="w-full h-14 border-emerald-200 dark:border-emerald-500/30 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl border-2 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
-                 >
-                   <Eye className="size-4" />
-                   PREVIEW
-                 </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={isPending}
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
-                >
-                  <Plus className="size-4" />
-                  {isPending ? "SAVING..." : "CREATE"}
-                </Button>
-                <Button 
-                  onClick={() => router.push("/website/pages")} 
-                  variant="outline" 
-                  className="w-full h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-bold gap-2 shadow-sm hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center"
-                >
-                  <X className="size-4" strokeWidth={2.5} />
-                  CANCEL
-                </Button>
-             </div>
+            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+                <PersistenceActions 
+                  onSave={handleSave}
+                  onCancel={() => router.push("/website/pages")}
+                  onPreview={() => setIsPreviewOpen(true)}
+                  saveLabel={isPending ? "SAVING..." : "CREATE"}
+                  isSubmitting={isPending}
+                />
+            </div>
           </div>
         </div>
 

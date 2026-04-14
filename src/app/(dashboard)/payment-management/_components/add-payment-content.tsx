@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { FormGroup } from "@/components/common/FormGroup";
 import { CommonCard } from "@/components/common/CommonCard";
-import { ActionFooter } from "@/components/common/ActionFooter";
+import { PersistenceActions } from "@/components/common/PersistenceActions";
 
 interface AddPaymentContentProps {
   isView?: boolean;
@@ -322,7 +322,16 @@ export default function AddPaymentContent({ isView = false }: AddPaymentContentP
           </div>
 
           {/* Action Sidebar */}
-          <div className="flex-1 space-y-6">
+          <div className="flex-1 space-y-6 lg:sticky lg:top-8">
+            {/* Standard Action Card */}
+            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <PersistenceActions 
+                onSave={handleSubmit}
+                onCancel={() => router.push("/payment-management")}
+                saveLabel="SAVE PAYMENT"
+              />
+            </div>
+
             <CommonCard 
               title="Summary" 
               subtitle="Finalize the payment record" 
@@ -335,19 +344,12 @@ export default function AddPaymentContent({ isView = false }: AddPaymentContentP
                   <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Entry Date</span>
                   <span className="text-[13px] font-bold text-gray-800 dark:text-gray-100">{new Date().toLocaleDateString()}</span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-gray-50 dark:border-gray-800/50">
+                <div className="flex justify-between items-center py-3">
                   <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Payment Type</span>
                   <span className="text-[13px] font-bold text-blue-600 uppercase tracking-tight">{formData.paymentType}</span>
                 </div>
-                
-                <ActionFooter 
-                  onSave={handleSubmit}
-                  onCancel={() => router.push("/payment-management")}
-                  saveLabel="Save Payment"
-                />
               </div>
             </CommonCard>
-
 
             <div className="bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm">
               <div className="space-y-4">

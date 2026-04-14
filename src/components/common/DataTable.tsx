@@ -30,6 +30,7 @@ interface DataTableProps<T> {
   loading?: boolean;
   emptyContent?: React.ReactNode;
   rowIdKey: keyof T;
+  noCard?: boolean;
 }
 
 export function DataTable<T>({ 
@@ -44,12 +45,16 @@ export function DataTable<T>({
   actionContent,
   loading = false,
   emptyContent,
-  rowIdKey
+  rowIdKey,
+  noCard = false
 }: DataTableProps<T>) {
   const filteredColumns = columns.filter(col => visibleColumns.includes(col.key));
   
   return (
-    <div className="flex-1 min-h-0 bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col mb-4">
+    <div className={cn(
+      "flex-1 min-h-0 flex flex-col",
+      !noCard && "bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden mb-4"
+    )}>
       <div className="flex-1 overflow-auto custom-scrollbar relative">
         <table className="w-full text-left border-separate border-spacing-0 min-w-[1100px]">
           <thead className="sticky top-0 z-20 bg-white dark:bg-[#1f2937] shadow-sm">
