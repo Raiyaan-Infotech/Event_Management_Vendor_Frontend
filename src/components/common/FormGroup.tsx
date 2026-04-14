@@ -4,7 +4,6 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { icon } from "@fortawesome/fontawesome-svg-core";
 
 interface FormGroupProps {
   label: string;

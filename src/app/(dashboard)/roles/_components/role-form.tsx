@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { CommonCard } from "@/components/common/CommonCard";
 import { FormGroup } from "@/components/common/FormGroup";
-import { ActionFooter } from "@/components/common/ActionFooter";
+import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { Shield, FileText, ChevronDown, ChevronRight } from "lucide-react";
 import {
   useCreateVendorRole,
@@ -127,133 +127,129 @@ export default function RoleForm({ role }: RoleFormProps) {
   const allSelected = allPermissionIds.length > 0 && allPermissionIds.every((id) => selectedPermissions.has(id));
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl">
-      {/* Role Details */}
-      <CommonCard title="Role Details" subtitle="Basic information" icon={Shield} iconColorClass="text-blue-600" iconBgClass="bg-blue-50 dark:bg-blue-500/10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormGroup label="Role Name" icon={Shield} error={errors.name} required>
-            <Input
-              value={name}
-              onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: "" })); }}
-              placeholder="e.g. Event Coordinator"
-              className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm ${errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
-            />
-          </FormGroup>
-          <FormGroup label="Description" icon={FileText}>
-            <Input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Short description"
-              className="h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"
-            />
-          </FormGroup>
-        </div>
-        <div className="flex items-center justify-between mt-6 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
-          <Switch checked={isActive} onCheckedChange={setIsActive} />
-        </div>
-      </CommonCard>
-
-      {/* Permissions */}
-      <CommonCard title="Permissions" subtitle="Assign module permissions" icon={Shield} iconColorClass="text-purple-600" iconBgClass="bg-purple-50 dark:bg-purple-500/10">
-        {/* Select All */}
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
-          <div className="flex items-center gap-3">
-            <Checkbox
-              checked={allSelected}
-              onCheckedChange={(checked) => toggleAll(!!checked)}
-            />
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Select All Permissions</span>
+    <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000">
+      {/* Left Column: Form Content */}
+      <div className="lg:col-span-9 space-y-6">
+        {/* Role Details */}
+        <CommonCard title="Role Details" subtitle="Basic information" icon={Shield} iconColorClass="text-blue-600" iconBgClass="bg-blue-50 dark:bg-blue-500/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormGroup label="Role Name" icon={Shield} error={errors.name} required>
+              <Input
+                value={name}
+                onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: "" })); }}
+                placeholder="e.g. Event Coordinator"
+                className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm ${errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+              />
+            </FormGroup>
+            <FormGroup label="Description" icon={FileText}>
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Short description"
+                className="h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"
+              />
+            </FormGroup>
           </div>
-          <div className="flex items-center gap-3 text-xs">
-            <button type="button" className="text-blue-600 hover:underline" onClick={() => setExpandedModules(new Set())}>
-              Collapse all
-            </button>
-            <span className="text-gray-300">|</span>
-            <button
-              type="button"
-              className="text-blue-600 hover:underline"
-              onClick={() => setExpandedModules(new Set(modules?.map((m) => m.slug) ?? []))}
-            >
-              Expand all
-            </button>
+          <div className="flex items-center justify-between mt-6 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
+            <Switch checked={isActive} onCheckedChange={setIsActive} />
           </div>
-        </div>
+        </CommonCard>
 
-        {modulesLoading ? (
-          <div className="text-center py-8 text-sm text-gray-400">Loading permissions...</div>
-        ) : (
-          <div className="space-y-2">
-            {modules?.map((mod) => {
-              const isExpanded = expandedModules.has(mod.slug);
-              const modPermIds = mod.permissions.map((p) => p.id);
-              const modAllSelected = modPermIds.length > 0 && modPermIds.every((id) => selectedPermissions.has(id));
-              const modSomeSelected = modPermIds.some((id) => selectedPermissions.has(id));
+        {/* Permissions */}
+        <CommonCard title="Permissions" subtitle="Assign module permissions" icon={Shield} iconColorClass="text-purple-600" iconBgClass="bg-purple-50 dark:bg-purple-500/10">
+          {/* Select All */}
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-3">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={(checked) => toggleAll(!!checked)}
+              />
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Select All Permissions</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <button type="button" className="text-blue-600 hover:underline" onClick={() => setExpandedModules(new Set())}>
+                Collapse all
+              </button>
+              <span className="text-gray-300">|</span>
+              <button
+                type="button"
+                className="text-blue-600 hover:underline"
+                onClick={() => setExpandedModules(new Set(modules?.map((m) => m.slug) ?? []))}
+              >
+                Expand all
+              </button>
+            </div>
+          </div>
 
-              return (
-                <div key={mod.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-                  {/* Module Header */}
-                  <div
-                    className="flex items-center gap-3 px-4 py-3 bg-gray-50/80 dark:bg-gray-800/30 cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors"
-                    onClick={() => toggleModule(mod.slug)}
-                  >
-                    <Checkbox
-                      checked={modAllSelected}
-                      data-state={modSomeSelected && !modAllSelected ? "indeterminate" : undefined}
-                      onCheckedChange={(checked) => toggleModuleAll(mod.permissions, !!checked)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    {isExpanded ? <ChevronDown size={16} className="text-gray-400" /> : <ChevronRight size={16} className="text-gray-400" />}
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{mod.name}</span>
-                    <span className="text-[10px] font-bold text-gray-400 ml-auto">
-                      {modPermIds.filter((id) => selectedPermissions.has(id)).length}/{modPermIds.length}
-                    </span>
-                  </div>
+          {modulesLoading ? (
+            <div className="text-center py-8 text-sm text-gray-400">Loading permissions...</div>
+          ) : (
+            <div className="space-y-2">
+              {modules?.map((mod) => {
+                const isExpanded = expandedModules.has(mod.slug);
+                const modPermIds = mod.permissions.map((p) => p.id);
+                const modAllSelected = modPermIds.length > 0 && modPermIds.every((id) => selectedPermissions.has(id));
+                const modSomeSelected = modPermIds.some((id) => selectedPermissions.has(id));
 
-                  {/* Permissions */}
-                  {isExpanded && (
-                    <div className="px-6 py-3 flex flex-wrap gap-x-6 gap-y-2">
-                      {mod.permissions.map((perm) => {
-                        const action = perm.slug.split(".").pop() || perm.name;
-                        return (
-                          <div key={perm.id} className="flex items-center gap-2">
-                            <Checkbox
-                              id={`perm-${perm.id}`}
-                              checked={selectedPermissions.has(perm.id)}
-                              onCheckedChange={() => togglePermission(perm.id)}
-                            />
-                            <label htmlFor={`perm-${perm.id}`} className="text-sm cursor-pointer capitalize text-gray-600 dark:text-gray-400">
-                              {action}
-                            </label>
-                          </div>
-                        );
-                      })}
+                return (
+                  <div key={mod.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                    {/* Module Header */}
+                    <div
+                      className="flex items-center gap-3 px-4 py-3 bg-gray-50/80 dark:bg-gray-800/30 cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors"
+                      onClick={() => toggleModule(mod.slug)}
+                    >
+                      <Checkbox
+                        checked={modAllSelected}
+                        data-state={modSomeSelected && !modAllSelected ? "indeterminate" : undefined}
+                        onCheckedChange={(checked) => toggleModuleAll(mod.permissions, !!checked)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      {isExpanded ? <ChevronDown size={16} className="text-gray-400" /> : <ChevronRight size={16} className="text-gray-400" />}
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{mod.name}</span>
+                      <span className="text-[10px] font-bold text-gray-400 ml-auto">
+                        {modPermIds.filter((id) => selectedPermissions.has(id)).length}/{modPermIds.length}
+                      </span>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </CommonCard>
 
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <Button
-          onClick={handleSubmit}
-          disabled={isPending}
-          className="rounded-2xl h-11 px-8 font-semibold shadow-md"
-        >
-          {isPending ? "Saving..." : role ? "Update Role" : "Create Role"}
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => router.push("/roles")}
-          disabled={isPending}
-          className="rounded-2xl h-11 px-8"
-        >
-          Cancel
-        </Button>
+                    {/* Permissions */}
+                    {isExpanded && (
+                      <div className="px-6 py-3 flex flex-wrap gap-x-6 gap-y-2">
+                        {mod.permissions.map((perm) => {
+                          const action = perm.slug.split(".").pop() || perm.name;
+                          return (
+                            <div key={perm.id} className="flex items-center gap-2">
+                              <Checkbox
+                                id={`perm-${perm.id}`}
+                                checked={selectedPermissions.has(perm.id)}
+                                onCheckedChange={() => togglePermission(perm.id)}
+                              />
+                              <label htmlFor={`perm-${perm.id}`} className="text-sm cursor-pointer capitalize text-gray-600 dark:text-gray-400">
+                                {action}
+                              </label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CommonCard>
+      </div>
+
+      {/* Right Column: Sticky Sidebar Actions */}
+      <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
+        <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <PersistenceActions 
+            onSave={handleSubmit}
+            onCancel={() => router.push("/roles")}
+            saveLabel={role ? "UPDATE ROLE" : "CREATE ROLE"}
+            isSubmitting={isPending}
+          />
+        </div>
       </div>
     </div>
   );

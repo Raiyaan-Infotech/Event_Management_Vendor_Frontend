@@ -5,7 +5,8 @@ import {
   Download, 
   Upload,
   CreditCard,
-  FileText
+  FileText,
+  Layout
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,7 @@ export default function PaymentManagementContent() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "", order: null });
+  const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "date", order: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filterStatus, setFilterStatus] = useState("All");
@@ -92,9 +93,7 @@ export default function PaymentManagementContent() {
         const parsed = JSON.parse(savedColumns);
         setVisibleColumns(parsed);
         setTempColumns(parsed);
-      } catch {
-        /* invalid saved columns */
-      }
+      } catch { }
     }
     setLoading(false);
   }, []);
@@ -127,7 +126,7 @@ export default function PaymentManagementContent() {
   );
 
   const handleExport = () => toast.success("Payments exported successfully");
-  const handleImport = () => toast.info("Import feature refactored.");
+  const handleImport = () => toast.info("Import feature needs backend processing.");
 
   return (
     <div className="h-[calc(100vh-86px)] flex flex-col space-y-4 max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden pt-8 pb-3">
@@ -198,39 +197,42 @@ export default function PaymentManagementContent() {
         }
       />
 
-      <DataTable 
-        data={paginatedData}
-        columns={paymentColumns}
-        visibleColumns={visibleColumns}
-        selectedIds={selectedIds}
-        rowIdKey="id"
-        loading={loading}
-        onSelect={(id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])}
-        onSelectAll={() => setSelectedIds(selectedIds.length === paginatedData.length ? [] : paginatedData.map(d => d.id))}
-        onSort={(key) => setSortConfig(prev => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
-        sortConfig={sortConfig}
-        actionContent={() => (
-          <DropdownMenuItem className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
-             <Download size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">Receipt</span>
-          </DropdownMenuItem>
-        )}
-        emptyContent={
-          <div className="flex flex-col items-center justify-center space-y-5 animate-in fade-in duration-700">
-            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
-               <FileText size={32} />
+      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+        <DataTable 
+          data={paginatedData}
+          columns={paymentColumns}
+          visibleColumns={visibleColumns}
+          selectedIds={selectedIds}
+          rowIdKey="id"
+          loading={loading}
+          onSelect={(id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])}
+          onSelectAll={() => setSelectedIds(selectedIds.length === paginatedData.length ? [] : paginatedData.map(d => d.id))}
+          onSort={(key) => setSortConfig(prev => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
+          sortConfig={sortConfig}
+          noCard={true}
+          actionContent={() => (
+            <DropdownMenuItem className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
+               <Download size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">Receipt</span>
+            </DropdownMenuItem>
+          )}
+          emptyContent={
+            <div className="flex flex-col items-center justify-center space-y-5 animate-in fade-in duration-700">
+              <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+                 <Layout size={32} />
+              </div>
+              <h4 className="text-2xl font-bold text-gray-800">No transactions found</h4>
             </div>
-            <h4 className="text-2xl font-bold text-gray-800">No transactions found</h4>
-          </div>
-        }
-      />
-
-      <PaginationControls 
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        totalResults={filteredData.length}
-        onPageChange={setCurrentPage}
-        onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
-      />
+          }
+        />
+  
+        <PaginationControls 
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          totalResults={filteredData.length}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
+        />
+      </div>
     </div>
   );
 }

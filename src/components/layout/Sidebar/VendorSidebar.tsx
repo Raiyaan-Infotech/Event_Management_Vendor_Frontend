@@ -132,7 +132,16 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Pages",          href: "/website/pages",                    icon: List      },
       { label: "Menu",           href: "/website/menu",                     icon: List      },
       { label: "Home",           href: "/website/home",                     icon: Home      },
-      { label: "Home Slider",    href: "/website/home-slider",              icon: Sliders   },
+     
+ { 
+        label: "Home Slider",    
+        icon: Sliders,
+        children: [
+          { label: "Simple Slider", href: "/website/home-slider/simple-slider", icon: List },
+          { label: "Advance Slider", href: "/website/home-slider/advance-slider", icon: List },
+        ]
+      },
+
       { label: "Gallery",        href: "/website/gallery",                  icon: Images    },
       { label: "Portfolio",      href: "/website/portfolio-management",     icon: Briefcase },
       { label: "Events",         href: "/website/events-management",        icon: Calendar  },
@@ -440,7 +449,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                                               }`}
                                             />
                                           </div>
-                                          <span className="text-[11px] font-semibold">{sub.label}</span>
+                                          <span className="text-[12px] font-semibold">{sub.label}</span>
                                         </Link>
                                       </SidebarMenuButton>
                                     </SidebarMenuItem>

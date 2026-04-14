@@ -35,7 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { FormGroup } from "@/components/common/FormGroup";
 import { CommonCard } from "@/components/common/CommonCard";
-import { ActionFooter } from "@/components/common/ActionFooter";
+import { PersistenceActions } from "@/components/common/PersistenceActions";
 
 // High-Fidelity Location Hierarchy Data
 
@@ -1430,7 +1430,18 @@ export function AddClientContent({
           </div>
 
           {/* Right Column - Sidebar */}
-          <div className="flex-1 space-y-8">
+          <div className="flex-1 space-y-8 lg:sticky lg:top-8">
+            {/* Action Buttons - Top of Sidebar */}
+            {!isView && (
+              <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <PersistenceActions
+                  onSave={handleSave}
+                  onCancel={() => router.push("/clients")}
+                  saveLabel={isEdit ? "UPDATE CLIENT" : "SAVE CLIENT"}
+                />
+              </div>
+            )}
+
             {/* Section 4: Photo Card */}
             <div className="bg-white dark:bg-gray-800/40 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm text-center">
               <div className="relative w-32 h-32 mx-auto mb-6 group cursor-pointer">
@@ -1607,36 +1618,23 @@ export function AddClientContent({
               </div>
             </div>
 
-            {/* Action Buttons - Hide in View Mode */}
-            {!isView && (
-              <div className="space-y-4">
-                <ActionFooter
-                  onSave={handleSave}
-                  onCancel={() => router.push("/clients")}
-                  saveLabel={
-                    isEdit ? "UPDATE CLIENT RECORD" : "SAVE CLIENT RECORD"
-                  }
-                />
-
-                {/* Registration Tip Card */}
-                <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800/50 p-6 shadow-sm border-dashed">
-                  <div>
-                    <h4 className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-[0.1em] mb-1.5 flex items-center gap-2">
-                      <Check
-                        size={14}
-                        className="text-blue-600 dark:text-blue-400"
-                        strokeWidth={3}
-                      />{" "}
-                      Registration Tip
-                    </h4>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed italic">
-                      Ensure the mobile number is unique. This will be used as
-                      the primary identifier for event notifications and login.
-                    </p>
-                  </div>
-                </div>
+            {/* Registration Tip Card */}
+            <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800/50 p-6 shadow-sm border-dashed">
+              <div>
+                <h4 className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-[0.1em] mb-1.5 flex items-center gap-2">
+                  <Check
+                    size={14}
+                    className="text-blue-600 dark:text-blue-400"
+                    strokeWidth={3}
+                  />{" "}
+                  Registration Tip
+                </h4>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed italic">
+                  Ensure the mobile number is unique. This will be used as
+                  the primary identifier for event notifications and login.
+                </p>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

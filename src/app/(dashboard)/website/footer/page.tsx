@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PersistenceActions } from "@/components/common/PersistenceActions";
 import {
   Plus,
   X,
@@ -816,32 +817,13 @@ export default function FooterPage() {
           {/* ── Right Column: Sticky Actions ─────────────────── */}
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
             <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
-              <Button
-                onClick={handleSave}
-                disabled={updateMutation.isPending}
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
-              >
-                <Plus className="size-4" />
-                {updateMutation.isPending ? "SAVING..." : "UPDATE"}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleReset}
-                className="w-full h-11 font-bold text-[12px] tracking-wide uppercase rounded-xl"
-              >
-                Reset
-              </Button>
-
-              <Button
-                onClick={() => router.push("/website/management")}
-                variant="outline"
-                className="w-full h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-bold gap-2 shadow-sm hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center"
-              >
-                <X className="size-4" strokeWidth={2.5} />
-                CANCEL
-              </Button>
+            <PersistenceActions 
+              onSave={handleSave}
+              onReset={handleReset}
+              onCancel={() => router.push("/website/management")}
+              saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
+              isSubmitting={updateMutation.isPending}
+            />
             </div>
           </div>
         </div>

@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faArrowLeft, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,7 +73,7 @@ export default function ForgotPasswordPage() {
             {sent ? (
               <div className="mt-6 flex flex-col items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                  <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-2xl" />
+                  <CheckCircle2 className="text-green-500 w-7 h-7" />
                 </div>
                 <p className="text-sm text-center text-muted-foreground">
                   If <span className="font-semibold text-foreground">{email}</span> is registered, an OTP has been sent. It expires in 10 minutes.
@@ -88,7 +87,7 @@ export default function ForgotPasswordPage() {
                   </Button>
                 </Link>
                 <Link href="/login" className="text-xs text-primary hover:underline font-medium flex items-center gap-1.5">
-                  <FontAwesomeIcon icon={faArrowLeft} /> Back to login
+                  <ArrowLeft size={14} /> Back to login
                 </Link>
               </div>
             ) : (
@@ -96,9 +95,8 @@ export default function ForgotPasswordPage() {
                 <div className="space-y-0.5">
                   <Label htmlFor="email" className="text-xs">Email</Label>
                   <div className="relative">
-                    <FontAwesomeIcon
-                      icon={faEnvelope}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"
+                    <Mail
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4"
                     />
                     <Input
                       id="email"
@@ -137,7 +135,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="text-center pt-1">
                   <Link href="/login" className="text-xs text-primary hover:underline font-medium flex items-center justify-center gap-1.5">
-                    <FontAwesomeIcon icon={faArrowLeft} /> Back to login
+                    <ArrowLeft size={14} /> Back to login
                   </Link>
                 </div>
               </form>

@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { Plus, X, Phone, Mail, MapPin, Globe, Share2, Facebook, Twitter, MessageCircle, Send, Youtube, Instagram, Linkedin, Music, Pin, Image as ImageIcon, Edit, Eye } from "lucide-react";
+import { Plus, X, Phone, Mail, MapPin, Globe, Share2, Facebook, Twitter, MessageCircle, Send, Youtube, Instagram, Linkedin, Music, Pin, Image as ImageIcon, Edit, Eye, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import apiClient from "@/lib/api-client";
+import { PersistenceActions } from "@/components/common/PersistenceActions";
 
 export default function AboutCompanyPage() {
   const router = useRouter();
@@ -117,6 +118,38 @@ export default function AboutCompanyPage() {
       ...socialMedia,
     } as never);
     setIsEditing(false);
+  };
+
+  const handleReset = () => {
+    if (!vendor) return;
+    setLogoImage(vendor.company_logo || null);
+    setCompanyName(vendor.company_name || "");
+    setAboutUsContent(vendor.about_us || "");
+    setDefaultContact({
+      mobile: vendor.company_contact || "",
+      email: vendor.company_email || "",
+      address: vendor.company_address || "",
+    });
+    setAltContact({
+      mobile:      vendor.contact      || "",
+      alt_mobile:  vendor.alt_contact  || "",
+      email:       vendor.alt_email    || "",
+      address:     vendor.address      || "",
+      alt_address: vendor.alt_address  || "",
+    });
+    setSocialMedia({
+      website:   vendor.website   || "",
+      facebook:  vendor.facebook  || "",
+      twitter:   vendor.twitter   || "",
+      whatsapp:  vendor.whatsapp  || "",
+      telegram:  vendor.telegram  || "",
+      youtube:   vendor.youtube   || "",
+      instagram: vendor.instagram || "",
+      linkedin:  vendor.linkedin  || "",
+      tiktok:    vendor.tiktok    || "",
+      pinterest: vendor.pinterest || "",
+    });
+    toast.info("All settings reset.");
   };
 
   const city = vendor?.locality?.name ?? "";
@@ -335,7 +368,6 @@ export default function AboutCompanyPage() {
         {/* Sticky Sidebar Actions */}
         <div className="lg:col-span-3 space-y-4 lg:sticky lg:top-8">
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
-
             <Button
               onClick={() => setIsEditing(!isEditing)}
               className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
@@ -348,27 +380,13 @@ export default function AboutCompanyPage() {
               {isEditing ? "PREVIEW" : "EDIT"}
             </Button>
 
-            <Button
-              onClick={handleSave}
-              disabled={!isEditing || updateMutation.isPending}
-              className={`w-full h-12 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl border-none transition-all duration-300 flex items-center justify-center gap-3 ${
-                isEditing
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 active:scale-95"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
-              }`}
-            >
-              <Plus className="size-4" />
-              {updateMutation.isPending ? "SAVING..." : "UPDATE"}
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => router.push("/website/management")}
-              className="w-full h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-bold gap-2 shadow-sm hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center"
-            >
-              <X className="size-4" strokeWidth={2.5} />
-              CANCEL
-            </Button>
+            <PersistenceActions 
+              onSave={handleSave}
+              onReset={handleReset}
+              onCancel={() => router.push("/website/management")}
+              saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
+              isSubmitting={updateMutation.isPending}
+            />
           </div>
         </div>
       </div>

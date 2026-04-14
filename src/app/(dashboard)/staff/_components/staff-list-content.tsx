@@ -9,6 +9,7 @@ import {
   Upload,
   Briefcase,
   Calendar,
+  Layout,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -198,7 +199,6 @@ export default function StaffListContent() {
 
   const handleExport = () => {
     if (employees.length === 0) return toast.error("No data to export");
-
     const headers = ["ID", "Emp ID", "Name", "Designation", "Mobile", "Email", "DOJ", "Status", "Login Access"];
     const csvContent = [
       headers.join(","),
@@ -216,7 +216,6 @@ export default function StaffListContent() {
         ].join(",")
       ),
     ].join("\n");
-
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url  = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -229,13 +228,7 @@ export default function StaffListContent() {
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      toast.error("Please upload a valid CSV file");
-      return;
-    }
-    toast.info("Import feature is currently being migrated to API. This will be available soon.");
+    toast.info("Import feature is currently being migrated to API.");
   };
 
   return (
@@ -316,47 +309,51 @@ export default function StaffListContent() {
         }
       />
 
-      <DataTable
-        data={employees}
-        columns={staffColumns}
-        visibleColumns={visibleColumns}
-        selectedIds={selectedIds}
-        rowIdKey="id"
-        loading={loading}
-        onSelect={(id) => setSelectedIds((prev) => prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id])}
-        onSelectAll={() => setSelectedIds(selectedIds.length === employees.length ? [] : employees.map((d) => d.id))}
-        onSort={(key) => setSortConfig((prev) => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
-        sortConfig={sortConfig}
-        actionContent={(item) => (
-          <>
-            <DropdownMenuItem onClick={() => router.push(`/staff/view/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
-              <Eye size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">View</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push(`/staff/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
-              <Edit2 size={15} className="text-emerald-500" /> <span className="text-[13px] font-semibold">Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setEmployeeToDelete(item)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
-              <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
-            </DropdownMenuItem>
-          </>
-        )}
-        emptyContent={
-          <div className="flex flex-col items-center justify-center space-y-5 animate-in fade-in duration-700">
-            <h4 className="text-2xl font-bold text-gray-800">No staff found</h4>
-            {searchQuery && <Button variant="outline" onClick={() => setSearchQuery("")}>Clear Search</Button>}
-          </div>
-        }
-      />
+      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+        <DataTable
+          data={employees}
+          columns={staffColumns}
+          visibleColumns={visibleColumns}
+          selectedIds={selectedIds}
+          rowIdKey="id"
+          loading={loading}
+          onSelect={(id) => setSelectedIds((prev) => prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id])}
+          onSelectAll={() => setSelectedIds(selectedIds.length === employees.length ? [] : employees.map((d) => d.id))}
+          onSort={(key) => setSortConfig((prev) => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
+          sortConfig={sortConfig}
+          noCard={true}
+          actionContent={(item) => (
+            <>
+              <DropdownMenuItem onClick={() => router.push(`/staff/view/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
+                <Eye size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">View</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(`/staff/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
+                <Edit2 size={15} className="text-emerald-500" /> <span className="text-[13px] font-semibold">Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setEmployeeToDelete(item)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
+                <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
+              </DropdownMenuItem>
+            </>
+          )}
+          emptyContent={
+            <div className="flex flex-col items-center justify-center space-y-5 animate-in fade-in duration-700">
+               <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+                  <Layout size={32} />
+               </div>
+               <h4 className="text-2xl font-bold text-gray-800">No staff found</h4>
+            </div>
+          }
+        />
+  
+        <PaginationControls
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          totalResults={totalRecords}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
+        />
+      </div>
 
-      <PaginationControls
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        totalResults={totalRecords}
-        onPageChange={setCurrentPage}
-        onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
-      />
-
-      {/* Delete Confirmation Dialog */}
       <Dialog open={!!employeeToDelete} onOpenChange={(open) => !open && setEmployeeToDelete(null)}>
         <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
