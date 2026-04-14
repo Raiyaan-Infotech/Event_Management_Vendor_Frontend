@@ -21,9 +21,9 @@ interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
   visibleColumns: string[];
-  selectedIds: (string | number)[];
-  onSelectAll: () => void;
-  onSelect: (id: string | number) => void;
+  selectedIds?: (string | number)[];
+  onSelectAll?: () => void;
+  onSelect?: (id: string | number) => void;
   onSort?: (key: string) => void;
   sortConfig?: { key: string; order: "asc" | "desc" | null };
   actionContent?: (item: T) => React.ReactNode;
@@ -37,9 +37,9 @@ export function DataTable<T>({
   data, 
   columns, 
   visibleColumns, 
-  selectedIds, 
-  onSelectAll, 
-  onSelect,
+  selectedIds = [], 
+  onSelectAll = () => {}, 
+  onSelect = () => {},
   onSort,
   sortConfig,
   actionContent,

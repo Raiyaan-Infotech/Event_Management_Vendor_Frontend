@@ -62,8 +62,31 @@ export default function GalleryPage() {
   });
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>(["preview", "eventName", "city", "createdAt", "actions"]);
+  const [tempColumns, setTempColumns] = useState<string[]>(["preview", "eventName", "city", "createdAt"]);
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSelectAll = () => {
+    const filteredData = galleryItems.filter(item => 
+      item.eventName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      item.city.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    if (selectedIds.length === filteredData.length && filteredData.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredData.map(item => item.id));
+    }
+  };
+
+  const handleSelect = (id: string | number) => {
+    setSelectedIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(i => i !== id) 
+        : [...prev, id]
+    );
+  };
 
   // Column definitions for DataTable
   const galleryColumns: Column<GalleryItem>[] = [
@@ -323,11 +346,16 @@ export default function GalleryPage() {
              </div>
           </div>
         }
-        columnToggle={
+        columnContent={
           <ColumnToggle 
-            columns={galleryColumns.filter(c => c.key !== 'actions')} 
-            visibleColumns={visibleColumns} 
-            onChange={setVisibleColumns} 
+            columns={galleryColumns.filter(c => c.key !== 'actions').map(c => ({ key: c.key, label: c.label }))} 
+            tempColumns={tempColumns} 
+            onToggle={(key) => setTempColumns(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])}
+            onToggleAll={() => setTempColumns(tempColumns.length === galleryColumns.filter(c => c.key !== 'actions').length ? [] : galleryColumns.filter(c => c.key !== 'actions').map(c => c.key))}
+            onSave={() => {
+              setVisibleColumns([...tempColumns, "actions"]);
+              toast.success("Columns updated");
+            }}
           />
         }
       />
@@ -340,7 +368,11 @@ export default function GalleryPage() {
             item.city.toLowerCase().includes(searchQuery.toLowerCase())
           )}
           visibleColumns={visibleColumns}
-          isLoading={false}
+          selectedIds={selectedIds}
+          onSelectAll={handleSelectAll}
+          onSelect={handleSelect}
+          rowIdKey="id"
+          loading={false}
         />
       </div>
     </div>

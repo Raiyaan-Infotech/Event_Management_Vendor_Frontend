@@ -6,7 +6,7 @@ import { LucideIcon, Plus } from "lucide-react";
 interface ActionButtonProps extends ButtonProps {
   label: string;
   icon?: LucideIcon;
-  variant_type?: "Client" | "Staff" | "Payment";
+  variant_type?: "Client" | "Staff" | "Payment" | "Event";
 }
 
 export function ActionButton({ label, icon: Icon = Plus, variant_type = "Client", className, ...props }: ActionButtonProps) {
@@ -14,7 +14,7 @@ export function ActionButton({ label, icon: Icon = Plus, variant_type = "Client"
   
   if (variant_type === "Staff") {
     styles = "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/20";
-  } else if (variant_type === "Payment") {
+  } else if (variant_type === "Payment" || variant_type === "Event") {
     styles = "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-emerald-500/20";
   }
 

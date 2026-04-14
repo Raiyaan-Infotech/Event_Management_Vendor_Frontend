@@ -393,3 +393,30 @@ export const WEBSITE_CONTENT_PAGES = [
 </div>`,
   },
 ];
+
+export const MOCK_TESTIMONIALS = [
+  {
+    id: "1",
+    name: "Aman Gupta",
+    eventName: "Tech Summit 2024",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    comment: "The team was incredible! They handled the entire tech summit with absolute perfection. Highly recommended for corporate events.",
+    status: true
+  },
+  {
+    id: "2",
+    name: "Sneha Reddy",
+    eventName: "Grand Wedding Gala",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    comment: "Words cannot describe how beautiful our wedding was. Every detail was meticulously planned and executed flawlessly.",
+    status: true
+  },
+  {
+    id: "3",
+    name: "Vikram Malhotra",
+    eventName: "Launch Party",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    comment: "Sleek, modern, and high-energy! The launch party was a huge hit with our clients. Thanks for the amazing work.",
+    status: false
+  }
+];

@@ -4,8 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faArrowLeft, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { Eye, EyeOff, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,7 +115,7 @@ function ResetPasswordForm() {
             {done ? (
               <div className="mt-6 flex flex-col items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                  <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-2xl" />
+                  <CheckCircle2 className="text-green-500 w-7 h-7" />
                 </div>
                 <p className="text-sm text-center text-muted-foreground">
                   Redirecting to login…
@@ -176,7 +175,7 @@ function ResetPasswordForm() {
                       onClick={() => setShowNew((p) => !p)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      <FontAwesomeIcon icon={showNew ? faEye : faEyeSlash} />
+                      {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                   {touched.newPassword && errors.newPassword && <p className="text-xs text-red-500">{errors.newPassword}</p>}
@@ -202,7 +201,7 @@ function ResetPasswordForm() {
                       onClick={() => setShowConfirm((p) => !p)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      <FontAwesomeIcon icon={showConfirm ? faEye : faEyeSlash} />
+                      {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                   {touched.confirmPassword && errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
@@ -218,7 +217,7 @@ function ResetPasswordForm() {
 
                 <div className="text-center pt-1">
                   <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium flex items-center justify-center gap-1.5">
-                    <FontAwesomeIcon icon={faArrowLeft} /> Resend OTP
+                    <ArrowLeft size={14} /> Resend OTP
                   </Link>
                 </div>
               </form>
