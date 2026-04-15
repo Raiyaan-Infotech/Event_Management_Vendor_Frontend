@@ -930,6 +930,9 @@ export function AddClientContent({
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+
   useEffect(() => {
     if (initialData) {
       setProfilePic(initialData.profile_pic || null);
@@ -1063,38 +1066,19 @@ export function AddClientContent({
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        const img = new Image();
-        img.src = reader.result as string;
-        img.onload = () => {
-          // Professional client-side compression
-          const canvas = document.createElement("canvas");
-          const MAX_SIZE = 400; // Small but high quality for avatars
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_SIZE) {
-              height *= MAX_SIZE / width;
-              width = MAX_SIZE;
-            }
-          } else {
-            if (height > MAX_SIZE) {
-              width *= MAX_SIZE / height;
-              height = MAX_SIZE;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          // Save as lightweight JPEG
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.8);
-          setProfilePic(compressedBase64);
-        };
+        setImageToCrop(reader.result as string);
+        setCropperOpen(true);
+        e.target.value = "";
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (croppedBase64: string) => {
+    setProfilePic(croppedBase64);
+    if (errors.profilePic) setErrors((prev) => ({ ...prev, profilePic: "" }));
+    setCropperOpen(false);
+    setImageToCrop(null);
   };
 
   return (

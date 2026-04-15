@@ -36,6 +36,7 @@ import {
   Star,
   Building2,
   type LucideIcon,
+  Handshake,
 } from "lucide-react";
 import {
   Sidebar,
@@ -143,7 +144,12 @@ const NAV_ITEMS: NavItem[] = [
       },
 
       { label: "Gallery",        href: "/website/gallery",                  icon: Images    },
-      { label: "Portfolio",      href: "/website/portfolio-management",     icon: Briefcase },
+      { label: "Portfolio",   icon: Briefcase,
+        children: [
+          { label:"Events", href: "/website/portfolio-management/events", icon: Briefcase},
+          {label:"Clients", href: "/website/portfolio-management/clients", icon: Users},
+          {label:"Sponsers", href: "/website/portfolio-management/sponsors", icon: Handshake}]
+          },
       { label: "Events",         href: "/website/events-management",        icon: Calendar  },
       { label: "Subscription",   href: "/website/subscription-management",  icon: CreditCard },
       { label: "Testimonial",    href: "/website/testimonial-management",   icon: Star      },

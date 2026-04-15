@@ -1,80 +1,69 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { 
-  Plus, 
-  Trash2, 
-  Edit, 
-  Eye, 
-  Download,
-  Upload,
-  Search, 
-  Image as ImageIcon,
-  X,
-  Edit2,
-  Sliders,
-  Layout
-} from "lucide-react";
+import React, { useState } from "react";
+import { Trash2, Edit, Image as ImageIcon, Layout } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import Image from "next/image";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogTitle 
-} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl } from "@/lib/utils";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { PaginationControls } from "@/components/common/PaginationControls";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
-
-interface Slider {
-  id: string;
-  title: string;
-  buttonLabel: string;
-  buttonUrl: string;
-  buttonColor: string;
-  image: string;
-  status: string;
-  isActive: boolean;
-}
+import {
+  useVendorSliders,
+  useDeleteVendorSlider,
+  VendorSlider,
+} from "@/hooks/use-vendor-sliders";
 
 export default function SimpleSliderList() {
   const router = useRouter();
-  const [sliders, setSliders] = useState<Slider[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "id", order: "desc" });
+  const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "created_at", order: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewData, setPreviewData] = useState<Slider | null>(null);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { data, isLoading } = useVendorSliders({
+    type: "basic",
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchQuery || undefined,
+    sort_by: sortConfig.key,
+    sort_order: sortConfig.order ?? "desc",
+    ...(filterStatus !== "All" && { status: filterStatus.toLowerCase() as "published" | "draft" }),
+  });
 
-  const sliderColumns: Column<Slider>[] = [
+  const deleteMutation = useDeleteVendorSlider();
+  const [sliderToDelete, setSliderToDelete] = useState<VendorSlider | null>(null);
+
+  const handleDelete = async () => {
+    if (!sliderToDelete) return;
+    await deleteMutation.mutateAsync(sliderToDelete.id);
+    setSliderToDelete(null);
+  };
+
+  const sliders = data?.data ?? [];
+  const total = data?.pagination?.total ?? 0;
+
+  const sliderColumns: Column<VendorSlider>[] = [
     {
       key: "id",
       label: "ID",
       sortable: true,
       render: (item) => (
         <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">
-          #{item.id.slice(-4)}
+          #{String(item.id).slice(-4)}
         </span>
       ),
     },
@@ -89,26 +78,25 @@ export default function SimpleSliderList() {
       ),
     },
     {
-      key: "buttonLabel",
+      key: "button_label",
       label: "Button",
-      sortable: true,
       render: (item) => (
         <div className="flex flex-col gap-0.5">
-           <span className="text-[13px] font-bold text-gray-600 dark:text-gray-400 leading-none">{item.buttonLabel}</span>
-           <span className="text-[10px] font-medium text-blue-500/80 italic">{item.buttonUrl}</span>
+          <span className="text-[13px] font-bold text-gray-600 dark:text-gray-400 leading-none">{item.button_label}</span>
+          <span className="text-[10px] font-medium text-blue-500/80 italic">{item.page?.name ?? "—"}</span>
         </div>
       ),
     },
     {
-      key: "image",
+      key: "image_path",
       label: "Image",
       render: (item) => (
         <div className="w-16 h-10 bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 relative shadow-sm group-hover:scale-110 transition-transform">
-           {item.image ? (
-             <Image src={item.image} alt={item.title} fill className="object-cover" />
-           ) : (
-             <ImageIcon size={14} className="text-gray-300 absolute inset-0 m-auto" />
-           )}
+          {item.image_path ? (
+            <Image src={resolveMediaUrl(item.image_path)} alt={item.title} fill className="object-cover" />
+          ) : (
+            <ImageIcon size={14} className="text-gray-300 absolute inset-0 m-auto" />
+          )}
         </div>
       ),
     },
@@ -118,10 +106,22 @@ export default function SimpleSliderList() {
       sortable: true,
       render: (item) => (
         <Badge className={cn(
-           "text-[10px] font-bold px-3 py-0.5 rounded-full border-none shadow-sm",
-           item.status === "Published" ? "bg-emerald-500 text-white" : "bg-gray-400 text-white"
+          "text-[10px] font-bold px-3 py-0.5 rounded-full border-none shadow-sm",
+          item.status === "published" ? "bg-emerald-500 text-white" : "bg-gray-400 text-white"
         )}>
-           {item.status.toUpperCase()}
+          {item.status.toUpperCase()}
+        </Badge>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Active",
+      render: (item) => (
+        <Badge className={cn(
+          "text-[10px] font-bold px-3 py-0.5 rounded-full border-none shadow-sm",
+          item.is_active ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-500"
+        )}>
+          {item.is_active ? "YES" : "NO"}
         </Badge>
       ),
     },
@@ -131,99 +131,23 @@ export default function SimpleSliderList() {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumnKeys);
   const [tempColumns, setTempColumns] = useState<string[]>(allColumnKeys);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("vendor_sliders_data");
-    if (saved) {
-      setSliders(JSON.parse(saved));
-    } else {
-      const initial = [
-        { id: "1", title: "learn", buttonLabel: "click new", buttonUrl: "/events", buttonColor: "#3b82f6", image: "", status: "Published", isActive: true },
-        { id: "2", title: "property", buttonLabel: "view", buttonUrl: "/portfolio", buttonColor: "#3b82f6", image: "", status: "Published", isActive: true },
-        { id: "3", title: "villa", buttonLabel: "checkout", buttonUrl: "/contact", buttonColor: "#3b82f6", image: "", status: "Published", isActive: true },
-      ];
-      setSliders(initial);
-      localStorage.setItem("vendor_sliders_data", JSON.stringify(initial));
-    }
-  }, []);
-
-  const handleDelete = (id: string) => {
-    const updated = sliders.filter(s => s.id !== id);
-    setSliders(updated);
-    localStorage.setItem("vendor_sliders_data", JSON.stringify(updated));
-    toast.success("Slider removed");
-  };
-
-  const handleExport = () => {
-    if (sliders.length === 0) return toast.error("No data to export");
-    const headers = ["ID", "Title", "Button Label", "Button URL", "Status"];
-    const csvContent = [
-      headers.join(","),
-      ...sliders.map((s) => [s.id, `"${s.title}"`, `"${s.buttonLabel}"`, `"${s.buttonUrl}"`, `"${s.status}"`].join(","))
-    ].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `simple_sliders_${new Date().toISOString().split("T")[0]}.csv`;
-    link.click();
-    toast.success("Sliders exported successfully");
-  };
-
-  const handleImport = () => {
-    toast.info("Import feature requires backend CSV processing.");
-  };
-
-  const filteredSliders = useMemo(() => {
-    let result = sliders.filter(s => 
-      (s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-       s.buttonLabel.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (filterStatus === "All" || s.status === filterStatus)
-    );
-
-    if (sortConfig.key && sortConfig.order) {
-       result.sort((a, b) => {
-          const aValue = a[sortConfig.key as keyof Slider];
-          const bValue = b[sortConfig.key as keyof Slider];
-          if (aValue < bValue) return sortConfig.order === "asc" ? -1 : 1;
-          if (aValue > bValue) return sortConfig.order === "asc" ? 1 : -1;
-          return 0;
-       });
-    }
-
-    return result;
-  }, [sliders, searchQuery, sortConfig]);
-
-  const paginatedSliders = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredSliders.slice(start, start + itemsPerPage);
-  }, [filteredSliders, currentPage, itemsPerPage]);
-
   return (
     <div className="h-[calc(100vh-86px)] flex flex-col space-y-4 max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden pt-8 pb-3">
       <PageHeader
         title="Simple Slider"
         subtitle="Manage homepage banners, buttons, and visual sliding content."
-        total={filteredSliders.length}
+        total={total}
         rightContent={
-          <div className="flex items-center gap-2">
-            <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
-              <Upload size={15} strokeWidth={2.5} /> Import
-            </Button>
-            <Button variant="outline" onClick={handleExport} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
-              <Download size={15} strokeWidth={2.5} /> Export
-            </Button>
-            <Link href="/website/home-slider/simple-slider/add">
-              <ActionButton label="ADD SLIDER" variant_type="Client" />
-            </Link>
-          </div>
+          <Link href="/website/home-slider/simple-slider/add">
+            <ActionButton label="ADD SLIDER" variant_type="Client" />
+          </Link>
         }
       />
 
       <DataTableSearch
         searchQuery={searchQuery}
         onSearchChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
-        placeholder="Search sliders by title or button label..."
+        placeholder="Search sliders by title..."
         isFiltered={filterStatus !== "All"}
         filterContent={
           <div className="space-y-4">
@@ -251,40 +175,39 @@ export default function SimpleSliderList() {
             tempColumns={tempColumns}
             onToggle={(key) => setTempColumns((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key])}
             onToggleAll={() => setTempColumns(tempColumns.length === allColumnKeys.length ? [] : allColumnKeys)}
-            onSave={() => {
-              setVisibleColumns(tempColumns);
-              toast.success("Columns updated");
-            }}
+            onSave={() => { setVisibleColumns(tempColumns); toast.success("Columns updated"); }}
           />
         }
       />
 
       <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
-          data={paginatedSliders}
+          data={sliders}
           columns={sliderColumns}
           visibleColumns={visibleColumns}
           selectedIds={selectedIds}
           rowIdKey="id"
-          loading={false}
+          loading={isLoading}
           onSelect={(id) => setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])}
-          onSelectAll={() => setSelectedIds(selectedIds.length === paginatedSliders.length ? [] : paginatedSliders.map((s) => s.id))}
+          onSelectAll={() => setSelectedIds(selectedIds.length === sliders.length ? [] : sliders.map((s) => s.id))}
           onSort={(key) => setSortConfig((prev) => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
           sortConfig={sortConfig}
           noCard={true}
           actionContent={(item) => (
             <>
               <DropdownMenuItem
-                onClick={() => router.push(`/website/home-slider/simple-slider/edit/${item.id}`)}
+                onClick={() => router.push(`/website/home-slider/simple-slider/add?edit=${item.id}`)}
                 className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600"
               >
-                <Edit size={15} className="text-emerald-500" /> <span className="text-[13px] font-semibold">Edit</span>
+                <Edit size={15} className="text-emerald-500" />
+                <span className="text-[13px] font-semibold">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleDelete(item.id)}
+                onClick={() => setSliderToDelete(item)}
                 className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
               >
-                <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
+                <Trash2 size={15} />
+                <span className="text-[13px] font-semibold">Delete</span>
               </DropdownMenuItem>
             </>
           )}
@@ -297,36 +220,44 @@ export default function SimpleSliderList() {
             </div>
           }
         />
-  
         <PaginationControls
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}
-          totalResults={filteredSliders.length}
+          totalResults={total}
           onPageChange={setCurrentPage}
           onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
         />
       </div>
 
-      {/* Full Preview Modal */}
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-[1100px] border-none shadow-2xl p-0 aspect-[16/9] overflow-hidden rounded-3xl bg-slate-950/90 backdrop-blur-xl">
-          <DialogTitle className="sr-only">Simple Slider Preview</DialogTitle>
-           {previewData && (
-             <div className="relative w-full h-full">
-                {previewData.image ? (
-                  <Image src={previewData.image} alt="Full" fill className="object-cover opacity-80" />
-                ) : null}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 bg-black/20">
-                   <h2 className="text-white text-5xl font-black uppercase tracking-tighter drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] animate-in slide-in-from-top-4 duration-700">{previewData.title}</h2>
-                   <Button style={{ backgroundColor: previewData.buttonColor }} className="h-14 px-16 rounded-full text-white font-black text-sm tracking-[0.3em] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.5)] hover:scale-110 active:scale-95 transition-all">
-                      {previewData.buttonLabel.toUpperCase()}
-                   </Button>
-                </div>
-                <Button onClick={() => setPreviewOpen(false)} variant="secondary" size="icon" className="absolute top-6 right-6 w-10 h-10 rounded-2xl bg-white/10 hover:bg-white text-white hover:text-black backdrop-blur-xl border-none transition-all shadow-xl">
-                   <X size={20} />
-                </Button>
-             </div>
-           )}
+      <Dialog open={!!sliderToDelete} onOpenChange={(open) => !open && setSliderToDelete(null)}>
+        <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
+          <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
+            <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
+              <Trash2 size={40} strokeWidth={2.5} />
+            </div>
+            <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">Delete Slider?</DialogTitle>
+            <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed max-w-[280px]">
+              You are about to permanently delete{" "}
+              <span className="text-rose-600 underline underline-offset-4 decoration-rose-200">{sliderToDelete?.title}</span>{" "}
+              and all associated records.
+            </DialogDescription>
+          </div>
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
+            <Button
+              variant="ghost"
+              onClick={() => setSliderToDelete(null)}
+              className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70"
+            >
+              {deleteMutation.isPending ? "Removing..." : "Confirm Delete"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

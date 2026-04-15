@@ -906,6 +906,9 @@ export default function AddStaffContent({
   );
   const [showPassword, setShowPassword] = useState(false);
 
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     name: effectiveData?.name || "",
     designation: effectiveData?.designation || "",
@@ -989,12 +992,20 @@ export default function AddStaffContent({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-        if (errors.profilePic)
-          setErrors((prev) => ({ ...prev, profilePic: "" }));
+        setImageToCrop(reader.result as string);
+        setCropperOpen(true);
+        e.target.value = "";
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (croppedBase64: string) => {
+    setProfilePic(croppedBase64);
+    if (errors.profilePic)
+      setErrors((prev) => ({ ...prev, profilePic: "" }));
+    setCropperOpen(false);
+    setImageToCrop(null);
   };
 
   const validateForm = () => {

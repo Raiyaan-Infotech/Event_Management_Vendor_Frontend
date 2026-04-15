@@ -1,12 +1,12 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Camera,  Globe, Facebook, Twitter, Linkedin, Youtube, Instagram } from 'lucide-react';
+import { Camera, Globe, Facebook, Twitter, Linkedin, Youtube, Instagram } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUploadMedia } from '@/hooks/use-media';
 import { useUpdateVendorProfile } from '@/hooks/use-vendors';
 import { resolveMediaUrl } from '@/lib/utils';
-
+import { ImageCropper } from '@/components/common/ImageCropper';
 import { Vendor } from "@/hooks/use-vendors";
 
 const cardClass = 'bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 ';
@@ -21,16 +21,35 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
   const uploadMedia = useUploadMedia();
   const updateProfile = useUpdateVendorProfile();
   const [uploading, setUploading] = useState(false);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
   const initials = vendor?.name
     ? vendor.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'VN';
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const target = e.target;
     if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+      target.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropSave = async (croppedBase64: string) => {
+    setCropperOpen(false);
+    setImageToCrop(null);
     setUploading(true);
     try {
+      // Convert base64 to File blob and upload
+      const res = await fetch(croppedBase64);
+      const blob = await res.blob();
+      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
       const result = await uploadMedia.mutateAsync({ file, folder: 'vendors' });
       updateProfile.mutate({ profile: result.url });
     } catch (err) {
@@ -41,6 +60,7 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
   };
 
   return (
+    <>
     <div className={`${cardClass} p-8 text-center`}>
       <div className="relative inline-block mb-6">
         <Avatar className="w-[124px] h-[124px] border border-border p-[4px] bg-card rounded-full relative">
@@ -138,5 +158,18 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
         </div>
       </div>
     </div>
+
+    {imageToCrop && (
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop}
+        onClose={() => { setCropperOpen(false); setImageToCrop(null); }}
+        onCropComplete={handleCropSave}
+        aspectRatio={1}
+        outputWidth={400}
+        outputHeight={400}
+      />
+    )}
+    </>
   );
 }
