@@ -13,7 +13,7 @@ export interface Column<T> {
   key: string;
   label: string;
   align?: "left" | "center" | "right";
-  render?: (item: T) => React.ReactNode;
+  render?: (item: T, index: number) => React.ReactNode;
   sortable?: boolean;
 }
 
@@ -105,7 +105,7 @@ export function DataTable<T>({
                 </td>
               </tr>
             ) : data.length > 0 ? (
-              data.map((item) => {
+              data.map((item, index) => {
                 const id = item[rowIdKey] as string | number;
                 return (
                   <tr 
@@ -135,7 +135,7 @@ export function DataTable<T>({
                           col.align === "center" ? "text-center" : ""
                         )}
                       >
-                        {col.render ? col.render(item) : (item[col.key as keyof T] as React.ReactNode)}
+                        {col.render ? col.render(item, index) : (item[col.key as keyof T] as React.ReactNode)}
                       </td>
                     ))}
                     {actionContent && (
