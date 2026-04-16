@@ -19,6 +19,7 @@ export interface TestimonialFormData {
   customer_portrait: string;
   event_name: string;
   client_feedback: string;
+  is_active?: boolean | number;
 }
 
 const QUERY_KEY = ['vendor-testimonials'] as const;

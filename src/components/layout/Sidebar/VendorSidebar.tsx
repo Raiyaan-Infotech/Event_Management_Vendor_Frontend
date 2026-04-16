@@ -129,7 +129,10 @@ const NAV_ITEMS: NavItem[] = [
     label: "Website Management",
     icon: Globe,
     children: [
-      { label: "About Company",  href: "/website/about-company",            icon: Building2 },
+      {label: "Header", href: "/website/header", icon: Building2},
+      {label:"Contact Information", href: "/website/contact-information", icon: Contact},
+      { label: "About-Us",       href: "/website/about-us",                   icon: Users     },
+      {label: "Social Links", href: "/website/social-links", icon: Globe},
       { label: "Pages",          href: "/website/pages",                    icon: List      },
       { label: "Menu",           href: "/website/menu",                     icon: List      },
       { label: "Home",           href: "/website/home",                     icon: Home      },

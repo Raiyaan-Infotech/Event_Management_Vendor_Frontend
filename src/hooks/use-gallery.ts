@@ -6,7 +6,8 @@ export interface GalleryItem {
   id: number;
   event_name: string;
   city: string;
-  event_img: string;
+  images: string[];
+  img_view: 'public' | 'private';
   is_active: number;
   vendor_id: number;
   createdAt: string;
@@ -15,12 +16,13 @@ export interface GalleryItem {
 export interface GalleryFormData {
   event_name: string;
   city: string;
-  event_img: string;
+  images: string[];
+  img_view: 'public' | 'private';
+  is_active: number;
 }
 
 const QUERY_KEY = ['vendor-gallery'] as const;
 
-// ─── Get All ──────────────────────────────────────────────────────────────────
 export const useGallery = () =>
   useQuery({
     queryKey: QUERY_KEY,
@@ -28,11 +30,10 @@ export const useGallery = () =>
       const res = await apiClient.get('/vendors/gallery');
       return res.data.data as GalleryItem[];
     },
-    staleTime:0,
+    staleTime: 0,
     refetchOnWindowFocus: true,
   });
 
-// ─── Get By Id ────────────────────────────────────────────────────────────────
 export const useGalleryItem = (id: number | string | null) =>
   useQuery({
     queryKey: ['vendor-gallery', id],
@@ -45,7 +46,6 @@ export const useGalleryItem = (id: number | string | null) =>
     refetchOnWindowFocus: false,
   });
 
-// ─── Create ───────────────────────────────────────────────────────────────────
 export const useAddGallery = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -64,7 +64,6 @@ export const useAddGallery = () => {
   });
 };
 
-// ─── Update ───────────────────────────────────────────────────────────────────
 export const useUpdateGallery = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -83,7 +82,6 @@ export const useUpdateGallery = () => {
   });
 };
 
-// ─── Toggle Status ────────────────────────────────────────────────────────────
 export const useToggleGalleryStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -99,7 +97,6 @@ export const useToggleGalleryStatus = () => {
   });
 };
 
-// ─── Delete ───────────────────────────────────────────────────────────────────
 export const useDeleteGallery = () => {
   const queryClient = useQueryClient();
   return useMutation({

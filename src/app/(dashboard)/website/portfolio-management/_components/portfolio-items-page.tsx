@@ -20,6 +20,7 @@ import {
   useDeletePortfolioItem,
   PortfolioItem,
 } from "@/hooks/use-vendor-portfolio";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 interface Props {
   type: "client" | "sponsor";
@@ -34,53 +35,46 @@ export default function PortfolioItemsPage({ type }: Props) {
   const [itemToDelete, setItemToDelete] = useState<PortfolioItem | null>(null);
   const [pendingPreviews, setPendingPreviews] = useState<{ id: string; previewUrl: string; uploading: boolean; error: boolean }[]>([]);
 
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>("");
+
   const { data: items = [], isLoading } = usePortfolioItems(type);
   const addMutation = useAddPortfolioItem(type);
   const toggleStatus = useTogglePortfolioItemStatus(type);
   const deleteMutation = useDeletePortfolioItem(type);
   const uploadMedia = useUploadMedia();
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const fileArray = Array.from(files); // capture before clearing
-    e.target.value = "";
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(`${file.name} is too large (max 5MB)`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+      e.target.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
 
-    const toProcess = fileArray.filter((file) => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name} is too large (max 5MB)`);
-        return false;
-      }
-      return true;
-    });
-
-    // show preview tiles immediately
-    const newPreviews = toProcess.map((file) => ({
-      id: `${file.name}-${Date.now()}-${Math.random()}`,
-      previewUrl: URL.createObjectURL(file),
-      uploading: true,
-      error: false,
-    }));
-    setPendingPreviews((prev) => [...prev, ...newPreviews]);
-
-    // upload each file
-    for (let i = 0; i < toProcess.length; i++) {
-      const file = toProcess[i];
-      const previewId = newPreviews[i].id;
-      try {
-        const result = await uploadMedia.mutateAsync({ file, folder: "portfolio" });
-        await addMutation.mutateAsync(result.url);
-        // remove from pending once saved
-        setPendingPreviews((prev) => {
-          const entry = prev.find((p) => p.id === previewId);
-          if (entry) URL.revokeObjectURL(entry.previewUrl);
-          return prev.filter((p) => p.id !== previewId);
-        });
-      } catch {
-        setPendingPreviews((prev) =>
-          prev.map((p) => p.id === previewId ? { ...p, uploading: false, error: true } : p)
-        );
-      }
+  const handleCropComplete = async (croppedBase64: string) => {
+    setCropperOpen(false);
+    setImageToCrop("");
+    const previewId = `crop-${Date.now()}`;
+    setPendingPreviews((prev) => [...prev, { id: previewId, previewUrl: croppedBase64, uploading: true, error: false }]);
+    try {
+      const blob = await fetch(croppedBase64).then((r) => r.blob());
+      const file = new File([blob], "logo.jpg", { type: "image/jpeg" });
+      const result = await uploadMedia.mutateAsync({ file, folder: "portfolio" });
+      await addMutation.mutateAsync(result.url);
+      setPendingPreviews((prev) => prev.filter((p) => p.id !== previewId));
+    } catch {
+      setPendingPreviews((prev) =>
+        prev.map((p) => p.id === previewId ? { ...p, uploading: false, error: true } : p)
+      );
     }
   };
 
@@ -121,7 +115,6 @@ export default function PortfolioItemsPage({ type }: Props) {
               <CardContent className="p-10 pt-8">
                 <input
                   type="file"
-                  multiple
                   ref={fileInputRef}
                   onChange={handleUpload}
                   accept="image/*"
@@ -225,6 +218,16 @@ export default function PortfolioItemsPage({ type }: Props) {
 
         </div>
       </div>
+
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        outputWidth={400}
+        outputHeight={400}
+      />
 
       {/* Delete confirmation */}
       <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>

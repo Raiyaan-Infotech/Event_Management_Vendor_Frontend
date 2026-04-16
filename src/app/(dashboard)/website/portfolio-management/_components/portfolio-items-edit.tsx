@@ -15,6 +15,7 @@ import {
   usePortfolioItem,
   useUpdatePortfolioItem,
 } from "@/hooks/use-vendor-portfolio";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 interface Props {
   type: "client" | "sponsor";
@@ -32,6 +33,8 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
   const [imagePath, setImagePath] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>("");
 
   const { data: item, isLoading } = usePortfolioItem(type, id);
   const updateMutation = useUpdatePortfolioItem(type);
@@ -43,17 +46,27 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
     }
   }, [item]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) return toast.error("Image too large (max 5MB)");
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+      e.target.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
 
-    const blobUrl = URL.createObjectURL(file);
-    setPreviewUrl(blobUrl);
-    e.target.value = "";
-
+  const handleCropComplete = async (croppedBase64: string) => {
+    setCropperOpen(false);
+    setImageToCrop("");
+    setPreviewUrl(croppedBase64);
     setUploading(true);
     try {
+      const blob = await fetch(croppedBase64).then((r) => r.blob());
+      const file = new File([blob], "logo.jpg", { type: "image/jpeg" });
       const result = await uploadMedia.mutateAsync({ file, folder: "portfolio" });
       setImagePath(result.url);
     } finally {
@@ -186,6 +199,15 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
           </div>
         </div>
       </div>
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        outputWidth={400}
+        outputHeight={400}
+      />
     </div>
   );
 }

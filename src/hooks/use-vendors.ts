@@ -150,6 +150,7 @@ export interface VendorAbout extends Vendor {
   social_visibility?: SocialVisibility | null;
   footer_links?: FooterLinkColumn[] | null;
   nav_menu?: NavMenuItem[] | null;
+  contact_mode?: 'default' | 'alternative' | null;
 }
 
 const VENDOR_ABOUT_KEY = ['vendor-about'] as const;

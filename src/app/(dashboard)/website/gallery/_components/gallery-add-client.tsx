@@ -1,14 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import GalleryAdd from "./gallery-add";
-import { useAddGallery } from "../../../../../hooks/use-gallery";  
-
-interface GalleryFormData {
-  eventName: string;
-  city: string;
-  image: string;
-}
+import GalleryAdd, { GalleryFormData } from "./gallery-add";
+import { useAddGallery } from "@/hooks/use-gallery";
 
 export default function GalleryAddClient() {
   const router = useRouter();
@@ -17,13 +11,13 @@ export default function GalleryAddClient() {
   const handleSave = (data: GalleryFormData) => {
     addGallery(
       {
-        event_name: data.eventName,  // ← map camelCase → snake_case
-        city: data.city,
-        event_img: data.image,       // ← map image → event_img
+        event_name: data.eventName,
+        city:       data.city,
+        images:     data.images.map((img) => img.previewUrl),
+        img_view:   data.imgView,
+        is_active:  data.isActive ? 1 : 0,
       },
-      {
-        onSuccess: () => router.push("/website/gallery"),
-      }
+      { onSuccess: () => router.push("/website/gallery") }
     );
   };
 

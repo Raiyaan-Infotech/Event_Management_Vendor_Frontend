@@ -28,7 +28,6 @@ const navLabels: Record<string, string> = {
   timezone: "Timezone",
   help: "Help",
   website: "Website Management",
-  "about-company": "About Company",
   "personal-info": "Personal Info",
   create: "Create",
   edit: "Edit",

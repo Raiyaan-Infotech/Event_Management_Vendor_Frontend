@@ -23,6 +23,7 @@ import {
   useCreateVendorSlider,
   useUpdateVendorSlider,
 } from "@/hooks/use-vendor-sliders";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 const DEFAULT_TITLE_COLOR = "#ffffff";
 const DEFAULT_DESC_COLOR = "#e2e8f0";
@@ -57,6 +58,8 @@ export default function AdvanceSliderContent() {
   const [formData, setFormData] = useState(getDefaultForm());
   const [imageUploading, setImageUploading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>("");
 
   const { data: existingSlider } = useVendorSlider(editId);
   const { data: pagesData } = useVendorPages({ limit: 100 });
@@ -88,16 +91,29 @@ export default function AdvanceSliderContent() {
     }
   }, [existingSlider]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+      e.target.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = async (croppedBase64: string) => {
+    setCropperOpen(false);
+    setImageToCrop("");
     setImageUploading(true);
     try {
+      const blob = await fetch(croppedBase64).then((r) => r.blob());
+      const file = new File([blob], "slider.jpg", { type: "image/jpeg" });
       const result = await uploadMedia.mutateAsync({ file, folder: "sliders" });
       setFormData((prev) => ({ ...prev, image_path: result.url }));
     } finally {
       setImageUploading(false);
-      e.target.value = "";
     }
   };
 
@@ -357,6 +373,16 @@ export default function AdvanceSliderContent() {
           </Card>
         </div>
       </div>
+
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={16 / 9}
+        outputWidth={1800}
+        outputHeight={900}
+      />
 
       {/* Full preview modal */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>

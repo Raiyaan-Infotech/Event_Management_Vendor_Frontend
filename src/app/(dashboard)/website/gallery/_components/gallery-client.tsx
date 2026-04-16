@@ -2,21 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import GalleryList from "./gallery-list";
-import { useGallery, useDeleteGallery } from "@/hooks/use-gallery";
+import { useGallery, useDeleteGallery, useToggleGalleryStatus } from "@/hooks/use-gallery";
 
 export default function GalleryClient() {
   const router = useRouter();
-
   const { data: items = [], isLoading } = useGallery();
-  const { mutate: deleteItem } = useDeleteGallery();
-
-  const handleDelete = (id: string) => {
-    deleteItem(Number(id));
-  };
-
-  const handleEdit = (item: { id: string }) => {
-    router.push(`/website/gallery/edit/${item.id}`);
-  };
+  const { mutate: deleteItem }   = useDeleteGallery();
+  const { mutate: toggleStatus } = useToggleGalleryStatus();
 
   return (
     <GalleryList
@@ -24,11 +16,14 @@ export default function GalleryClient() {
         id:        String(item.id),
         eventName: item.event_name,
         city:      item.city,
-        image:     item.event_img,
+        images:    item.images ?? [],
+        imgView:   item.img_view,
+        isActive:  item.is_active,
         createdAt: new Date(item.createdAt).toLocaleDateString("en-IN"),
       }))}
-      onDelete={handleDelete}
-      onEdit={handleEdit}
+      onDelete={(id) => deleteItem(Number(id))}
+      onEdit={(item) => router.push(`/website/gallery/edit/${item.id}`)}
+      onToggleStatus={(id) => toggleStatus(Number(id))}
       loading={isLoading}
     />
   );

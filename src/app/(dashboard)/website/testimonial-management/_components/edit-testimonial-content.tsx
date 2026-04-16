@@ -22,6 +22,7 @@ import QuillEditor from "@/components/ui/quill-editor";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import { useTestimonialItem, useUpdateTestimonial } from "@/hooks/use-testimonials";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 interface EditTestimonialContentProps {
   id: string;
@@ -38,9 +39,11 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
     client_feedback: "",
     is_active:       true,
   });
-  const [preview,   setPreview]   = useState<string>("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [preview,      setPreview]      = useState<string>("");
+  const [imageFile,    setImageFile]    = useState<File | null>(null);
+  const [uploading,    setUploading]    = useState(false);
+  const [cropperOpen,  setCropperOpen]  = useState(false);
+  const [imageToCrop,  setImageToCrop]  = useState<string>("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,8 +63,22 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImageFile(file);
-    setPreview(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+      e.target.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = (croppedBase64: string) => {
+    setPreview(croppedBase64);
+    fetch(croppedBase64)
+      .then((r) => r.blob())
+      .then((blob) => setImageFile(new File([blob], "portrait.jpg", { type: "image/jpeg" })));
+    setCropperOpen(false);
+    setImageToCrop("");
   };
 
   const uploadImage = async (file: File): Promise<string> => {
@@ -93,6 +110,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
           event_name:        formData.event_name,
           client_feedback:   formData.client_feedback,
           customer_portrait: portraitUrl,
+          is_active:         formData.is_active,
         },
         { onSuccess: () => router.push("/website/testimonial-management") },
       );
@@ -142,7 +160,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" size={20} />
                     <Input
                       value={formData.customer_name}
-                      onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
                       placeholder="e.g. John Doe"
                       className="h-14 pl-12 rounded-2xl border-gray-200 dark:border-gray-800 bg-gray-50/10 focus:bg-white transition-all font-bold"
                     />
@@ -155,7 +173,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                     <Input
                       value={formData.event_name}
-                      onChange={(e) => setFormData({ ...formData, event_name: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, event_name: e.target.value }))}
                       placeholder="e.g. Wedding Ceremony"
                       className="h-14 pl-12 rounded-2xl border-gray-200 dark:border-gray-800 bg-gray-50/10 focus:bg-white transition-all font-bold"
                     />
@@ -207,7 +225,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Client Feedback <span className="text-rose-500">*</span></Label>
               <QuillEditor
                 value={formData.client_feedback}
-                onChange={({ html }) => setFormData({ ...formData, client_feedback: html })}
+                onChange={({ html }) => setFormData(prev => ({ ...prev, client_feedback: html }))}
                 placeholder="Share what the client said about your service..."
                 height="280px"
               />
@@ -232,11 +250,21 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
               <span className={cn("text-xs font-bold uppercase tracking-widest", formData.is_active ? "text-emerald-500" : "text-gray-400")}>
                 {formData.is_active ? "Showing" : "Hidden"}
               </span>
-              <Switch checked={formData.is_active} onCheckedChange={(v) => setFormData({ ...formData, is_active: v })} />
+              <Switch checked={formData.is_active} onCheckedChange={(v) => setFormData(prev => ({ ...prev, is_active: v }))} />
             </div>
           </div>
         </div>
       </div>
+
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        outputWidth={400}
+        outputHeight={400}
+      />
     </div>
   );
 }

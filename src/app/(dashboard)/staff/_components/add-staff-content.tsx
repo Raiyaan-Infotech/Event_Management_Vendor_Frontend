@@ -877,6 +877,7 @@ import {
   VendorStaff,
 } from "@/hooks/use-vendor-staff";
 import { useVendorRoles } from "@/hooks/use-vendor-roles";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 interface AddStaffContentProps {
   initialData?: any;
@@ -1637,6 +1638,16 @@ export default function AddStaffContent({
           </div>
         </div>
       </div>
+
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop || ""}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        outputWidth={400}
+        outputHeight={400}
+      />
     </div>
   );
 }

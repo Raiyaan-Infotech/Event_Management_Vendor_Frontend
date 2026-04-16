@@ -879,6 +879,7 @@ import {
   useUpdateVendorClient,
   VendorClient,
 } from "@/hooks/use-vendor-clients";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 // ... existing code ...
 
@@ -1622,6 +1623,16 @@ export function AddClientContent({
           </div>
         </div>
       </div>
+
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop || ""}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        outputWidth={400}
+        outputHeight={400}
+      />
     </div>
   );
 }
