@@ -97,6 +97,7 @@ export interface MailStatus {
   template: string;
   status: 'Success' | 'Failed';
   readStatus: 'Read' | 'Unread';
+  subscriptionStatus: 'Subscribed' | 'Unsubscribed';
 }
 
 export const useNewsletterSentLogs = () =>
@@ -112,6 +113,7 @@ export const useNewsletterSentLogs = () =>
         template: log.template,
         status: log.status === 'sent' ? 'Success' : 'Failed',
         readStatus: log.opened_at ? 'Read' : 'Unread',
+        subscriptionStatus: log.client_type === 'unsubscribed' ? 'Unsubscribed' : 'Subscribed',
       })) as MailStatus[];
     },
     staleTime: 0,

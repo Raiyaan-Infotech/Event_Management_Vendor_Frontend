@@ -42,6 +42,9 @@ export default function MailStatusContent() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [filterStatus, setFilterStatus] = useState("All");
+  const [filterPlan, setFilterPlan] = useState("All");
+  const [filterReadStatus, setFilterReadStatus] = useState("All");
+  const [filterSubscription, setFilterSubscription] = useState("All");
 
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this log?")) {
@@ -148,7 +151,10 @@ export default function MailStatusContent() {
         String(val).toLowerCase().includes(searchQuery.toLowerCase())
       );
       const matchesStatus = filterStatus === "All" || item.status === filterStatus;
-      return matchesSearch && matchesStatus;
+      const matchesPlan = filterPlan === "All" || (item.membership || "").toLowerCase() === filterPlan.toLowerCase();
+      const matchesRead = filterReadStatus === "All" || item.readStatus === filterReadStatus;
+      const matchesSubscription = filterSubscription === "All" || item.subscriptionStatus === filterSubscription;
+      return matchesSearch && matchesStatus && matchesPlan && matchesRead && matchesSubscription;
     });
 
     if (sortConfig.key && sortConfig.order) {
@@ -161,7 +167,7 @@ export default function MailStatusContent() {
       });
     }
     return result;
-  }, [logs, searchQuery, sortConfig, filterStatus]);
+  }, [logs, searchQuery, sortConfig, filterStatus, filterPlan, filterReadStatus, filterSubscription]);
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -187,9 +193,22 @@ export default function MailStatusContent() {
         searchQuery={searchQuery}
         onSearchChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
         placeholder="Search logs..."
-        isFiltered={filterStatus !== "All"}
+        isFiltered={filterStatus !== "All" || filterPlan !== "All" || filterReadStatus !== "All" || filterSubscription !== "All"}
         filterContent={
           <div className="space-y-4">
+             <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Subscription</p>
+                <Select value={filterSubscription} onValueChange={setFilterSubscription}>
+                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                      <SelectValue placeholder="All" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl font-bold">
+                      <SelectItem value="All">All</SelectItem>
+                      <SelectItem value="Subscribed">Subscribers Only</SelectItem>
+                      <SelectItem value="Unsubscribed">Unsubscribers Only</SelectItem>
+                   </SelectContent>
+                </Select>
+             </div>
              <div className="space-y-2">
                 <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Delivery Status</p>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -203,7 +222,36 @@ export default function MailStatusContent() {
                    </SelectContent>
                 </Select>
              </div>
-             <Button variant="ghost" onClick={() => setFilterStatus("All")} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all font-bold">
+             <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Plan / Membership</p>
+                <Select value={filterPlan} onValueChange={setFilterPlan}>
+                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                      <SelectValue placeholder="All Plans" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl font-bold">
+                      <SelectItem value="All">All Plans</SelectItem>
+                      <SelectItem value="Guest">Guest</SelectItem>
+                      <SelectItem value="Silver">Silver</SelectItem>
+                      <SelectItem value="Gold">Gold</SelectItem>
+                      <SelectItem value="Platinum">Platinum</SelectItem>
+                      <SelectItem value="Standard">Standard</SelectItem>
+                   </SelectContent>
+                </Select>
+             </div>
+             <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Read Status</p>
+                <Select value={filterReadStatus} onValueChange={setFilterReadStatus}>
+                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                      <SelectValue placeholder="All" />
+                   </SelectTrigger>
+                   <SelectContent className="rounded-xl font-bold">
+                      <SelectItem value="All">All</SelectItem>
+                      <SelectItem value="Read">Read Only</SelectItem>
+                      <SelectItem value="Unread">Unread Only</SelectItem>
+                   </SelectContent>
+                </Select>
+             </div>
+             <Button variant="ghost" onClick={() => { setFilterStatus("All"); setFilterPlan("All"); setFilterReadStatus("All"); setFilterSubscription("All"); }} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all font-bold">
                 Reset
              </Button>
           </div>

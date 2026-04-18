@@ -283,6 +283,12 @@ export default function GalleryList({
                     </div>
                   )}
 
+                  {/* ── Bottom-right: Image count badge ── */}
+                  <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-full flex items-center gap-1 z-10">
+                    <ImageIcon size={10} />
+                    <span>{item.images.length}/10</span>
+                  </div>
+
                   {/* ── Top-left: img_view switch ── */}
                   <div
                     onClick={() => onToggleStatus(item.id)}
@@ -362,9 +368,10 @@ export default function GalleryList({
                       <ImageIcon size={24} />
                     </div>
                   )}
-                  {item.images.length > 1 && (
-                    <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
-                      +{item.images.length - 1}
+                  {item.images.length > 0 && (
+                    <div className="absolute bottom-1 right-1 bg-black/70 backdrop-blur-sm text-white text-[9px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                      <ImageIcon size={8} />
+                      <span>{item.images.length}/10</span>
                     </div>
                   )}
                 </div>
