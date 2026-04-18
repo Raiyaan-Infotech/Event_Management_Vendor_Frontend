@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function NewsletterPage() {
-  return <NewsletterManagementContent />;
+  return <NewsletterManagementContent type="subscribers" />;
 }

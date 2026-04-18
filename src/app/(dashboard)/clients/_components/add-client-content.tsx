@@ -877,7 +877,6 @@ interface ClientFormProps {
 import {
   useCreateVendorClient,
   useUpdateVendorClient,
-  VendorClient,
 } from "@/hooks/use-vendor-clients";
 import { ImageCropper } from "@/components/common/ImageCropper";
 
@@ -1039,7 +1038,7 @@ export function AddClientContent({
       ...formData,
       profile_pic: profilePic,
       registration_type: registrationType,
-      plan: registrationType === "Guest" ? "not_subscribed" : selectedPlan,
+      plan: registrationType === "Guest" ? null : selectedPlan,
       login_access: loginAccess ? 1 : 0,
       send_credentials_to_email: sendCredentialsToEmail ? 1 : 0,
     };

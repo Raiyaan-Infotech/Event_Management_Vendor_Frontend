@@ -160,6 +160,25 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Footer",         href: "/website/footer",                   icon: Layers    },
     ],
   },
+  {
+    label: "Email Marketing",
+    icon: Mail,
+    children: [
+      { label: "Email Template", icon: Mail,
+        children: [
+          { label: "Templates", href: "/website/email-template", icon: Mail },
+          { label: "Category",  href: "/website/email-template/category", icon: List },
+        ]
+      },
+      {label: "Newsletter",  icon: Mail,
+      children:[  {label: "Subscribers",
+              href: "/website/newsletter/subscribers", icon: Users},
+              {label: "Unsubscribers",
+               href: "/website/newsletter/unsubscribers", icon: UserRound},
+              ]
+      },
+    ]
+  }
 ];
 
 function isItemActive(item: NavItem, pathname: string): boolean {

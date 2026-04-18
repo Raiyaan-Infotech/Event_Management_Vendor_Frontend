@@ -33,19 +33,17 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { useVendorClients, useDeleteVendorClient, useToggleVendorClientLoginAccess, useUpdateVendorClientStatus, VendorClient } from "@/hooks/use-vendor-clients";
 
 const planStyles: Record<string, string> = {
-  "silver":        "bg-slate-100 text-slate-600 border-slate-200",
-  "gold":          "bg-amber-50 text-amber-600 border-amber-200",
-  "platinum":      "bg-purple-50 text-purple-600 border-purple-200",
-  "standard":      "bg-gray-100 text-gray-600 border-gray-200",
-  "not_subscribed":"bg-rose-50 text-rose-600 border-rose-200",
+  "silver":   "bg-slate-100 text-slate-600 border-slate-200",
+  "gold":     "bg-amber-50 text-amber-600 border-amber-200",
+  "platinum": "bg-purple-50 text-purple-600 border-purple-200",
+  "standard": "bg-gray-100 text-gray-600 border-gray-200",
 };
 
 const planLabels: Record<string, string> = {
-  "silver":        "Silver Plan",
-  "gold":          "Gold Plan",
-  "platinum":      "Platinum Plan",
-  "standard":      "Standard",
-  "not_subscribed":"Not Subscribed",
+  "silver":   "Silver Plan",
+  "gold":     "Gold Plan",
+  "platinum": "Platinum Plan",
+  "standard": "Standard",
 };
 
 const statusLabels: Record<string, string> = {
@@ -280,7 +278,7 @@ export default function ClientsListContent() {
                   <SelectItem value="silver"       className="text-[12px] font-bold">Silver Plan</SelectItem>
                   <SelectItem value="gold"         className="text-[12px] font-bold">Gold Plan</SelectItem>
                   <SelectItem value="platinum"     className="text-[12px] font-bold">Platinum Plan</SelectItem>
-                  <SelectItem value="not_subscribed" className="text-[12px] font-bold">Not Subscribed</SelectItem>
+                  <SelectItem value="standard"      className="text-[12px] font-bold">Standard</SelectItem>
                 </SelectContent>
               </Select>
             </div>

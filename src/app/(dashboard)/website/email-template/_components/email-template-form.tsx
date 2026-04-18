@@ -7,6 +7,19 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  useVendorEmailTemplate,
+  useCreateVendorEmailTemplate,
+  useUpdateVendorEmailTemplate,
+} from "@/hooks/use-vendor-email-templates";
+import { useEmailCategories } from "@/hooks/use-vendor-email-categories";
 
 interface EmailTemplateFormProps {
   mode: "add" | "edit" | "view";
@@ -17,32 +30,26 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
+    category_id: "",
     description: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(mode !== "add");
+
+  const { data: template, isLoading } = useVendorEmailTemplate(mode !== "add" ? id ?? null : null);
+  const { data: categoriesRes } = useEmailCategories({ limit: 100 });
+  const createMutation = useCreateVendorEmailTemplate();
+  const updateMutation = useUpdateVendorEmailTemplate();
+
+  const categories = categoriesRes?.data || [];
 
   useEffect(() => {
-    if (mode !== "add" && id) {
-      const savedTemplates = localStorage.getItem("email_templates");
-      if (savedTemplates) {
-        const templates = JSON.parse(savedTemplates);
-        const template = templates.find((t: any) => String(t.id) === String(id));
-        if (template) {
-          setFormData({
-            name: template.name || "",
-            category: template.category || "",
-            description: template.description || "",
-          });
-        } else {
-          toast.error("Template not found");
-          router.push("/website/email-template");
-        }
-      }
-      setIsLoading(false);
+    if (template && mode !== "add") {
+      setFormData({
+        name: template.name || "",
+        category_id: template.category_id ? String(template.category_id) : "",
+        description: template.description || "",
+      });
     }
-  }, [mode, id, router]);
+  }, [template, mode]);
 
   const updateForm = (field: keyof typeof formData, value: string) => {
     if (mode === "view") return;
@@ -51,57 +58,28 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
 
   const handleSave = async () => {
     if (mode === "view") return;
-    if (!formData.name.trim() || !formData.category.trim()) {
+    if (!formData.name.trim() || !formData.category_id) {
       toast.error("Please fill in Template Name and Category");
       return;
     }
-    
-    setIsSubmitting(true);
-    
-    setTimeout(() => {
-      try {
-        const savedTemplates = localStorage.getItem("email_templates");
-        let templates = savedTemplates ? JSON.parse(savedTemplates) : [];
-        
-        // Extract a plain text snippet from HTML for the "description" column in the table
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = formData.description;
-        const plainText = tempDiv.textContent || tempDiv.innerText || "";
-        const detailsSnippet = plainText.length > 200 ? plainText.substring(0, 200).trim() + "..." : plainText.trim() || "No content provided";
 
-        if (mode === "edit" || (mode === "add" && id)) {
-          // Update existing
-          templates = templates.map((t: any) => 
-            String(t.id) === String(id) 
-              ? { ...t, name: formData.name, category: formData.category, description: formData.description, details: detailsSnippet } 
-              : t
-          );
-        } else {
-          // Create new
-          const newTemplate = {
-            id: Date.now(),
-            name: formData.name,
-            category: formData.category,
-            details: detailsSnippet,
-            description: formData.description
-          };
-          templates = [newTemplate, ...templates];
-        }
-        
-        localStorage.setItem("email_templates", JSON.stringify(templates));
-        
-        setIsSubmitting(false);
-        toast.success(mode === "edit" ? "Template updated successfully!" : "Template created successfully!");
-        router.push("/website/email-template");
-      } catch (error) {
-        console.error("Save error:", error);
-        setIsSubmitting(false);
-        toast.error("Failed to save template");
-      }
-    }, 800);
+    const payload = {
+      name: formData.name,
+      category_id: Number(formData.category_id),
+      description: formData.description,
+    };
+
+    if (mode === "edit" && id) {
+      await updateMutation.mutateAsync({ id: Number(id), ...payload });
+    } else {
+      await createMutation.mutateAsync(payload);
+    }
+    router.push("/website/email-template");
   };
 
-  if (isLoading) {
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  if (mode !== "add" && isLoading) {
     return <div className="p-20 text-center font-bold animate-pulse text-gray-400 uppercase tracking-widest">Loading Template Data...</div>;
   }
 
@@ -119,7 +97,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000 pb-10">
         {/* Main Content: Left Side (9 cols) */}
         <div className="lg:col-span-9 space-y-6 relative z-0">
-          
+
           {/* Template Details Card */}
           <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -129,7 +107,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                   <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Template Name</Label>
                   {mode !== "view" && <span className="text-rose-500 font-bold">*</span>}
                 </div>
-                <Input 
+                <Input
                   value={formData.name}
                   onChange={(e) => updateForm("name", e.target.value)}
                   placeholder="Enter Template name.."
@@ -138,19 +116,32 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                 />
               </div>
 
-              {/* Category Field */}
+              {/* Category Dropdown */}
               <div className="space-y-3">
                 <div className="flex items-center gap-1 ml-1">
                   <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Category</Label>
                   {mode !== "view" && <span className="text-rose-500 font-bold">*</span>}
                 </div>
-                <Input 
-                  value={formData.category}
-                  onChange={(e) => updateForm("category", e.target.value)}
-                  placeholder="e.g. Welcome, Transactional, Notification"
-                  readOnly={mode === "view"}
-                  className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-gray-100 dark:border-gray-800 rounded-xl text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 disabled:opacity-80"
-                />
+                {mode === "view" ? (
+                  <Input
+                    value={template?.category?.name || "—"}
+                    readOnly
+                    className="h-11 bg-gray-50 dark:bg-[#181d23] border-gray-100 dark:border-gray-800 rounded-xl text-sm font-bold shadow-sm disabled:opacity-80"
+                  />
+                ) : (
+                  <Select value={formData.category_id} onValueChange={(val) => updateForm("category_id", val)}>
+                    <SelectTrigger className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-gray-100 dark:border-gray-800 rounded-xl text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-gray-100 font-bold">
+                      {categories.map((cat: { id: number; name: string }) => (
+                        <SelectItem key={cat.id} value={String(cat.id)}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
           </div>
@@ -162,8 +153,8 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                  <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Description</Label>
                </div>
                <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#181d23]/50 overflow-hidden shadow-sm">
-                  <RichTextEditor 
-                    value={formData.description} 
+                  <RichTextEditor
+                    value={formData.description}
                     onChange={(val) => updateForm("description", val)}
                     height="450px"
                     readOnly={mode === "view"}
@@ -177,7 +168,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
         {/* Action Sidebar: Right Side (3 cols) */}
         <div className="lg:col-span-3 space-y-4">
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 transition-all">
-            <PersistenceActions 
+            <PersistenceActions
               onSave={mode !== "view" ? handleSave : undefined}
               onCancel={() => router.push("/website/email-template")}
               saveLabel={isSubmitting ? "SAVING..." : mode === "edit" ? "UPDATE" : "CREATE"}

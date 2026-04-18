@@ -18,34 +18,24 @@ import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { PaginationControls } from "@/components/common/PaginationControls";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
-import { 
-  DropdownMenuItem 
+import {
+  DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
-
-interface MailStatus {
-  id: number;
-  name: string;
-  email: string;
-  membership: string;
-  template: string;
-  status: "Success" | "Failed";
-  readStatus: "Read" | "Unread";
-}
+import { useNewsletterSentLogs, MailStatus } from "@/hooks/use-newsletter";
 
 export default function MailStatusContent() {
   const router = useRouter();
-  const [logs, setLogs] = useState<MailStatus[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: logs = [], isLoading: loading } = useNewsletterSentLogs();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "", order: null });
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,15 +43,8 @@ export default function MailStatusContent() {
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [filterStatus, setFilterStatus] = useState("All");
 
-  useEffect(() => {
-     // Start with empty logs
-     setLogs([]);
-     setLoading(false);
-  }, []);
-
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this log?")) {
-      setLogs(logs.filter(log => log.id !== id));
       toast.success("Log deleted successfully");
     }
   };
@@ -161,7 +144,7 @@ export default function MailStatusContent() {
 
   const filteredData = useMemo(() => {
     let result = [...logs].filter(item => {
-      const matchesSearch = Object.values(item).some(val => 
+      const matchesSearch = Object.values(item).some(val =>
         String(val).toLowerCase().includes(searchQuery.toLowerCase())
       );
       const matchesStatus = filterStatus === "All" || item.status === filterStatus;
@@ -187,8 +170,8 @@ export default function MailStatusContent() {
 
   return (
     <div className="h-[calc(100vh-86px)] flex flex-col space-y-4 max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden pt-8 pb-3 bg-[#F8FAFC] dark:bg-black/40">
-      <PageHeader 
-        title="MAIL STATUS" 
+      <PageHeader
+        title="MAIL STATUS"
         subtitle="Track delivery and engagement metrics for your newsletter campaigns."
         total={logs.length}
         rightContent={
