@@ -56,15 +56,7 @@ import {
   useVendorClient,
   useDeleteVendorClient,
 } from "@/hooks/use-vendor-clients";
-
-const planLabels: Record<string, string> = {
-  silver: "Silver Plan",
-  gold: "Gold Plan",
-  platinum: "Platinum Plan",
-  standard: "Standard",
-  not_subscribed: "Not Subscribed",
-};
-
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 export default function ViewClientContent() {
   const router = useRouter();
   const params = useParams();
@@ -73,6 +65,8 @@ export default function ViewClientContent() {
 
   const { data: client, isLoading, isError } = useVendorClient(id);
   const deleteMutation = useDeleteVendorClient();
+  const { data: subscriptionData } = useVendorSubscription();
+  const plans = subscriptionData?.plans ?? [];
 
   useEffect(() => {
     if (isError) {
@@ -375,19 +369,32 @@ export default function ViewClientContent() {
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                   SELECTED PLAN
                 </p>
-                <div className="h-14 px-6 rounded-2xl bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
-                      <Building size={16} />
+                {(() => {
+                  const planData = plans.find(p => p.name === client.plan);
+                  const planColor = planData?.label_color;
+                  return (
+                    <div className="h-14 px-6 rounded-2xl bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                          style={planColor ? { backgroundColor: planColor + '22', color: planColor } : { backgroundColor: '#eff6ff', color: '#2563eb' }}
+                        >
+                          <Building size={16} />
+                        </div>
+                        <span
+                          className="text-[12px] font-black uppercase tracking-widest px-3 py-1 rounded-full"
+                          style={planColor
+                            ? { backgroundColor: planColor + '22', color: planColor, border: `1px solid ${planColor}44` }
+                            : { backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                        >
+                          {client.plan || "No Plan"}
+                        </span>
+                      </div>
+                      <Badge className="bg-emerald-500 text-white font-black text-[9px] px-2 rounded-md uppercase tracking-widest">
+                        Active
+                      </Badge>
                     </div>
-                    <span className="text-[14px] font-black text-gray-800 dark:text-gray-200">
-                      {planLabels[client.plan] || client.plan}
-                    </span>
-                  </div>
-                  <Badge className="bg-emerald-500 text-white font-black text-[9px] px-2 rounded-md uppercase tracking-widest">
-                    Active
-                  </Badge>
-                </div>
+                  );
+                })()}
                 <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 mt-2 ml-1 italic">
                   <ChevronRight size={14} className="text-gray-300" />
                   Registered: 31 Mar 2026

@@ -3,7 +3,8 @@
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { Send, Globe, UserCheck, Check, ChevronDown, MailCheck, MailX } from "lucide-react";
+import { Send, Globe, UserCheck, Check, ChevronDown, MailCheck, MailX, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -111,9 +112,16 @@ export default function SendMailContent() {
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-[#F8FAFC] dark:bg-black/40">
 
       {/* Header */}
-      <div className="max-w-[1700px] mx-auto mb-8">
-        <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">Send Newsletter</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-tight">Configure your audience and select a template to start your campaign.</p>
+      <div className="max-w-[1700px] mx-auto mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">Send Newsletter</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-tight">Configure your audience and select a template to start your campaign.</p>
+        </div>
+        <Link href="/newsletter/email">
+          <button className="flex items-center gap-2 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all font-bold text-[11px] uppercase tracking-[0.2em] hover:bg-transparent">
+            <ArrowLeft size={16} className="text-blue-500" strokeWidth={3} /> Back to Email
+          </button>
+        </Link>
       </div>
 
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000 pb-10">
