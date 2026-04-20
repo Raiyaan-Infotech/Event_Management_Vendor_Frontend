@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { FormGroup } from "@/components/common/FormGroup";
 import { CommonCard } from "@/components/common/CommonCard";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 // High-Fidelity Location Hierarchy Data
 
@@ -888,6 +889,8 @@ export function AddClientContent({
   isView = false,
 }: ClientFormProps) {
   const router = useRouter();
+  const { data: subscriptionData } = useVendorSubscription();
+  const plans = subscriptionData?.plans ?? [];
   const [profilePic, setProfilePic] = useState<string | null>(
     (initialData?.profile_pic as string) || null,
   );
@@ -911,13 +914,12 @@ export function AddClientContent({
     pincode: (initialData?.pincode as string) || "",
   });
 
-  const [registrationType, setRegistrationType] = useState<"Guest" | "Client">(
-    (initialData?.registrationType as "Guest" | "Client") || "Client",
-  );
+  const [registrationType, setRegistrationType] = useState<"Guest" | "Client">(() => {
+    const rt = initialData?.registration_type || initialData?.registrationType || "client";
+    return (rt.charAt(0).toUpperCase() + rt.slice(1).toLowerCase()) as "Guest" | "Client";
+  });
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>(
-    initialData?.plan && initialData.plan !== "Not Subscribed"
-      ? (initialData.plan as string)
-      : undefined,
+    initialData?.plan || undefined,
   );
 
   const [loginAccess, setLoginAccess] = useState<boolean>(
@@ -949,8 +951,9 @@ export function AddClientContent({
         locality: initialData.locality || "",
         pincode: initialData.pincode || "",
       });
-      setRegistrationType((initialData.registration_type as "Guest" | "Client") || "Client");
-      setSelectedPlan(initialData.plan || "");
+      const rt = initialData.registration_type || initialData.registrationType || "client";
+      setRegistrationType((rt.charAt(0).toUpperCase() + rt.slice(1).toLowerCase()) as "Guest" | "Client");
+      setSelectedPlan(initialData.plan || undefined);
       setLoginAccess(
         Number(initialData.login_access) === 1 ||
           initialData.login_access === true,
@@ -1529,24 +1532,11 @@ export function AddClientContent({
                         <SelectValue placeholder="Select Plan" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-gray-100 shadow-xl">
-                        <SelectItem
-                          value="silver"
-                          className="text-[13px] rounded-lg cursor-pointer"
-                        >
-                          Silver Plan
-                        </SelectItem>
-                        <SelectItem
-                          value="gold"
-                          className="text-[13px] rounded-lg cursor-pointer"
-                        >
-                          Gold Plan
-                        </SelectItem>
-                        <SelectItem
-                          value="platinum"
-                          className="text-[13px] rounded-lg cursor-pointer"
-                        >
-                          Platinum Plan
-                        </SelectItem>
+                        {plans.map(p => (
+                          <SelectItem key={p.id} value={p.name} className="text-[13px] rounded-lg cursor-pointer">
+                            {p.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   )}

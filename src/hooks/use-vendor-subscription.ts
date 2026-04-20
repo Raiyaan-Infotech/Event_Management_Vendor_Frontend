@@ -13,6 +13,7 @@ export interface SubscriptionPlan {
   is_active: number;
   is_custom: number;
   vendor_id: number | null;
+  label_color: string | null;
 }
 
 export interface SubscriptionResponse {

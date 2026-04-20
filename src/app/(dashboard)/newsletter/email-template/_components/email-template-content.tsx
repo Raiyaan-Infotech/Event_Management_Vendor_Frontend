@@ -122,7 +122,7 @@ export default function EmailTemplateManagementContent() {
         total={pagination?.total || 0}
         rightContent={
           <div className="flex items-center gap-2">
-            <Link href="/website/email-template/add">
+            <Link href="/newsletter/email-template/add">
               <ActionButton label="ADD TEMPLATE" variant_type="Client" />
             </Link>
           </div>
@@ -183,10 +183,10 @@ export default function EmailTemplateManagementContent() {
           noCard={true}
           actionContent={(item) => (
             <>
-              <DropdownMenuItem onClick={() => router.push(`/website/email-template/view/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
+              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/view/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
                 <Eye size={15} className="text-blue-500" /> <span className="text-[13px]">View</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/website/email-template/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
+              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
                 <Edit size={15} className="text-emerald-500" /> <span className="text-[13px]">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">

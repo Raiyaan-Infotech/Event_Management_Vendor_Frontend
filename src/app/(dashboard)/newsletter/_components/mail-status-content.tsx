@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { 
-  Trash2, 
+import React, { useState, useMemo } from "react";
+import {
+  Trash2,
   History,
-  Search,
   ArrowLeft,
-  Mail,
   CheckCircle2,
   XCircle,
   Eye,
   EyeOff
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { DataTable, Column } from "@/components/common/DataTable";
@@ -32,21 +30,29 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useNewsletterSentLogs, MailStatus } from "@/hooks/use-newsletter";
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 export default function MailStatusContent() {
-  const router = useRouter();
-  const { data: logs = [], isLoading: loading } = useNewsletterSentLogs();
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = useSearchParams();
+  const initialTemplate = searchParams.get("template") || "";
+  const initialStatus   = searchParams.get("status") || "All";
+  const initialRead     = searchParams.get("read")   || "All";
+
+  const newsletterId = searchParams.get("newsletter_id") ? Number(searchParams.get("newsletter_id")) : null;
+  const { data: logs = [], isLoading: loading } = useNewsletterSentLogs(newsletterId);
+  const { data: subscriptionData } = useVendorSubscription();
+  const planOptions = subscriptionData?.plans ?? [];
+  const [searchQuery, setSearchQuery] = useState(initialTemplate);
   const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "", order: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterStatus, setFilterStatus] = useState(initialStatus);
   const [filterPlan, setFilterPlan] = useState("All");
-  const [filterReadStatus, setFilterReadStatus] = useState("All");
+  const [filterReadStatus, setFilterReadStatus] = useState(initialRead);
   const [filterSubscription, setFilterSubscription] = useState("All");
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (_id: number) => {
     if (confirm("Are you sure you want to delete this log?")) {
       toast.success("Log deleted successfully");
     }
@@ -181,7 +187,7 @@ export default function MailStatusContent() {
         subtitle="Track delivery and engagement metrics for your newsletter campaigns."
         total={logs.length}
         rightContent={
-          <Link href="/website/newsletter">
+          <Link href="/newsletter">
             <Button variant="ghost" className="gap-2 text-gray-400 hover:text-gray-900 transition-all font-bold text-[11px] uppercase tracking-[0.2em] hover:bg-transparent">
                <ArrowLeft size={16} className="text-blue-500" strokeWidth={3} /> Back to Newsletter
             </Button>
@@ -231,10 +237,9 @@ export default function MailStatusContent() {
                    <SelectContent className="rounded-xl font-bold">
                       <SelectItem value="All">All Plans</SelectItem>
                       <SelectItem value="Guest">Guest</SelectItem>
-                      <SelectItem value="Silver">Silver</SelectItem>
-                      <SelectItem value="Gold">Gold</SelectItem>
-                      <SelectItem value="Platinum">Platinum</SelectItem>
-                      <SelectItem value="Standard">Standard</SelectItem>
+                      {planOptions.map(p => (
+                        <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                      ))}
                    </SelectContent>
                 </Select>
              </div>
@@ -288,9 +293,24 @@ export default function MailStatusContent() {
           emptyContent={
             <div className="flex flex-col items-center justify-center space-y-5 animate-in fade-in duration-700">
               <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
-                 <History size={32} />
+                <History size={32} />
               </div>
-              <h4 className="text-2xl font-bold text-gray-800">No mail logs found</h4>
+              <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                {logs.length === 0
+                  ? "No mail logs found"
+                  : filterStatus !== "All"
+                  ? `No ${filterStatus.toLowerCase()} deliveries found`
+                  : filterReadStatus !== "All"
+                  ? `No ${filterReadStatus.toLowerCase()} emails found`
+                  : filterPlan !== "All"
+                  ? `No logs found for ${filterPlan}`
+                  : filterSubscription !== "All"
+                  ? `No logs found for ${filterSubscription.toLowerCase()} users`
+                  : "No results match your filters"}
+              </h4>
+              {logs.length > 0 && (
+                <p className="text-sm text-gray-400 font-medium">Try adjusting or resetting your filters</p>
+              )}
             </div>
           }
         />

@@ -2,12 +2,9 @@
 
 import React, { useState, useMemo } from "react";
 import {
-  Send,
-  History,
   Users,
   Download
 } from "lucide-react";
-import Link from "next/link";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { DataTable, Column } from "@/components/common/DataTable";
@@ -27,6 +24,7 @@ import {
   getPlanLabel,
   NewsletterClient,
 } from "@/hooks/use-newsletter";
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 interface Props {
   type: "subscribers" | "unsubscribers";
@@ -37,18 +35,9 @@ interface Row {
   name: string;
   email: string;
   membership: string;
+  rawPlan: string | null;
   status: "Subscribed" | "UnSubscribed";
 }
-
-const PLAN_FILTER_OPTIONS = [
-  { value: "All",           label: "All" },
-  { value: "Gold Plan",     label: "Gold Plan" },
-  { value: "Silver Plan",   label: "Silver Plan" },
-  { value: "Platinum Plan", label: "Platinum Plan" },
-  { value: "Standard Plan", label: "Standard Plan" },
-  { value: "Guest",         label: "Guest" },
-  { value: "—",             label: "No Plan" },
-];
 
 function mapToRow(c: NewsletterClient): Row {
   return {
@@ -56,6 +45,7 @@ function mapToRow(c: NewsletterClient): Row {
     name:       c.name,
     email:      c.email,
     membership: getPlanLabel(c.plan, c.registration_type),
+    rawPlan:    c.plan,
     status:     c.client_type === 'subscribed' ? "Subscribed" : "UnSubscribed",
   };
 }
@@ -69,6 +59,9 @@ export default function NewsletterManagementContent({ type }: Props) {
   const { data: rawData = [], isLoading } = isSubscribers
     ? subscribersQuery
     : unsubscribersQuery;
+
+  const { data: subscriptionData } = useVendorSubscription();
+  const plans = subscriptionData?.plans ?? [];
 
   const bulkUpdate      = useBulkUpdateClientType();
   const bulkUpdateIds   = useBulkUpdateByIds();
@@ -117,11 +110,19 @@ export default function NewsletterManagementContent({ type }: Props) {
       key: "membership",
       label: "Client Membership",
       sortable: true,
-      render: (item) => (
-        <span className="text-[12px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-500/20">
-          {item.membership}
-        </span>
-      ),
+      render: (item) => {
+        const planColor = plans.find(p => p.name === item.rawPlan)?.label_color;
+        return (
+          <span
+            className="text-[12px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border"
+            style={planColor
+              ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
+              : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
+          >
+            {item.membership}
+          </span>
+        );
+      },
     },
     {
       key: "status",
@@ -213,21 +214,9 @@ export default function NewsletterManagementContent({ type }: Props) {
         subtitle={subtitle}
         total={rows.length}
         rightContent={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleExport} className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white">
-              <Download size={15} strokeWidth={2.5} /> Export
-            </Button>
-            <Link href={`/website/newsletter/send?from=${type}`} aria-disabled={selectedIds.length > 0 || rows.length === 0} onClick={e => (selectedIds.length > 0 || rows.length === 0) && e.preventDefault()}>
-              <Button variant="outline" disabled={selectedIds.length > 0 || rows.length === 0} className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white disabled:opacity-50 disabled:cursor-not-allowed">
-                <Send size={15} strokeWidth={2.5} className="text-emerald-500" /> Send Mail
-              </Button>
-            </Link>
-            <Link href="/website/newsletter/mail-status">
-              <Button variant="outline" className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white">
-                <History size={15} strokeWidth={2.5} className="text-blue-500" /> Mail Status
-              </Button>
-            </Link>
-          </div>
+          <Button variant="outline" onClick={handleExport} className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white">
+            <Download size={15} strokeWidth={2.5} /> Export
+          </Button>
         }
       />
 
@@ -245,9 +234,12 @@ export default function NewsletterManagementContent({ type }: Props) {
                   <SelectValue placeholder="All Memberships" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-gray-100 font-bold">
-                  {PLAN_FILTER_OPTIONS.map(o => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="Guest">Guest</SelectItem>
+                  {plans.map(p => (
+                    <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
                   ))}
+                  <SelectItem value="—">No Plan</SelectItem>
                 </SelectContent>
               </Select>
             </div>

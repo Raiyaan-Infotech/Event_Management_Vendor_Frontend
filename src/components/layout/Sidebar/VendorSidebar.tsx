@@ -124,6 +124,14 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Activity Log",     href: "/activity-log",      icon: ClipboardList },
     ],
   },
+  {
+    label: "Appearance",
+    icon: Settings,
+    children: [
+      { label: "Home Settings", href: "/appearance/home-settings", icon: Settings },
+      { label: "Menu", href: "/appearance/menu", icon: LayoutDashboard },
+    ],
+  },
   { label: "Help", href: "/help", icon: HelpCircle },
   {
     label: "Website Management",
@@ -166,16 +174,16 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { label: "Email Template", icon: Mail,
         children: [
-          { label: "Templates", href: "/website/email-template", icon: Mail },
-          { label: "Category",  href: "/website/email-template/category", icon: List },
+          { label: "Templates", href: "/newsletter/email-template", icon: Mail },
+          { label: "Category",  href: "/newsletter/email-template/category", icon: List },
         ]
       },
-      {label: "Newsletter",  icon: Mail,
-      children:[  {label: "Subscribers",
-              href: "/website/newsletter/subscribers", icon: Users},
-              {label: "Unsubscribers",
-               href: "/website/newsletter/unsubscribers", icon: UserRound},
-              ]
+      { label: "Newsletter", icon: Mail,
+        children: [
+          { label: "Email", href: "/newsletter/email", icon: List },
+          { label: "Subscribers", href: "/newsletter/subscribers", icon: Users },
+          { label: "Unsubscribers", href: "/newsletter/unsubscribers", icon: UserRound },
+        ]
       },
     ]
   }

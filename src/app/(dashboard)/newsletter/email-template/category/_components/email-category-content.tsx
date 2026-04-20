@@ -93,7 +93,7 @@ export default function EmailCategoryContent() {
         subtitle="Manage email template categories."
         total={pagination?.total || 0}
         rightContent={
-          <Link href="/website/email-template/category/add">
+          <Link href="/newsletter/email-template/category/add">
             <ActionButton label="ADD CATEGORY" variant_type="Client" />
           </Link>
         }
@@ -120,7 +120,7 @@ export default function EmailCategoryContent() {
           noCard={true}
           actionContent={(item) => (
             <>
-              <DropdownMenuItem onClick={() => router.push(`/website/email-template/category/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
+              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/category/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
                 <Edit size={15} className="text-emerald-500" /> <span className="text-[13px]">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">

@@ -49,7 +49,7 @@ export default function EmailCategoryForm({ mode, id }: EmailCategoryFormProps) 
     } else {
       await createMutation.mutateAsync({ name: formData.name, description: formData.description });
     }
-    router.push("/website/email-template/category");
+    router.push("/newsletter/email-template/category");
   };
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
@@ -104,7 +104,7 @@ export default function EmailCategoryForm({ mode, id }: EmailCategoryFormProps) 
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 transition-all">
             <PersistenceActions
               onSave={handleSave}
-              onCancel={() => router.push("/website/email-template/category")}
+              onCancel={() => router.push("/newsletter/email-template/category")}
               saveLabel={isSubmitting ? "SAVING..." : mode === "edit" ? "UPDATE" : "CREATE"}
               cancelLabel="CANCEL"
               isSubmitting={isSubmitting}

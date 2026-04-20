@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import MailStatusContent from "../_components/mail-status-content";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function MailStatusPage() {
-  return <MailStatusContent />;
+  return (
+    <Suspense fallback={<div className="h-full flex items-center justify-center p-8 bg-[#F8FAFC]">Loading mail status...</div>}>
+      <MailStatusContent />
+    </Suspense>
+  );
 }

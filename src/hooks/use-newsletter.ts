@@ -5,24 +5,17 @@ export interface NewsletterClient {
   id: number;
   name: string;
   email: string;
-  plan: 'silver' | 'gold' | 'platinum' | 'standard' | null;
+  plan: string | null;
   client_type: 'subscribed' | 'unsubscribed';
   registration_type: 'guest' | 'client';
   is_active: number;
   [key: string]: unknown;
 }
 
-const PLAN_LABEL: Record<string, string> = {
-  gold:     'Gold Plan',
-  silver:   'Silver Plan',
-  platinum: 'Platinum Plan',
-  standard: 'Standard Plan',
-};
-
 export const getPlanLabel = (plan: string | null, registrationType: string): string => {
   if (registrationType === 'guest') return 'Guest';
   if (!plan) return '—';
-  return PLAN_LABEL[plan] ?? plan;
+  return plan;
 };
 
 export const useBulkUpdateByIds = () => {
@@ -98,13 +91,17 @@ export interface MailStatus {
   status: 'Success' | 'Failed';
   readStatus: 'Read' | 'Unread';
   subscriptionStatus: 'Subscribed' | 'Unsubscribed';
+  date?: string;
 }
 
-export const useNewsletterSentLogs = () =>
+export const useNewsletterSentLogs = (newsletterId?: number | null) =>
   useQuery({
-    queryKey: ['newsletter-sent-logs'],
+    queryKey: ['newsletter-sent-logs', newsletterId],
     queryFn: async () => {
-      const res = await apiClient.get('/vendors/newsletter/sent-logs');
+      const url = newsletterId
+        ? `/vendors/newsletter/sent-logs?newsletter_id=${newsletterId}`
+        : '/vendors/newsletter/sent-logs';
+      const res = await apiClient.get(url);
       return (res.data.data || []).map((log: any) => ({
         id: log.id,
         name: log.name,
@@ -114,7 +111,33 @@ export const useNewsletterSentLogs = () =>
         status: log.status === 'sent' ? 'Success' : 'Failed',
         readStatus: log.opened_at ? 'Read' : 'Unread',
         subscriptionStatus: log.client_type === 'unsubscribed' ? 'Unsubscribed' : 'Subscribed',
+        date: log.created_at || log.sent_at || log.updated_at,
       })) as MailStatus[];
+    },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+
+export interface NewsletterSend {
+  id: number;
+  template_id: number | null;
+  template_name: string;
+  user_type: 'Guest' | 'Registered';
+  plans: string[] | null;
+  total_sent: number;
+  success_count: number;
+  failed_count: number;
+  read_count: number;
+  unread_count: number;
+  createdAt: string;
+}
+
+export const useNewsletterSends = () =>
+  useQuery({
+    queryKey: ['newsletter-sends'],
+    queryFn: async () => {
+      const res = await apiClient.get('/vendors/newsletter/sends');
+      return res.data.data as NewsletterSend[];
     },
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -123,11 +146,12 @@ export const useNewsletterSentLogs = () =>
 export const useSendNewsletter = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: { userType: string; plans: string[]; categoryId: number; templateId: number }) => {
+    mutationFn: async (payload: { userType: string; plans: string[]; categoryId: number; templateId: number; sendTo: 'subscribers' | 'unsubscribers' }) => {
       const res = await apiClient.post('/vendors/newsletter/send', payload);
       return res.data.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['newsletter-sends'] });
       queryClient.invalidateQueries({ queryKey: ['newsletter-sent-logs'] });
     },
   });

@@ -11,7 +11,8 @@ export interface VendorClient {
   email: string;
   profile_pic: string | null;
   registration_type: 'guest' | 'client';
-  plan: 'silver' | 'gold' | 'platinum' | 'standard' | 'not_subscribed';
+  subscription_id: number | null;
+  plan: string | null;
   is_active: 0 | 1 | 2; // 0=inactive, 1=active, 2=blocked
   login_access: 0 | 1;
   address: string | null;

@@ -31,20 +31,7 @@ import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
 import { SafeImage } from "@/components/ui/safe-image";
 import { useVendorClients, useDeleteVendorClient, useToggleVendorClientLoginAccess, useUpdateVendorClientStatus, VendorClient } from "@/hooks/use-vendor-clients";
-
-const planStyles: Record<string, string> = {
-  "silver":   "bg-slate-100 text-slate-600 border-slate-200",
-  "gold":     "bg-amber-50 text-amber-600 border-amber-200",
-  "platinum": "bg-purple-50 text-purple-600 border-purple-200",
-  "standard": "bg-gray-100 text-gray-600 border-gray-200",
-};
-
-const planLabels: Record<string, string> = {
-  "silver":   "Silver Plan",
-  "gold":     "Gold Plan",
-  "platinum": "Platinum Plan",
-  "standard": "Standard",
-};
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 const statusLabels: Record<string, string> = {
   "1": "Active",
@@ -54,6 +41,8 @@ const statusLabels: Record<string, string> = {
 
 export default function ClientsListContent() {
   const router = useRouter();
+  const { data: subscriptionData } = useVendorSubscription();
+  const plans = subscriptionData?.plans ?? [];
   const [searchQuery, setSearchQuery]     = useState("");
   const [sortConfig, setSortConfig]       = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "created_at", order: "desc" });
   const [currentPage, setCurrentPage]     = useState(1);
@@ -108,9 +97,20 @@ export default function ClientsListContent() {
             <p className="text-[14px] font-black text-gray-800 dark:text-gray-100 leading-none mb-2 group-hover:text-blue-600 transition-colors uppercase tracking-tight">
               {item.name}
             </p>
-            <Badge variant="outline" className={`text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0 border-none rounded-full ${planStyles[item.plan] || planStyles["standard"]}`}>
-              {planLabels[item.plan] || item.plan}
-            </Badge>
+            {(() => {
+              const planColor = plans.find(p => p.name === item.plan)?.label_color;
+              return (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0 rounded-full"
+                  style={planColor
+                    ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
+                    : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
+                >
+                  {item.plan || "—"}
+                </Badge>
+              );
+            })()}
           </div>
         </div>
       ),
@@ -274,11 +274,10 @@ export default function ClientsListContent() {
                   <SelectValue placeholder="All Plans" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-gray-100">
-                  <SelectItem value="All"          className="text-[12px] font-bold">All Plans</SelectItem>
-                  <SelectItem value="silver"       className="text-[12px] font-bold">Silver Plan</SelectItem>
-                  <SelectItem value="gold"         className="text-[12px] font-bold">Gold Plan</SelectItem>
-                  <SelectItem value="platinum"     className="text-[12px] font-bold">Platinum Plan</SelectItem>
-                  <SelectItem value="standard"      className="text-[12px] font-bold">Standard</SelectItem>
+                  <SelectItem value="All" className="text-[12px] font-bold">All Plans</SelectItem>
+                  {plans.map(p => (
+                    <SelectItem key={p.id} value={p.name} className="text-[12px] font-bold">{p.name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

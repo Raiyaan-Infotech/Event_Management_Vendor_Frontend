@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { Send, Globe, UserCheck, Check, ChevronDown } from "lucide-react";
+import { Send, Globe, UserCheck, Check, ChevronDown, MailCheck, MailX } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,34 +11,45 @@ import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { cn } from "@/lib/utils";
 import { useEmailCategories, useEmailTemplatesByCategory } from "@/hooks/use-email-categories";
 import { useNewsletterSubscribers, useNewsletterUnsubscribers, useSendNewsletter } from "@/hooks/use-newsletter";
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 const USER_TYPE_OPTIONS = [
   { value: "Guest",      label: "Guest",      icon: Globe,      color: "blue" },
   { value: "Registered", label: "Registered", icon: UserCheck,  color: "emerald" },
 ] as const;
 
-const PLAN_OPTIONS = [
-  { value: "silver",   label: "Silver Plan" },
-  { value: "gold",     label: "Gold Plan" },
-  { value: "platinum", label: "Platinum Plan" },
-  { value: "standard", label: "Standard" },
-];
-
 export default function SendMailContent() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const from         = searchParams.get("from") ?? "subscribers";
+  const [from, setFrom] = useState<"subscribers" | "unsubscribers">(
+    (searchParams.get("from") as "subscribers" | "unsubscribers") ?? "subscribers"
+  );
 
   const [userType,    setUserType]    = useState<"Guest" | "Registered">("Registered");
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
   const [categoryId,  setCategoryId]  = useState<number | null>(null);
   const [templateId,  setTemplateId]  = useState<number | null>(null);
 
+  const { data: subscriptionData } = useVendorSubscription();
+  const planOptions = subscriptionData?.plans ?? [];
+
   const { data: categories = [], isLoading: catsLoading } = useEmailCategories();
   const { data: templates  = [], isLoading: tmplLoading  } = useEmailTemplatesByCategory(categoryId);
   const { data: subscribers = [] } = useNewsletterSubscribers();
   const { data: unsubscribers = [] } = useNewsletterUnsubscribers();
   const { mutate: sendNewsletter, isPending } = useSendNewsletter();
+
+  // Plan-wise counts
+  const planCounts = useMemo(() => {
+    const allData = from === "subscribers" ? subscribers : unsubscribers;
+    const registered = allData.filter(item => item.registration_type === "client");
+    const counts: Record<string, number> = {};
+    for (const item of registered) {
+      const plan = item.plan || "";
+      counts[plan] = (counts[plan] || 0) + 1;
+    }
+    return counts;
+  }, [from, subscribers, unsubscribers]);
 
   // Calculate Live Stats
   const stats = useMemo(() => {
@@ -55,9 +66,6 @@ export default function SendMailContent() {
       }
     }
 
-    // Active subscribers count
-    const activeCount = filtered.filter(item => item.is_active === 1).length;
-
     // Segment label
     let segment = "All Plans";
     if (userType === "Guest") {
@@ -68,7 +76,6 @@ export default function SendMailContent() {
 
     return {
       totalRecipients: filtered.length,
-      activeCount,
       segment,
     };
   }, [subscribers, unsubscribers, from, userType, selectedPlans]);
@@ -86,12 +93,12 @@ export default function SendMailContent() {
     if (!templateId) { toast.error("Please select an email template");  return; }
 
     sendNewsletter(
-      { userType, plans: userType === "Registered" ? selectedPlans : [], categoryId, templateId },
+      { userType, plans: userType === "Registered" ? selectedPlans : [], categoryId, templateId, sendTo: from },
       {
         onSuccess: (data) => {
           const count = data?.count || 0;
           toast.success(`Newsletter sent to ${count} recipients!`);
-          router.push("/website/newsletter/mail-status");
+          router.push("/newsletter/email");
         },
         onError: () => {
           toast.error("Failed to send newsletter");
@@ -99,9 +106,6 @@ export default function SendMailContent() {
       }
     );
   };
-
-  const selectedCategory = categories.find(c => c.id === categoryId);
-  const selectedTemplate = templates.find(t => t.id === templateId);
 
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-[#F8FAFC] dark:bg-black/40">
@@ -122,8 +126,32 @@ export default function SendMailContent() {
               {/* Form Section - 2 cols */}
               <div className="col-span-2 space-y-10">
 
-                {/* Top Row: User Type | Plan Filter */}
+                {/* Row 1: Send To + User Type on same line */}
                 <div className="grid grid-cols-2 gap-8">
+
+                  {/* Send To */}
+                  <div className="space-y-5">
+                    <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Send To</Label>
+                    <div className="inline-flex gap-1 p-1 bg-gray-100 dark:bg-white/5 rounded-xl">
+                      {([
+                        { value: "subscribers",   label: "Subscribers",   icon: MailCheck },
+                        { value: "unsubscribers", label: "Unsubscribers", icon: MailX },
+                      ] as const).map(({ value, label, icon: Icon }) => {
+                        const isActive = from === value;
+                        return (
+                          <button key={value} type="button" onClick={() => setFrom(value)}
+                            className={cn(
+                              "flex items-center gap-2 px-4 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all duration-200",
+                              isActive ? "bg-white dark:bg-sidebar shadow-sm text-gray-800 dark:text-white" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            )}
+                          >
+                            <Icon size={14} className={isActive ? "text-blue-500" : ""} />
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                   {/* User Type */}
                   <div className="space-y-5">
@@ -133,15 +161,10 @@ export default function SendMailContent() {
                         const isActive = userType === opt.value;
                         const Icon = opt.icon;
                         return (
-                          <button
-                            key={opt.value}
-                            type="button"
-                            onClick={() => setUserType(opt.value)}
+                          <button key={opt.value} type="button" onClick={() => setUserType(opt.value)}
                             className={cn(
                               "flex items-center gap-2 px-5 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all duration-200",
-                              isActive
-                                ? "bg-white dark:bg-sidebar shadow-sm text-gray-800 dark:text-white"
-                                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                              isActive ? "bg-white dark:bg-sidebar shadow-sm text-gray-800 dark:text-white" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             )}
                           >
                             <Icon size={14} className={isActive ? "text-blue-500" : ""} />
@@ -152,53 +175,70 @@ export default function SendMailContent() {
                     </div>
                   </div>
 
-                  {/* Plan Filter - Dropdown Multi Select */}
-                  <div className="space-y-5">
-                    <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Plan Filter</Label>
-                    <Popover>
-                      <PopoverTrigger asChild disabled={userType === "Guest"}>
-                        <button className="h-12 w-full px-4 rounded-xl text-sm font-bold border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 focus:ring-4 focus:ring-amber-500/10 transition-all border text-left flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10">
-                          <span className={selectedPlans.length === 0 ? "text-gray-500 dark:text-gray-400" : "text-gray-800 dark:text-white"}>
-                            {selectedPlans.length === 0
-                              ? "All Plans"
-                              : selectedPlans.length === PLAN_OPTIONS.length
-                              ? "All Plans Selected"
-                              : `${selectedPlans.length} Plan${selectedPlans.length !== 1 ? 's' : ''} Selected`}
-                          </span>
-                          <ChevronDown size={16} className="text-gray-400" />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-56 p-2 rounded-xl border-gray-200 dark:border-white/10">
-                        <div className="space-y-1">
-                          {PLAN_OPTIONS.map(o => (
-                            <button
-                              key={o.value}
-                              onClick={() => togglePlan(o.value)}
+                </div>
+
+                {/* Row 2: Plan Filter dropdown multi-select */}
+                <div className="space-y-5">
+                  <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Plan Filter</Label>
+                  <Popover>
+                    <PopoverTrigger asChild disabled={userType === "Guest"}>
+                      <button className="min-h-12 w-full px-4 py-2 rounded-xl text-sm font-bold border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 transition-all border text-left flex items-center justify-between gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/10">
+                        {selectedPlans.length === 0 ? (
+                          <span className="text-gray-500 dark:text-gray-400">All Plans</span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5">
+                            {selectedPlans.map(name => {
+                              const plan = planOptions.find(p => p.name === name);
+                              return (
+                                <span
+                                  key={name}
+                                  className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full"
+                                  style={plan?.label_color
+                                    ? { backgroundColor: plan.label_color + '22', color: plan.label_color, border: `1px solid ${plan.label_color}44` }
+                                    : { backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                                >
+                                  {name}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        )}
+                        <ChevronDown size={16} className="text-gray-400 flex-shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-2 rounded-xl border-gray-200 dark:border-white/10">
+                      <div className="space-y-1 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+                        {planOptions.length === 0 ? (
+                          <p className="text-xs text-gray-400 px-3 py-2">No plans available</p>
+                        ) : planOptions.map(o => {
+                          const isSelected = selectedPlans.includes(o.name);
+                          return (
+                            <button key={o.id} onClick={() => togglePlan(o.name)}
                               className={cn(
                                 "w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold transition-all text-left",
-                                selectedPlans.includes(o.value)
-                                  ? "bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300"
-                                  : "hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-400"
+                                isSelected ? "bg-blue-50 dark:bg-blue-500/20" : "hover:bg-gray-100 dark:hover:bg-white/10"
                               )}
                             >
                               <div className={cn(
                                 "w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all",
-                                selectedPlans.includes(o.value)
-                                  ? "bg-blue-500 border-blue-500"
-                                  : "border-gray-300 dark:border-gray-600"
+                                isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-600"
                               )}>
-                                {selectedPlans.includes(o.value) && (
-                                  <Check size={12} className="text-white" />
-                                )}
+                                {isSelected && <Check size={10} className="text-white" />}
                               </div>
-                              <span>{o.label}</span>
+                              <span
+                                className="text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full truncate"
+                                style={o.label_color
+                                  ? { backgroundColor: o.label_color + '22', color: o.label_color, border: `1px solid ${o.label_color}44` }
+                                  : { backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                              >
+                                {o.name}
+                              </span>
                             </button>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
+                          );
+                        })}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 {/* Bottom Row: Category | Template */}
@@ -265,10 +305,33 @@ export default function SendMailContent() {
                   </div>
                   <div className="h-px bg-gray-200 dark:bg-gray-700"></div>
 
-                  {/* Active Subscribers */}
+                  {/* Plan-wise counts */}
                   <div className="space-y-2">
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.activeCount.toLocaleString()}</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Active subscribers</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 font-medium mb-3">By Plan</p>
+                    {userType === "Guest" ? (
+                      <p className="text-sm font-bold text-gray-500 dark:text-gray-400">—</p>
+                    ) : planOptions.length === 0 ? (
+                      <p className="text-sm font-bold text-gray-500 dark:text-gray-400">No plans</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {planOptions.map(p => {
+                          const count = planCounts[p.name] || 0;
+                          return (
+                            <div key={p.id} className="flex items-center justify-between gap-2">
+                              <span
+                                className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full truncate max-w-[100px]"
+                                style={p.label_color
+                                  ? { backgroundColor: p.label_color + '22', color: p.label_color, border: `1px solid ${p.label_color}44` }
+                                  : { backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                              >
+                                {p.name}
+                              </span>
+                              <span className="text-sm font-black text-gray-800 dark:text-gray-200 tabular-nums">{count}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <div className="h-px bg-gray-200 dark:bg-gray-700"></div>
 
@@ -289,7 +352,7 @@ export default function SendMailContent() {
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 transition-all">
             <PersistenceActions
               onSave={handleSend}
-              onCancel={() => router.push(`/website/newsletter/${from}`)}
+              onCancel={() => router.push(`/newsletter/${from}`)}
               saveLabel={isPending ? "SENDING..." : "SEND"}
               cancelLabel="CANCEL"
               saveIcon={Send}

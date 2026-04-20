@@ -74,7 +74,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
     } else {
       await createMutation.mutateAsync(payload);
     }
-    router.push("/website/email-template");
+    router.push("/newsletter/email-template");
   };
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
@@ -170,7 +170,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 transition-all">
             <PersistenceActions
               onSave={mode !== "view" ? handleSave : undefined}
-              onCancel={() => router.push("/website/email-template")}
+              onCancel={() => router.push("/newsletter/email-template")}
               saveLabel={isSubmitting ? "SAVING..." : mode === "edit" ? "UPDATE" : "CREATE"}
               cancelLabel={mode === "view" ? "BACK TO LIST" : "CANCEL"}
               isSubmitting={isSubmitting}
