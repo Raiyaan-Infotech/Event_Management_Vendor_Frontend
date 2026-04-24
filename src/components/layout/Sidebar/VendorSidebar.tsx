@@ -37,6 +37,7 @@ import {
   Building2,
   type LucideIcon,
   Handshake,
+  Palette,
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,17 +54,20 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { useVendorMe } from "@/hooks/use-vendors";
+import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 
 interface SubChildItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  blockType?: string;
 }
 
 interface ChildItem {
   label: string;
   href?: string;
   icon: LucideIcon;
+  blockType?: string;
   children?: SubChildItem[];
 }
 
@@ -137,35 +141,32 @@ const NAV_ITEMS: NavItem[] = [
     label: "Website Management",
     icon: Globe,
     children: [
-      {label: "Header", href: "/website/header", icon: Building2},
-      {label:"Contact Information", href: "/website/contact-information", icon: Contact},
-      { label: "About-Us",       href: "/website/about-us",                   icon: Users     },
-      {label: "Social Links", href: "/website/social-links", icon: Globe},
-      { label: "Pages",          href: "/website/pages",                    icon: List      },
-      { label: "Menu",           href: "/website/menu",                     icon: List      },
-      { label: "Home",           href: "/website/home",                     icon: Home      },
-     
- { 
-        label: "Home Slider",    
-        icon: Sliders,
+      { label: "Header",              href: "/website/header",              icon: Building2  },
+      { label: "Contact Information", href: "/website/contact-information", icon: Contact    },
+      { label: "Social Links",        href: "/website/social-links",        icon: Globe      },
+      { label: "Pages",               href: "/website/pages",               icon: List       },
+      { label: "Menu",                href: "/website/menu",                icon: List       },
+      { label: "Home",                href: "/website/home",                icon: Home       },
+      { label: "Theme",               href: "/website/theme",               icon: Palette    },
+      { label: "Footer",              href: "/website/footer",              icon: Layers     },
+      // ─── Block-gated items ───────────────────────────────────────────────────
+      { label: "About-Us",    href: "/website/about-us",                  icon: Users,     blockType: "about_us"          },
+      { label: "Gallery",     href: "/website/gallery",                   icon: Images,    blockType: "gallery"           },
+      { label: "Subscription",href: "/website/subscription-management",   icon: CreditCard,blockType: "subscription"      },
+      { label: "Testimonial", href: "/website/testimonial-management",    icon: Star,      blockType: "testimonial"       },
+      { label: "Home Slider", icon: Sliders,
         children: [
-          { label: "Simple Slider", href: "/website/home-slider/simple-slider", icon: List },
-          { label: "Advance Slider", href: "/website/home-slider/advance-slider", icon: List },
+          { label: "Simple Slider",  href: "/website/home-slider/simple-slider",  icon: List, blockType: "simple_slider"  },
+          { label: "Advance Slider", href: "/website/home-slider/advance-slider", icon: List, blockType: "advance_slider" },
         ]
       },
-
-      { label: "Gallery",        href: "/website/gallery",                  icon: Images    },
-      { label: "Portfolio",   icon: Briefcase,
+      { label: "Portfolio", icon: Briefcase,
         children: [
-          { label:"Events", href: "/website/portfolio-management/events", icon: Briefcase},
-          {label:"Clients", href: "/website/portfolio-management/clients", icon: Users},
-          {label:"Sponsers", href: "/website/portfolio-management/sponsors", icon: Handshake}]
-          },
-      { label: "Events",         href: "/website/events-management",        icon: Calendar  },
-      { label: "Subscription",   href: "/website/subscription-management",  icon: CreditCard },
-      { label: "Testimonial",    href: "/website/testimonial-management",   icon: Star      },
-      { label: "Contact Us",     href: "/website/contact-us-management",    icon: Mail      },
-      { label: "Footer",         href: "/website/footer",                   icon: Layers    },
+          { label: "Clients",  href: "/website/portfolio-management/clients",  icon: Users,      blockType: "portfolio_clients"  },
+          { label: "Sponsors", href: "/website/portfolio-management/sponsors", icon: Handshake,  blockType: "portfolio_sponsors" },
+          { label: "Events",   href: "/website/portfolio-management/events",   icon: Briefcase,  blockType: "portfolio_events"   },
+        ]
+      },
     ],
   },
   {
@@ -212,6 +213,11 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
   const isCollapsed = state === "collapsed";
   const [mounted, setMounted] = React.useState(false);
   const { data: vendor } = useVendorMe();
+  const { data: homeBlocks } = useVendorHomeBlocks();
+  const activeBlockTypes = React.useMemo(
+    () => new Set((homeBlocks ?? []).map((b) => b.block_type)),
+    [homeBlocks],
+  );
 
   const [openItems, setOpenItems] = React.useState<Set<string>>(() => {
     const initial = new Set<string>();
@@ -247,6 +253,25 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
       return next;
     });
   };
+
+  // Filter a child list — remove block-gated items whose blockType isn't active.
+  // For groups with sub-children, filter the sub-children and hide the group if all hidden.
+  const filterChildren = (children: ChildItem[]): ChildItem[] =>
+    children
+      .map((child) => {
+        if (child.children) {
+          const filtered = child.children.filter(
+            (sub) => !sub.blockType || activeBlockTypes.has(sub.blockType),
+          );
+          return { ...child, children: filtered };
+        }
+        return child;
+      })
+      .filter((child) => {
+        if (child.blockType) return activeBlockTypes.has(child.blockType);
+        if (child.children) return child.children.length > 0;
+        return true;
+      });
 
   const activeClass   = "text-primary-foreground dark:text-white font-bold bg-primary dark:bg-primary drop-shadow-sm";
   const inactiveClass = "bg-transparent text-sidebar-foreground/70 dark:text-gray-400 hover:bg-sidebar-accent dark:hover:bg-white/10 hover:text-sidebar-accent-foreground dark:hover:text-white";
@@ -387,7 +412,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
 
                   <CollapsibleContent>
                     <div className="mt-0.5 flex flex-col gap-1">
-                      {item.children!.map((child) => {
+                      {filterChildren(item.children!).map((child) => {
                         const hasSubChildren = !!child.children?.length;
                         const isChildOpen    = openItems.has(child.label);
                         const childActive    = child.href
