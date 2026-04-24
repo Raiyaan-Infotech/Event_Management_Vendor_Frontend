@@ -124,6 +124,10 @@ export default function FooterPage() {
   const [copyright, setCopyright] = useState<string>("");
   const [poweredBy, setPoweredBy] = useState<string>("");
 
+  // ── Newsletter ────────────────────────────────────
+  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
+  const [newsletterEmailPreview, setNewsletterEmailPreview] = useState("");
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Populate from API (same field mapping as AboutCompanyPage) ──
@@ -142,6 +146,10 @@ export default function FooterPage() {
       email: vendor.company_email || "",
       address: vendor.company_address || "",
     });
+
+    // Newsletter
+    setNewsletterEnabled((vendor as any).newsletter_status === 1);
+    setNewsletterEmailPreview("");
 
     // Alternative contact
     setAltContact({
@@ -254,6 +262,7 @@ export default function FooterPage() {
       ...socialUrls,
       social_visibility: socialVisibility,
       footer_links,
+      newsletter_status: newsletterEnabled ? 1 : 0,
     } as never);
   };
 
@@ -306,6 +315,8 @@ export default function FooterPage() {
     });
     setSocialVisibility({ ...DEFAULT_VISIBILITY, ...(vendor.social_visibility ?? {}) });
     setColumns([]);
+    setNewsletterEnabled(false);
+    setNewsletterEmailPreview("");
     toast.info("All settings reset.");
   };
 
@@ -327,7 +338,7 @@ export default function FooterPage() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-poppins mb-1">
-            Footer Management
+            Footer
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Manage both brand identity and quick navigation links in a single
@@ -609,6 +620,54 @@ export default function FooterPage() {
                     </div>
                   </div>
                 ))}
+
+                {/* Newsletter Card */}
+                <div className="p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/5 space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
+                      Newsletter
+                    </h3>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-sidebar transition-all">
+                    <div className="flex items-center gap-3 transition-colors">
+                      <input
+                        type="checkbox"
+                        id="newsletter-checkbox"
+                        checked={newsletterEnabled}
+                        onChange={(e) => setNewsletterEnabled(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer transition-all"
+                      />
+                      <Label 
+                        htmlFor="newsletter-checkbox" 
+                        className={`text-sm font-bold cursor-pointer transition-colors ${newsletterEnabled ? "text-primary" : "text-gray-500"}`}
+                      >
+                        Newsletter
+                      </Label>
+                    </div>
+                  </div>
+
+                  {newsletterEnabled && (
+                    <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top duration-300">
+                      <div className="space-y-3 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-sidebar shadow-sm">
+                        <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                           Subscribe our newsletter
+                        </Label>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <Input
+                            value={newsletterEmailPreview}
+                            onChange={(e) => setNewsletterEmailPreview(e.target.value)}
+                            placeholder="Enter Email Address..."
+                            className="h-11 text-xs bg-gray-50/50 dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-xl font-medium focus:ring-2 focus:ring-primary/10 transition-all flex-1"
+                          />
+                          <Button className="h-11 px-8 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 active:scale-95 transition-all">
+                            Subscribe
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Contact Information [Multi-Mode] */}
                 <div className="p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/5 space-y-6 shadow-sm">

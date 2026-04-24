@@ -181,14 +181,10 @@
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden !important;
-    height: 100vh !important;
   }
 
   html {
     font-family: var(--font-poppins) !important;
-    overflow: hidden !important;
-    height: 100vh !important;
   }
 
   button,

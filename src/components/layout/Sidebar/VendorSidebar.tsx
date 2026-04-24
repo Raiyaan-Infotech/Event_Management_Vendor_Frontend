@@ -13,6 +13,7 @@ import {
   UserRound,
   MessagesSquare,
   Contact,
+  Newspaper,
   Mail,
   MessageCircle,
   Bell,

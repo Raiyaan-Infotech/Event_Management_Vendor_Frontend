@@ -39,7 +39,7 @@ export default function ViewWebsitePage({ params }: ViewPageProps) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
             <Badge className="bg-violet-50 text-violet-600 border-violet-100 hover:bg-violet-50 font-bold">
-              Website Page
+             Page
             </Badge>
             <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
               {page.name}

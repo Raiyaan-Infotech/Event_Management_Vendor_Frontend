@@ -154,7 +154,7 @@ export default function TestimonialManagementContent() {
         rightContent={
           <div className="flex items-center gap-2">
             <Link href="/website/testimonial-management/add">
-              <ActionButton label="ADD TESTIMONIAL" variant_type="Event" />
+              <ActionButton label="ADD TESTIMONIAL" variant_type="Client" />
             </Link>
           </div>
         }

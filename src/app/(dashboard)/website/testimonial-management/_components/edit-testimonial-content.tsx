@@ -239,7 +239,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
             <PersistenceActions
               onSave={handleSave}
               onCancel={() => router.push("/website/testimonial-management")}
-              saveLabel={uploading ? "Uploading..." : isBusy ? "Saving..." : "Update"}
+              saveLabel={uploading ? "Uploading..." : isBusy ? "SAVING..." : "SAVE"}
               isSubmitting={isBusy}
             />
           </div>

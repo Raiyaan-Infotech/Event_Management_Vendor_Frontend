@@ -120,7 +120,7 @@ export default function GalleryList({
           rightContent={
             <Button
               onClick={() => router.push("gallery/add")}
-              className="h-10 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[12px] font-bold shadow-lg shadow-emerald-500/30 flex items-center gap-3 transition-all hover:-translate-y-0.5 active:scale-95 border-none uppercase"
+              className="h-10 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-[12px] font-bold shadow-lg shadow-blue-500/20 flex items-center gap-3 transition-all hover:-translate-y-0.5 active:scale-95 border-none uppercase"
             >
               <Plus size={16} strokeWidth={3} /> ADD GALLERY
             </Button>

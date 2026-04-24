@@ -39,7 +39,7 @@ export default function CreateWebsitePage() {
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar">
       <div className="max-w-[1700px] mx-auto mb-8">
-        <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">Create Website Page</h1>
+        <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">Create Page</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">Define the basic information for your new page.</p>
       </div>
 
@@ -94,7 +94,7 @@ export default function CreateWebsitePage() {
                   onSave={handleSave}
                   onCancel={() => router.push("/website/pages")}
                   onPreview={() => setIsPreviewOpen(true)}
-                  saveLabel={isPending ? "SAVING..." : "CREATE"}
+                  saveLabel="SAVE"
                   isSubmitting={isPending}
                 />
             </div>
