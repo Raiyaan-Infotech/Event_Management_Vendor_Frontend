@@ -211,7 +211,7 @@ export default function PortfolioItemsPage({ type }: Props) {
                 }}
                 onCancel={() => router.push(`/website/portfolio-management/${type}s`)}
                 onPreview={() => toast.info("Preview coming soon!")}
-                saveLabel="Save Portfolio"
+                saveLabel="Save"
               />
             </div>
           </div>

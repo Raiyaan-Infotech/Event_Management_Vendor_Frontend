@@ -13,6 +13,7 @@ import {
   UserRound,
   MessagesSquare,
   Contact,
+  Newspaper,
   Mail,
   MessageCircle,
   Bell,
@@ -141,6 +142,13 @@ const NAV_ITEMS: NavItem[] = [
     label: "Website Management",
     icon: Globe,
     children: [
+       { 
+        label: "Appearance", 
+        icon: Palette,
+        children: [
+          { label: "Themes Option", href: "/website/appearance/themes-option", icon: List },
+        ]
+      },
       { label: "Header",              href: "/website/header",              icon: Building2  },
       { label: "Contact Information", href: "/website/contact-information", icon: Contact    },
       { label: "Social Links",        href: "/website/social-links",        icon: Globe      },

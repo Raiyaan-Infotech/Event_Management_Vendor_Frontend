@@ -99,7 +99,7 @@ export default function PagesListContent() {
   return (
     <div className="h-[calc(100vh-86px)] flex flex-col space-y-4 max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden pt-8 pb-3">
       <PageHeader
-        title="PAGES MANAGEMENT"
+        title="PAGES"
         subtitle="View and manage all your website's static and dynamic pages in one place."
         total={total}
         rightContent={

@@ -37,13 +37,25 @@ export default function EventsHighlightsForm() {
   const { data: existing } = useEventHighlights();
   const updateEvents = useUpdateEventHighlights();
 
+  const [header, setHeader] = useState("");
+  const [detail, setDetail] = useState("");
   const [rows, setRows] = useState<Row[]>(() =>
     Array.from({ length: MIN_ROWS }, emptyRow)
   );
 
   useEffect(() => {
     if (existing && existing.length > 0) {
-      const loaded = existing.map((e) => ({ label: e.label, value: e.value }));
+      // Extract Header and Detail if they exist as special labels
+      const h = existing.find((e) => e.label === "Header")?.value || "";
+      const d = existing.find((e) => e.label === "Detail")?.value || "";
+      setHeader(h);
+      setDetail(d);
+
+      // Remaining are highlights
+      const highlights = existing.filter(
+        (e) => e.label !== "Header" && e.label !== "Detail"
+      );
+      const loaded = highlights.map((e) => ({ label: e.label, value: e.value }));
       while (loaded.length < MIN_ROWS) loaded.push(emptyRow());
       setRows(loaded.slice(0, MAX_ROWS));
     }
@@ -66,13 +78,19 @@ export default function EventsHighlightsForm() {
   };
 
   const handleSave = async () => {
-    const cleaned = rows.filter((r) => r.label.trim() && r.value.trim());
-    if (cleaned.length < MIN_ROWS) {
-      return toast.error(
-        `Please fill at least ${MIN_ROWS} rows (label and value).`
-      );
+    const cleanedRows = rows.filter((r) => r.label.trim() && r.value.trim());
+
+    // Prepare all items including Header and Detail
+    const allItems = [
+      { label: "Header", value: header },
+      { label: "Detail", value: detail },
+      ...cleanedRows,
+    ];
+
+    if (cleanedRows.length < MIN_ROWS) {
+      return toast.error(`Please fill at least ${MIN_ROWS} highlight rows.`);
     }
-    await updateEvents.mutateAsync(cleaned);
+    await updateEvents.mutateAsync(allItems);
   };
 
   return (
@@ -96,14 +114,47 @@ export default function EventsHighlightsForm() {
                       Events Highlights
                     </CardTitle>
                     <CardDescription className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                      {MIN_ROWS} required, up to {MAX_ROWS} rows. Label + value
-                      per highlight.
+                      Header, Detail, and {MIN_ROWS} required highlights (Label
+                      + Value).
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
 
               <CardContent className="p-10 pt-8 space-y-4">
+                {/* Header and Detail Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8 border-b border-gray-100 dark:border-white/5 mb-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                      Header
+                    </label>
+                    <Input
+                      value={header}
+                      onChange={(e) => setHeader(e.target.value)}
+                      placeholder="e.g. Our Success Stories"
+                      className="h-14 rounded-2xl border-gray-100 dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                       Detail
+                    </label>
+                    <Input
+                      value={detail}
+                      onChange={(e) => setDetail(e.target.value)}
+                      placeholder="e.g. Statistics of our best events"
+                      className="h-14 rounded-2xl border-gray-100 dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 mb-4 ml-1">
+                  <p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.2em]">
+                    Highlights Statistics
+                  </p>
+                  <div className="h-[1px] flex-1 bg-blue-50 dark:bg-blue-900/20" />
+                </div>
+
                 {rows.map((row, index) => {
                   const canRemove = index >= MIN_ROWS;
                   return (
@@ -179,7 +230,7 @@ export default function EventsHighlightsForm() {
                 onSave={handleSave}
                 onCancel={() => router.back()}
                 onPreview={() => toast.info("Preview coming soon!")}
-                saveLabel={updateEvents.isPending ? "Saving…" : "Save Events"}
+                saveLabel={updateEvents.isPending ? "Saving…" : "Save"}
               />
             </div>
           </div>

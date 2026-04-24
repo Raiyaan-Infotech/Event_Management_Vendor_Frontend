@@ -66,7 +66,7 @@ export default function EditWebsitePage({ params }: EditPageProps) {
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar">
       <div className="max-w-[1700px] mx-auto mb-8">
-        <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">Edit Website Page</h1>
+        <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">Edit Page</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">Modify the basic information and content for this page.</p>
       </div>
 
@@ -122,7 +122,7 @@ export default function EditWebsitePage({ params }: EditPageProps) {
                   onSave={handleSave}
                   onCancel={() => router.push("/website/pages")}
                   onPreview={() => setIsPreviewOpen(true)}
-                  saveLabel={isPending ? "SAVING..." : "UPDATE"}
+                  saveLabel="SAVE"
                   isSubmitting={isPending}
                 />
             </div>

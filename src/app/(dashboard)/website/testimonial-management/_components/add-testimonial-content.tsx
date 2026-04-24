@@ -211,7 +211,7 @@ export default function AddTestimonialContent() {
             <PersistenceActions
               onSave={handleSave}
               onCancel={() => router.push("/website/testimonial-management")}
-              saveLabel={uploading ? "Uploading..." : isBusy ? "Saving..." : "Save"}
+              saveLabel="SAVE"
               isSubmitting={isBusy}
             />
           </div>
