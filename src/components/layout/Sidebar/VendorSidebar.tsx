@@ -151,7 +151,7 @@ const NAV_ITEMS: NavItem[] = [
       },
       { label: "Header",              href: "/website/header",              icon: Building2  },
       { label: "Contact Information", href: "/website/contact-information", icon: Contact    },
-      { label: "Social Links",        href: "/website/social-links",        icon: Globe      },
+      { label: "Social Links",        href: "/website/social-links",        icon: Globe,     blockType: "social_media" },
       { label: "Pages",               href: "/website/pages",               icon: List       },
       { label: "Menu",                href: "/website/menu",                icon: List       },
       { label: "Home",                href: "/website/home",                icon: Home       },

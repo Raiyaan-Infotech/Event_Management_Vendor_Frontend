@@ -13,6 +13,7 @@ import PortfolioEvents   from "./portfolio_events";
 import Gallery           from "./gallery";
 import Testimonial       from "./testimonial";
 import Subscription      from "./subscription";
+import SocialMedia       from "./social_media";
 
 // ─── Block dispatcher ──────────────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ function BlockPreview({
   if (block === "gallery")            return <Gallery           variant={variant} colors={colors} groups={data?.gallery} />;
   if (block === "testimonial")        return <Testimonial       variant={variant} colors={colors} items={data?.testimonials} />;
   if (block === "subscription")       return <Subscription      variant={variant} colors={colors} plans={data?.plans} />;
+  if (block === "social_media")       return <SocialMedia       variant={variant} colors={colors} items={data?.socialLinks} />;
   return (
     <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
       Unknown block: {block}

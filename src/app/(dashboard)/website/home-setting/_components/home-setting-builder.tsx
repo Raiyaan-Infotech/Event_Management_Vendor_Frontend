@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useVendorHomeBlocks, useSaveVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import { useVendorAbout } from "@/hooks/use-vendors";
+import { useUiBlocks } from "@/hooks/use-ui-blocks";
 import type { HomeBlock } from "@/types/home-blocks";
-import { BLOCK_CATALOG } from "@/types/home-blocks";
 import BlockPalette from "./block-palette";
 import ComposedList from "./composed-list";
 import ActionsPanel from "./actions-panel";
@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function HomeSettingBuilder() {
   const { data, isLoading } = useVendorHomeBlocks();
   const { data: vendor }    = useVendorAbout();
+  const { data: catalog = [], isLoading: catalogLoading } = useUiBlocks();
 
   const [blocks, setBlocks]   = useState<HomeBlock[]>([]);
   const [initial, setInitial] = useState<HomeBlock[]>([]);
@@ -40,7 +41,7 @@ export default function HomeSettingBuilder() {
   const handleAdd = (block_type: string) => {
     // Guard: one instance per type
     if (blocks.some((b) => b.block_type === block_type)) return;
-    const defaultVariant = BLOCK_CATALOG.find((c) => c.block_type === block_type)?.variants[0]?.id ?? 'variant_1';
+    const defaultVariant = catalog.find((c) => c.block_type === block_type)?.variants[0]?.id ?? 'variant_1';
     setBlocks((prev) => [...prev, { block_type, variant: defaultVariant, is_visible: true }]);
   };
 
@@ -67,7 +68,7 @@ export default function HomeSettingBuilder() {
 
   // ── loading skeleton ───────────────────────────────────────────────────────
 
-  if (isLoading) {
+  if (isLoading || catalogLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-6">
         <Skeleton className="h-[500px] rounded-xl" />
@@ -82,10 +83,10 @@ export default function HomeSettingBuilder() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-6 items-start">
       {/* Left: Palette */}
-      <BlockPalette addedTypes={addedTypes} onAdd={handleAdd} />
+      <BlockPalette addedTypes={addedTypes} onAdd={handleAdd} catalog={catalog} />
 
       {/* Middle: Composed list */}
-      <ComposedList blocks={blocks} onChange={handleListChange} vendor={vendor} />
+      <ComposedList blocks={blocks} onChange={handleListChange} vendor={vendor} catalog={catalog} />
 
       {/* Right: Actions */}
       <ActionsPanel

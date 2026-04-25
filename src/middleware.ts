@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const publicRoutes = ['/login', '/forgot-password', '/reset-password', '/preview'];
+// These routes are accessible regardless of login state — NEVER redirect them
+const alwaysPublicRoutes = ['/preview', '/public-preview'];
+
+// These routes are only for guests (logged-in users get sent to /dashboard)
+const guestOnlyRoutes = ['/login', '/forgot-password', '/reset-password'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+  // Preview routes are always accessible — skip all auth checks
+  if (alwaysPublicRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
 
   // Vendor session cookies
   const vendorAccessToken  = request.cookies.get('vendor_access_token')?.value;
@@ -21,12 +28,13 @@ export async function middleware(request: NextRequest) {
       : NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Already logged in, redirect away from login
-  if (isPublicRoute && isVendorLoggedIn) {
+  // Already logged in, redirect away from guest-only pages
+  if (guestOnlyRoutes.some((route) => pathname.startsWith(route)) && isVendorLoggedIn) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Not logged in, redirect to login
+  const isPublicRoute = guestOnlyRoutes.some((route) => pathname.startsWith(route));
   if (!isPublicRoute && !isVendorLoggedIn) {
     return NextResponse.redirect(new URL('/login', request.url));
   }

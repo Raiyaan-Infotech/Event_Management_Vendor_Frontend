@@ -2,15 +2,16 @@
 
 import React from "react";
 import { PlusCircle } from "lucide-react";
-import { BLOCK_CATALOG, type HomeBlock } from "@/types/home-blocks";
+import { type HomeBlock, type BlockCatalogEntry, resolveIcon } from "@/types/home-blocks";
 import { cn } from "@/lib/utils";
 
 interface BlockPaletteProps {
   addedTypes: Set<string>;
   onAdd: (block_type: string) => void;
+  catalog: BlockCatalogEntry[];
 }
 
-export default function BlockPalette({ addedTypes, onAdd }: BlockPaletteProps) {
+export default function BlockPalette({ addedTypes, onAdd, catalog }: BlockPaletteProps) {
   return (
     <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
       <div className="px-4 py-3 border-b bg-muted/40">
@@ -23,9 +24,9 @@ export default function BlockPalette({ addedTypes, onAdd }: BlockPaletteProps) {
       </div>
 
       <div className="flex flex-col divide-y">
-        {BLOCK_CATALOG.map((entry) => {
+        {catalog.map((entry) => {
           const isAdded = addedTypes.has(entry.block_type);
-          const Icon = entry.icon;
+          const Icon = resolveIcon(entry.icon);
 
           return (
             <button

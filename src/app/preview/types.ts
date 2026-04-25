@@ -72,6 +72,16 @@ export interface SubscriptionPlan {
   label_color?: string;
 }
 
+export interface SocialLinkItem {
+  id: number;
+  label: string;
+  url: string;
+  icon?: string | null;
+  icon_color?: string | null;
+  is_active: number;
+  sort_order: number;
+}
+
 export interface PreviewData {
   vendor: VendorData;
   sliders: SliderItem[];
@@ -83,4 +93,5 @@ export interface PreviewData {
   gallery: GalleryGroup[];
   testimonials: TestimonialItem[];
   plans?: SubscriptionPlan[];
+  socialLinks?: SocialLinkItem[];
 }

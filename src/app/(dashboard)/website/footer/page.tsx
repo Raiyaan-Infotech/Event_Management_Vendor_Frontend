@@ -15,16 +15,6 @@ import {
   Phone,
   Mail,
   MapPin,
-  Globe,
-  Facebook,
-  Twitter,
-  Youtube,
-  Instagram,
-  Linkedin,
-  MessageCircle,
-  Music,
-  Send,
-  Pin,
   Image as ImageIcon,
   Upload,
   Layout,
@@ -32,11 +22,33 @@ import {
   Search,
   Copyright,
   Trash2,
+  Share2,
+  ExternalLink,
 } from "lucide-react";
+import { Icon } from "@iconify/react";
+import * as LucideIcons from "lucide-react";
 import { toast } from "sonner";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import { useVendorPages } from "@/hooks/use-vendor-pages";
+import { useVendorSocialLinks, useToggleSocialLink } from "@/hooks/use-vendor-social-links";
+import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import apiClient from "@/lib/api-client";
+
+// ─── Social icon renderer ─────────────────────────────────────────────────────
+const lucideIconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = Object.fromEntries(
+  Object.entries(LucideIcons)
+    .filter(([k]) => /^[A-Z]/.test(k))
+    .map(([k, v]) => [k.toLowerCase(), v as React.ComponentType<{ className?: string; style?: React.CSSProperties }>])
+);
+function SocialIcon({ name, color }: { name?: string | null; color?: string | null }) {
+  if (!name) return <Share2 className="size-4 text-gray-400" />;
+  const style = color ? { color } : undefined;
+  if (name.includes(":")) return <Icon icon={name} className="size-4" style={style} />;
+  const LucideIcon = lucideIconMap[name.toLowerCase()];
+  if (!LucideIcon) return <Share2 className="size-4 text-gray-400" />;
+  return <LucideIcon className="size-4" style={style} />;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface QuickLinkItem {
@@ -52,25 +64,6 @@ interface QuickLinkColumn {
   links: QuickLinkItem[];
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const SOCIAL_PLATFORMS = [
-  { id: "website",   label: "Website",     icon: Globe,          color: "text-blue-500" },
-  { id: "youtube",   label: "YouTube",     icon: Youtube,        color: "text-red-600" },
-  { id: "facebook",  label: "Facebook",    icon: Facebook,       color: "text-blue-600" },
-  { id: "instagram", label: "Instagram",   icon: Instagram,      color: "text-pink-600" },
-  { id: "twitter",   label: "Twitter / X", icon: Twitter,        color: "text-gray-700 dark:text-gray-200" },
-  { id: "linkedin",  label: "LinkedIn",    icon: Linkedin,       color: "text-blue-700" },
-  { id: "whatsapp",  label: "WhatsApp",    icon: MessageCircle,  color: "text-green-500" },
-  { id: "tiktok",    label: "TikTok",      icon: Music,          color: "text-black dark:text-white" },
-  { id: "telegram",  label: "Telegram",    icon: Send,           color: "text-blue-400" },
-  { id: "pinterest", label: "Pinterest",   icon: Pin,            color: "text-red-500" },
-] as const;
-
-const DEFAULT_VISIBILITY = Object.fromEntries(
-  SOCIAL_PLATFORMS.map((p) => [p.id, true])
-) as Record<string, boolean>;
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function FooterPage() {
@@ -81,6 +74,10 @@ export default function FooterPage() {
   const updateMutation = useUpdateVendorAbout('Footer saved successfully');
   const { data: pagesData } = useVendorPages({ limit: 100 });
   const vendorPages = pagesData?.data ?? [];
+  const { data: socialLinks = [] } = useVendorSocialLinks();
+  const toggleSocialLink = useToggleSocialLink();
+  const { data: homeBlocks = [] } = useVendorHomeBlocks();
+  const hasSocialMediaBlock = homeBlocks.some((b) => b.block_type === "social_media");
 
   // ── Logo & Brand ──────────────────────────────────
   const [logo, setLogo] = useState<string>("");
@@ -105,14 +102,6 @@ export default function FooterPage() {
     email: "",
     address: "",
   });
-
-  // ── Social Links ──────────────────────────────────
-  const [socialUrls, setSocialUrls] = useState<Record<string, string>>(
-    Object.fromEntries(SOCIAL_PLATFORMS.map((p) => [p.id, ""]))
-  );
-  const [socialVisibility, setSocialVisibility] = useState<Record<string, boolean>>(
-    { ...DEFAULT_VISIBILITY }
-  );
 
   // ── Quick Links Columns ───────────────────────────
   const [columns, setColumns] = useState<QuickLinkColumn[]>([]);
@@ -158,24 +147,6 @@ export default function FooterPage() {
       address: vendor.address || "",
     });
 
-    // Map social URLs from vendor fields
-    setSocialUrls({
-      website:   vendor.website   || "",
-      youtube:   vendor.youtube   || "",
-      facebook:  vendor.facebook  || "",
-      instagram: vendor.instagram || "",
-      twitter:   vendor.twitter   || "",
-      linkedin:  vendor.linkedin  || "",
-      whatsapp:  vendor.whatsapp  || "",
-      tiktok:    vendor.tiktok    || "",
-      telegram:  vendor.telegram  || "",
-      pinterest: vendor.pinterest || "",
-    });
-    // Map social visibility (merge with defaults so new platforms default to true)
-    setSocialVisibility({
-      ...DEFAULT_VISIBILITY,
-      ...(vendor.social_visibility ?? {}),
-    });
   }, [vendor]);
 
   // ── Load footer_links once both vendor + pages are ready ──
@@ -259,8 +230,6 @@ export default function FooterPage() {
       short_description: description,
       poweredby: poweredBy,
       copywrite: copyright,
-      ...socialUrls,
-      social_visibility: socialVisibility,
       footer_links,
       newsletter_status: newsletterEnabled ? 1 : 0,
     } as never);
@@ -301,19 +270,6 @@ export default function FooterPage() {
     setCopyright(vendor.copywrite || "");
     setPoweredBy(vendor.poweredby || "");
     setDescription(vendor.short_description || "");
-    setSocialUrls({
-      website:   vendor.website   || "",
-      youtube:   vendor.youtube   || "",
-      facebook:  vendor.facebook  || "",
-      instagram: vendor.instagram || "",
-      twitter:   vendor.twitter   || "",
-      linkedin:  vendor.linkedin  || "",
-      whatsapp:  vendor.whatsapp  || "",
-      tiktok:    vendor.tiktok    || "",
-      telegram:  vendor.telegram  || "",
-      pinterest: vendor.pinterest || "",
-    });
-    setSocialVisibility({ ...DEFAULT_VISIBILITY, ...(vendor.social_visibility ?? {}) });
     setColumns([]);
     setNewsletterEnabled(false);
     setNewsletterEmailPreview("");
@@ -428,54 +384,74 @@ export default function FooterPage() {
                 </div>
               </div>
 
-              {/* Social Links */}
-              <div className="space-y-4 pt-4 border-t">
-                <Label className="text-sm font-bold uppercase tracking-wider text-gray-400">
-                  Social Links
-                </Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {SOCIAL_PLATFORMS.map((platform) => {
-                    const isOn = socialVisibility[platform.id] !== false;
-                    return (
-                      <div
-                        key={platform.id}
-                        className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                          isOn
-                            ? "bg-gray-50/50 dark:bg-white/5 border-gray-100 dark:border-gray-800"
-                            : "bg-gray-50/20 dark:bg-white/2 border-gray-100/50 dark:border-gray-800/50 opacity-50"
-                        }`}
+              {/* Social Links — only shown when social_media block is in the active theme */}
+              {hasSocialMediaBlock && (
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-bold uppercase tracking-wider text-gray-400">
+                      Social Links
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={() => router.push("/website/social-links")}
+                      className="flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                    >
+                      <ExternalLink size={11} /> Manage
+                    </button>
+                  </div>
+
+                  {socialLinks.length === 0 ? (
+                    <p className="text-xs text-gray-400 italic py-2">
+                      No social links added yet.{" "}
+                      <button
+                        type="button"
+                        onClick={() => router.push("/website/social-links/add")}
+                        className="text-primary font-semibold hover:underline"
                       >
-                        <platform.icon className={`size-4 flex-shrink-0 ${platform.color}`} />
-                        <Input
-                          value={socialUrls[platform.id] || ""}
-                          onChange={(e) =>
-                            setSocialUrls((prev) => ({ ...prev, [platform.id]: e.target.value }))
-                          }
-                          placeholder={platform.label}
-                          className="h-8 text-xs border-none bg-white dark:bg-sidebar shadow-none flex-1 min-w-0"
-                        />
-                        {/* Toggle */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSocialVisibility((prev) => ({ ...prev, [platform.id]: !isOn }))
-                          }
-                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-none ${
-                            isOn ? "bg-primary" : "bg-red-500"
-                          }`}
-                          title={isOn ? "Visible — click to hide" : "Hidden — click to show"}
-                        >
-                          <span
-                            className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transform transition-transform duration-200 ${
-                              isOn ? "translate-x-4" : "translate-x-0.5"
+                        Add one
+                      </button>
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {socialLinks.map((link) => {
+                        const isOn = link.is_active === 1;
+                        return (
+                          <div
+                            key={link.id}
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                              isOn
+                                ? "bg-gray-50/50 dark:bg-white/5 border-gray-100 dark:border-gray-800"
+                                : "bg-gray-50/20 dark:bg-white/2 border-gray-100/50 dark:border-gray-800/50 opacity-50"
                             }`}
-                          />
-                        </button>
-                      </div>
-                    );
-                  })}
+                          >
+                            <SocialIcon name={link.icon} color={link.icon_color} />
+                            <span className="flex-1 min-w-0 text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">
+                              {link.label}
+                            </span>
+                            <span className="text-[10px] text-gray-400 truncate max-w-[100px] hidden sm:block">
+                              {link.url}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => toggleSocialLink.mutate(link.id)}
+                              className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-none ${
+                                isOn ? "bg-primary" : "bg-red-500"
+                              }`}
+                              title={isOn ? "Visible — click to hide" : "Hidden — click to show"}
+                            >
+                              <span
+                                className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transform transition-transform duration-200 ${
+                                  isOn ? "translate-x-4" : "translate-x-0.5"
+                                }`}
+                              />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Section 2: Quick Links Columns */}

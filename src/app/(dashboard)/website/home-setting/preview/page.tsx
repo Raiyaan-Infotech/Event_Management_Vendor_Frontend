@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import { useVendorAbout } from "@/hooks/use-vendors";
-import { BLOCK_CATALOG } from "@/types/home-blocks";
+import { useUiBlocks } from "@/hooks/use-ui-blocks";
+import { resolveIcon, type BlockCatalogEntry } from "@/types/home-blocks";
 import { resolveMediaUrl } from "@/lib/utils";
 import { ChevronDown, Eye, EyeOff } from "lucide-react";
 import type { NavMenuItem, VendorAbout } from "@/hooks/use-vendors";
@@ -78,9 +79,9 @@ function PreviewHeader({ vendor }: { vendor?: VendorAbout }) {
 
 // ─── Block placeholder ───────────────────────────────────────────────────────
 
-function BlockPlaceholder({ block_type, visible }: { block_type: string; visible: boolean }) {
-  const entry = BLOCK_CATALOG.find((c) => c.block_type === block_type);
-  const Icon = entry?.icon;
+function BlockPlaceholder({ block_type, visible, catalog }: { block_type: string; visible: boolean; catalog: BlockCatalogEntry[] }) {
+  const entry = catalog.find((c) => c.block_type === block_type);
+  const Icon = entry ? resolveIcon(entry.icon) : null;
 
   return (
     <section
@@ -207,12 +208,13 @@ function PreviewFooter({ vendor }: { vendor?: VendorAbout }) {
 export default function HomeSettingPreviewPage() {
   const { data: blocks = [], isLoading: blocksLoading } = useVendorHomeBlocks();
   const { data: vendor, isLoading: vendorLoading }      = useVendorAbout();
+  const { data: catalog = [], isLoading: catalogLoading } = useUiBlocks();
 
   const [showHidden, setShowHidden] = useState(true);
 
   const visibleBlocks = showHidden ? blocks : blocks.filter((b) => b.is_visible);
 
-  if (blocksLoading || vendorLoading) {
+  if (blocksLoading || vendorLoading || catalogLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-muted-foreground text-sm">
         Loading preview…
@@ -258,6 +260,7 @@ export default function HomeSettingPreviewPage() {
                 key={block.block_type}
                 block_type={block.block_type}
                 visible={block.is_visible}
+                catalog={catalog}
               />
             ))
           )}

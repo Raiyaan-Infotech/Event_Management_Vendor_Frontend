@@ -80,8 +80,8 @@ export function VendorThemeContent() {
 
     if (subLoading || themeLoading) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-[450px] w-full rounded-[2rem]" />)}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-72 w-full rounded-2xl" />)}
             </div>
         );
     }
@@ -108,7 +108,7 @@ export function VendorThemeContent() {
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {themes.map((theme) => {
                         const isActivated = activatedPresetId === theme.id;
                         const isSelected = selectedId === theme.id;
@@ -126,16 +126,26 @@ export function VendorThemeContent() {
                                 } dark:border-gray-800`}
                             >
                                 {/* Theme Preview Webpage Area */}
-                                <div className="relative aspect-[4/3] w-full p-6 bg-gray-50 dark:bg-[#0f0f0f]">
+                                <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-[#0f0f0f]">
                                     {isActivated && (
-                                        <div className="absolute top-4 right-10 bg-green-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-lg flex items-center gap-1.5 z-30">
+                                        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-lg flex items-center gap-1.5 z-30">
                                             <Check size={10} strokeWidth={4} />
                                             Active Now
                                         </div>
                                     )}
-                                    <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner custom-scrollbar-hidden">
-                                        <InternalThemePreview theme={theme} />
-                                    </div>
+                                    {(theme as any).preview_image ? (
+                                        <img
+                                            src={(theme as any).preview_image}
+                                            alt={theme.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full p-6">
+                                            <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner">
+                                                <InternalThemePreview theme={theme} />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Content Area */}

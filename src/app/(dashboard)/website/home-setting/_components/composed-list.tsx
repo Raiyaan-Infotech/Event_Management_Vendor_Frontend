@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Eye, EyeOff, X, ChevronDown } from "lucide-react";
-import { BLOCK_CATALOG, type HomeBlock } from "@/types/home-blocks";
+import { type HomeBlock, type BlockCatalogEntry, resolveIcon } from "@/types/home-blocks";
 import { cn } from "@/lib/utils";
 import type { VendorAbout, NavMenuItem } from "@/hooks/use-vendors";
 
@@ -135,10 +135,12 @@ function SortableRow({
   block,
   onToggleVisibility,
   onRemove,
+  catalog,
 }: {
   block: HomeBlock;
   onToggleVisibility: () => void;
   onRemove: () => void;
+  catalog: BlockCatalogEntry[];
 }) {
   const {
     attributes,
@@ -155,8 +157,8 @@ function SortableRow({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const entry = BLOCK_CATALOG.find((c) => c.block_type === block.block_type);
-  const Icon = entry?.icon;
+  const entry = catalog.find((c) => c.block_type === block.block_type);
+  const Icon = entry ? resolveIcon(entry.icon) : null;
 
   return (
     <div
@@ -339,9 +341,10 @@ interface ComposedListProps {
   blocks: HomeBlock[];
   onChange: (updated: HomeBlock[]) => void;
   vendor?: VendorAbout;
+  catalog: BlockCatalogEntry[];
 }
 
-export default function ComposedList({ blocks, onChange, vendor }: ComposedListProps) {
+export default function ComposedList({ blocks, onChange, vendor, catalog }: ComposedListProps) {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -408,6 +411,7 @@ export default function ComposedList({ blocks, onChange, vendor }: ComposedListP
                 <SortableRow
                   key={block.block_type}
                   block={block}
+                  catalog={catalog}
                   onToggleVisibility={() => toggleVisibility(block.block_type)}
                   onRemove={() => removeBlock(block.block_type)}
                 />
