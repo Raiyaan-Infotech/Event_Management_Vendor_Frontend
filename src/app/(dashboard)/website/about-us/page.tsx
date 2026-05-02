@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Edit, Eye, ExternalLink } from "lucide-react";
+import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
+import { WebsiteSettingsPageSkeleton } from "@/components/boneyard/website-settings-page-skeleton";
 
 export default function AboutUsPage() {
   const router = useRouter();
@@ -37,13 +38,7 @@ export default function AboutUsPage() {
     toast.info("All settings reset.");
   };
 
-  if (isLoading) {
-    return (
-      <div className="h-[calc(100vh-86px)] flex items-center justify-center">
-        <p className="text-sm text-gray-400">Loading...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <WebsiteSettingsPageSkeleton />;
 
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar">
@@ -81,24 +76,13 @@ export default function AboutUsPage() {
                   : "bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
               }`}
             >
-              {isEditing ? <Eye className="size-4" /> : <Edit className="size-4" />}
-              {isEditing ? "PREVIEW" : "EDIT"}
-            </Button>
-
-            <Button
-              onClick={() => {
-                const url = vendor?.website;
-                if (url) window.open(url, "_blank");
-                else toast.info("No website URL set.");
-              }}
-              className="w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-            >
-              <ExternalLink className="size-4" />
-              PREVIEW
+              <Edit className="size-4" />
+              EDIT
             </Button>
 
             <PersistenceActions
               onSave={handleSave}
+              onPreview={() => window.open("/preview#about-us", "_blank")}
               onReset={handleReset}
               onCancel={() => router.push("/website/management")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}

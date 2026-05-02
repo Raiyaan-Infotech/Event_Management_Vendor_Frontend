@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { DashboardTableSkeleton } from "@/components/boneyard/dashboard-table-skeleton";
 
 export interface Column<T> {
   key: string;
@@ -49,6 +50,10 @@ export function DataTable<T>({
   noCard = false
 }: DataTableProps<T>) {
   const filteredColumns = columns.filter(col => visibleColumns.includes(col.key));
+
+  if (loading) {
+    return <DashboardTableSkeleton />;
+  }
   
   return (
     <div className={cn(
@@ -98,13 +103,7 @@ export function DataTable<T>({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50 dark:divide-gray-800/30">
-            {loading ? (
-              <tr>
-                <td colSpan={filteredColumns.length + (actionContent ? 2 : 1)} className="px-6 py-20 text-center text-gray-400 font-medium italic">
-                  Loading data...
-                </td>
-              </tr>
-            ) : data.length > 0 ? (
+            {data.length > 0 ? (
               data.map((item, index) => {
                 const id = item[rowIdKey] as string | number;
                 return (

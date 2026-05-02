@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { PersistenceActions } from '@/components/common/PersistenceActions';
 import { IconPickerDialog } from '@/components/common/icon-picker-dialog';
 import { useVendorSocialLinkItem, useUpdateSocialLink } from '@/hooks/use-vendor-social-links';
+import { WebsiteSettingsPageSkeleton } from '@/components/boneyard/website-settings-page-skeleton';
 
 // ─── Icon renderer ────────────────────────────────────────────────────────────
 const lucideMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = Object.fromEntries(
@@ -79,13 +80,7 @@ export default function EditSocialLinkPage() {
     setSortOrder(link.sort_order);
   };
 
-  if (isLoading) {
-    return (
-      <div className="h-[calc(100vh-86px)] flex items-center justify-center">
-        <p className="text-sm text-gray-400">Loading...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <WebsiteSettingsPageSkeleton />;
 
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar">
@@ -240,6 +235,7 @@ export default function EditSocialLinkPage() {
             <div className="bg-white dark:bg-sidebar/50 p-5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
               <PersistenceActions
                 onSave={handleSave}
+                onPreview={() => window.open('/preview?block=social_media', '_blank')}
                 onReset={handleReset}
                 onCancel={() => router.push('/website/social-links')}
                 saveLabel={updateMutation.isPending ? 'SAVING...' : 'UPDATE'}

@@ -146,8 +146,7 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
                     ) : displayUrl ? (
                       <>
                         {previewUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={displayUrl} alt="Preview" className="absolute inset-0 w-full h-full object-contain p-8" />
+                          <Image src={displayUrl} alt="Preview" fill sizes="320px" className="object-contain p-8" unoptimized />
                         ) : (
                           <Image src={displayUrl} alt="Logo" fill className="object-contain p-8" />
                         )}

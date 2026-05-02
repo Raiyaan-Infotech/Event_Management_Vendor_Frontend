@@ -20,7 +20,7 @@ export const useVendorHomeBlocks = () => {
       })) as HomeBlock[];
     },
     staleTime: 0,
-    refetchOnWindowFocus: true,
+    refetchOnMount: 'always',
   });
 };
 

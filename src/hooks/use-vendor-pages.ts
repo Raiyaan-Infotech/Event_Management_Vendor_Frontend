@@ -118,6 +118,72 @@ export const useDeleteVendorPage = () => {
   });
 };
 
+// ─── Terms & Conditions ───────────────────────────────────────────────────────
+
+export const useVendorTerms = (enabled = true) =>
+  useQuery({
+    queryKey: ['vendor-terms'],
+    queryFn: async () => {
+      const res = await apiClient.get('/vendors/pages/terms-conditions');
+      return res.data.data as { content: string } | null;
+    },
+    enabled,
+    staleTime: 30 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+export const useUpdateVendorTerms = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: { content: string }) => {
+      const res = await apiClient.put('/vendors/pages/terms-conditions', data);
+      return res.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vendor-terms'] });
+      toast.success('Terms & Conditions updated');
+    },
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || 'Failed to update terms');
+    },
+  });
+};
+
+// ─── Privacy Policy ───────────────────────────────────────────────────────────
+
+export const useVendorPrivacy = (enabled = true) =>
+  useQuery({
+    queryKey: ['vendor-privacy'],
+    queryFn: async () => {
+      const res = await apiClient.get('/vendors/pages/privacy-policy');
+      return res.data.data as { content: string } | null;
+    },
+    enabled,
+    staleTime: 30 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+export const useUpdateVendorPrivacy = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: { content: string }) => {
+      const res = await apiClient.put('/vendors/pages/privacy-policy', data);
+      return res.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vendor-privacy'] });
+      toast.success('Privacy Policy updated');
+    },
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || 'Failed to update privacy policy');
+    },
+  });
+};
+
 export const useUpdateVendorPageStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({

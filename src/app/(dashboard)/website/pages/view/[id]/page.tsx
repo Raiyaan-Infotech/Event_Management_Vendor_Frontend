@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarDays, FileText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useVendorPage } from "@/hooks/use-vendor-pages";
+import { WebsiteDetailsPageSkeleton } from "@/components/boneyard/website-details-page-skeleton";
 
 interface ViewPageProps {
   params: Promise<{ id: string }>;
@@ -18,18 +19,15 @@ export default function ViewWebsitePage({ params }: ViewPageProps) {
   const router = useRouter();
   const { data: page, isLoading } = useVendorPage(Number(id));
 
-  if (isLoading) {
-    return (
-      <div className="h-[calc(100vh-86px)] flex items-center justify-center">
-        <p className="text-gray-500 font-bold">Loading...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <WebsiteDetailsPageSkeleton />;
 
-  if (!page) {
-    router.push("/website/pages");
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoading && !page) {
+      router.replace("/website/pages");
+    }
+  }, [isLoading, page, router]);
+
+  if (!page) return null;
 
   const htmlContent = page.content || "<p>No content given.</p>";
 

@@ -50,6 +50,7 @@ interface Client {
   pincode?: string;
   registrationType?: string;
   registrationDate?: string;
+  created_at?: string;
 }
 
 import {
@@ -397,7 +398,7 @@ export default function ViewClientContent() {
                 })()}
                 <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 mt-2 ml-1 italic">
                   <ChevronRight size={14} className="text-gray-300" />
-                  Registered: 31 Mar 2026
+                  Registered: {client.created_at ? new Date(client.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "N/A"}
                 </div>
               </div>
             </div>

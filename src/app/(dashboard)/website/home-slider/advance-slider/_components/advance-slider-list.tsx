@@ -55,8 +55,9 @@ export default function AdvanceSliderList() {
     setSliderToDelete(null);
   };
 
-  const sliders = data?.data ?? [];
-  const total = data?.pagination?.total ?? 0;
+  const rawSliders = data?.data;
+  const sliders = Array.isArray(rawSliders) ? rawSliders : [];
+  const total = data?.pagination?.total ?? sliders.length;
 
   const advanceSliderColumns: Column<VendorSlider>[] = [
     {

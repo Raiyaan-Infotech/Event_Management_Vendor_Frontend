@@ -26,11 +26,28 @@ interface NavChild {
 interface MenuNavItem {
   id: string;          // temp UI id
   label: string;       // parent heading
+  type?: "pages";
   page_ids: number[];  // selected page IDs
   order: number;
   children: NavChild[];
   isOpen: boolean;
 }
+
+const FIXED_MENU_TYPES = new Set(["home", "about", "contact"]);
+
+const inferMenuType = (label: string): "pages" | undefined =>
+  label.trim().toLowerCase() === "pages" ? "pages" : undefined;
+
+const parseNavMenu = (value: unknown): NavMenuItem[] => {
+  if (Array.isArray(value)) return value as NavMenuItem[];
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -43,19 +60,21 @@ export default function MenuManagementContent() {
   const [menuItems, setMenuItems] = useState<MenuNavItem[]>([]);
   const [menuLoaded, setMenuLoaded] = useState(false);
 
-  // ── Load nav_menu from vendor on mount ────────────────────────────────────
+  // ── Load nav_menu from vendor on mount (skip fixed Home/Contact items) ───
   useEffect(() => {
     if (menuLoaded || !vendor) return;
     setMenuLoaded(true);
-    const raw = vendor.nav_menu;
-    if (raw?.length) {
+    const raw = parseNavMenu(vendor.nav_menu);
+    if (raw.length) {
+      const editable = raw.filter(item => !FIXED_MENU_TYPES.has(item.type || ""));
       setMenuItems(
-        raw.map((item, i) => ({
+        editable.map((item, i) => ({
           id: `m${i}-loaded`,
           label: item.label,
-          page_ids: item.page_ids,
+          type: item.type === "pages" ? "pages" : inferMenuType(item.label),
+          page_ids: item.page_ids || [],
           order: item.order,
-          children: item.children,
+          children: item.children || [],
           isOpen: false,
         }))
       );
@@ -107,6 +126,7 @@ export default function MenuManagementContent() {
     const newItem: MenuNavItem = {
       id: `m-${Date.now()}`,
       label: parentLabel.trim(),
+      type: inferMenuType(parentLabel),
       page_ids: selectedIds,
       order: menuItems.length,
       children,
@@ -130,7 +150,7 @@ export default function MenuManagementContent() {
           const page = vendorPages.find((p) => p.id === pid);
           return { page_id: pid, label: page?.name ?? `Page #${pid}`, order };
         });
-        return { ...item, label: parentLabel.trim(), page_ids: selectedIds, children };
+        return { ...item, label: parentLabel.trim(), type: inferMenuType(parentLabel), page_ids: selectedIds, children };
       })
     );
     toast.success(`Menu item "${parentLabel}" updated`);
@@ -171,14 +191,22 @@ export default function MenuManagementContent() {
     );
   };
 
-  // ── Save to API ───────────────────────────────────────────────────────────
+  // Fixed Home/About/Contact wrap the draggable page groups in the saved order.
   const handleSave = async () => {
-    const nav_menu: NavMenuItem[] = menuItems.map((item, i) => ({
+    const pageGroups: NavMenuItem[] = menuItems.map((item, index) => ({
       label: item.label,
+      type: item.type || inferMenuType(item.label),
       page_ids: item.page_ids,
-      order: i,
-      children: item.children.map((c, j) => ({ ...c, order: j })),
+      children: item.children.map((child, childIndex) => ({ ...child, order: childIndex })),
+      order: index + 2,
     }));
+
+    const nav_menu: NavMenuItem[] = [
+      { label: "Home",       type: "home",    page_ids: [], children: [], order: 0 },
+      { label: "About Us",   type: "about",   page_ids: [], children: [], order: 1 },
+      ...pageGroups,
+      { label: "Contact Us", type: "contact", page_ids: [], children: [], order: pageGroups.length + 2 },
+    ];
 
     try {
       await updateMutation.mutateAsync({ nav_menu } as never);
@@ -189,15 +217,17 @@ export default function MenuManagementContent() {
   };
 
   const handleReset = () => {
-    const raw = vendor?.nav_menu;
-    if (raw?.length) {
+    const raw = parseNavMenu(vendor?.nav_menu);
+    if (raw.length) {
+      const editable = raw.filter(item => !FIXED_MENU_TYPES.has(item.type || ""));
       setMenuItems(
-        raw.map((item, i) => ({
+        editable.map((item, i) => ({
           id: `m${i}-reset`,
           label: item.label,
-          page_ids: item.page_ids,
+          type: item.type === "pages" ? "pages" : inferMenuType(item.label),
+          page_ids: item.page_ids || [],
           order: item.order,
-          children: item.children,
+          children: item.children || [],
           isOpen: false,
         }))
       );
@@ -333,10 +363,24 @@ export default function MenuManagementContent() {
           </CardHeader>
 
           <CardContent className="pt-4">
+            {/* Fixed: Home (always first) */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mb-2 opacity-70">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Fixed</span>
+              <span className="flex-1 text-sm font-bold text-slate-600 dark:text-slate-300">Home</span>
+              <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">no child</span>
+            </div>
+
+            {/* Fixed: About Us */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mb-2 opacity-70">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Fixed</span>
+              <span className="flex-1 text-sm font-bold text-slate-600 dark:text-slate-300">About Us</span>
+              <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">no child</span>
+            </div>
+
             {menuItems.length === 0 ? (
-              <div className="py-12 flex flex-col items-center justify-center text-center gap-2">
-                <p className="text-sm font-bold text-slate-400">No menu items yet</p>
-                <p className="text-xs text-slate-400">Create your first menu item on the left.</p>
+              <div className="py-8 flex flex-col items-center justify-center text-center gap-2">
+                <p className="text-sm font-bold text-slate-400">No custom menu items yet</p>
+                <p className="text-xs text-slate-400">Create a page group on the left.</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -423,9 +467,16 @@ export default function MenuManagementContent() {
               </div>
             )}
 
-            <div className="mt-6 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/30 text-center">
+            {/* Fixed: Contact Us (always last) */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mt-2 opacity-70">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Fixed</span>
+              <span className="flex-1 text-sm font-bold text-slate-600 dark:text-slate-300">Contact Us</span>
+              <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">no child</span>
+            </div>
+
+            <div className="mt-4 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/30 text-center">
               <p className="text-xs text-slate-400 font-medium italic">
-                Drag parent items to reorder · Use arrows to reorder child pages
+                Drag page groups to reorder · Home, About Us, and Contact Us are always fixed
               </p>
             </div>
           </CardContent>

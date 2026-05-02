@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { cn } from "@/lib/utils";
 import { useEmailCategories, useEmailTemplatesByCategory } from "@/hooks/use-email-categories";
-import { useNewsletterSubscribers, useNewsletterUnsubscribers, useSendNewsletter } from "@/hooks/use-newsletter";
+import { NewsletterClient, useNewsletterSubscribers, useNewsletterUnsubscribers, useSendNewsletter } from "@/hooks/use-newsletter";
 import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 const USER_TYPE_OPTIONS = [
@@ -36,13 +36,15 @@ export default function SendMailContent() {
 
   const { data: categories = [], isLoading: catsLoading } = useEmailCategories();
   const { data: templates  = [], isLoading: tmplLoading  } = useEmailTemplatesByCategory(categoryId);
-  const { data: subscribers = [] } = useNewsletterSubscribers();
-  const { data: unsubscribers = [] } = useNewsletterUnsubscribers();
+  const subscribersQuery = useNewsletterSubscribers();
+  const unsubscribersQuery = useNewsletterUnsubscribers();
+  const subscribers: NewsletterClient[] = subscribersQuery.data ?? [];
+  const unsubscribers: NewsletterClient[] = unsubscribersQuery.data ?? [];
   const { mutate: sendNewsletter, isPending } = useSendNewsletter();
 
   // Plan-wise counts
   const planCounts = useMemo(() => {
-    const allData = from === "subscribers" ? subscribers : unsubscribers;
+    const allData: NewsletterClient[] = from === "subscribers" ? subscribers : unsubscribers;
     const registered = allData.filter(item => item.registration_type === "client");
     const counts: Record<string, number> = {};
     for (const item of registered) {
@@ -54,10 +56,10 @@ export default function SendMailContent() {
 
   // Calculate Live Stats
   const stats = useMemo(() => {
-    const allData = from === "subscribers" ? subscribers : unsubscribers;
+    const allData: NewsletterClient[] = from === "subscribers" ? subscribers : unsubscribers;
 
     // Filter by userType (Guest vs Registered) and plan selection
-    let filtered = allData;
+    let filtered: NewsletterClient[] = allData;
     if (userType === "Guest") {
       filtered = allData.filter(item => item.registration_type === "guest");
     } else {

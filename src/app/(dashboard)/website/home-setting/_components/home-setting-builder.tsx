@@ -8,7 +8,7 @@ import type { HomeBlock } from "@/types/home-blocks";
 import BlockPalette from "./block-palette";
 import ComposedList from "./composed-list";
 import ActionsPanel from "./actions-panel";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ThreePanelBuilderSkeleton } from "@/components/boneyard/three-panel-builder-skeleton";
 
 export default function HomeSettingBuilder() {
   const { data, isLoading } = useVendorHomeBlocks();
@@ -69,13 +69,7 @@ export default function HomeSettingBuilder() {
   // ── loading skeleton ───────────────────────────────────────────────────────
 
   if (isLoading || catalogLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-6">
-        <Skeleton className="h-[500px] rounded-xl" />
-        <Skeleton className="h-[500px] rounded-xl" />
-        <Skeleton className="h-[300px] rounded-xl" />
-      </div>
-    );
+    return <ThreePanelBuilderSkeleton />;
   }
 
   // ── main layout ────────────────────────────────────────────────────────────

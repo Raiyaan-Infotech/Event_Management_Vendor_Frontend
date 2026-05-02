@@ -210,6 +210,7 @@ export default function AddTestimonialContent() {
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
+              onPreview={() => window.open("/preview?block=testimonial", "_blank")}
               onCancel={() => router.push("/website/testimonial-management")}
               saveLabel="SAVE"
               isSubmitting={isBusy}

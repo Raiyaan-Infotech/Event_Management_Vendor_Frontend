@@ -261,6 +261,7 @@ export default function SimpleSliderContent() {
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
+              onPreview={() => window.open("/preview?block=simple_slider", "_blank")}
               onReset={isEditing ? resetForm : undefined}
               onCancel={() => router.push("/website/home-slider/simple-slider")}
               saveLabel={isSaving ? "SAVING…" : isEditing ? "UPDATE SLIDER" : "SAVE SLIDER"}

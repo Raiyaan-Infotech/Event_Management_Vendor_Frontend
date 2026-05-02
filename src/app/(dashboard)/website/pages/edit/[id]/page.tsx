@@ -13,6 +13,8 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Plus, X, Eye, ArrowLeft } from "lucide-react";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 
+const PAGE_NAME_MAX_LENGTH = 25;
+
 interface EditPageProps {
   params: Promise<{ id: string }>;
 }
@@ -43,7 +45,10 @@ export default function EditWebsitePage({ params }: EditPageProps) {
   }, [page]);
 
   const updateForm = (field: "name" | "description" | "content", value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleSave = () => {
@@ -51,7 +56,15 @@ export default function EditWebsitePage({ params }: EditPageProps) {
       toast.error("Please fill in all mandatory fields");
       return;
     }
-    updatePage({ name: formData.name, description: formData.description, content: formData.content });
+    if (formData.name.trim().length > PAGE_NAME_MAX_LENGTH) {
+      toast.error(`Page name must be ${PAGE_NAME_MAX_LENGTH} characters or less`);
+      return;
+    }
+    updatePage({
+      name: formData.name.trim(),
+      description: formData.description,
+      content: formData.content,
+    });
   };
 
   if (isLoading) {

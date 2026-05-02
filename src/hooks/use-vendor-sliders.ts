@@ -70,7 +70,15 @@ export const useVendorSliders = (params?: {
     queryKey: [...VENDOR_SLIDERS_KEY, params],
     queryFn: async () => {
       const res = await apiClient.get('/vendors/sliders', { params });
-      return res.data.data as VendorSlidersResponse;
+      // Support both { data: { data: [], pagination: {} } } and { data: [] }
+      const responseData = res.data.data;
+      if (Array.isArray(responseData)) {
+        return {
+          data: responseData,
+          pagination: { total: responseData.length, page: 1, limit: responseData.length, totalPages: 1 }
+        } as VendorSlidersResponse;
+      }
+      return responseData as VendorSlidersResponse;
     },
     staleTime: 30 * 1000,
     refetchOnWindowFocus: false,

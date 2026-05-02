@@ -30,8 +30,8 @@ export const useVendorEmailTemplates = (params?: { page?: number; limit?: number
       const res = await apiClient.get('/vendors/email-templates', { params });
       return res.data;
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
 export const useVendorEmailTemplate = (id: number | string | null) =>

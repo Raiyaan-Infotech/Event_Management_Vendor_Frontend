@@ -31,7 +31,7 @@ const DEFAULT_NAV: NavMenuItem[] = [
   { label: "Contact Us", page_ids: [], order: 2, children: [] },
 ];
 
-function SiteHeaderPreview({ vendor }: { vendor?: VendorAbout }) {
+function SiteHeaderPreview({ vendor, blocks = [] }: { vendor?: VendorAbout; blocks?: HomeBlock[] }) {
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
 
   const navItems: NavMenuItem[] =
@@ -40,6 +40,7 @@ function SiteHeaderPreview({ vendor }: { vendor?: VendorAbout }) {
       : DEFAULT_NAV;
 
   const city = vendor?.district?.name ?? vendor?.locality?.name ?? null;
+  const showRegister = blocks.some((block) => block.block_type === "register" && block.is_visible !== false);
 
   return (
     <div className="border rounded-lg bg-white dark:bg-zinc-900 shadow-sm">
@@ -124,6 +125,17 @@ function SiteHeaderPreview({ vendor }: { vendor?: VendorAbout }) {
             );
           })}
         </nav>
+
+        <div className="ml-auto flex items-center gap-2 shrink-0">
+          <span className="px-2 py-1.5 text-[11px] font-semibold text-foreground/70">
+            Login
+          </span>
+          {showRegister ? (
+            <span className="rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-sm">
+              Register
+            </span>
+          ) : null}
+        </div>
       </div>
     </div>
   );
@@ -370,7 +382,7 @@ export default function ComposedList({ blocks, onChange, vendor, catalog }: Comp
   return (
     <div className="flex flex-col gap-3">
       {/* ── Fixed header preview (always shown, not draggable) ── */}
-      <SiteHeaderPreview vendor={vendor} />
+      <SiteHeaderPreview vendor={vendor} blocks={blocks} />
 
       {/* ── Draggable blocks ── */}
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">

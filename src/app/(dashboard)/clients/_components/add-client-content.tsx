@@ -40,7 +40,7 @@ import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
 // High-Fidelity Location Hierarchy Data
 
-const LOCATION_DATA: Record<
+export const LOCATION_DATA: Record<
   string,
   Record<string, Record<string, string[]>>
 > = {

@@ -8,10 +8,12 @@ import { Check, Palette, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import Image from "next/image";
+import { normalizeHomeBlocks } from "@/lib/safe-json";
 
 // Internal ThemePreview substitute since the component is missing in the project
 const InternalThemePreview = ({ theme }: { theme: any }) => {
-    const blocks = Array.isArray(theme.home_blocks) ? theme.home_blocks : (typeof theme.home_blocks === 'string' ? JSON.parse(theme.home_blocks) : []);
+    const blocks = normalizeHomeBlocks(theme.home_blocks);
     
     return (
         <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner flex flex-col p-3">
@@ -134,10 +136,13 @@ export function VendorThemeContent() {
                                         </div>
                                     )}
                                     {(theme as any).preview_image ? (
-                                        <img
+                                        <Image
                                             src={(theme as any).preview_image}
                                             alt={theme.name}
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            sizes="320px"
+                                            className="object-cover"
+                                            unoptimized
                                         />
                                     ) : (
                                         <div className="w-full h-full p-6">
@@ -169,8 +174,20 @@ export function VendorThemeContent() {
                                             variant="secondary"
                                             onClick={(e) => { 
                                                 e.stopPropagation(); 
-                                                // Preview logic would go here
-                                                toast.info("Full preview demo mode.");
+                                                const sortedBlocks = normalizeHomeBlocks(theme.home_blocks);
+                                                const params = new URLSearchParams({
+                                                    themeId: theme.id.toString(),
+                                                    primary: theme.primary_color || '',
+                                                    secondary: theme.secondary_color || '',
+                                                    header: theme.header_color || '',
+                                                    footer: theme.footer_color || '',
+                                                    text: theme.text_color || '',
+                                                    hover: theme.hover_color || ''
+                                                });
+                                                if (sortedBlocks.length > 0) {
+                                                    params.set("blocks", btoa(JSON.stringify(sortedBlocks)));
+                                                }
+                                                window.open(`/preview?${params.toString()}`, '_blank');
                                             }}
                                             className="h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-xl bg-[#e2e2e2] hover:bg-[#d4d4d4] dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-white border-none transition-all duration-300 active:scale-95"
                                         >

@@ -30,8 +30,8 @@ export const useGallery = () =>
       const res = await apiClient.get('/vendors/gallery');
       return res.data.data as GalleryItem[];
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
 export const useGalleryItem = (id: number | string | null) =>

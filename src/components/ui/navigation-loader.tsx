@@ -13,11 +13,18 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const loadingStartTimeRef = useRef<number>(0);
+  const showDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Stop loading when pathname or params change
   useEffect(() => {
+    if (showDelayTimerRef.current) {
+      clearTimeout(showDelayTimerRef.current);
+      showDelayTimerRef.current = null;
+    }
+
+    if (!loading) return;
     const elapsed = Date.now() - loadingStartTimeRef.current;
-    const MINIMUM_DISPLAY_TIME = 400; 
+    const MINIMUM_DISPLAY_TIME = 120; 
     
     const remainingTime = Math.max(0, MINIMUM_DISPLAY_TIME - elapsed);
 
@@ -31,10 +38,15 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   // Intercept links to start loader INSTANTLY
   useEffect(() => {
     const startLoading = () => {
-      loadingStartTimeRef.current = Date.now();
-      // Use setTimeout to decouple state update from the intercepted event
-      // This prevents "useInsertionEffect must not schedule updates" warnings
-      setTimeout(() => setLoading(true), 0);
+      if (showDelayTimerRef.current) {
+        clearTimeout(showDelayTimerRef.current);
+      }
+
+      // Show loader only if navigation is not instant.
+      showDelayTimerRef.current = setTimeout(() => {
+        loadingStartTimeRef.current = Date.now();
+        setLoading(true);
+      }, 120);
     };
 
     const handleAnchorClick = (e: MouseEvent) => {
@@ -69,6 +81,9 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
     document.addEventListener("click", handleAnchorClick);
     
     return () => {
+      if (showDelayTimerRef.current) {
+        clearTimeout(showDelayTimerRef.current);
+      }
       document.removeEventListener("click", handleAnchorClick);
       window.history.pushState = originalPushState;
     };
@@ -77,9 +92,9 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   return (
     <>
       {loading && <Loader />}
-      <div 
+      <div
         className={`transition-opacity duration-300 ease-in-out ${
-          loading ? "opacity-30 blur-[1px] pointer-events-none" : "opacity-100 blur-0"
+          loading ? "opacity-70 pointer-events-none" : "opacity-100"
         }`}
       >
         {children}

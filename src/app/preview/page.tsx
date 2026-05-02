@@ -2,176 +2,258 @@
 
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import type { ThemeColors, PreviewData } from "./types";
+import { ThemePreview } from "@/components/website/ThemePreview";
+import BlockRenderer from "@/components/blocks/BlockRenderer";
+import ContactUs from "@/components/blocks/ContactUs";
+import TermsConditions from "@/components/blocks/TermsConditions";
+import PrivacyPolicy from "@/components/blocks/PrivacyPolicy";
+import PublicClientLogin from "@/components/blocks/PublicClientLogin";
+import PublicClientRegister from "@/components/blocks/PublicClientRegister";
+import Loader from "@/components/ui/loader";
+import { useVendorPreviewData } from "@/hooks/use-vendor-preview";
+import { useVendorPage, useVendorPrivacy, useVendorTerms } from "@/hooks/use-vendor-pages";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 
-import SimpleSlider      from "./simple_slider";
-import AdvanceSlider     from "./advance_slider";
-import AboutUs           from "./about_us";
-import PortfolioClients  from "./portfolio_clients";
-import PortfolioSponsors from "./portfolio_sponsors";
-import PortfolioEvents   from "./portfolio_events";
-import Gallery           from "./gallery";
-import Testimonial       from "./testimonial";
-import Subscription      from "./subscription";
-import SocialMedia       from "./social_media";
+function PreviewCustomPage({ data, pageId, pageData }: { data?: any; pageId: number | null; pageData?: any }) {
+  const listPage = (data?.pages || []).find((item: any) => Number(item.id) === pageId && item.is_active !== 0);
+  const page = pageData || listPage;
+  const safeContent = sanitizeHtml(page?.content);
 
-// ─── Block dispatcher ──────────────────────────────────────────────────────
-
-function BlockPreview({
-  block,
-  variant,
-  colors,
-  data,
-}: {
-  block: string;
-  variant: string;
-  colors?: ThemeColors;
-  data?: PreviewData;
-}) {
-  if (block === "simple_slider")      return <SimpleSlider      variant={variant} colors={colors} sliders={data?.sliders} />;
-  if (block === "advance_slider")     return <AdvanceSlider     variant={variant} colors={colors} sliders={data?.sliders} />;
-  if (block === "about_us")           return <AboutUs           variant={variant} colors={colors} vendor={data?.vendor} />;
-  if (block === "portfolio_clients")  return <PortfolioClients  variant={variant} colors={colors} items={data?.portfolio?.clients} />;
-  if (block === "portfolio_sponsors") return <PortfolioSponsors variant={variant} colors={colors} items={data?.portfolio?.sponsors} />;
-  if (block === "portfolio_events")   return <PortfolioEvents   variant={variant} colors={colors} items={data?.portfolio?.events} />;
-  if (block === "gallery")            return <Gallery           variant={variant} colors={colors} groups={data?.gallery} />;
-  if (block === "testimonial")        return <Testimonial       variant={variant} colors={colors} items={data?.testimonials} />;
-  if (block === "subscription")       return <Subscription      variant={variant} colors={colors} plans={data?.plans} />;
-  if (block === "social_media")       return <SocialMedia       variant={variant} colors={colors} items={data?.socialLinks} />;
   return (
-    <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-      Unknown block: {block}
+    <div className="px-6 py-16 md:px-8">
+      <article className="mx-auto max-w-4xl">
+        {page ? (
+          <>
+            <h1 className="mb-4 text-4xl font-black text-gray-900">{page.name}</h1>
+            {page.description && <p className="mb-8 text-lg leading-relaxed text-gray-500">{page.description}</p>}
+            {page.content ? (
+              <div
+                className="prose prose-lg max-w-none text-gray-700 prose-headings:text-gray-900"
+                dangerouslySetInnerHTML={{ __html: safeContent }}
+              />
+            ) : (
+              <p className="text-gray-400 italic">This page does not have content yet.</p>
+            )}
+          </>
+        ) : (
+          <div className="py-24 text-center">
+            <h1 className="text-4xl font-black text-gray-300">404</h1>
+            <p className="mt-2 text-gray-500">Page not found.</p>
+          </div>
+        )}
+      </article>
     </div>
   );
 }
 
-// ─── Shared vendor data hook ──────────────────────────────────────────────────
+function PreviewContent() {
+  const searchParams = useSearchParams();
+  const vendorIdParam = searchParams.get("vendorId");
+  const vendorId = vendorIdParam ? parseInt(vendorIdParam) : null;
+  const pageIdParam = searchParams.get("pageId");
+  const pageId = pageIdParam ? Number(pageIdParam) : null;
+  const rawPreviewPage = searchParams.get("previewPage");
+  const previewPage =
+    rawPreviewPage === "terms-conditions" || rawPreviewPage === "terms_conditions"
+      ? "terms"
+      : rawPreviewPage === "privacy-policy" || rawPreviewPage === "privacy_policy"
+        ? "privacy"
+        : rawPreviewPage;
+  const { data: vendorData, isLoading } = useVendorPreviewData(vendorId);
+  const embeddedSelectedPage = (vendorData?.pages || []).find((item: any) => Number(item.id) === pageId && item.is_active !== 0);
+  const shouldFetchTerms = previewPage === "terms" && !!vendorData && !vendorData.terms_content;
+  const shouldFetchPrivacy = previewPage === "privacy" && !!vendorData && !vendorData.privacy_content;
+  const shouldFetchPage = previewPage === "page" && !!pageId && !!vendorData && !embeddedSelectedPage;
+  const { data: termsData, isLoading: isTermsLoading } = useVendorTerms(shouldFetchTerms);
+  const { data: privacyData, isLoading: isPrivacyLoading } = useVendorPrivacy(shouldFetchPrivacy);
+  const { data: selectedPageData, isLoading: isPageLoading } = useVendorPage(shouldFetchPage ? pageId : null);
 
-function useVendorPreviewData() {
-  const [data, setData] = React.useState<PreviewData | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const params = useSearchParams();
-  const vendorIdParam = params.get("vendorId");
+  if (
+    isLoading ||
+    (shouldFetchTerms && isTermsLoading) ||
+    (shouldFetchPrivacy && isPrivacyLoading) ||
+    (shouldFetchPage && isPageLoading)
+  ) {
+    return <Loader />;
+  }
 
-  React.useEffect(() => {
-    // If vendorId is provided in URL, we use the public endpoint (bypasses cookie issues in iframes)
-    // Otherwise fall back to the authenticated "me" endpoint
-    const url = vendorIdParam 
-      ? `${process.env.NEXT_PUBLIC_API_URL}/vendors/${vendorIdParam}/preview-data`
-      : `${process.env.NEXT_PUBLIC_API_URL}/vendors/auth/preview-data`;
-
-    fetch(url, {
-      credentials: "include",
-    })
-      .then(r => r.json())
-      .then(res => { setData(res?.data ?? res); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [vendorIdParam]);
-
-  return { data, loading };
-}
-
-// ─── Full theme preview ──────────────────────────────────────────────────────
-
-function FullThemePreview({ themeId }: { themeId: string }) {
-  const [theme, setTheme] = React.useState<any>(null);
-  const [themeLoading, setThemeLoading] = React.useState(true);
-  const { data: vendorData, loading: vendorLoading } = useVendorPreviewData();
-
-  React.useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/themes/${themeId}`)
-      .then(r => r.json())
-      .then(res => { setTheme(res?.data ?? res); setThemeLoading(false); })
-      .catch(() => setThemeLoading(false));
-  }, [themeId]);
-
-  if (themeLoading || vendorLoading) return <div className="flex items-center justify-center min-h-screen text-sm text-gray-400">Loading preview…</div>;
-  if (!theme) return <div className="flex items-center justify-center min-h-screen text-sm text-red-400">Theme not found.</div>;
-
-  const colors: ThemeColors = {
-    primary_color:   theme.primary_color,
-    secondary_color: theme.secondary_color,
-    header_color:    theme.header_color,
-    footer_color:    theme.footer_color,
-    text_color:      theme.text_color,
-    hover_color:     theme.hover_color,
+  const activeColors = {
+    header_color:    searchParams.get("header")    || vendorData?.colors?.header_color    || "#ffffff",
+    footer_color:    searchParams.get("footer")    || vendorData?.colors?.footer_color    || "#1e293b",
+    primary_color:   searchParams.get("primary")   || vendorData?.colors?.primary_color   || "#2563eb",
+    secondary_color: searchParams.get("secondary") || vendorData?.colors?.secondary_color || "#1d4ed8",
+    hover_color:     searchParams.get("hover")     || vendorData?.colors?.hover_color     || "#dbeafe",
+    text_color:      searchParams.get("text")      || vendorData?.colors?.text_color      || "#1e293b",
   };
 
-  const blocks: Array<{ block_type: string; variant: string; is_visible: boolean }> =
-    Array.isArray(theme.home_blocks)
-      ? theme.home_blocks
-      : typeof theme.home_blocks === "string"
-        ? JSON.parse(theme.home_blocks)
-        : [];
+  // Augment vendorData with resolved colors, slug, and pages so Header/Footer blocks receive them
+  const previewBaseUrl = `/preview?${searchParams.toString()}`;
+  const enrichedData = vendorData
+    ? {
+        ...vendorData,
+        colors: activeColors,
+        slug: "preview",
+        pages: vendorData.pages || [],
+        previewBaseUrl,
+        terms_content: termsData?.content || vendorData.terms_content || "",
+        privacy_content: privacyData?.content || vendorData.privacy_content || "",
+      }
+    : null;
 
-  const visibleBlocks = blocks.filter(b => b.is_visible);
+  // Combined blocks mode (admin theme builder variant picker)
+  const blocksParam = searchParams.get("blocks");
+  if (blocksParam) {
+    let combinedBlocks: { block_type: string; variant: string; is_visible: boolean }[] = [];
+    try { combinedBlocks = JSON.parse(atob(blocksParam)); } catch { combinedBlocks = []; }
+    const visibleBlocks = combinedBlocks.filter(b => b.is_visible);
+    const headerBlock = visibleBlocks.find(b => b.block_type === "header");
+    const footerBlock = visibleBlocks.find(b => b.block_type === "footer");
+    const blockData = { ...enrichedData, home_blocks: combinedBlocks };
 
-  return (
-    <div className="min-h-screen bg-white">
-      <header className="h-14 flex items-center px-8 border-b font-bold text-sm" style={{ backgroundColor: colors.header_color || "#ffffff", color: colors.text_color || "#1f2937" }}>
-        {vendorData?.vendor?.company_name || theme.name || "Theme Preview"}
-      </header>
-
-      <main>
-        {visibleBlocks.length === 0 ? (
-          <div className="flex items-center justify-center py-24 text-gray-400 text-sm">No visible blocks configured.</div>
+    if (previewPage === "contact" || previewPage === "terms" || previewPage === "privacy" || previewPage === "page" || previewPage === "login" || previewPage === "register") {
+      const middleContent =
+        previewPage === "contact" ? (
+          <ContactUs data={blockData} />
+        ) : previewPage === "terms" ? (
+          <TermsConditions data={blockData} />
+        ) : previewPage === "page" ? (
+          <PreviewCustomPage data={blockData} pageId={pageId} pageData={selectedPageData} />
+        ) : previewPage === "login" ? (
+          <PublicClientLogin data={blockData} />
+        ) : previewPage === "register" ? (
+          <PublicClientRegister data={blockData} />
         ) : (
-          visibleBlocks.map((block, i) => (
-            <BlockPreview
-              key={i}
-              block={block.block_type}
-              variant={block.variant || "variant_1"}
-              colors={colors}
-              data={vendorData ?? undefined}
+          <PrivacyPolicy data={blockData} />
+        );
+
+      return (
+        <div className="min-h-screen bg-white p-0 m-0 flex flex-col">
+          {headerBlock && (
+            <BlockRenderer
+              block_type="header"
+              visible={true}
+              settings={{ variant: headerBlock.variant || "variant_1" }}
+              vendorData={blockData}
             />
-          ))
-        )}
-      </main>
+          )}
+          <main key={`preview-${previewPage || "home"}-${pageId || ""}`} className="flex-1">
+            {middleContent}
+          </main>
+          {footerBlock && (
+            <BlockRenderer
+              block_type="footer"
+              visible={true}
+              settings={{ variant: footerBlock.variant || "variant_1" }}
+              vendorData={blockData}
+            />
+          )}
+        </div>
+      );
+    }
 
-      <footer className="h-12 flex items-center justify-center border-t text-xs text-gray-400" style={{ backgroundColor: colors.footer_color || "#f9fafb" }}>
-        © {vendorData?.vendor?.company_name || theme.name} — All rights reserved.
-      </footer>
-    </div>
-  );
-}
+    return (
+      <div className="min-h-screen bg-white p-0 m-0 flex flex-col scroll-smooth">
+        {visibleBlocks.map((b, i) => (
+          <BlockRenderer
+            key={i}
+            block_type={b.block_type}
+            visible={true}
+            settings={{ variant: b.variant || "variant_1" }}
+            vendorData={blockData}
+          />
+        ))}
+      </div>
+    );
+  }
 
-// ─── Single block preview ──────────────────────────────────────────────────────
+  if (previewPage === "contact" || previewPage === "terms" || previewPage === "privacy" || previewPage === "page" || previewPage === "login" || previewPage === "register") {
+    const blockData = enrichedData
+      ? { ...enrichedData, home_blocks: enrichedData.home_blocks || [] }
+      : null;
 
-function SingleBlockPreview({ block, variant }: { block: string; variant: string }) {
-  const { data: vendorData, loading } = useVendorPreviewData();
+    const middleContent =
+      previewPage === "contact" ? (
+        <ContactUs data={blockData} />
+      ) : previewPage === "terms" ? (
+        <TermsConditions data={blockData} />
+      ) : previewPage === "page" ? (
+        <PreviewCustomPage data={blockData} pageId={pageId} pageData={selectedPageData} />
+      ) : previewPage === "login" ? (
+        <PublicClientLogin data={blockData} />
+      ) : previewPage === "register" ? (
+        <PublicClientRegister data={blockData} />
+      ) : (
+        <PrivacyPolicy data={blockData} />
+      );
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen text-sm text-gray-400">Loading…</div>;
+    return (
+      <div className="min-h-screen bg-white p-0 m-0 flex flex-col">
+        <BlockRenderer
+          block_type="header"
+          visible={true}
+          settings={{ variant: "variant_1" }}
+          vendorData={blockData}
+        />
+        <main key={`preview-${previewPage || "home"}-${pageId || ""}`} className="flex-1">
+          {middleContent}
+        </main>
+        <BlockRenderer
+          block_type="footer"
+          visible={true}
+          settings={{ variant: "variant_1" }}
+          vendorData={blockData}
+        />
+      </div>
+    );
+  }
+
+  // Single block mode (legacy)
+  const blockType = searchParams.get("block");
+  const variant   = searchParams.get("variant");
+  if (blockType) {
+    return (
+      <div className="min-h-screen bg-white overflow-hidden p-0 m-0">
+        <BlockRenderer
+          block_type={blockType}
+          visible={true}
+          settings={{ variant: variant || "variant_1" }}
+          vendorData={enrichedData}
+        />
+      </div>
+    );
+  }
+
+  if (!vendorData || !vendorData.theme_id) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0f172a]">
+        <div className="text-center space-y-2">
+          <p className="text-gray-500 font-medium">No active theme set.</p>
+          <p className="text-sm text-gray-400">Please select a theme first.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const previewThemeId = searchParams.get("themeId")
+    ? parseInt(searchParams.get("themeId") as string)
+    : vendorData.theme_id;
 
   return (
     <div className="min-h-screen bg-white">
-      <BlockPreview block={block} variant={variant} data={vendorData ?? undefined} />
-    </div>
-  );
-}
-
-// ─── Page ──────────────────────────────────────────────────────────────────
-
-function PreviewPageInner() {
-  const params  = useSearchParams();
-  const block   = params.get("block");
-  const variant = params.get("variant") || "variant_1";
-  const themeId = params.get("themeId");
-
-  if (themeId) return <FullThemePreview themeId={themeId} />;
-
-  if (block) return <SingleBlockPreview block={block} variant={variant} />;
-
-  return (
-    <div className="flex items-center justify-center min-h-screen text-gray-400 text-sm">
-      No preview params provided. Use ?block=simple_slider&variant=variant_1 or ?themeId=5
+      <ThemePreview
+        themeId={previewThemeId!}
+        colors={activeColors as any}
+        vendorData={enrichedData ?? undefined}
+        isFullPage={true}
+      />
     </div>
   );
 }
 
 export default function PreviewPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-sm text-gray-400">Loading…</div>}>
-      <PreviewPageInner />
+    <Suspense fallback={<Loader />}>
+      <PreviewContent />
     </Suspense>
   );
 }

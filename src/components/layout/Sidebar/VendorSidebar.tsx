@@ -13,7 +13,7 @@ import {
   UserRound,
   MessagesSquare,
   Contact,
-  Newspaper,
+
   Mail,
   MessageCircle,
   Bell,
@@ -39,6 +39,8 @@ import {
   type LucideIcon,
   Handshake,
   Palette,
+  FileText,
+  Shield,
 } from "lucide-react";
 import {
   Sidebar,
@@ -151,21 +153,28 @@ const NAV_ITEMS: NavItem[] = [
       },
       { label: "Header",              href: "/website/header",              icon: Building2  },
       { label: "Contact Information", href: "/website/contact-information", icon: Contact    },
-      { label: "Social Links",        href: "/website/social-links",        icon: Globe,     blockType: "social_media" },
+      { label: "Social Links",        href: "/website/social-links",        icon: Globe                              },
       { label: "Pages",               href: "/website/pages",               icon: List       },
       { label: "Menu",                href: "/website/menu",                icon: List       },
       { label: "Home",                href: "/website/home",                icon: Home       },
       { label: "Theme",               href: "/website/theme",               icon: Palette    },
-      { label: "Footer",              href: "/website/footer",              icon: Layers     },
+      // ─── Footer group (collapsible) ──────────────────────────────────────────
+      { label: "Footer", icon: Layers,
+        children: [
+          { label: "Footer Settings",    href: "/website/footer",             icon: Layers    },
+          { label: "Terms & Conditions", href: "/website/terms-conditions",   icon: FileText, blockType: "terms_conditions" },
+          { label: "Privacy Policy",     href: "/website/privacy-policy",     icon: Shield,   blockType: "privacy_policy"   },
+        ]
+      },
       // ─── Block-gated items ───────────────────────────────────────────────────
-      { label: "About-Us",    href: "/website/about-us",                  icon: Users,     blockType: "about_us"          },
-      { label: "Gallery",     href: "/website/gallery",                   icon: Images,    blockType: "gallery"           },
-      { label: "Subscription",href: "/website/subscription-management",   icon: CreditCard,blockType: "subscription"      },
-      { label: "Testimonial", href: "/website/testimonial-management",    icon: Star,      blockType: "testimonial"       },
+      { label: "About Us",     href: "/website/about-us",                  icon: Users,     blockType: "about_us"          },
+      { label: "Gallery",      href: "/website/gallery",                   icon: Images,    blockType: "gallery"           },
+      { label: "Subscription", href: "/website/subscription-management",   icon: CreditCard,blockType: "subscription"      },
+      { label: "Testimonial",  href: "/website/testimonial-management",    icon: Star,      blockType: "testimonial"       },
       { label: "Home Slider", icon: Sliders,
         children: [
-          { label: "Simple Slider",  href: "/website/home-slider/simple-slider",  icon: List, blockType: "simple_slider"  },
-          { label: "Advance Slider", href: "/website/home-slider/advance-slider", icon: List, blockType: "advance_slider" },
+          { label: "Simple Slider",  href: "/website/home-slider/simple-slider",  icon: Sliders, blockType: "simple_slider"  },
+          { label: "Advance Slider", href: "/website/home-slider/advance-slider", icon: Sliders, blockType: "advance_slider" },
         ]
       },
       { label: "Portfolio", icon: Briefcase,

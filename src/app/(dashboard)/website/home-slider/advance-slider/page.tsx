@@ -1,8 +1,8 @@
 import AdvanceSliderList from "./_components/advance-slider-list";
 
 export const metadata = {
-  title: "Advance Slider Management | Vendor Portal",
-  description: "Configure rich-content hero sliders with typography and background effects.",
+  title: "Slider Management | Vendor Portal",
+  description: "Configure hero sliders for your website home page.",
 };
 
 export default function AdvanceSliderPage() {

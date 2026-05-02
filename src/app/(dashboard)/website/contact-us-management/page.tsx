@@ -144,6 +144,7 @@ export default function ContactUsManagementPage() {
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions 
               onSave={handleSave}
+              onPreview={() => window.open("/preview?previewPage=contact", "_blank")}
               onCancel={() => router.push("/website/management")}
             />
           </div>

@@ -32,8 +32,8 @@ export const useTestimonials = () =>
       const res = await apiClient.get('/vendors/testimonials');
       return res.data.data as Testimonial[];
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
 // ─── Get By Id ────────────────────────────────────────────────────────────────

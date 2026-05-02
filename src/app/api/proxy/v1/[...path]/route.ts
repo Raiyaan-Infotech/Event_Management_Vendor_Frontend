@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+const PROXY_TIMEOUT_MS = 25000;
 
 async function forwardRequest(request: NextRequest, path: string, method: string) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), PROXY_TIMEOUT_MS);
+
   try {
     const strippedPath = path.startsWith('v1/') ? path.slice(3) : path;
     const searchParams = request.nextUrl.search;
@@ -31,11 +35,15 @@ async function forwardRequest(request: NextRequest, path: string, method: string
       headers,
       body,
       credentials: 'include',
+      cache: 'no-store',
+      signal: controller.signal,
     };
 
     const backendResponse = await fetch(backendUrl, fetchOptions);
 
-    console.log(`[Proxy] Forwarding ${method} to ${backendUrl}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[Proxy] Forwarding ${method} to ${backendUrl}`);
+    }
 
     const responseHeaders = new Headers();
     backendResponse.headers.forEach((value, key) => {
@@ -65,6 +73,8 @@ async function forwardRequest(request: NextRequest, path: string, method: string
       { success: false, message: 'Proxy request failed: Backend unreachable or timed out' },
       { status: 504 }
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

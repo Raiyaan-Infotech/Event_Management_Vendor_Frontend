@@ -3,6 +3,11 @@
 import React, { use, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ThemePreview } from "@/components/website/ThemePreview";
+import Loader from "@/components/ui/loader";
+import { VendorPreviewData, useVendorPreviewData } from "@/hooks/use-vendor-preview";
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
+import { useVendorTheme } from "@/hooks/use-vendor-theme";
+import { normalizeHomeBlocks } from "@/lib/safe-json";
 
 interface PublicPreviewContentProps {
     id: string;
@@ -11,6 +16,25 @@ interface PublicPreviewContentProps {
 function PublicPreviewContent({ id }: PublicPreviewContentProps) {
   const searchParams = useSearchParams();
   const idNum = parseInt(id);
+  const { data: vendorData, isLoading: vendorPreviewLoading } = useVendorPreviewData();
+  const { data: subscriptionData, isLoading: subscriptionLoading } = useVendorSubscription();
+  const activePlan = subscriptionData?.plans?.[0] ?? null;
+  const { data: themesRaw, isLoading: themesLoading } = useVendorTheme(activePlan?.id);
+  const themes = themesRaw ?? [];
+  const selectedTheme = React.useMemo(
+    () => themes.find((theme) => theme.id === idNum) ?? null,
+    [themes, idNum]
+  );
+  const previewVendorData = React.useMemo<VendorPreviewData | undefined>(() => {
+    if (!vendorData) return undefined;
+    if (!selectedTheme) return vendorData;
+
+    return {
+      ...vendorData,
+      theme_id: selectedTheme.id,
+      home_blocks: normalizeHomeBlocks(selectedTheme.home_blocks),
+    };
+  }, [vendorData, selectedTheme]);
   
   const [colors, setColors] = React.useState<any>(undefined);
   const [layoutId, setLayoutId] = React.useState<number>(idNum);
@@ -58,11 +82,11 @@ function PublicPreviewContent({ id }: PublicPreviewContentProps) {
     }
   }, [id, searchParams]);
 
-  if (!colors) return <div className="h-screen w-full flex items-center justify-center font-black uppercase tracking-widest animate-pulse">Initializing Theme...</div>;
+  if (vendorPreviewLoading || subscriptionLoading || themesLoading || !colors) return <Loader />;
 
   return (
     <div className="min-h-screen w-full bg-white transition-colors duration-500 overflow-x-hidden">
-      <ThemePreview themeId={layoutId} colors={colors} isFullPage={true} />
+      <ThemePreview themeId={layoutId} colors={colors} vendorData={previewVendorData} isFullPage={true} />
     </div>
   );
 }
@@ -75,7 +99,7 @@ export default function PublicPreviewPage({ params }: PageProps) {
   const resolvedParams = use(params);
   
   return (
-    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center font-black uppercase tracking-widest">Loading...</div>}>
+    <Suspense fallback={<Loader />}>
       <PublicPreviewContent id={resolvedParams.id} />
     </Suspense>
   );

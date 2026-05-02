@@ -2,6 +2,11 @@
 
 import React, { use } from "react";
 import { ThemeFullPagePreview } from "@/components/website/ThemeFullPagePreview";
+import Loader from "@/components/ui/loader";
+import { VendorPreviewData, useVendorPreviewData } from "@/hooks/use-vendor-preview";
+import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
+import { useVendorTheme } from "@/hooks/use-vendor-theme";
+import { normalizeHomeBlocks } from "@/lib/safe-json";
 
 interface PreviewPageProps {
   params: Promise<{ id: string }>;
@@ -9,13 +14,31 @@ interface PreviewPageProps {
 
 export default function ThemeFullPreviewPage({ params }: PreviewPageProps) {
   const { id } = use(params);
+  const idNum = Number.parseInt(id, 10);
   
   const [colors, setColors] = React.useState<any>(undefined);
-  const [layoutId, setLayoutId] = React.useState<number>(parseInt(id));
+  const [layoutId, setLayoutId] = React.useState<number>(idNum);
+  const { data: vendorData, isLoading: vendorPreviewLoading } = useVendorPreviewData();
+  const { data: subscriptionData, isLoading: subscriptionLoading } = useVendorSubscription();
+  const activePlan = subscriptionData?.plans?.[0] ?? null;
+  const { data: themesRaw, isLoading: themesLoading } = useVendorTheme(activePlan?.id);
+  const themes = themesRaw ?? [];
+  const selectedTheme = React.useMemo(
+    () => themes.find((theme) => theme.id === idNum) ?? null,
+    [themes, idNum]
+  );
+  const previewVendorData = React.useMemo<VendorPreviewData | undefined>(() => {
+    if (!vendorData) return undefined;
+    if (!selectedTheme) return vendorData;
+
+    return {
+      ...vendorData,
+      theme_id: selectedTheme.id,
+      home_blocks: normalizeHomeBlocks(selectedTheme.home_blocks),
+    };
+  }, [vendorData, selectedTheme]);
 
   React.useEffect(() => {
-    const idNum = parseInt(id);
-    
     // 1. Get global active state from Designer
     const activatedPresetId = localStorage.getItem("activatedPresetId");
     const activatedLayoutId = localStorage.getItem("activatedLayoutId");
@@ -47,7 +70,11 @@ export default function ThemeFullPreviewPage({ params }: PreviewPageProps) {
     } else if (idNum === 2) {
       setColors({ header: "#7c3aed", footer: "#4c1d95", primary: "#8b5cf6", secondary: "#a78bfa", hover: "#6d28d9", text: "#1e1b4b" });
     }
-  }, [id]);
+  }, [id, idNum]);
+
+  if (vendorPreviewLoading || subscriptionLoading || themesLoading || !colors) {
+    return <Loader />;
+  }
 
   return (
     <ThemeFullPagePreview 
@@ -56,6 +83,7 @@ export default function ThemeFullPreviewPage({ params }: PreviewPageProps) {
       themeId={layoutId}
       colors={colors}
       maxWidth="1100px"
+      vendorData={previewVendorData}
     />
   );
 }

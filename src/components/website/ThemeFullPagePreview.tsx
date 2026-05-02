@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemePreview } from "@/components/website/ThemePreview";
+import { VendorPreviewData } from "@/hooks/use-vendor-preview";
 
 interface ThemeColors {
   header: string;
@@ -21,6 +22,7 @@ interface ThemeFullPagePreviewProps {
   themeId: number | string;
   colors?: ThemeColors;
   maxWidth?: string;
+  vendorData?: VendorPreviewData;
 }
 
 export const ThemeFullPagePreview = ({
@@ -28,12 +30,13 @@ export const ThemeFullPagePreview = ({
   subtitle,
   themeId,
   colors,
-  maxWidth = "1400px"
+  maxWidth = "1400px",
+  vendorData,
 }: ThemeFullPagePreviewProps) => {
   const router = useRouter();
 
   return (
-    <div className="h-[calc(100vh-86px)] flex flex-col bg-gray-50/30 dark:bg-[#0f172a] animate-in fade-in duration-500 overflow-hidden">
+    <div className="h-screen flex flex-col bg-gray-50/30 dark:bg-[#0f172a] animate-in fade-in duration-500 overflow-hidden">
       {/* Top Header Bar */}
       <div className="sticky top-0 z-50 px-8 py-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md">
         <div className="space-y-1">
@@ -68,7 +71,7 @@ export const ThemeFullPagePreview = ({
 
                {/* The Actual Website Content */}
                <div className="flex-1">
-                  <ThemePreview themeId={themeId} colors={colors} />
+                  <ThemePreview themeId={themeId} colors={colors} vendorData={vendorData} />
                </div>
             </div>
          </div>

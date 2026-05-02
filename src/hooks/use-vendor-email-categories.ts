@@ -29,8 +29,8 @@ export const useEmailCategories = (params?: { page?: number; limit?: number; sea
       const res = await apiClient.get('/vendors/email-categories', { params });
       return res.data;
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
 export const useEmailCategory = (id: number | string | null) =>

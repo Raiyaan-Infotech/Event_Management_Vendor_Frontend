@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Icon } from '@iconify/react';
 import { Search, X, LayoutGrid } from 'lucide-react';
 import {
@@ -38,25 +39,23 @@ interface Props {
 export function IconPickerDialog({ open, onOpenChange, onSelect }: Props) {
   const [collection, setCollection] = useState('simple-icons');
   const [search, setSearch] = useState('');
-  const [allIcons, setAllIcons] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    setLoading(true);
-    setAllIcons([]);
-    fetch(`https://api.iconify.design/collection?prefix=${collection}&pretty=0`)
-      .then(r => r.json())
-      .then(data => {
-        const icons: string[] = [
-          ...(data.uncategorized || []),
-          ...Object.values(data.categories || {}).flatMap(v => v as string[]),
-        ];
-        setAllIcons(icons);
-      })
-      .catch(() => setAllIcons([]))
-      .finally(() => setLoading(false));
-  }, [collection, open]);
+  const { data: allIcons = [], isLoading, isFetching } = useQuery({
+    queryKey: ['iconify-collection', collection],
+    queryFn: async () => {
+      const response = await fetch(`https://api.iconify.design/collection?prefix=${collection}&pretty=0`);
+      if (!response.ok) throw new Error('Failed to load icons');
+      const data = await response.json();
+      return [
+        ...(data.uncategorized || []),
+        ...Object.values(data.categories || {}).flatMap(v => v as string[]),
+      ] as string[];
+    },
+    enabled: open,
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 7 * 24 * 60 * 60 * 1000,
+    retry: 1,
+  });
+  const loading = isLoading || isFetching;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

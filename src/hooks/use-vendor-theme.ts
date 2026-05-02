@@ -25,6 +25,9 @@ export const useSaveVendorTheme = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendor-me'] });
       queryClient.invalidateQueries({ queryKey: ['vendor-home-blocks'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor-colors'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor-themes'] });
       toast.success('Theme saved successfully');
     },
     onError: (error: any) => {
@@ -42,6 +45,7 @@ export const useVendorTheme = (planId?: number) => {
       return res.data.data?.themes as Theme[] || [];
     },
     enabled: !!planId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 };

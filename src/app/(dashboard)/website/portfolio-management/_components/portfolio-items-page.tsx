@@ -171,8 +171,7 @@ export default function PortfolioItemsPage({ type }: Props) {
                     {/* Pending preview tiles */}
                     {pendingPreviews.map((p) => (
                       <div key={p.id} className="relative aspect-square rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.previewUrl} alt="preview" className="w-full h-full object-contain p-4" />
+                        <Image src={p.previewUrl} alt="preview" fill sizes="160px" className="object-contain p-4" unoptimized />
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                           {p.uploading ? (
                             <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin" />

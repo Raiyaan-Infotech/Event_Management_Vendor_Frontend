@@ -51,6 +51,7 @@ export interface Vendor {
   short_description: string | null;
   poweredby: string | null;
   copywrite: string | null;
+  theme_id: number | null;
 }
 
 // Get current logged-in vendor profile
@@ -139,6 +140,7 @@ export interface NavMenuChild {
 
 export interface NavMenuItem {
   label: string;
+  type?: "home" | "about" | "contact" | "pages"; // fixed nav item types
   page_ids: number[];
   order: number;
   children: NavMenuChild[];

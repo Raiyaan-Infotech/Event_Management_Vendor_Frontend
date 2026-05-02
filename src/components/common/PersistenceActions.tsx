@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Check, X, RotateCcw, Eye, LucideIcon } from "lucide-react";
+import { Check, X, RotateCcw, ExternalLink, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PersistenceActionsProps {
@@ -34,22 +34,20 @@ export const PersistenceActions = ({
   saveIcon: SaveIcon = Check,
   cancelIcon: CancelIcon = X,
   resetIcon: ResetIcon = RotateCcw,
-  previewIcon: PreviewIcon = Eye,
+  previewIcon: PreviewIcon = ExternalLink,
   isSubmitting = false,
   className
 }: PersistenceActionsProps) => {
   return (
     <div className={cn("space-y-3 w-full", className)}>
-      {onPreview && (
-        <Button 
-          type="button"
-          onClick={onPreview}
-          variant="outline"
-          className="w-full h-12 border-emerald-200 dark:border-emerald-500/30 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 font-bold text-[13px] tracking-[0.1em] uppercase rounded-xl border-2 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 shadow-emerald-500/10 shadow-lg"
-        >
-          <PreviewIcon size={16} /> {previewLabel}
-        </Button>
-      )}
+      <Button 
+        type="button"
+        onClick={onPreview}
+        variant="outline"
+        className="w-full h-12 bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-bold text-[13px] tracking-[0.1em] uppercase rounded-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 shadow-sm"
+      >
+        <PreviewIcon size={16} /> {previewLabel}
+      </Button>
 
       <Button 
         type="submit"

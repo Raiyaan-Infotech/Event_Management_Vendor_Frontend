@@ -211,6 +211,7 @@ export default function AddSocialLinkPage() {
             <div className="bg-white dark:bg-sidebar/50 p-5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
               <PersistenceActions
                 onSave={handleSave}
+                onPreview={() => window.open('/preview?block=social_media', '_blank')}
                 onReset={() => {
                   setIcon(''); setIconColor('#3b82f6');
                   setLabel(''); setUrl('');

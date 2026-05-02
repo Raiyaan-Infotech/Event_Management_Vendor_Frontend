@@ -4,6 +4,17 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@iconify/react",
+      "recharts",
+      "date-fns",
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@dnd-kit/utilities",
+    ],
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Use axios pre-built browser bundle — no Node.js built-ins (http2/zlib/etc)
@@ -15,7 +26,6 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
-    unoptimized: true,
     remotePatterns: [
       { hostname: "i.pravatar.cc" },
       { hostname: "logo.clearbit.com" },
@@ -24,6 +34,8 @@ const nextConfig: NextConfig = {
       { hostname: "images.unsplash.com" },
       { hostname: "flagcdn.com" },
       { hostname: "localhost" },
+      { hostname: "d2423c9j40z83w.cloudfront.net" },
+      { hostname: "picsum.photos" },
     ],
   },
   async rewrites() {

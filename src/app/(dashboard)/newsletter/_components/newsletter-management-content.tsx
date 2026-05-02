@@ -56,9 +56,8 @@ export default function NewsletterManagementContent({ type }: Props) {
   const subscribersQuery   = useNewsletterSubscribers();
   const unsubscribersQuery = useNewsletterUnsubscribers();
 
-  const { data: rawData = [], isLoading } = isSubscribers
-    ? subscribersQuery
-    : unsubscribersQuery;
+  const rawData: NewsletterClient[] = (isSubscribers ? subscribersQuery.data : unsubscribersQuery.data) ?? [];
+  const isLoading = isSubscribers ? subscribersQuery.isLoading : unsubscribersQuery.isLoading;
 
   const { data: subscriptionData } = useVendorSubscription();
   const plans = subscriptionData?.plans ?? [];

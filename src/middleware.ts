@@ -1,17 +1,41 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// These routes are accessible regardless of login state — NEVER redirect them
+// Routes always accessible — no auth checks
 const alwaysPublicRoutes = ['/preview', '/public-preview'];
 
-// These routes are only for guests (logged-in users get sent to /dashboard)
+// Guest-only routes (logged-in users → /dashboard)
 const guestOnlyRoutes = ['/login', '/forgot-password', '/reset-password'];
+
+// All known "system" top-level paths — anything NOT in this list and not a
+// known system prefix is treated as a public vendor slug (e.g. /royal-events)
+const SYSTEM_PREFIXES = [
+  '/dashboard', '/analytics', '/clients', '/staff', '/communication',
+  '/reports', '/transactions', '/events', '/payment-management',
+  '/settings', '/appearance', '/help', '/website', '/roles', '/modules',
+  '/activity-log', '/newsletter', '/login', '/forgot-password',
+  '/reset-password', '/preview', '/public-preview', '/api',
+];
+
+function isPublicVendorSlug(pathname: string): boolean {
+  // Must be exactly one segment like /royal-events (not /royal-events/something/deep)
+  const parts = pathname.split('/').filter(Boolean);
+  if (parts.length < 1 || parts.length > 3) return false;
+  // First segment must not be a known system prefix
+  const first = `/${parts[0]}`;
+  return !SYSTEM_PREFIXES.some((p) => first === p || first.startsWith(p));
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Preview routes are always accessible — skip all auth checks
+  // Always-public routes — skip auth checks
   if (alwaysPublicRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
+
+  // Public vendor slug pages — accessible without login
+  if (isPublicVendorSlug(pathname)) {
     return NextResponse.next();
   }
 
@@ -33,7 +57,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Not logged in, redirect to login
+  // Not logged in → login page
   const isPublicRoute = guestOnlyRoutes.some((route) => pathname.startsWith(route));
   if (!isPublicRoute && !isVendorLoggedIn) {
     return NextResponse.redirect(new URL('/login', request.url));
@@ -45,3 +69,4 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|public|api).*)'],
 };
+

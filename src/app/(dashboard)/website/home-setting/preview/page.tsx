@@ -18,10 +18,11 @@ const DEFAULT_NAV: NavMenuItem[] = [
   { label: "Contact Us", page_ids: [], order: 2, children: [] },
 ];
 
-function PreviewHeader({ vendor }: { vendor?: VendorAbout }) {
+function PreviewHeader({ vendor, blocks = [] }: { vendor?: VendorAbout; blocks?: { block_type: string; is_visible?: boolean }[] }) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const navItems = vendor?.nav_menu?.length ? vendor.nav_menu : DEFAULT_NAV;
   const city = vendor?.district?.name ?? vendor?.locality?.name ?? null;
+  const showRegister = blocks.some((block) => block.block_type === "register" && block.is_visible !== false);
 
   return (
     <header className="flex items-center px-6 py-3 border-b bg-white dark:bg-zinc-900 gap-4 sticky top-0 z-40 shadow-sm">
@@ -73,6 +74,15 @@ function PreviewHeader({ vendor }: { vendor?: VendorAbout }) {
           );
         })}
       </nav>
+
+      <div className="ml-auto flex items-center gap-2">
+        <span className="px-3 py-2 text-sm font-semibold text-foreground/70">Login</span>
+        {showRegister ? (
+          <span className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm">
+            Register
+          </span>
+        ) : null}
+      </div>
     </header>
   );
 }
@@ -246,7 +256,7 @@ export default function HomeSettingPreviewPage() {
 
       {/* Site preview */}
       <div className="flex-1 bg-background shadow-2xl max-w-5xl mx-auto w-full my-4 rounded-xl overflow-hidden border">
-        <PreviewHeader vendor={vendor} />
+        <PreviewHeader vendor={vendor} blocks={blocks} />
 
         <main className="py-2">
           {visibleBlocks.length === 0 ? (

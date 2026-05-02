@@ -32,8 +32,8 @@ export const useVendorSocialLinks = () =>
       const res = await apiClient.get('/vendors/social-links');
       return res.data.data as VendorSocialLink[];
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
 export const useVendorSocialLinkItem = (id: number | string | null) =>

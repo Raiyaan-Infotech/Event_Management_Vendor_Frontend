@@ -53,8 +53,9 @@ export default function SimpleSliderList() {
     setSliderToDelete(null);
   };
 
-  const sliders = data?.data ?? [];
-  const total = data?.pagination?.total ?? 0;
+  const rawSliders = data?.data;
+  const sliders = Array.isArray(rawSliders) ? rawSliders : [];
+  const total = data?.pagination?.total ?? sliders.length;
 
   const sliderColumns: Column<VendorSlider>[] = [
     {

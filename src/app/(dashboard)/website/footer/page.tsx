@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
+import { WebsiteSettingsPageSkeleton } from "@/components/boneyard/website-settings-page-skeleton";
 import {
   Plus,
   X,
@@ -24,7 +25,11 @@ import {
   Trash2,
   Share2,
   ExternalLink,
+  Link as LinkIcon,
+  FileText,
+  GripVertical,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Icon } from "@iconify/react";
 import * as LucideIcons from "lucide-react";
 import { toast } from "sonner";
@@ -52,16 +57,8 @@ function SocialIcon({ name, color }: { name?: string | null; color?: string | nu
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface QuickLinkItem {
-  id: string;
   page_id: number;
   pageName: string;
-  url: string;
-}
-
-interface QuickLinkColumn {
-  id: string;
-  title: string;
-  links: QuickLinkItem[];
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -103,11 +100,12 @@ export default function FooterPage() {
     address: "",
   });
 
-  // ── Quick Links Columns ───────────────────────────
-  const [columns, setColumns] = useState<QuickLinkColumn[]>([]);
-  const [pageSearchByCol, setPageSearchByCol] = useState<{
-    [key: string]: string;
-  }>({});
+  // ── Quick Links ──────────────────────────────────
+  const [quickLinksHeading, setQuickLinksHeading] = useState("Quick Links");
+  const [selectedLinks, setSelectedLinks] = useState<QuickLinkItem[]>([]);
+  const [pageModalOpen, setPageModalOpen] = useState(false);
+  const [modalSearch, setModalSearch]     = useState("");
+  const [draggedLinkIndex, setDraggedLinkIndex] = useState<number | null>(null);
 
   // ── Footer Bottom ─────────────────────────────────
   const [copyright, setCopyright] = useState<string>("");
@@ -156,20 +154,16 @@ export default function FooterPage() {
     setFooterLinksLoaded(true);
     const raw = vendor.footer_links;
     if (raw?.length) {
-      setColumns(
-        raw.map((col, i) => ({
-          id: `c${i}-loaded`,
-          title: col.heading,
-          links: col.page_ids
-            .map((pid, j) => {
-              const page = vendorPages.find((p) => p.id === pid);
-              return page
-                ? { id: `l${i}-${j}`, page_id: page.id, pageName: page.name, url: `/website/pages/view/${page.id}` }
-                : null;
-            })
-            .filter(Boolean) as QuickLinkItem[],
-        }))
-      );
+      setQuickLinksHeading(raw[0]?.heading || "Quick Links");
+      // Flatten all page_ids from all columns into a single list
+      const allPageIds: number[] = raw.flatMap((col: any) => col.page_ids ?? []);
+      const links: QuickLinkItem[] = allPageIds
+        .map((pid) => {
+          const page = vendorPages.find((p) => p.id === pid);
+          return page ? { page_id: page.id, pageName: page.name } : null;
+        })
+        .filter(Boolean) as QuickLinkItem[];
+      setSelectedLinks(links);
     }
   }, [vendor, vendorPages, footerLinksLoaded]);
 
@@ -213,10 +207,9 @@ export default function FooterPage() {
       }
     }
 
-    const footer_links = columns.map((col) => ({
-      heading: col.title,
-      page_ids: col.links.map((l) => l.page_id).filter(Boolean),
-    }));
+    const footer_links = selectedLinks.length
+      ? [{ heading: quickLinksHeading.trim() || "Quick Links", page_ids: selectedLinks.map((l) => l.page_id) }]
+      : [];
 
     await updateMutation.mutateAsync({
       company_name: companyName,
@@ -235,22 +228,27 @@ export default function FooterPage() {
     } as never);
   };
 
-  // ── Column helpers ────────────────────────────────
-  const addColumn = () => {
-    if (columns.length >= 2) return toast.error("Only two columns maximum");
-    setColumns([
-      ...columns,
-      {
-        id: Date.now().toString(),
-        title: "",
-        links: [],
-      },
-    ]);
+  // ── Quick link helpers ────────────────────────────
+  const togglePageLink = (page: { id: number; name: string }) => {
+    setSelectedLinks((prev) =>
+      prev.some((l) => l.page_id === page.id)
+        ? prev.filter((l) => l.page_id !== page.id)
+        : [...prev, { page_id: page.id, pageName: page.name }]
+    );
   };
-  const removeColumn = (id: string) =>
-    setColumns(columns.filter((c) => c.id !== id));
-  const updateColumnTitle = (id: string, title: string) =>
-    setColumns(columns.map((c) => (c.id === id ? { ...c, title } : c)));
+  const removeLink = (page_id: number) =>
+    setSelectedLinks((prev) => prev.filter((l) => l.page_id !== page_id));
+
+  const handleQuickLinkDrop = (targetIndex: number) => {
+    if (draggedLinkIndex === null || draggedLinkIndex === targetIndex) return;
+    setSelectedLinks((prev) => {
+      const updated = [...prev];
+      const [moved] = updated.splice(draggedLinkIndex, 1);
+      updated.splice(targetIndex, 0, moved);
+      return updated;
+    });
+    setDraggedLinkIndex(null);
+  };
 
   // ── Reset ─────────────────────────────────────────
   const handleReset = () => {
@@ -270,20 +268,15 @@ export default function FooterPage() {
     setCopyright(vendor.copywrite || "");
     setPoweredBy(vendor.poweredby || "");
     setDescription(vendor.short_description || "");
-    setColumns([]);
+    setQuickLinksHeading(vendor.footer_links?.[0]?.heading || "Quick Links");
+    setSelectedLinks([]);
     setNewsletterEnabled(false);
     setNewsletterEmailPreview("");
     toast.info("All settings reset.");
   };
 
   // ── Loading guard ─────────────────────────────────
-  if (isLoading) {
-    return (
-      <div className="h-[calc(100vh-86px)] flex items-center justify-center">
-        <p className="text-sm text-gray-400">Loading...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <WebsiteSettingsPageSkeleton />;
 
   // ─────────────────────────────────────────────────────────────────────────────
   // RENDER
@@ -454,148 +447,87 @@ export default function FooterPage() {
               )}
             </div>
 
-            {/* Section 2: Quick Links Columns */}
+            {/* Section 2: Quick Links */}
             <div className="bg-white dark:bg-sidebar p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-6">
               <div className="flex items-center justify-between border-b pb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center text-green-600">
-                    <Layout size={20} />
+                    <LinkIcon size={20} />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white font-poppins">
-                    Footer Top List
-                  </h3>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white font-poppins">Footer Top List</h3>
+                    <p className="text-xs text-gray-400">Pages shown in the footer navigation</p>
+                  </div>
                 </div>
                 <Button
-                  onClick={addColumn}
+                  onClick={() => { setModalSearch(""); setPageModalOpen(true); }}
                   className="bg-green-600 hover:bg-green-700 text-white h-9 text-xs font-bold px-4 gap-2 shadow-sm shadow-green-500/10 active:scale-95 transition-all"
                 >
-                  <Plus size={14} /> Add Column
+                  <Plus size={14} /> Add Pages
                 </Button>
               </div>
 
               <div className="space-y-8">
-                {columns.map((col) => (
-                  <div
-                    key={col.id}
-                    className="p-5 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5 space-y-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 max-w-[300px]">
-                        <Input
-                          value={col.title}
-                          onChange={(e) =>
-                            updateColumnTitle(col.id, e.target.value)
-                          }
-                          placeholder="Type Heading Here..."
-                          className="font-bold text-base h-10 bg-white dark:bg-sidebar border-gray-200 dark:border-gray-800"
-                        />
-                      </div>
-                      <button
-                        onClick={() => removeColumn(col.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                <div className="space-y-2">
+                  <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                    Footer Top List Heading
+                  </Label>
+                  <Input
+                    value={quickLinksHeading}
+                    onChange={(e) => setQuickLinksHeading(e.target.value)}
+                    placeholder="Type Heading Here..."
+                    className="font-bold text-base h-10 bg-white dark:bg-sidebar border-gray-200 dark:border-gray-800"
+                  />
+                </div>
 
-                    <div className="space-y-4">
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
-                          Select Navigation Pages
-                        </Label>
-                        <div className="bg-white dark:bg-sidebar border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-                          <div className="p-3 border-b border-gray-50 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5">
-                            <div className="relative">
-                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 size-3.5" />
-                              <input
-                                placeholder="Search pages..."
-                                value={pageSearchByCol[col.id] || ""}
-                                onChange={(e) =>
-                                  setPageSearchByCol({
-                                    ...pageSearchByCol,
-                                    [col.id]: e.target.value,
-                                  })
-                                }
-                                className="w-full h-9 pl-9 pr-3 bg-white dark:bg-sidebar border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium"
-                              />
-                            </div>
-                          </div>
-                          <div className="max-h-[200px] overflow-y-auto custom-scrollbar p-1.5 bg-white dark:bg-sidebar">
-                            {vendorPages.filter((p) =>
-                              p.name
-                                .toLowerCase()
-                                .includes(
-                                  (pageSearchByCol[col.id] || "").toLowerCase(),
-                                ),
-                            ).map((page) => {
-                              const isSelected = col.links.some(
-                                (l) => l.pageName === page.name,
-                              );
-                              return (
-                                <div
-                                  key={page.id}
-                                  onClick={() => {
-                                    if (isSelected) {
-                                      setColumns((prev) =>
-                                        prev.map((c) =>
-                                          c.id === col.id
-                                            ? {
-                                                ...c,
-                                                links: c.links.filter(
-                                                  (l) =>
-                                                    l.pageName !== page.name,
-                                                ),
-                                              }
-                                            : c,
-                                        ),
-                                      );
-                                    } else {
-                                      setColumns((prev) =>
-                                        prev.map((c) =>
-                                          c.id === col.id
-                                            ? {
-                                                ...c,
-                                                links: [
-                                                  ...c.links,
-                                                  {
-                                                    id: `l-${Date.now()}`,
-                                                    page_id: page.id,
-                                                    pageName: page.name,
-                                                    url: `/website/pages/view/${page.id}`,
-                                                  },
-                                                ],
-                                              }
-                                            : c,
-                                        ),
-                                      );
-                                    }
-                                  }}
-                                  className={`px-3 py-1.5 rounded-lg border border-transparent hover:border-primary/10 hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer group transition-all flex items-center gap-3 mb-0.5 select-none ${isSelected ? "bg-primary/5 border-primary/20" : ""}`}
-                                >
-                                  <div
-                                    className={`w-4 h-4 rounded-md border flex flex-shrink-0 items-center justify-center transition-all ${isSelected ? "bg-primary border-primary text-white" : "border-gray-300 dark:border-gray-700 bg-white dark:bg-sidebar group-hover:border-primary/50"}`}
-                                  >
-                                    {isSelected && <Check size={10} />}
-                                  </div>
-                                  <span
-                                    className={`text-[13px] font-bold transition-colors ${isSelected ? "text-primary" : "text-gray-700 dark:text-gray-200 group-hover:text-primary"}`}
-                                  >
-                                    {page.name}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                      {col.links.length === 0 && (
-                        <p className="text-xs text-gray-400 italic py-2 pl-2">
-                          No links in this column yet.
-                        </p>
-                      )}
+                {/* Selected pages list */}
+                {selectedLinks.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between px-1">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                        Footer page hierarchy
+                      </p>
+                      <p className="text-[11px] font-semibold text-gray-400">
+                        Drag to reorder
+                      </p>
                     </div>
+                    {selectedLinks.map((link, index) => (
+                      <div
+                        key={link.page_id}
+                        draggable
+                        onDragStart={() => setDraggedLinkIndex(index)}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDrop={() => handleQuickLinkDrop(index)}
+                        onDragEnd={() => setDraggedLinkIndex(null)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/40 dark:bg-white/5 group cursor-move transition-all ${
+                          draggedLinkIndex === index ? "opacity-50 border-primary/40" : "hover:border-primary/30"
+                        }`}
+                      >
+                        <GripVertical size={15} className="text-gray-300 shrink-0" />
+                        <span className="w-6 h-6 rounded-lg bg-white dark:bg-sidebar border border-gray-100 dark:border-gray-800 flex items-center justify-center text-[10px] font-black text-gray-400">
+                          {index + 1}
+                        </span>
+                        <FileText size={14} className="text-gray-400 shrink-0" />
+                        <span className="flex-1 text-sm font-semibold text-gray-700 dark:text-gray-200 truncate">
+                          {link.pageName}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeLink(link.page_id)}
+                          className="text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="py-10 text-center border-2 border-dashed border-gray-100 dark:border-gray-800/50 rounded-2xl">
+                    <LinkIcon size={24} className="mx-auto text-gray-300 mb-2" />
+                    <p className="text-sm text-gray-400">No quick links yet.</p>
+                    <p className="text-xs text-gray-300 mt-1">Click &quot;Add Pages&quot; to choose pages for the footer.</p>
+                  </div>
+                )}
 
                 {/* Newsletter Card */}
                 <div className="p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/5 space-y-4 shadow-sm">
@@ -803,14 +735,6 @@ export default function FooterPage() {
                   </div>
                 </div>
 
-                {columns.length === 0 && (
-                  <div className="py-12 text-center border-2 border-dashed border-gray-100 dark:border-gray-800/50 rounded-2xl">
-                    <p className="text-sm text-gray-400">
-                      Click &quot;Add Column&quot; to start building your footer
-                      link structure.
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -854,6 +778,7 @@ export default function FooterPage() {
             <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
             <PersistenceActions 
               onSave={handleSave}
+              onPreview={() => window.open("/preview", "_blank")}
               onReset={handleReset}
               onCancel={() => router.push("/website/management")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
@@ -863,6 +788,79 @@ export default function FooterPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Add Pages Modal ─────────────────────────────── */}
+      <Dialog open={pageModalOpen} onOpenChange={setPageModalOpen}>
+        <DialogContent
+          className="max-h-[92vh] flex flex-col"
+          style={{
+            width: "calc(100vw - 320px)",
+            maxWidth: "1500px",
+            left: "calc(50% + 120px)",
+          }}
+        >
+          <DialogHeader className="shrink-0">
+            <DialogTitle className="flex items-center gap-2 text-base font-bold">
+              <FileText size={16} className="text-primary" /> Select Pages for Quick Links
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Search */}
+          <div className="relative shrink-0 px-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-3.5" />
+            <input
+              placeholder="Search pages..."
+              value={modalSearch}
+              onChange={(e) => setModalSearch(e.target.value)}
+              className="w-full h-10 pl-9 pr-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium"
+            />
+          </div>
+
+          {/* Pages as cards */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-1 py-1">
+            {vendorPages.length === 0 ? (
+              <p className="text-center text-sm text-gray-400 py-8">No pages found. Create pages first.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
+                {vendorPages
+                  .filter((p) => p.name.toLowerCase().includes(modalSearch.toLowerCase()))
+                  .map((page) => {
+                    const isSelected = selectedLinks.some((l) => l.page_id === page.id);
+                    return (
+                      <div key={page.id} onClick={() => togglePageLink(page)}
+                        className={`relative flex items-center gap-3 cursor-pointer rounded-xl border-2 p-4 transition-all select-none group ${
+                          isSelected
+                            ? "border-primary bg-primary/5 dark:bg-primary/10"
+                            : "border-gray-100 dark:border-gray-800 hover:border-primary/40 hover:bg-gray-50 dark:hover:bg-white/5"
+                        }`}>
+                        {/* Check badge */}
+                        {isSelected && (
+                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                            <Check size={10} className="text-white" />
+                          </span>
+                        )}
+                        <FileText size={20} className={`shrink-0 ${isSelected ? "text-primary" : "text-gray-300 group-hover:text-gray-400"}`} />
+                        <p className={`flex-1 text-sm font-bold truncate leading-tight ${isSelected ? "text-primary" : "text-gray-700 dark:text-gray-200"}`}>
+                          {page.name}
+                        </p>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="shrink-0 flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
+            <span className="text-xs text-gray-400 font-medium">
+              {selectedLinks.length} page{selectedLinks.length !== 1 ? "s" : ""} selected
+            </span>
+            <Button onClick={() => setPageModalOpen(false)} className="h-9 px-6 text-xs font-bold">
+              Done
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -8,11 +8,11 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import { QueryProvider } from "@/providers/query-provider";
+import { BoneyardProvider } from "@/components/boneyard/boneyard-provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
-
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
 
   variable: "--font-poppins",
 });
@@ -43,6 +43,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <BoneyardProvider />
           <QueryProvider>
             <NavigationLoader>
                {children}
