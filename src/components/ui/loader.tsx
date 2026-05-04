@@ -2,12 +2,25 @@
 
 import React from "react";
 
-const Loader = () => {
-  const dots = [
-    { color: "bg-[#9a3ff2]", delay: "0ms" },
-    { color: "bg-[#ff4fa3]", delay: "140ms" },
-    { color: "bg-[#45aaf2]", delay: "280ms" },
-  ];
+interface LoaderProps {
+  dotColors?: string[];
+}
+
+const DEFAULT_DOT_COLORS = [
+  "#2563eb",
+  "#1d4ed8",
+  "#0f172a",
+  "#334155",
+  "#60a5fa",
+  "#93c5fd",
+];
+
+const Loader = ({ dotColors }: LoaderProps) => {
+  const colors = dotColors && dotColors.length === 6 ? dotColors : DEFAULT_DOT_COLORS;
+  const dots = colors.map((color, index) => ({
+    color,
+    delay: `${index * 120}ms`,
+  }));
 
   return (
     <div
@@ -16,13 +29,14 @@ const Loader = () => {
       aria-live="polite"
       aria-label="Loading"
     >
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4">
         {dots.map((dot, index) => (
           <span
             key={index}
-            className={`h-5 w-5 rounded-full ${dot.color}`}
+            className="h-5 w-5 rounded-full border border-black/10 shadow-sm dark:border-white/10"
             style={{
-              animation: "loader-dot 0.9s ease-in-out infinite",
+              backgroundColor: dot.color,
+              animation: "loader-dot 0.95s ease-in-out infinite",
               animationDelay: dot.delay,
             }}
           />

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Plus, Save, X, GripVertical, ChevronRight, ChevronDown,
   Trash2, FileText, Layout, Search, Pencil,
@@ -12,8 +13,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/api-client";
 import { useVendorAbout, useUpdateVendorAbout, NavMenuItem } from "@/hooks/use-vendors";
 import { useVendorPages } from "@/hooks/use-vendor-pages";
+import { WebsiteSettingsPageSkeleton } from "@/components/boneyard/website-settings-page-skeleton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,7 +36,8 @@ interface MenuNavItem {
   isOpen: boolean;
 }
 
-const FIXED_MENU_TYPES = new Set(["home", "about", "contact"]);
+const FIXED_MENU_TYPES = new Set(["home", "about", "pages", "contact"]);
+const PAGES_MENU_ID = "fixed-pages";
 
 const inferMenuType = (label: string): "pages" | undefined =>
   label.trim().toLowerCase() === "pages" ? "pages" : undefined;
@@ -47,6 +51,15 @@ const parseNavMenu = (value: unknown): NavMenuItem[] => {
   } catch {
     return [];
   }
+};
+
+const normalizeMenuType = (item: Partial<NavMenuItem>) => {
+  const label = (item.label || "").trim().toLowerCase();
+  if (item.type === "home" || label === "home") return "home";
+  if (item.type === "about" || label === "about us" || label === "about") return "about";
+  if (item.type === "pages" || label === "pages") return "pages";
+  if (item.type === "contact" || label === "contact us" || label === "contact") return "contact";
+  return item.type;
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────

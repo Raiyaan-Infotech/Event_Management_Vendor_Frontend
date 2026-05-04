@@ -216,7 +216,7 @@ function PreviewFooter({ vendor }: { vendor?: VendorAbout }) {
 // ─── Preview page ─────────────────────────────────────────────────────────────
 
 export default function HomeSettingPreviewPage() {
-  const { data: blocks = [], isLoading: blocksLoading } = useVendorHomeBlocks();
+  const { data: blocks = [], isLoading: blocksLoading, isFetching: blocksFetching } = useVendorHomeBlocks();
   const { data: vendor, isLoading: vendorLoading }      = useVendorAbout();
   const { data: catalog = [], isLoading: catalogLoading } = useUiBlocks();
 
@@ -224,7 +224,7 @@ export default function HomeSettingPreviewPage() {
 
   const visibleBlocks = showHidden ? blocks : blocks.filter((b) => b.is_visible);
 
-  if (blocksLoading || vendorLoading || catalogLoading) {
+  if (blocksLoading || blocksFetching || vendorLoading || catalogLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-muted-foreground text-sm">
         Loading preview…

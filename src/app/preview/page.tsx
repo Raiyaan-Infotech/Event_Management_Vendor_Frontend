@@ -59,7 +59,7 @@ function PreviewContent() {
       : rawPreviewPage === "privacy-policy" || rawPreviewPage === "privacy_policy"
         ? "privacy"
         : rawPreviewPage;
-  const { data: vendorData, isLoading } = useVendorPreviewData(vendorId);
+  const { data: vendorData, isLoading, isFetching } = useVendorPreviewData(vendorId);
   const embeddedSelectedPage = (vendorData?.pages || []).find((item: any) => Number(item.id) === pageId && item.is_active !== 0);
   const shouldFetchTerms = previewPage === "terms" && !!vendorData && !vendorData.terms_content;
   const shouldFetchPrivacy = previewPage === "privacy" && !!vendorData && !vendorData.privacy_content;
@@ -70,6 +70,7 @@ function PreviewContent() {
 
   if (
     isLoading ||
+    isFetching ||
     (shouldFetchTerms && isTermsLoading) ||
     (shouldFetchPrivacy && isPrivacyLoading) ||
     (shouldFetchPage && isPageLoading)

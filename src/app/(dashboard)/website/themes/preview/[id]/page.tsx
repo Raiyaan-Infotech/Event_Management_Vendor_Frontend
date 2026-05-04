@@ -18,10 +18,10 @@ export default function ThemeFullPreviewPage({ params }: PreviewPageProps) {
   
   const [colors, setColors] = React.useState<any>(undefined);
   const [layoutId, setLayoutId] = React.useState<number>(idNum);
-  const { data: vendorData, isLoading: vendorPreviewLoading } = useVendorPreviewData();
+  const { data: vendorData, isLoading: vendorPreviewLoading, isFetching: vendorPreviewFetching } = useVendorPreviewData();
   const { data: subscriptionData, isLoading: subscriptionLoading } = useVendorSubscription();
   const activePlan = subscriptionData?.plans?.[0] ?? null;
-  const { data: themesRaw, isLoading: themesLoading } = useVendorTheme(activePlan?.id);
+  const { data: themesRaw, isLoading: themesLoading, isFetching: themesFetching } = useVendorTheme(activePlan?.id);
   const themes = themesRaw ?? [];
   const selectedTheme = React.useMemo(
     () => themes.find((theme) => theme.id === idNum) ?? null,
@@ -72,7 +72,7 @@ export default function ThemeFullPreviewPage({ params }: PreviewPageProps) {
     }
   }, [id, idNum]);
 
-  if (vendorPreviewLoading || subscriptionLoading || themesLoading || !colors) {
+  if (vendorPreviewLoading || vendorPreviewFetching || subscriptionLoading || themesLoading || themesFetching || !colors) {
     return <Loader />;
   }
 

@@ -39,6 +39,7 @@ export const useSaveVendorHomeBlocks = (onSuccess?: () => void) => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(HOME_BLOCKS_KEY, data);
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success('Home layout saved');
       onSuccess?.();
     },

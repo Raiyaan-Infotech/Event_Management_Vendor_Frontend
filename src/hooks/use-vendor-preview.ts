@@ -83,7 +83,13 @@ export const useVendorPreviewData = (vendorId?: number | null) =>
       const url = vendorId
         ? `/vendors/${vendorId}/preview-data`
         : '/vendors/auth/preview-data';
-      const res = await apiClient.get(url);
+      const res = await apiClient.get(url, {
+        params: { _t: Date.now() },
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      });
       return res.data.data as VendorPreviewData;
     },
     staleTime: 0,

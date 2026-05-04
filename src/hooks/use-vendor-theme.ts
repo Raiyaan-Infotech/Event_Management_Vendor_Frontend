@@ -22,12 +22,18 @@ export const useSaveVendorTheme = () => {
   return useMutation({
     mutationFn: (themeId: number) =>
       apiClient.put('/vendors/subscription/theme', { theme_id: themeId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vendor-me'] });
-      queryClient.invalidateQueries({ queryKey: ['vendor-home-blocks'] });
-      queryClient.invalidateQueries({ queryKey: ['vendor-colors'] });
-      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
-      queryClient.invalidateQueries({ queryKey: ['vendor-themes'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['vendor-me'] }),
+        queryClient.invalidateQueries({ queryKey: ['vendor-home-blocks'] }),
+        queryClient.invalidateQueries({ queryKey: ['vendor-colors'] }),
+        queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] }),
+        queryClient.invalidateQueries({ queryKey: ['vendor-themes'] }),
+      ]);
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ['vendor-preview-data'], type: 'active' }),
+        queryClient.refetchQueries({ queryKey: ['vendor-themes'], type: 'active' }),
+      ]);
       toast.success('Theme saved successfully');
     },
     onError: (error: any) => {
@@ -41,7 +47,13 @@ export const useVendorTheme = (planId?: number) => {
     queryKey: ['vendor-themes', planId],
     queryFn: async () => {
       if (!planId) return null;
-      const res = await apiClient.get(`/vendors/subscription/themes/${planId}`);
+      const res = await apiClient.get(`/vendors/subscription/themes/${planId}`, {
+        params: { _t: Date.now() },
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      });
       return res.data.data?.themes as Theme[] || [];
     },
     enabled: !!planId,

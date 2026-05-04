@@ -16,10 +16,10 @@ interface PublicPreviewContentProps {
 function PublicPreviewContent({ id }: PublicPreviewContentProps) {
   const searchParams = useSearchParams();
   const idNum = parseInt(id);
-  const { data: vendorData, isLoading: vendorPreviewLoading } = useVendorPreviewData();
+  const { data: vendorData, isLoading: vendorPreviewLoading, isFetching: vendorPreviewFetching } = useVendorPreviewData();
   const { data: subscriptionData, isLoading: subscriptionLoading } = useVendorSubscription();
   const activePlan = subscriptionData?.plans?.[0] ?? null;
-  const { data: themesRaw, isLoading: themesLoading } = useVendorTheme(activePlan?.id);
+  const { data: themesRaw, isLoading: themesLoading, isFetching: themesFetching } = useVendorTheme(activePlan?.id);
   const themes = themesRaw ?? [];
   const selectedTheme = React.useMemo(
     () => themes.find((theme) => theme.id === idNum) ?? null,
@@ -82,7 +82,7 @@ function PublicPreviewContent({ id }: PublicPreviewContentProps) {
     }
   }, [id, searchParams]);
 
-  if (vendorPreviewLoading || subscriptionLoading || themesLoading || !colors) return <Loader />;
+  if (vendorPreviewLoading || vendorPreviewFetching || subscriptionLoading || themesLoading || themesFetching || !colors) return <Loader />;
 
   return (
     <div className="min-h-screen w-full bg-white transition-colors duration-500 overflow-x-hidden">
