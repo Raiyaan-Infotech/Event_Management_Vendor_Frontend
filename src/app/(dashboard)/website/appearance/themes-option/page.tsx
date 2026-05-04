@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Loader from "@/components/ui/loader";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { useVendorMe } from "@/hooks/use-vendors";
 import {
@@ -223,6 +224,7 @@ export default function ThemesOptionPage() {
 
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-gray-50/30 dark:bg-transparent">
+      {(isLoading || isPending) && <Loader />}
       {/* ── Page Header ── */}
       <div className="max-w-[1700px] mx-auto mb-10">
         <div className="flex items-center gap-3 mb-2">
