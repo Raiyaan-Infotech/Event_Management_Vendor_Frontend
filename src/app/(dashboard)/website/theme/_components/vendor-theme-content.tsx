@@ -1,16 +1,15 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useVendorSubscription } from '@/hooks/use-vendor-subscription';
 import { useVendorTheme, useSaveVendorTheme } from '@/hooks/use-vendor-theme';
 import { useVendorMe } from '@/hooks/use-vendors';
 import { Check, Palette, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 import Image from "next/image";
 import { normalizeHomeBlocks } from "@/lib/safe-json";
-import { apiClient } from "@/lib/api-client";
 
 // Internal ThemePreview substitute since the component is missing in the project
 const InternalThemePreview = ({ theme }: { theme: any }) => {
@@ -60,14 +59,12 @@ export function VendorThemeContent() {
     const {
         data: themesRaw,
         isLoading: themeLoading,
-        isFetching: themeFetching,
         refetch: refetchThemes,
     } = useVendorTheme(planId);
     const themes = themesRaw ?? [];
 
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [activatedPresetId, setActivatedPresetId] = useState<number | null>(null);
-    const [previewingId, setPreviewingId] = useState<number | null>(null);
 
     // Pre-select the vendor's saved theme_id once data loads
     useEffect(() => {
@@ -103,58 +100,6 @@ export function VendorThemeContent() {
         setActivatedPresetId(id);
         setSelectedId(id);
         saveTheme.mutate(id);
-    };
-
-    const buildPreviewUrl = (theme: any) => {
-        const sortedBlocks = normalizeHomeBlocks(theme.home_blocks);
-        const params = new URLSearchParams({
-            themeId: theme.id.toString(),
-            primary: theme.primary_color || '',
-            secondary: theme.secondary_color || '',
-            header: theme.header_color || '',
-            footer: theme.footer_color || '',
-            text: theme.text_color || '',
-            hover: theme.hover_color || ''
-        });
-        if (sortedBlocks.length > 0) {
-            params.set("blocks", btoa(JSON.stringify(sortedBlocks)));
-        }
-        return `/preview?${params.toString()}`;
-    };
-
-    const fetchLatestTheme = async (themeId: number) => {
-        if (!planId) return null;
-        const res = await apiClient.get(`/vendors/subscription/themes/${planId}`, {
-            params: { _t: Date.now() },
-            headers: {
-                'Cache-Control': 'no-cache',
-                Pragma: 'no-cache',
-            },
-        });
-        const latestThemes = res.data.data?.themes ?? [];
-        return latestThemes.find((item: any) => item.id === themeId) ?? null;
-    };
-
-    const handlePreview = async (theme: any) => {
-        const previewWindow = window.open("", "_blank");
-        setPreviewingId(theme.id);
-        try {
-            const latestTheme = await fetchLatestTheme(theme.id) ?? theme;
-            const previewUrl = buildPreviewUrl(latestTheme);
-            if (previewWindow) {
-                previewWindow.location.href = previewUrl;
-            } else {
-                window.open(previewUrl, "_blank");
-            }
-        } catch {
-            if (previewWindow) {
-                previewWindow.location.href = buildPreviewUrl(theme);
-            } else {
-                window.open(buildPreviewUrl(theme), "_blank");
-            }
-        } finally {
-            setPreviewingId(null);
-        }
     };
 
     if (subLoading || themeLoading) {
@@ -247,17 +192,15 @@ export function VendorThemeContent() {
                                             {isActivated ? "ACTIVATED" : "ACTIVATE"}
                                         </Button>
                                         
-                                        <Button
-                                            variant="secondary"
-                                            disabled={previewingId === theme.id}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handlePreview(theme);
-                                            }}
-                                            className="h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-xl bg-[#e2e2e2] hover:bg-[#d4d4d4] dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-white border-none transition-all duration-300 active:scale-95"
+                                        <Link
+                                            href={`/preview?themeId=${theme.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-xl bg-[#e2e2e2] hover:bg-[#d4d4d4] dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-white transition-all duration-300 active:scale-95 flex items-center justify-center"
                                         >
-                                            {previewingId === theme.id ? "OPENING" : "PREVIEW"}
-                                        </Button>
+                                            PREVIEW
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

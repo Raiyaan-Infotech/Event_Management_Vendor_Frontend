@@ -27,6 +27,7 @@ import {
   VendorColors,
   ColorPalette,
 } from "@/hooks/use-vendor-colors";
+import { useVendorPreviewData } from "@/hooks/use-vendor-preview";
 
 // ─── Color field config ───────────────────────────────────────────────────────
 const COLOR_FIELDS: {
@@ -102,6 +103,7 @@ export default function ThemesOptionPage() {
   const { data: vendor } = useVendorMe();
   const { data: colorsData, isLoading: colorsLoading } = useVendorColors();
   const { data: palettes, isLoading: palettesLoading } = useVendorPalettes();
+  const { data: vendorPreviewData } = useVendorPreviewData();
 
   const selectPalette = useSelectVendorPalette();
   const saveColors = useSaveVendorColors();
@@ -224,7 +226,18 @@ export default function ThemesOptionPage() {
 
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-gray-50/30 dark:bg-transparent">
-      {(isLoading || isPending) && <Loader />}
+      {(isLoading || isPending) && (
+        <Loader
+          dotColors={isPending ? [
+            formData.primary_color   || "#2563eb",
+            formData.secondary_color || "#1d4ed8",
+            formData.header_color    || "#0f172a",
+            formData.footer_color    || "#334155",
+            formData.text_color      || "#60a5fa",
+            formData.hover_color     || "#93c5fd",
+          ] : undefined}
+        />
+      )}
       {/* ── Page Header ── */}
       <div className="max-w-[1700px] mx-auto mb-10">
         <div className="flex items-center gap-3 mb-2">
@@ -447,41 +460,13 @@ export default function ThemesOptionPage() {
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
-              onPreview={() => window.open(`/preview?primary=${encodeURIComponent(formData.primary_color || "")}&secondary=${encodeURIComponent(formData.secondary_color || "")}&header=${encodeURIComponent(formData.header_color || "")}&footer=${encodeURIComponent(formData.footer_color || "")}&text=${encodeURIComponent(formData.text_color || "")}&hover=${encodeURIComponent(formData.hover_color || "")}`, "_blank")}
+              onPreview={() => window.open(`/preview?themeId=${(vendor as any)?.theme_id ?? ""}`, "_blank")}
               onReset={handleReset}
               isSubmitting={isPending}
               saveLabel="SAVE"
             />
           </div>
 
-          {/* Color preview swatches */}
-          <div className="bg-white dark:bg-sidebar/50 p-5 rounded-2xl border border-gray-100 dark:border-white/5">
-            {/* <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Preview</p>
-            <div className="grid grid-cols-3 gap-2">
-              {COLOR_FIELDS.map(({ key, swatchLabel }) => (
-                <div key={key} className="flex flex-col items-center gap-1.5">
-                  <div
-                    className="w-full h-8 rounded-lg shadow-sm"
-                    style={{ backgroundColor: formData[key] || "#e5e7eb" }}
-                  />
-                  <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">
-                    {swatchLabel}
-                  </span>
-                </div>
-              ))}
-            </div> */}
-
-            <div className=" pt-5 border-t border-gray-100 dark:border-white/5">
-              <a
-                href={`/preview?primary=${encodeURIComponent(formData.primary_color || "")}&secondary=${encodeURIComponent(formData.secondary_color || "")}&header=${encodeURIComponent(formData.header_color || "")}&footer=${encodeURIComponent(formData.footer_color || "")}&text=${encodeURIComponent(formData.text_color || "")}&hover=${encodeURIComponent(formData.hover_color || "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center w-full bg-[#0a0a0a] hover:bg-black text-white h-12 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-lg transition-all active:scale-95"
-              >
-                Open Live Preview ↗
-              </a>
-            </div>
-          </div>
 
           {/* Color pickers — only when Custom card selected */}
           {selectedCard === "custom" && (

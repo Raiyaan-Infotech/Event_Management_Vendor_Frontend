@@ -235,6 +235,26 @@ function PreviewContent() {
     );
   }
 
+  // Render block-by-block using vendor's own home_blocks (correct variants + colors)
+  if (enrichedData?.home_blocks?.length) {
+    const visibleBlocks = (enrichedData.home_blocks as any[]).filter(
+      (b: any) => b.is_visible !== false,
+    );
+    return (
+      <div className="min-h-screen bg-white p-0 m-0 flex flex-col scroll-smooth">
+        {visibleBlocks.map((b: any, i: number) => (
+          <BlockRenderer
+            key={i}
+            block_type={b.block_type}
+            visible={true}
+            settings={{ variant: b.variant || "variant_1" }}
+            vendorData={enrichedData}
+          />
+        ))}
+      </div>
+    );
+  }
+
   const previewThemeId = searchParams.get("themeId")
     ? parseInt(searchParams.get("themeId") as string)
     : vendorData.theme_id;

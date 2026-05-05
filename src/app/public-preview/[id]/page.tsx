@@ -16,7 +16,9 @@ interface PublicPreviewContentProps {
 function PublicPreviewContent({ id }: PublicPreviewContentProps) {
   const searchParams = useSearchParams();
   const idNum = parseInt(id);
-  const { data: vendorData, isLoading: vendorPreviewLoading, isFetching: vendorPreviewFetching } = useVendorPreviewData();
+  const vendorIdParam = searchParams.get("vendorId");
+  const vendorId = vendorIdParam ? parseInt(vendorIdParam, 10) : null;
+  const { data: vendorData, isLoading: vendorPreviewLoading, isFetching: vendorPreviewFetching } = useVendorPreviewData(vendorId);
   const { data: subscriptionData, isLoading: subscriptionLoading } = useVendorSubscription();
   const activePlan = subscriptionData?.plans?.[0] ?? null;
   const { data: themesRaw, isLoading: themesLoading, isFetching: themesFetching } = useVendorTheme(activePlan?.id);
@@ -74,13 +76,22 @@ function PublicPreviewContent({ id }: PublicPreviewContentProps) {
       }
     }
 
-    // 4. Default presets fallback
-    if (idNum === 1) {
-      setColors({ header: "#2563eb", footer: "#1e3a8a", primary: "#3b82f6", secondary: "#60a5fa", hover: "#1d4ed8", text: "#1e293b" });
-    } else if (idNum === 2) {
-      setColors({ header: "#7c3aed", footer: "#4c1d95", primary: "#8b5cf6", secondary: "#a78bfa", hover: "#6d28d9", text: "#1e1b4b" });
+    // 4. Use vendor's own colors from preview data (covers any theme ID)
+    if (vendorData?.colors) {
+      setColors({
+        header: vendorData.colors.header_color || "#2563eb",
+        footer: vendorData.colors.footer_color || "#1e3a8a",
+        primary: vendorData.colors.primary_color || "#3b82f6",
+        secondary: vendorData.colors.secondary_color || "#60a5fa",
+        hover: vendorData.colors.hover_color || "#1d4ed8",
+        text: vendorData.colors.text_color || "#1e293b",
+      });
+      return;
     }
-  }, [id, searchParams]);
+
+    // 5. Generic default — always set something so the loader never hangs
+    setColors({ header: "#2563eb", footer: "#1e3a8a", primary: "#3b82f6", secondary: "#60a5fa", hover: "#1d4ed8", text: "#1e293b" });
+  }, [id, searchParams, vendorData]);
 
   if (vendorPreviewLoading || vendorPreviewFetching || subscriptionLoading || themesLoading || themesFetching || !colors) return <Loader />;
 
