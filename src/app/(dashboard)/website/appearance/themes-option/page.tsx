@@ -27,7 +27,6 @@ import {
   VendorColors,
   ColorPalette,
 } from "@/hooks/use-vendor-colors";
-import { useVendorPreviewData } from "@/hooks/use-vendor-preview";
 
 // ─── Color field config ───────────────────────────────────────────────────────
 const COLOR_FIELDS: {
@@ -97,13 +96,14 @@ const FALLBACK_COLORS: VendorColors = {
   hover_color: "#1d4ed8",
 };
 
+const PREVIEW_LOADER_COLORS_KEY = "vendor-preview-loader-colors";
+
 type CardId = number | "custom"; // palette id OR 'custom'
 
 export default function ThemesOptionPage() {
   const { data: vendor } = useVendorMe();
   const { data: colorsData, isLoading: colorsLoading } = useVendorColors();
   const { data: palettes, isLoading: palettesLoading } = useVendorPalettes();
-  const { data: vendorPreviewData } = useVendorPreviewData();
 
   const selectPalette = useSelectVendorPalette();
   const saveColors = useSaveVendorColors();
@@ -224,20 +224,43 @@ export default function ThemesOptionPage() {
   const isPending =
     selectPalette.isPending || saveColors.isPending || resetColors.isPending;
 
+  const activeColorSrc = (() => {
+    const activePalette =
+      typeof selectedCard === "number"
+        ? palettes?.find((p: ColorPalette) => p.id === selectedCard)
+        : null;
+    return (activePalette ?? formData) as any;
+  })();
+
+  const loaderColors: string[] = [
+    activeColorSrc.primary_color   || "#2563eb",
+    activeColorSrc.secondary_color || "#1d4ed8",
+    activeColorSrc.header_color    || "#0f172a",
+    activeColorSrc.footer_color    || "#334155",
+    activeColorSrc.text_color      || "#60a5fa",
+    activeColorSrc.hover_color     || "#93c5fd",
+  ];
+
+  const previewUrl = (() => {
+    const themeId = (vendor as any)?.theme_id ?? "";
+    const params = new URLSearchParams({ themeId: String(themeId) });
+    if (activeColorSrc.primary_color)   params.set("primary",   activeColorSrc.primary_color);
+    if (activeColorSrc.secondary_color) params.set("secondary", activeColorSrc.secondary_color);
+    if (activeColorSrc.header_color)    params.set("header",    activeColorSrc.header_color);
+    if (activeColorSrc.footer_color)    params.set("footer",    activeColorSrc.footer_color);
+    if (activeColorSrc.text_color)      params.set("text",      activeColorSrc.text_color);
+    if (activeColorSrc.hover_color)     params.set("hover",     activeColorSrc.hover_color);
+    return `/preview?${params.toString()}`;
+  })();
+
+  const handlePreview = () => {
+    window.localStorage.setItem(PREVIEW_LOADER_COLORS_KEY, JSON.stringify(loaderColors));
+    window.open(previewUrl, "_blank");
+  };
+
   return (
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-gray-50/30 dark:bg-transparent">
-      {(isLoading || isPending) && (
-        <Loader
-          dotColors={isPending ? [
-            formData.primary_color   || "#2563eb",
-            formData.secondary_color || "#1d4ed8",
-            formData.header_color    || "#0f172a",
-            formData.footer_color    || "#334155",
-            formData.text_color      || "#60a5fa",
-            formData.hover_color     || "#93c5fd",
-          ] : undefined}
-        />
-      )}
+      {(isLoading || isPending) && <Loader dotColors={loaderColors} />}
       {/* ── Page Header ── */}
       <div className="max-w-[1700px] mx-auto mb-10">
         <div className="flex items-center gap-3 mb-2">
@@ -460,7 +483,7 @@ export default function ThemesOptionPage() {
           <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
-              onPreview={() => window.open(`/preview?themeId=${(vendor as any)?.theme_id ?? ""}`, "_blank")}
+              onPreview={handlePreview}
               onReset={handleReset}
               isSubmitting={isPending}
               saveLabel="SAVE"

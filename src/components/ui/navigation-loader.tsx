@@ -17,6 +17,7 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   const { data: vendorColors } = useVendorColors();
   const [loading, setLoading] = useState(false);
   const [mutationLoading, setMutationLoading] = useState(false);
+  const pageHandlesOwnMutationLoader = pathname === "/website/appearance/themes-option";
   const loadingStartTimeRef = useRef<number>(0);
   const mutationLoadingStartTimeRef = useRef<number>(0);
   const showDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,6 +51,11 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   }, [pathname, searchParams]);
 
   useEffect(() => {
+    if (pageHandlesOwnMutationLoader) {
+      setMutationLoading(false);
+      return;
+    }
+
     if (activeMutations > 0) {
       mutationLoadingStartTimeRef.current = Date.now();
       setMutationLoading(true);
@@ -64,7 +70,7 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
     }, Math.max(0, MINIMUM_DISPLAY_TIME - elapsed));
 
     return () => clearTimeout(timer);
-  }, [activeMutations, mutationLoading]);
+  }, [activeMutations, mutationLoading, pageHandlesOwnMutationLoader]);
 
   // Intercept links to start loader INSTANTLY
   useEffect(() => {

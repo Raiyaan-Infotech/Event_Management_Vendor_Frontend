@@ -4,6 +4,7 @@ import React from "react";
 
 interface LoaderProps {
   dotColors?: string[];
+  storageKey?: string;
 }
 
 const DEFAULT_DOT_COLORS = [
@@ -15,8 +16,21 @@ const DEFAULT_DOT_COLORS = [
   "#93c5fd",
 ];
 
-const Loader = ({ dotColors }: LoaderProps) => {
-  const colors = dotColors && dotColors.length === 6 ? dotColors : DEFAULT_DOT_COLORS;
+const getStoredDotColors = (storageKey?: string) => {
+  if (!storageKey || typeof window === "undefined") return null;
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(storageKey) || "null");
+    return Array.isArray(parsed) && parsed.length === 6 ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+const Loader = ({ dotColors, storageKey }: LoaderProps) => {
+  const storedColors = getStoredDotColors(storageKey);
+  const colors = dotColors && dotColors.length === 6
+    ? dotColors
+    : storedColors || DEFAULT_DOT_COLORS;
   const dots = colors.map((color, index) => ({
     color,
     delay: `${index * 120}ms`,

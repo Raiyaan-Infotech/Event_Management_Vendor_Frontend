@@ -14,6 +14,8 @@ import { useVendorPreviewData } from "@/hooks/use-vendor-preview";
 import { useVendorPage, useVendorPrivacy, useVendorTerms } from "@/hooks/use-vendor-pages";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 
+const PREVIEW_LOADER_COLORS_KEY = "vendor-preview-loader-colors";
+
 function PreviewCustomPage({ data, pageId, pageData }: { data?: any; pageId: number | null; pageData?: any }) {
   const listPage = (data?.pages || []).find((item: any) => Number(item.id) === pageId && item.is_active !== 0);
   const page = pageData || listPage;
@@ -68,14 +70,28 @@ function PreviewContent() {
   const { data: privacyData, isLoading: isPrivacyLoading } = useVendorPrivacy(shouldFetchPrivacy);
   const { data: selectedPageData, isLoading: isPageLoading } = useVendorPage(shouldFetchPage ? pageId : null);
 
+  // URL color params are available synchronously — use them for Loader dots
+  // so a new-tab preview shows the vendor's active palette colors immediately
+  const loaderDotColors = React.useMemo(() => {
+    const p = searchParams.get("primary");
+    if (!p) return undefined;
+    return [
+      p,
+      searchParams.get("secondary") || "#1d4ed8",
+      searchParams.get("header")    || "#0f172a",
+      searchParams.get("footer")    || "#334155",
+      searchParams.get("text")      || "#60a5fa",
+      searchParams.get("hover")     || "#93c5fd",
+    ] as string[];
+  }, [searchParams]);
+
   if (
     isLoading ||
-    isFetching ||
     (shouldFetchTerms && isTermsLoading) ||
     (shouldFetchPrivacy && isPrivacyLoading) ||
     (shouldFetchPage && isPageLoading)
   ) {
-    return <Loader />;
+    return <Loader dotColors={loaderDotColors} storageKey={PREVIEW_LOADER_COLORS_KEY} />;
   }
 
   const activeColors = {
@@ -273,7 +289,7 @@ function PreviewContent() {
 
 export default function PreviewPage() {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<Loader storageKey={PREVIEW_LOADER_COLORS_KEY} />}>
       <PreviewContent />
     </Suspense>
   );

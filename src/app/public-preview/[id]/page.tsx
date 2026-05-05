@@ -18,10 +18,10 @@ function PublicPreviewContent({ id }: PublicPreviewContentProps) {
   const idNum = parseInt(id);
   const vendorIdParam = searchParams.get("vendorId");
   const vendorId = vendorIdParam ? parseInt(vendorIdParam, 10) : null;
-  const { data: vendorData, isLoading: vendorPreviewLoading, isFetching: vendorPreviewFetching } = useVendorPreviewData(vendorId);
+  const { data: vendorData, isLoading: vendorPreviewLoading } = useVendorPreviewData(vendorId);
   const { data: subscriptionData, isLoading: subscriptionLoading } = useVendorSubscription();
   const activePlan = subscriptionData?.plans?.[0] ?? null;
-  const { data: themesRaw, isLoading: themesLoading, isFetching: themesFetching } = useVendorTheme(activePlan?.id);
+  const { data: themesRaw, isLoading: themesLoading } = useVendorTheme(activePlan?.id);
   const themes = themesRaw ?? [];
   const selectedTheme = React.useMemo(
     () => themes.find((theme) => theme.id === idNum) ?? null,
@@ -93,7 +93,7 @@ function PublicPreviewContent({ id }: PublicPreviewContentProps) {
     setColors({ header: "#2563eb", footer: "#1e3a8a", primary: "#3b82f6", secondary: "#60a5fa", hover: "#1d4ed8", text: "#1e293b" });
   }, [id, searchParams, vendorData]);
 
-  if (vendorPreviewLoading || vendorPreviewFetching || subscriptionLoading || themesLoading || themesFetching || !colors) return <Loader />;
+  if (vendorPreviewLoading || subscriptionLoading || themesLoading || !colors) return <Loader />;
 
   return (
     <div className="min-h-screen w-full bg-white transition-colors duration-500 overflow-x-hidden">
