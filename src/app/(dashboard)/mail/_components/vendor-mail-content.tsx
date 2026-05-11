@@ -1,421 +1,450 @@
 "use client";
 
-import { useState } from "react";
-
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  Star,
-  Trash2,
-  Folder,
-  CheckSquare,
-  RotateCw,
-  MailOpen,
-  AlertOctagon,
-  Tag,
-  Paperclip,
+  Star, Trash2, CheckSquare, RotateCw, MailOpen, Folder, ChevronDown,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MailSidebar } from "./mail-sidebar";
 import { PageHeader } from "@/components/common/PageHeader";
+import {
+  useVendorMails,
+  useVendorInbox,
+  useVendorMailTrash,
+  useRestoreFromTrash,
+  usePermanentDeleteMail,
+  useBulkDeleteVendorMail,
+  useBulkMarkRead,
+  useBulkAssignLabel,
+  useBulkMoveFolder,
+} from "@/hooks/use-vendor-mail";
+import { useVendorMailFolders } from "@/hooks/use-vendor-mail-folders";
+import type { VendorMail } from "@/hooks/use-vendor-mail";
 
-const cardClass =
-  "bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6 ";
+const cardClass = "bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none";
 
-interface Email {
-  id: number;
-  sender: string;
-  avatar: string;
-  subject: string;
-  snippet: string;
-  time: string;
-  isUnread: boolean;
-  isStarred: boolean;
-  hasAttachment: boolean;
-  selected: boolean;
-  initials: string;
-}
+const stripHtml = (html: string): string => {
+  if (typeof window === "undefined") return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+};
 
-const initialEmails: Email[] = [
-  {
-    id: 1,
-    sender: "Adrian Monino",
-    avatar: "/images/user-avatar-1.jpg",
-    subject: "Someone who believes in you",
-    snippet:
-      "enean commodo li gula eget dolor cum socia eget dolor enean commod...",
-    time: "11:30am",
-    isUnread: true,
-    isStarred: false,
-    hasAttachment: true,
-    selected: false,
-    initials: "AM",
-  },
-  {
-    id: 2,
-    sender: "Albert Ansing",
-    avatar: "/images/user-avatar-2.jpg",
-    subject: "Here's What You Missed This Week",
-    snippet:
-      "enean commodo li gula eget dolor cum socia eget dolor enean commod...",
-    time: "06:50am",
-    isUnread: true,
-    isStarred: true,
-    hasAttachment: false,
-    selected: false,
-    initials: "AA",
-  },
-  {
-    id: 3,
-    sender: "Carla Guden",
-    avatar: "/images/user-avatar-3.jpg",
-    subject: "4 Ways to Optimize Your Search",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Yesterday",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: true,
-    selected: false,
-    initials: "CG",
-  },
-  {
-    id: 4,
-    sender: "Reven Galeon",
-    avatar: "/images/user-avatar-4.jpg",
-    subject: "We're Giving a Macbook for Free",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Yesterday",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "RG",
-  },
-  {
-    id: 5,
-    sender: "Elisse Tan",
-    avatar: "/images/user-avatar-5.jpg",
-    subject: "Keep Your Personal Data Safe",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 13",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "ET",
-  },
-  {
-    id: 6,
-    sender: "Marianne Audrey",
-    avatar: "/images/user-avatar-6.jpg",
-    subject: "We've Made Some Changes",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 13",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "MA",
-  },
-  {
-    id: 7,
-    sender: "Jane Phoebe",
-    avatar: "/images/user-avatar-7.jpg",
-    subject: "Grab Our Holiday Deals",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 12",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "J",
-  },
-  {
-    id: 8,
-    sender: "Raffy Godinez",
-    avatar: "/images/user-avatar-8.jpg",
-    subject: "Just a Few Steps Away",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 05",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "RG",
-  },
-  {
-    id: 9,
-    sender: "Allan Cadungog",
-    avatar: "/images/user-avatar-60.jpg",
-    subject: "Credit Card Promos",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 04",
-    isUnread: false,
-    isStarred: true,
-    hasAttachment: false,
-    selected: false,
-    initials: "AC",
-  },
-  {
-    id: 10,
-    sender: "Alfie Salinas",
-    avatar: "/images/user-avatar-66.jpg",
-    subject: "4 Ways to Optimize Your Search",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 02",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "AS",
-  },
-  {
-    id: 11,
-    sender: "Jove Guden",
-    avatar: "/images/user-avatar-12.jpg",
-    subject: "Keep Your Personal Data Safe",
-    snippet:
-      "viva mus elemen tum semper nisi enean vulputat enean commodo li gul...",
-    time: "Oct 02",
-    isUnread: false,
-    isStarred: false,
-    hasAttachment: false,
-    selected: false,
-    initials: "JG",
-  },
-];
+const LABELS = [
+  { key: "social",     label: "Social",     color: "text-primary" },
+  { key: "promotions", label: "Promotions", color: "text-green-500" },
+  { key: "updates",    label: "Updates",    color: "text-sky-500" },
+] as const;
 
-interface VendorMailContentProps {
+type VendorMailContentProps = {
   title?: string;
   subtitle?: string;
-}
+};
 
 export function VendorMailContent({
   title = "Mail",
-  subtitle = "Inbox",
-}: VendorMailContentProps) {
-  const [emails, setEmails] = useState<Email[]>(initialEmails);
+  subtitle = "Manage Your Emails and Communications",
+}: VendorMailContentProps = {}) {
+  const router = useRouter();
+  const [activeFolder, setActiveFolder] = useState("inbox");
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const { data: mails = [], isLoading, refetch } = useVendorMails();
+  const { data: inboxMails = [], isLoading: inboxLoading, refetch: refetchInbox } = useVendorInbox();
+  const { data: trashMails = [], isLoading: trashLoading, refetch: refetchTrash } = useVendorMailTrash();
+  const restoreMutation   = useRestoreFromTrash();
+  const permDeleteMutation = usePermanentDeleteMail();
+  const { data: folders = [] } = useVendorMailFolders();
+  const bulkDelete    = useBulkDeleteVendorMail();
+  const bulkRead      = useBulkMarkRead();
+  const bulkLabel     = useBulkAssignLabel();
+  const bulkFolder    = useBulkMoveFolder();
+
+  const customFolders = folders.filter((f) => f.is_active === 1);
+  const selectedArr   = Array.from(selectedIds);
+  const hasSelection  = selectedArr.length > 0;
+
+  const filteredMails = useMemo<VendorMail[]>(() => {
+    if (activeFolder === "inbox")            return inboxMails;
+    if (activeFolder === "sent")             return mails.filter((m) => m.folder === "sent" && !m.custom_folder_id && !m.label);
+    if (activeFolder === "drafts")           return mails.filter((m) => m.folder === "drafts" && !m.custom_folder_id && !m.label);
+    if (activeFolder === "all")              return mails;
+    if (activeFolder === "important")        return mails.filter((m) => starredIds.has(m.id));
+    if (activeFolder === "trash")            return [];
+    if (activeFolder === "contacts")         return [];
+    if (activeFolder === "label-social")     return mails.filter((m) => m.label === "social");
+    if (activeFolder === "label-promotions") return mails.filter((m) => m.label === "promotions");
+    if (activeFolder === "label-updates")    return mails.filter((m) => m.label === "updates");
+    if (activeFolder.startsWith("folder-")) {
+      const folderId = Number(activeFolder.replace("folder-", ""));
+      return mails.filter((m) => m.custom_folder_id === folderId);
+    }
+    return mails;
+  }, [mails, activeFolder, starredIds]);
+
+  const folderLabel: Record<string, string> = {
+    inbox: "Inbox", important: "Important", sent: "Sent Mail",
+    drafts: "Draft", all: "All Mails", contacts: "Contacts", trash: "Trash",
+    "label-social": "Social", "label-promotions": "Promotions", "label-updates": "Updates",
+  };
+  const currentLabel = activeFolder.startsWith("folder-")
+    ? (customFolders.find((f) => `folder-${f.id}` === activeFolder)?.name ?? "Folder")
+    : (folderLabel[activeFolder] ?? activeFolder);
+
+  const handleFolderChange = (folder: string) => {
+    setActiveFolder(folder);
+    setSelectedIds(new Set());
+    setSelectAll(false);
+    setMoveOpen(false);
+  };
 
   const toggleSelectAll = () => {
-    const newValue = !selectAll;
-    setSelectAll(newValue);
-    setEmails(emails.map((email) => ({ ...email, selected: newValue })));
+    const next = !selectAll;
+    setSelectAll(next);
+    setSelectedIds(next ? new Set(filteredMails.map((m) => m.id)) : new Set());
   };
 
   const toggleSelect = (id: number) => {
-    setEmails(
-      emails.map((email) =>
-        email.id === id ? { ...email, selected: !email.selected } : email,
-      ),
-    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      setSelectAll(next.size > 0 && next.size === filteredMails.length);
+      return next;
+    });
   };
 
-  const toggleStar = (id: number) => {
-    setEmails(
-      emails.map((email) =>
-        email.id === id ? { ...email, isStarred: !email.isStarred } : email,
-      ),
-    );
+  const toggleStar = (id: number) =>
+    setStarredIds((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+
+  const clearSelection = () => { setSelectedIds(new Set()); setSelectAll(false); };
+  const handleRestoreOne = async (id: number) => {
+    clearSelection();
+    await restoreMutation.mutateAsync(id);
+  };
+  const handlePermanentDeleteOne = async (id: number) => {
+    clearSelection();
+    await permDeleteMutation.mutateAsync(id);
   };
 
-  return (
-    <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar ">
-      <div className="space-y-6 max-w-[1700px] mx-auto">
-        <PageHeader
-          title={title}
-          subtitle="Manage Your Emails and Communications"
-          total={emails.length}
-        />
+  const handleBulkDelete = async () => {
+    if (!hasSelection) return;
+    await bulkDelete.mutateAsync(selectedArr);
+    clearSelection();
+    setConfirmDelete(false);
+  };
 
-        <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
-          {/* --- LEFT NAVIGATION --- */}
-          <MailSidebar />
+  const handleBulkRead = async (isRead: boolean) => {
+    if (!hasSelection) return;
+    await bulkRead.mutateAsync({ ids: selectedArr, is_read: isRead });
+    clearSelection();
+  };
 
-          {/* --- RIGHT CONTENT --- */}
-          <div className="flex-1 min-w-0 flex flex-col h-full">
-            <div
-              className={`${cardClass} bg-card flex-1 flex flex-col mb-0 overflow-hidden`}
-            >
-              {/* Header Area */}
-              <div className="p-6 pb-4">
-                <div className="flex items-baseline justify-between mb-1">
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-tight">
-                    {subtitle}
-                  </h2>
-                </div>
-                <div className="flex items-center justify-between border-b pb-1 border-transparent"></div>
-              </div>
+  const handleMoveToLabel = async (label: string | null) => {
+    if (!hasSelection) return;
+    setMoveOpen(false);
+    await bulkLabel.mutateAsync({ ids: selectedArr, label });
+    clearSelection();
+  };
 
-              {/* Toolbar Area */}
-              <div className="px-6 py-3 border-y border-border bg-muted/50 flex items-center justify-between">
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <div
-                    className={`flex items-center justify-center w-[16px] h-[16px] rounded-[3px] border ${selectAll ? "bg-primary border-primary" : "bg-transparent border-[#c4c9d7] group-hover:border-primary"} transition-all`}
-                  >
-                    {selectAll && (
-                      <CheckSquare
-                        size={12}
-                        className="text-white opacity-100"
-                      />
-                    )}
-                  </div>
-                  <span className="text-[14px] text-muted-foreground">
-                    Select All
-                  </span>
-                  <input
-                    type="checkbox"
-                    className="hidden"
-                    checked={selectAll}
-                    onChange={toggleSelectAll}
-                  />
-                </label>
+  const handleMoveToFolder = async (folderId: number | null) => {
+    if (!hasSelection) return;
+    setMoveOpen(false);
+    await bulkFolder.mutateAsync({ ids: selectedArr, folder_id: folderId });
+    clearSelection();
+  };
 
-                <div className="flex items-center gap-2">
-                  <button
-                    title="Refresh"
-                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
-                  >
-                    <RotateCw size={16} />
-                  </button>
-                  <button
-                    title="Mark as Read"
-                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
-                  >
-                    <MailOpen size={16} />
-                  </button>
-                  <button
-                    title="Report Spam"
-                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
-                  >
-                    <AlertOctagon size={16} />
-                  </button>
-                  <button
-                    title="Delete"
-                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                  <button
-                    title="Move to Folder"
-                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
-                  >
-                    <Folder size={16} />
-                  </button>
-                  <button
-                    title="Tag"
-                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
-                  >
-                    <Tag size={16} />
+  const isWorking = bulkDelete.isPending || bulkRead.isPending || bulkLabel.isPending || bulkFolder.isPending;
+
+  /* ── Trash view ────────────────────────────────────────────────────────────── */
+  if (activeFolder === "trash") {
+    return (
+      <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar">
+        <div className="space-y-6 max-w-[1700px] mx-auto">
+          <PageHeader title={title} subtitle={subtitle} total={trashMails.length} />
+          <div className="flex flex-col lg:flex-row gap-[30px] lg:h-[800px] items-stretch">
+            <MailSidebar activeFolder={activeFolder} onFolderChange={handleFolderChange} />
+            <div className="flex-1 min-w-0 flex flex-col h-full">
+              <div className={`${cardClass} flex-1 flex flex-col overflow-hidden`}>
+                <div className="p-6 pb-4 flex items-center justify-between border-b border-border">
+                  <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight">Trash</h2>
+                  <button onClick={() => refetchTrash()} className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all">
+                    <RotateCw size={15} />
                   </button>
                 </div>
-              </div>
-
-              {/* Email List Area */}
-              <div className="flex-1 overflow-y-auto chat-scrollbar pb-6">
-                {emails.map((email) => (
-                  <div
-                    key={email.id}
-                    className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border transition-all cursor-pointer ${
-                      email.selected
-                        ? "bg-primary/5"
-                        : "bg-card hover:bg-muted/30"
-                    }`}
-                  >
-                    {/* Actions */}
-                    <div className="flex items-center gap-[18px] shrink-0 mt-[1px]">
-                      <label
-                        className="cursor-pointer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div
-                          className={`flex items-center justify-center w-[16px] h-[16px] rounded-[3px] border ${email.selected ? "bg-primary border-primary" : "bg-transparent border-[#c4c9d7] hover:border-primary"} transition-all`}
-                        >
-                          {email.selected && (
-                            <CheckSquare
-                              size={12}
-                              className="text-white opacity-100"
-                            />
-                          )}
-                        </div>
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={email.selected}
-                          onChange={() => toggleSelect(email.id)}
-                        />
-                      </label>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleStar(email.id);
-                        }}
-                        className={`hover:scale-110 transition-transform ${email.isStarred ? "text-yellow-500" : "text-muted-foreground"}`}
-                      >
-                        <Star
-                          size={16}
-                          className={email.isStarred ? "fill-current" : ""}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Avatar & Content Wrapper */}
-                    <div className="flex flex-1 min-w-0 items-start gap-4 ml-2">
-                      <Avatar className="w-[32px] h-[32px] border border-transparent bg-transparent shrink-0 mt-0">
-                        {email.avatar ? (
-                          <AvatarImage
-                            src={email.avatar}
-                            className="object-cover rounded-full"
-                          />
-                        ) : (
-                          <AvatarFallback className="bg-primary text-white font-bold text-[12px] rounded-full">
-                            {email.initials}
-                          </AvatarFallback>
-                        )}
+                <div className="flex-1 overflow-y-auto chat-scrollbar pb-6">
+                  {trashLoading && <div className="p-10 text-center text-sm font-bold text-muted-foreground">Loading...</div>}
+                  {!trashLoading && trashMails.length === 0 && (
+                    <div className="p-10 text-center text-sm font-bold text-muted-foreground">Trash is empty.</div>
+                  )}
+                  {trashMails.map((mail) => (
+                    <div key={mail.id} className="flex items-start gap-4 pt-5 pb-4 pl-6 pr-6 border-b border-border hover:bg-muted/20 transition-all">
+                      <Avatar className="w-[32px] h-[32px] shrink-0">
+                        <AvatarFallback className="bg-muted text-muted-foreground font-bold text-[12px] rounded-full">
+                          {mail.folder === "drafts" ? "D" : "S"}
+                        </AvatarFallback>
                       </Avatar>
-
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-1.5">
-                          <p
-                            className={`text-[13px] leading-[13px] font-bold transition-colors truncate ${email.isUnread ? "text-foreground" : "text-muted-foreground group-hover:text-primary"}`}
-                          >
-                            {email.sender}
-                          </p>
-                          <div className="flex items-center gap-3 shrink-0 ml-4 -mt-0.5">
-                            {email.hasAttachment && (
-                              <Paperclip
-                                size={14}
-                                className="text-foreground"
-                              />
-                            )}
-                            <span className="text-[12px] text-muted-foreground whitespace-nowrap">
-                              {email.time}
-                            </span>
-                          </div>
-                        </div>
-                        <p
-                          className={`text-[14px] leading-[14px] mb-[7px] truncate ${email.isUnread ? "text-foreground font-bold" : "text-foreground font-bold"}`}
+                        <p className="text-[13px] font-bold text-muted-foreground truncate">{mail.to_email}</p>
+                        <p className="text-[14px] font-bold text-foreground truncate">{mail.subject}</p>
+                        <p className="text-[12px] text-muted-foreground truncate">{stripHtml(mail.body).slice(0, 100)}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleRestoreOne(mail.id); }}
+                          disabled={restoreMutation.isPending}
+                          className="px-3 h-8 text-[12px] font-bold border border-border rounded-[4px] text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                         >
-                          {email.subject}
-                        </p>
-                        <p className="text-[13px] leading-[13px] text-muted-foreground truncate">
-                          {email.snippet}
-                        </p>
+                          Restore
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handlePermanentDeleteOne(mail.id); }}
+                          disabled={permDeleteMutation.isPending}
+                          className="px-3 h-8 text-[12px] font-bold border border-destructive/30 rounded-[4px] text-destructive hover:bg-destructive/5 transition-colors disabled:opacity-50"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    );
+  }
+
+  /* ── Contacts view ─────────────────────────────────────────────────────────── */
+  if (activeFolder === "contacts") {
+    const uniqueEmails = Array.from(
+      new Set(mails.flatMap((m) => m.to_email.split(",").map((e) => e.trim().toLowerCase())).filter(Boolean))
+    );
+    return (
+      <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar">
+        <div className="space-y-6 max-w-[1700px] mx-auto">
+          <PageHeader title={title} subtitle={subtitle} total={uniqueEmails.length} />
+          <div className="flex flex-col lg:flex-row gap-[30px]">
+            <MailSidebar activeFolder={activeFolder} onFolderChange={handleFolderChange} />
+            <div className="flex-1 min-w-0">
+              <div className={`${cardClass} p-6`}>
+                <h2 className="text-[14px] font-bold uppercase tracking-wider mb-4 text-foreground">Contacts</h2>
+                {uniqueEmails.length === 0
+                  ? <p className="text-sm text-muted-foreground">No contacts yet.</p>
+                  : <ul className="divide-y divide-border">{uniqueEmails.map((e) => <li key={e} className="py-3 text-[14px] text-foreground font-medium">{e}</li>)}</ul>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 pt-4 pb-10 custom-scrollbar">
+      <div className="space-y-6 max-w-[1700px] mx-auto">
+        <PageHeader title={title} subtitle={subtitle} total={filteredMails.length} />
+
+        <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
+          <MailSidebar activeFolder={activeFolder} onFolderChange={handleFolderChange} />
+
+          <div className="flex-1 min-w-0 flex flex-col h-full">
+            <div className={`${cardClass} bg-card flex-1 flex flex-col mb-0 overflow-hidden`}>
+
+              {/* Header */}
+              <div className="p-6 pb-4">
+                <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight">{currentLabel}</h2>
+              </div>
+
+              {/* Toolbar */}
+              <div className="px-6 py-3 border-y border-border bg-muted/50 flex items-center justify-between">
+                {/* Select all */}
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className={`flex items-center justify-center w-[16px] h-[16px] rounded-[3px] border ${selectAll ? "bg-primary border-primary" : "bg-transparent border-[#c4c9d7] group-hover:border-primary"} transition-all`}>
+                    {selectAll && <CheckSquare size={12} className="text-white" />}
+                  </div>
+                  <span className="text-[14px] text-muted-foreground">Select All</span>
+                  <input type="checkbox" className="hidden" checked={selectAll} onChange={toggleSelectAll} />
+                </label>
+
+                <div className="flex items-center gap-2">
+                  {/* Refresh */}
+                  <button title="Refresh" onClick={() => { refetch(); refetchInbox(); }}
+                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all">
+                    <RotateCw size={16} />
+                  </button>
+
+                  {/* Mark as read */}
+                  <button title="Mark as Read" disabled={!hasSelection || isWorking}
+                    onClick={() => handleBulkRead(true)}
+                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all disabled:opacity-40">
+                    <MailOpen size={16} />
+                  </button>
+
+                  {/* Delete */}
+                  <button title="Delete selected" disabled={!hasSelection || isWorking}
+                    onClick={() => hasSelection && setConfirmDelete(true)}
+                    className="w-[36px] h-[36px] flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-muted rounded-full transition-all disabled:opacity-40">
+                    <Trash2 size={16} />
+                  </button>
+
+                  {/* Move to (label + custom folder) */}
+                  {hasSelection && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setMoveOpen((o) => !o)}
+                        disabled={isWorking}
+                        className="flex items-center gap-1.5 px-3 h-[36px] text-[12px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted rounded-[3px] transition-all border border-border disabled:opacity-40"
+                      >
+                        <Folder size={14} /> Move to <ChevronDown size={12} className={`transition-transform ${moveOpen ? "rotate-180" : ""}`} />
+                      </button>
+
+                      {moveOpen && (
+                        <div className="absolute right-0 top-[40px] z-50 bg-card border border-border rounded-[5px] shadow-xl min-w-[180px] py-1">
+                          {/* Labels section */}
+                          <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Label</p>
+                          {LABELS.map(({ key, label }) => (
+                            <button key={key} onClick={() => handleMoveToLabel(key)}
+                              className="w-full text-left px-4 py-2 text-[13px] hover:bg-muted text-foreground transition-colors">
+                              {label}
+                            </button>
+                          ))}
+                          <button onClick={() => handleMoveToLabel(null)}
+                            className="w-full text-left px-4 py-2 text-[13px] hover:bg-muted text-muted-foreground transition-colors">
+                            Remove label
+                          </button>
+
+                          {/* Custom folders section */}
+                          {customFolders.length > 0 && (
+                            <>
+                              <div className="border-t border-border my-1" />
+                              <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">My Folder</p>
+                              {customFolders.map((f) => (
+                                <button key={f.id} onClick={() => handleMoveToFolder(f.id)}
+                                  className="w-full text-left px-4 py-2 text-[13px] hover:bg-muted text-foreground transition-colors">
+                                  {f.name}
+                                </button>
+                              ))}
+                              <button onClick={() => handleMoveToFolder(null)}
+                                className="w-full text-left px-4 py-2 text-[13px] hover:bg-muted text-muted-foreground transition-colors">
+                                Remove from folder
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Mail list */}
+              <div className="flex-1 overflow-y-auto chat-scrollbar pb-6" onClick={() => setMoveOpen(false)}>
+                {isLoading && <div className="p-10 text-center text-sm font-bold text-muted-foreground">Loading mails...</div>}
+                {!isLoading && filteredMails.length === 0 && (
+                  <div className="p-10 text-center text-sm font-bold text-muted-foreground">
+                    {activeFolder === "inbox" ? "Your inbox is empty." : "No mails found."}
+                  </div>
+                )}
+
+                {filteredMails.map((mail) => {
+                  const isSelected = selectedIds.has(mail.id);
+                  const isStarred  = starredIds.has(mail.id);
+                  const isRead     = mail.is_read === 1;
+                  const initials   = mail.folder === "drafts" ? "D" : mail.status === "failed" ? "F" : "S";
+                  const snippet    = mail.error_message
+                    ? `Failed: ${mail.error_message}`
+                    : stripHtml(mail.body).slice(0, 140);
+                  const time = mail.sent_at
+                    ? new Date(mail.sent_at).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
+                    : new Date(mail.created_at).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+
+                  return (
+                    <div key={mail.id}
+                      onClick={() => { if (mail.folder === "drafts") router.push(`/mail/compose?draftId=${mail.id}`); }}
+                      className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border transition-all cursor-pointer ${isSelected ? "bg-primary/5" : isRead ? "bg-card hover:bg-muted/20" : "bg-muted/10 hover:bg-muted/30"}`}
+                    >
+                      {/* Checkbox + star */}
+                      <div className="flex items-center gap-[18px] shrink-0 mt-[1px]">
+                        <label className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                          <div className={`flex items-center justify-center w-[16px] h-[16px] rounded-[3px] border ${isSelected ? "bg-primary border-primary" : "bg-transparent border-[#c4c9d7] hover:border-primary"} transition-all`}>
+                            {isSelected && <CheckSquare size={12} className="text-white" />}
+                          </div>
+                          <input type="checkbox" className="hidden" checked={isSelected} onChange={() => toggleSelect(mail.id)} />
+                        </label>
+                        <button onClick={(e) => { e.stopPropagation(); toggleStar(mail.id); }}
+                          className={`hover:scale-110 transition-transform ${isStarred ? "text-yellow-500" : "text-muted-foreground"}`}>
+                          <Star size={16} className={isStarred ? "fill-current" : ""} />
+                        </button>
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex flex-1 min-w-0 items-start gap-4 ml-2">
+                        <Avatar className="w-[32px] h-[32px] shrink-0 mt-0">
+                          <AvatarFallback className="bg-primary text-white font-bold text-[12px] rounded-full">{initials}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-1.5">
+                            <p className={`text-[13px] font-bold truncate ${isRead ? "text-muted-foreground" : "text-foreground"} group-hover:text-primary transition-colors`}>
+                              {mail.to_email}
+                            </p>
+                            <div className="flex items-center gap-2 shrink-0 ml-4 -mt-0.5">
+                              {mail.label && (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-[3px] bg-muted capitalize ${LABELS.find(l => l.key === mail.label)?.color || "text-muted-foreground"}`}>
+                                  {mail.label}
+                                </span>
+                              )}
+                              <span className="text-[12px] text-muted-foreground whitespace-nowrap">{time}</span>
+                            </div>
+                          </div>
+                          <p className={`text-[14px] mb-[7px] truncate ${isRead ? "font-medium text-foreground" : "font-bold text-foreground"}`}>{mail.subject}</p>
+                          <p className="text-[13px] text-muted-foreground truncate">{snippet}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete confirmation */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-[8px] shadow-2xl p-8 w-full max-w-sm mx-4 text-center space-y-5">
+            <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+              <Trash2 size={24} className="text-destructive" />
+            </div>
+            <div>
+              <h3 className="text-[16px] font-black uppercase tracking-tight text-foreground">Delete {selectedArr.length} Mail{selectedArr.length > 1 ? "s" : ""}?</h3>
+              <p className="text-[13px] text-muted-foreground mt-1">This action cannot be undone.</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(false)}
+                disabled={bulkDelete.isPending}
+                className="flex-1 h-10 border border-border rounded-[5px] text-[13px] font-bold text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkDelete.isPending}
+                className="flex-1 h-10 bg-destructive text-white rounded-[5px] text-[13px] font-bold hover:brightness-110 transition-colors disabled:opacity-50"
+              >
+                {bulkDelete.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

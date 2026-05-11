@@ -13,9 +13,10 @@ export const useVendorHomeBlocks = () => {
     queryFn: async () => {
       const res = await apiClient.get('/vendors/home-blocks');
       // API returns { success, data: [...] }
-      const raw: { block_type: string; is_visible: number }[] = res.data.data ?? [];
+      const raw: { block_type: string; variant?: string; is_visible: number }[] = res.data.data ?? [];
       return raw.map((b) => ({
         block_type: b.block_type,
+        variant: b.variant || 'variant_1',
         is_visible: Boolean(b.is_visible),
       })) as HomeBlock[];
     },

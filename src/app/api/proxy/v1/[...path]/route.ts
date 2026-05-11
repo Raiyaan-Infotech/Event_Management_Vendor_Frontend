@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+const PORTAL_TYPE = 'vendor';
+const ALLOWED_COOKIE_NAMES = new Set(["vendor_access_token","vendor_refresh_token"]);
 const PROXY_TIMEOUT_MS = 25000;
 
 async function forwardRequest(request: NextRequest, path: string, method: string) {
@@ -12,7 +14,6 @@ async function forwardRequest(request: NextRequest, path: string, method: string
     const searchParams = request.nextUrl.search;
     const backendUrl = `${BACKEND_URL}/${strippedPath}${searchParams}`;
 
-    // Forward the raw body as a Blob to ensure no re-encoding happens
     let body: BodyInit | undefined;
     if (method !== 'GET' && method !== 'HEAD') {
       body = await request.blob();
@@ -23,26 +24,31 @@ async function forwardRequest(request: NextRequest, path: string, method: string
     headers.delete('connection');
     headers.delete('content-length');
 
+    // Force backend mail/auth context for this frontend app.
+    headers.set('x-portal-type', PORTAL_TYPE);
 
-    // Explicitly rebuild Cookie header — Next.js may not include it in request.headers
-    const allCookies = request.cookies.getAll();
-    if (allCookies.length > 0) {
-      headers.set('cookie', allCookies.map(c => `${c.name}=${c.value}`).join('; '));
+    // localhost shares cookies across ports. Forward only this portal's auth cookies.
+    const portalCookies = request.cookies
+      .getAll()
+      .filter((cookie) => ALLOWED_COOKIE_NAMES.has(cookie.name));
+
+    if (portalCookies.length > 0) {
+      headers.set('cookie', portalCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; '));
+    } else {
+      headers.delete('cookie');
     }
 
-    const fetchOptions: RequestInit = {
+    const backendResponse = await fetch(backendUrl, {
       method,
       headers,
       body,
       credentials: 'include',
       cache: 'no-store',
       signal: controller.signal,
-    };
-
-    const backendResponse = await fetch(backendUrl, fetchOptions);
+    });
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[Proxy] Forwarding ${method} to ${backendUrl}`);
+      console.log(`[Proxy:${PORTAL_TYPE}] Forwarding ${method} to ${backendUrl}`);
     }
 
     const responseHeaders = new Headers();
@@ -55,13 +61,10 @@ async function forwardRequest(request: NextRequest, path: string, method: string
 
     const setCookieHeaders = backendResponse.headers.getSetCookie?.();
     if (setCookieHeaders && setCookieHeaders.length > 0) {
-      setCookieHeaders.forEach(cookie => {
-        responseHeaders.append('Set-Cookie', cookie);
-      });
+      setCookieHeaders.forEach((cookie) => responseHeaders.append('Set-Cookie', cookie));
     }
 
     const responseData = await backendResponse.blob();
-
     return new NextResponse(responseData, {
       status: backendResponse.status,
       statusText: backendResponse.statusText,
@@ -101,4 +104,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path: pathArray } = await params;
   return forwardRequest(request, pathArray.join('/'), 'DELETE');
+}
+
+export async function HEAD(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params;
+  return forwardRequest(request, pathArray.join('/'), 'HEAD');
+}
+
+export async function OPTIONS(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params;
+  return forwardRequest(request, pathArray.join('/'), 'OPTIONS');
 }

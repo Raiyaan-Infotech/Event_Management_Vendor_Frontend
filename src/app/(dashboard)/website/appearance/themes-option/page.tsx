@@ -96,8 +96,6 @@ const FALLBACK_COLORS: VendorColors = {
   hover_color: "#1d4ed8",
 };
 
-const PREVIEW_LOADER_COLORS_KEY = "vendor-preview-loader-colors";
-
 type CardId = number | "custom"; // palette id OR 'custom'
 
 export default function ThemesOptionPage() {
@@ -241,21 +239,9 @@ export default function ThemesOptionPage() {
     activeColorSrc.hover_color     || "#93c5fd",
   ];
 
-  const previewUrl = (() => {
-    const themeId = (vendor as any)?.theme_id ?? "";
-    const params = new URLSearchParams({ themeId: String(themeId) });
-    if (activeColorSrc.primary_color)   params.set("primary",   activeColorSrc.primary_color);
-    if (activeColorSrc.secondary_color) params.set("secondary", activeColorSrc.secondary_color);
-    if (activeColorSrc.header_color)    params.set("header",    activeColorSrc.header_color);
-    if (activeColorSrc.footer_color)    params.set("footer",    activeColorSrc.footer_color);
-    if (activeColorSrc.text_color)      params.set("text",      activeColorSrc.text_color);
-    if (activeColorSrc.hover_color)     params.set("hover",     activeColorSrc.hover_color);
-    return `/preview?${params.toString()}`;
-  })();
-
   const handlePreview = () => {
-    window.localStorage.setItem(PREVIEW_LOADER_COLORS_KEY, JSON.stringify(loaderColors));
-    window.open(previewUrl, "_blank");
+    const themeId = (vendor as any)?.theme_id ?? "";
+    window.open(`/preview?themeId=${themeId}`, "_blank");
   };
 
   return (

@@ -76,15 +76,17 @@ export interface VendorPreviewData {
   };
 }
 
-export const useVendorPreviewData = (vendorId?: number | null) =>
+export const useVendorPreviewData = (vendorId?: number | null, themeId?: number | null) =>
   useQuery({
-    queryKey: ['vendor-preview-data', vendorId ?? 'me'],
+    queryKey: ['vendor-preview-data', vendorId ?? 'me', themeId ?? 'active'],
     queryFn: async () => {
       const url = vendorId
         ? `/vendors/${vendorId}/preview-data`
         : '/vendors/auth/preview-data';
+      const params: Record<string, string | number> = { _t: Date.now() };
+      if (themeId) params.theme_id = themeId;
       const res = await apiClient.get(url, {
-        params: { _t: Date.now() },
+        params,
         headers: {
           'Cache-Control': 'no-cache',
           Pragma: 'no-cache',

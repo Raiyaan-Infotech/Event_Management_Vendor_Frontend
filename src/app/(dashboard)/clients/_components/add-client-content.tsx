@@ -880,6 +880,7 @@ import {
   useUpdateVendorClient,
 } from "@/hooks/use-vendor-clients";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { LocationSelects, type LocationValues } from "@/components/common/LocationSelects";
 
 // ... existing code ...
 
@@ -1256,116 +1257,13 @@ export function AddClientContent({
                   />
                 </FormGroup>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  <FormGroup
-                    label="Country"
-                    required
-                    isView={isView}
-                    error={errors.country}
-                  >
-                    <SearchableSelect
-                      value={formData.country}
-                      onValueChange={(val) => {
-                        !isView &&
-                          setFormData({
-                            ...formData,
-                            country: val,
-                            state: "",
-                            district: "",
-                            city: "",
-                          });
-                        if (errors.country)
-                          setErrors((prev) => ({ ...prev, country: "" }));
-                      }}
-                      options={countryOptions}
-                      placeholder="Select Country"
-                      icon={Flag}
-                      disabled={isView}
-                      error={errors.country}
-                    />
-                  </FormGroup>
-
-                  <FormGroup
-                    label="State"
-                    required
-                    isView={isView}
-                    error={errors.state}
-                  >
-                    <SearchableSelect
-                      value={formData.state}
-                      onValueChange={(val) => {
-                        !isView &&
-                          setFormData({
-                            ...formData,
-                            state: val,
-                            district: "",
-                            city: "",
-                          });
-                        if (errors.state)
-                          setErrors((prev) => ({ ...prev, state: "" }));
-                      }}
-                      options={stateOptions}
-                      placeholder={
-                        formData.country
-                          ? "Select State"
-                          : "Select Country First"
-                      }
-                      icon={Globe}
-                      disabled={isView || stateOptions.length === 0}
-                      error={errors.state}
-                    />
-                  </FormGroup>
-
-                  <FormGroup
-                    label="District"
-                    required
-                    isView={isView}
-                    error={errors.district}
-                  >
-                    <SearchableSelect
-                      value={formData.district}
-                      onValueChange={(val) => {
-                        !isView &&
-                          setFormData({ ...formData, district: val, city: "" });
-                        if (errors.district)
-                          setErrors((prev) => ({ ...prev, district: "" }));
-                      }}
-                      options={districtOptions}
-                      placeholder={
-                        formData.state
-                          ? "Select District"
-                          : "Select State First"
-                      }
-                      icon={Building}
-                      disabled={isView || districtOptions.length === 0}
-                      error={errors.district}
-                    />
-                  </FormGroup>
-
-                  <FormGroup
-                    label="City"
-                    required
-                    isView={isView}
-                    error={errors.city}
-                  >
-                    <SearchableSelect
-                      value={formData.city}
-                      onValueChange={(val) => {
-                        !isView && setFormData({ ...formData, city: val });
-                        if (errors.city)
-                          setErrors((prev) => ({ ...prev, city: "" }));
-                      }}
-                      options={cityOptions}
-                      placeholder={
-                        formData.district
-                          ? "Select City"
-                          : "Select District First"
-                      }
-                      icon={Building}
-                      disabled={isView || cityOptions.length === 0}
-                      error={errors.city}
-                    />
-                  </FormGroup>
+                <LocationSelects
+                  values={{ country: formData.country, state: formData.state, district: formData.district, city: formData.city }}
+                  onChange={(loc: LocationValues) => {
+                    if (!isView) setFormData((prev) => ({ ...prev, ...loc }));
+                  }}
+                  isView={isView}
+                />
 
                   <FormGroup
                     label="Locality"
@@ -1412,7 +1310,6 @@ export function AddClientContent({
                     />
                   </FormGroup>
                 </div>
-              </div>
             </CommonCard>
           </div>
 

@@ -2,7 +2,6 @@
 
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { ThemePreview } from "@/components/website/ThemePreview";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import ContactUs from "@/components/blocks/ContactUs";
 import TermsConditions from "@/components/blocks/TermsConditions";
@@ -61,7 +60,9 @@ function PreviewContent() {
       : rawPreviewPage === "privacy-policy" || rawPreviewPage === "privacy_policy"
         ? "privacy"
         : rawPreviewPage;
-  const { data: vendorData, isLoading, isFetching } = useVendorPreviewData(vendorId);
+  const urlThemeIdParam = searchParams.get("themeId");
+  const urlThemeId = urlThemeIdParam ? parseInt(urlThemeIdParam) : null;
+  const { data: vendorData, isLoading } = useVendorPreviewData(vendorId, urlThemeId);
   const embeddedSelectedPage = (vendorData?.pages || []).find((item: any) => Number(item.id) === pageId && item.is_active !== 0);
   const shouldFetchTerms = previewPage === "terms" && !!vendorData && !vendorData.terms_content;
   const shouldFetchPrivacy = previewPage === "privacy" && !!vendorData && !vendorData.privacy_content;
@@ -251,7 +252,7 @@ function PreviewContent() {
     );
   }
 
-  // Render block-by-block using vendor's own home_blocks (correct variants + colors)
+  // Render block-by-block — backend already returns the correct theme's blocks
   if (enrichedData?.home_blocks?.length) {
     const visibleBlocks = (enrichedData.home_blocks as any[]).filter(
       (b: any) => b.is_visible !== false,
@@ -271,18 +272,13 @@ function PreviewContent() {
     );
   }
 
-  const previewThemeId = searchParams.get("themeId")
-    ? parseInt(searchParams.get("themeId") as string)
-    : vendorData.theme_id;
-
+  // No blocks configured for this theme
   return (
-    <div className="min-h-screen bg-white">
-      <ThemePreview
-        themeId={previewThemeId!}
-        colors={activeColors as any}
-        vendorData={enrichedData ?? undefined}
-        isFullPage={true}
-      />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center space-y-2">
+        <p className="text-gray-500 font-medium">No blocks configured for this theme.</p>
+        <p className="text-sm text-gray-400">Use the Theme Builder to add blocks to this theme.</p>
+      </div>
     </div>
   );
 }

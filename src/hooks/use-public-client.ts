@@ -17,7 +17,7 @@ export interface PublicClientRegisterPayload {
 
 export interface PublicClientLoginPayload {
   email: string;
-  mobile: string;
+  password: string;
 }
 
 export interface PublicNewsletterPayload {

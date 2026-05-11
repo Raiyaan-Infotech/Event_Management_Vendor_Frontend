@@ -18,7 +18,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Eye, EyeOff, X, ChevronDown } from "lucide-react";
+import { GripVertical, X, ChevronDown } from "lucide-react";
 import { type HomeBlock, type BlockCatalogEntry, resolveIcon } from "@/types/home-blocks";
 import { cn } from "@/lib/utils";
 import type { VendorAbout, NavMenuItem } from "@/hooks/use-vendors";
@@ -145,12 +145,10 @@ function SiteHeaderPreview({ vendor, blocks = [] }: { vendor?: VendorAbout; bloc
 
 function SortableRow({
   block,
-  onToggleVisibility,
   onRemove,
   catalog,
 }: {
   block: HomeBlock;
-  onToggleVisibility: () => void;
   onRemove: () => void;
   catalog: BlockCatalogEntry[];
 }) {
@@ -200,19 +198,6 @@ function SortableRow({
       <span className="flex-1 text-[12px] font-semibold truncate">
         {entry?.label ?? block.block_type}
       </span>
-
-      <button
-        id={`toggle-visibility-${block.block_type}`}
-        onClick={onToggleVisibility}
-        className="p-1 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-        aria-label={block.is_visible ? "Hide block" : "Show block"}
-      >
-        {block.is_visible ? (
-          <Eye className="size-4" />
-        ) : (
-          <EyeOff className="size-4 opacity-50" />
-        )}
-      </button>
 
       <button
         id={`remove-block-${block.block_type}`}
@@ -367,14 +352,6 @@ export default function ComposedList({ blocks, onChange, vendor, catalog }: Comp
     onChange(arrayMove(blocks, oldIndex, newIndex));
   };
 
-  const toggleVisibility = (block_type: string) => {
-    onChange(
-      blocks.map((b) =>
-        b.block_type === block_type ? { ...b, is_visible: !b.is_visible } : b
-      )
-    );
-  };
-
   const removeBlock = (block_type: string) => {
     onChange(blocks.filter((b) => b.block_type !== block_type));
   };
@@ -424,7 +401,6 @@ export default function ComposedList({ blocks, onChange, vendor, catalog }: Comp
                   key={block.block_type}
                   block={block}
                   catalog={catalog}
-                  onToggleVisibility={() => toggleVisibility(block.block_type)}
                   onRemove={() => removeBlock(block.block_type)}
                 />
               ))}

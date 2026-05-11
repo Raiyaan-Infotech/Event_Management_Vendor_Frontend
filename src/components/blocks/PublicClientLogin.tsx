@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2, LogIn } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import { usePublicClientLogin } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
 
@@ -15,7 +15,8 @@ export default function PublicClientLogin({ data }: { data?: any }) {
   const loginMutation = usePublicClientLogin(publicSlug);
 
   const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -25,7 +26,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
     setError("");
 
     try {
-      const payload = await loginMutation.mutateAsync({ email, mobile });
+      const payload = await loginMutation.mutateAsync({ email, password });
 
       if (typeof window !== "undefined") {
         window.localStorage.setItem(`vendor_client_${publicSlug}`, JSON.stringify(payload.data));
@@ -56,8 +57,13 @@ export default function PublicClientLogin({ data }: { data?: any }) {
               <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Mobile</span>
-              <input required value={mobile} onChange={(e) => setMobile(e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password</span>
+              <div className="relative">
+                <input required type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-11 text-sm outline-none focus:border-gray-950" />
+                <button type="button" tabIndex={-1} onClick={() => setShowPassword((p) => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </label>
           </div>
 
@@ -89,7 +95,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
           </div>
           <div className="mt-10 border-t border-white/10 pt-6">
             <p className="text-xs font-bold uppercase tracking-widest text-white/35">Current Access</p>
-            <p className="mt-2 text-3xl font-black">Email + Mobile</p>
+            <p className="mt-2 text-3xl font-black">Email + Password</p>
           </div>
         </aside>
       </div>
