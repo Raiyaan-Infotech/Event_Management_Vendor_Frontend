@@ -131,21 +131,13 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Activity Log",     href: "/activity-log",      icon: ClipboardList },
     ],
   },
-  {
-    label: "Appearance",
-    icon: Settings,
-    children: [
-      { label: "Home Settings", href: "/appearance/home-settings", icon: Settings },
-      { label: "Menu", href: "/appearance/menu", icon: LayoutDashboard },
-    ],
-  },
   { label: "Help", href: "/help", icon: HelpCircle },
   {
     label: "Website Management",
     icon: Globe,
     children: [
-       { 
-        label: "Appearance", 
+       {
+        label: "Appearance",
         icon: Palette,
         children: [
           { label: "Themes Option", href: "/website/appearance/themes-option", icon: List },

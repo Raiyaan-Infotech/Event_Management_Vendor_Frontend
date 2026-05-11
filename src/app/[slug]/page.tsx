@@ -19,25 +19,51 @@ export default async function PublicVendorHomePage({ params }: PageProps) {
   const vendorBundle = buildPublicVendorBundle(data, slug);
   const visibleBlocks = visiblePublicBlocks(data);
 
+  const headerBlock = visibleBlocks.find((b) => b.block_type === "header");
+  const footerBlock = visibleBlocks.find((b) => b.block_type === "footer");
+  const middleBlocks = visibleBlocks.filter(
+    (b) => b.block_type !== "header" && b.block_type !== "footer",
+  );
+
   return (
     <div style={publicColorStyle(data.colors)} className="flex min-h-screen flex-col bg-white">
-      {visibleBlocks.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 px-4 py-32 text-center">
-          <h2 className="text-3xl font-bold text-gray-800">{data.vendor.company_name}</h2>
-          {data.vendor.short_description && (
-            <p className="max-w-xl text-gray-500">{data.vendor.short_description}</p>
-          )}
-        </div>
-      ) : (
-        visibleBlocks.map((block, index) => (
-          <BlockRenderer
-            key={`${block.block_type}-${index}`}
-            block_type={block.block_type}
-            visible={true}
-            settings={{ variant: block.variant || "variant_1" }}
-            vendorData={vendorBundle}
-          />
-        ))
+      {headerBlock && (
+        <BlockRenderer
+          block_type="header"
+          visible={true}
+          settings={{ variant: headerBlock.variant || "variant_1" }}
+          vendorData={vendorBundle}
+        />
+      )}
+
+      <main className="flex-1">
+        {middleBlocks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 px-4 py-32 text-center">
+            <h2 className="text-3xl font-bold text-gray-800">{data.vendor.company_name}</h2>
+            {data.vendor.short_description && (
+              <p className="max-w-xl text-gray-500">{data.vendor.short_description}</p>
+            )}
+          </div>
+        ) : (
+          middleBlocks.map((block, index) => (
+            <BlockRenderer
+              key={`${block.block_type}-${index}`}
+              block_type={block.block_type}
+              visible={true}
+              settings={{ variant: block.variant || "variant_1" }}
+              vendorData={vendorBundle}
+            />
+          ))
+        )}
+      </main>
+
+      {footerBlock && (
+        <BlockRenderer
+          block_type="footer"
+          visible={true}
+          settings={{ variant: footerBlock.variant || "variant_1" }}
+          vendorData={vendorBundle}
+        />
       )}
     </div>
   );
