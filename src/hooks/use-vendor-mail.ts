@@ -57,7 +57,7 @@ export interface VendorMail {
   to_email: string;
   subject: string;
   body: string;
-  folder: 'sent' | 'drafts';
+  folder: 'sent' | 'drafts' | 'inbox';
   status: 'draft' | 'sent' | 'failed';
   is_read: number;
   is_active: number;
@@ -184,7 +184,7 @@ const flattenInboxRow = (row: MailRecipientRow & { mail: MailApiData; recipientR
     to_email: `From: ${SENDER_LABEL[row.mail.sender_type] ?? row.mail.sender_type}`,
     subject: row.mail.subject,
     body: row.mail.body,
-    folder: 'sent',
+    folder: 'inbox',
     status: row.mail.status,
     is_read: recipient.is_read,
     is_active: recipient.is_active,
@@ -319,7 +319,7 @@ export const useSendVendorMail = () => {
   return useMutation({
     mutationFn: async (p: MailPayload) =>
       (await apiClient.post('/mail/send', p)).data.data as MailApiData,
-    onSuccess: () => { inv(qc); inv(qc, NOTIF_KEY); toast.success('Mail sent'); },
+    onSuccess: async () => { await inv(qc); await inv(qc, NOTIF_KEY); toast.success('Mail sent'); },
     onError: (e: unknown) => {
       const err = e as { response?: { data?: { message?: string } } };
       toast.error(err.response?.data?.message || 'Failed to send mail');

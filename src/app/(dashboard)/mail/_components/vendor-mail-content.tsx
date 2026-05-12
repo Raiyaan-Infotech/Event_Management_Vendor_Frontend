@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Star, Trash2, CheckSquare, RotateCw, MailOpen, Folder, ChevronDown,
+  Star, Trash2, CheckSquare, RotateCw, MailOpen, Folder, ChevronDown, X,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MailSidebar } from "./mail-sidebar";
@@ -12,6 +12,7 @@ import {
   useVendorMails,
   useVendorInbox,
   useVendorMailTrash,
+  useVendorMail,
   useRestoreFromTrash,
   usePermanentDeleteMail,
   useBulkDeleteVendorMail,
@@ -52,10 +53,12 @@ export function VendorMailContent({
   const [selectAll, setSelectAll] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [selectedMailId, setSelectedMailId] = useState<number | null>(null);
 
   const { data: mails = [], isLoading, refetch } = useVendorMails();
   const { data: inboxMails = [], isLoading: inboxLoading, refetch: refetchInbox } = useVendorInbox();
   const { data: trashMails = [], isLoading: trashLoading, refetch: refetchTrash } = useVendorMailTrash();
+  const { data: mailDetail, isLoading: detailLoading } = useVendorMail(selectedMailId ?? undefined);
   const restoreMutation   = useRestoreFromTrash();
   const permDeleteMutation = usePermanentDeleteMail();
   const { data: folders = [] } = useVendorMailFolders();
@@ -253,8 +256,9 @@ export function VendorMailContent({
         <div className="flex flex-col lg:flex-row gap-[30px] mb-6 lg:h-[800px] items-stretch">
           <MailSidebar activeFolder={activeFolder} onFolderChange={handleFolderChange} />
 
-          <div className="flex-1 min-w-0 flex flex-col h-full">
-            <div className={`${cardClass} bg-card flex-1 flex flex-col mb-0 overflow-hidden`}>
+          <div className="flex-1 min-w-0 flex gap-[20px] h-full overflow-hidden">
+            {/* Mail list panel */}
+            <div className={`${cardClass} bg-card flex flex-col mb-0 overflow-hidden transition-all duration-300 ${selectedMailId ? "w-[42%] shrink-0" : "flex-1"}`}>
 
               {/* Header */}
               <div className="p-6 pb-4">
@@ -345,8 +349,10 @@ export function VendorMailContent({
 
               {/* Mail list */}
               <div className="flex-1 overflow-y-auto chat-scrollbar pb-6" onClick={() => setMoveOpen(false)}>
-                {isLoading && <div className="p-10 text-center text-sm font-bold text-muted-foreground">Loading mails...</div>}
-                {!isLoading && filteredMails.length === 0 && (
+                {(activeFolder === "inbox" ? inboxLoading : isLoading) && (
+                  <div className="p-10 text-center text-sm font-bold text-muted-foreground">Loading mails...</div>
+                )}
+                {!(activeFolder === "inbox" ? inboxLoading : isLoading) && filteredMails.length === 0 && (
                   <div className="p-10 text-center text-sm font-bold text-muted-foreground">
                     {activeFolder === "inbox" ? "Your inbox is empty." : "No mails found."}
                   </div>
@@ -366,8 +372,11 @@ export function VendorMailContent({
 
                   return (
                     <div key={mail.id}
-                      onClick={() => { if (mail.folder === "drafts") router.push(`/mail/compose?draftId=${mail.id}`); }}
-                      className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border transition-all cursor-pointer ${isSelected ? "bg-primary/5" : isRead ? "bg-card hover:bg-muted/20" : "bg-muted/10 hover:bg-muted/30"}`}
+                      onClick={() => {
+                        if (mail.folder === "drafts") { router.push(`/mail/compose?draftId=${mail.id}`); return; }
+                        setSelectedMailId(mail.id === selectedMailId ? null : mail.id);
+                      }}
+                      className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border transition-all cursor-pointer ${mail.id === selectedMailId ? "bg-primary/10 border-l-2 border-l-primary" : isSelected ? "bg-primary/5" : isRead ? "bg-card hover:bg-muted/20" : "bg-muted/10 hover:bg-muted/30"}`}
                     >
                       {/* Checkbox + star */}
                       <div className="flex items-center gap-[18px] shrink-0 mt-[1px]">
@@ -411,6 +420,61 @@ export function VendorMailContent({
                 })}
               </div>
             </div>
+
+            {/* Mail detail panel */}
+            {selectedMailId && (
+              <div className={`${cardClass} flex-1 flex flex-col overflow-hidden`}>
+                {detailLoading ? (
+                  <div className="flex-1 flex items-center justify-center text-sm font-bold text-muted-foreground">Loading...</div>
+                ) : mailDetail ? (
+                  <>
+                    {/* Detail header */}
+                    <div className="p-5 border-b border-border flex items-start justify-between gap-4 shrink-0">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                          {mailDetail.recipientRow
+                            ? `From: ${mailDetail.mail.sender_type.charAt(0).toUpperCase() + mailDetail.mail.sender_type.slice(1)}`
+                            : `To: ${(mailDetail.mail.recipients ?? []).filter(r => r.role === "to").length} recipient(s)`}
+                        </p>
+                        <h3 className="text-[16px] font-black text-foreground leading-snug break-words">{mailDetail.mail.subject}</h3>
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                          {mailDetail.mail.sent_at
+                            ? new Date(mailDetail.mail.sent_at).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                            : new Date(mailDetail.mail.createdAt).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedMailId(null)}
+                        className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-all shrink-0"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    {/* Recipients row (if sender view) */}
+                    {!mailDetail.recipientRow && (mailDetail.mail.recipients ?? []).length > 0 && (
+                      <div className="px-5 py-2.5 border-b border-border bg-muted/30 shrink-0 flex flex-wrap gap-1.5">
+                        {(mailDetail.mail.recipients ?? []).map((r) => (
+                          <span key={r.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-muted text-[11px] font-bold text-foreground capitalize">
+                            <span className="text-muted-foreground">{r.role.toUpperCase()}:</span> {r.recipient_type}#{r.recipient_id}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Body */}
+                    <div className="flex-1 overflow-y-auto chat-scrollbar p-5">
+                      <div
+                        className="prose prose-sm dark:prose-invert max-w-none text-[14px] text-foreground leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: mailDetail.mail.body }}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center text-sm font-bold text-muted-foreground">Mail not found.</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
