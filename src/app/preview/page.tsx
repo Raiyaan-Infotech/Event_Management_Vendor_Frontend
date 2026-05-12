@@ -169,17 +169,38 @@ function PreviewContent() {
       );
     }
 
+    const middleBlocks = visibleBlocks.filter(
+      (b) => b.block_type !== "header" && b.block_type !== "footer",
+    );
     return (
       <div className="min-h-screen bg-white p-0 m-0 flex flex-col scroll-smooth">
-        {visibleBlocks.map((b, i) => (
+        {headerBlock && (
           <BlockRenderer
-            key={i}
-            block_type={b.block_type}
+            block_type="header"
             visible={true}
-            settings={{ variant: b.variant || "variant_1" }}
+            settings={{ variant: headerBlock.variant || "variant_1" }}
             vendorData={blockData}
           />
-        ))}
+        )}
+        <main className="flex-1">
+          {middleBlocks.map((b, i) => (
+            <BlockRenderer
+              key={i}
+              block_type={b.block_type}
+              visible={true}
+              settings={{ variant: b.variant || "variant_1" }}
+              vendorData={blockData}
+            />
+          ))}
+        </main>
+        {footerBlock && (
+          <BlockRenderer
+            block_type="footer"
+            visible={true}
+            settings={{ variant: footerBlock.variant || "variant_1" }}
+            vendorData={blockData}
+          />
+        )}
       </div>
     );
   }
