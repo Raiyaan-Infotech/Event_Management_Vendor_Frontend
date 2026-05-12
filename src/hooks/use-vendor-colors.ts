@@ -37,7 +37,7 @@ export const useVendorPalettes = () =>
   });
 
 // ─── GET current color state ─────────────────────────────────────────────────
-export const useVendorColors = () =>
+export const useVendorColors = (options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: ['vendor-colors'],
     queryFn: async () => {
@@ -45,6 +45,7 @@ export const useVendorColors = () =>
       return res.data.data as VendorColorsResponse;
     },
     staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled !== false,
   });
 
 // ─── PUT select an admin palette ─────────────────────────────────────────────

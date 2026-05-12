@@ -10,11 +10,15 @@ import { useVendorColors } from "@/hooks/use-vendor-colors";
  * Professional Navigation Loader - Snappy & Balanced
  * Optimized to ONLY trigger on actual navigation clicks or pushState calls.
  */
+// Routes that are publicly accessible — never require vendor auth
+const PUBLIC_PATHS = ['/preview', '/public-preview'];
+
 function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeMutations = useIsMutating();
-  const { data: vendorColors } = useVendorColors();
+  const isPublicPage = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const { data: vendorColors } = useVendorColors({ enabled: !isPublicPage });
   const [loading, setLoading] = useState(false);
   const [mutationLoading, setMutationLoading] = useState(false);
   const pageHandlesOwnMutationLoader = pathname === "/website/appearance/themes-option";

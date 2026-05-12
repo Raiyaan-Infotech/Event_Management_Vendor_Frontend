@@ -273,22 +273,45 @@ function PreviewContent() {
     );
   }
 
-  // Render block-by-block — backend already returns the correct theme's blocks
+  // Render block-by-block — pin header top, footer bottom regardless of array order
   if (enrichedData?.home_blocks?.length) {
     const visibleBlocks = (enrichedData.home_blocks as any[]).filter(
       (b: any) => b.is_visible !== false,
     );
+    const headerBlock = visibleBlocks.find((b: any) => b.block_type === "header");
+    const footerBlock = visibleBlocks.find((b: any) => b.block_type === "footer");
+    const middleBlocks = visibleBlocks.filter(
+      (b: any) => b.block_type !== "header" && b.block_type !== "footer",
+    );
     return (
       <div className="min-h-screen bg-white p-0 m-0 flex flex-col scroll-smooth">
-        {visibleBlocks.map((b: any, i: number) => (
+        {headerBlock && (
           <BlockRenderer
-            key={i}
-            block_type={b.block_type}
+            block_type="header"
             visible={true}
-            settings={{ variant: b.variant || "variant_1" }}
+            settings={{ variant: headerBlock.variant || "variant_1" }}
             vendorData={enrichedData}
           />
-        ))}
+        )}
+        <main className="flex-1">
+          {middleBlocks.map((b: any, i: number) => (
+            <BlockRenderer
+              key={i}
+              block_type={b.block_type}
+              visible={true}
+              settings={{ variant: b.variant || "variant_1" }}
+              vendorData={enrichedData}
+            />
+          ))}
+        </main>
+        {footerBlock && (
+          <BlockRenderer
+            block_type="footer"
+            visible={true}
+            settings={{ variant: footerBlock.variant || "variant_1" }}
+            vendorData={enrichedData}
+          />
+        )}
       </div>
     );
   }
