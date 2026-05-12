@@ -206,8 +206,11 @@ function PreviewContent() {
   }
 
   if (previewPage === "contact" || previewPage === "terms" || previewPage === "privacy" || previewPage === "page" || previewPage === "login" || previewPage === "register") {
+    const blocks = (enrichedData?.home_blocks as any[]) || [];
+    const headerBlock = blocks.find((b: any) => b.block_type === "header");
+    const footerBlock = blocks.find((b: any) => b.block_type === "footer");
     const blockData = enrichedData
-      ? { ...enrichedData, home_blocks: enrichedData.home_blocks || [] }
+      ? { ...enrichedData, home_blocks: blocks }
       : null;
 
     const middleContent =
@@ -230,7 +233,7 @@ function PreviewContent() {
         <BlockRenderer
           block_type="header"
           visible={true}
-          settings={{ variant: "variant_1" }}
+          settings={{ variant: headerBlock?.variant || "variant_1" }}
           vendorData={blockData}
         />
         <main key={`preview-${previewPage || "home"}-${pageId || ""}`} className="flex-1">
@@ -239,7 +242,7 @@ function PreviewContent() {
         <BlockRenderer
           block_type="footer"
           visible={true}
-          settings={{ variant: "variant_1" }}
+          settings={{ variant: footerBlock?.variant || "variant_1" }}
           vendorData={blockData}
         />
       </div>

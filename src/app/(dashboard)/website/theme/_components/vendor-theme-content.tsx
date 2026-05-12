@@ -36,8 +36,7 @@ const InternalThemePreview = ({ theme }: { theme: any }) => {
                     <div className="h-12 col-span-1 border rounded-lg dark:border-gray-700" />
                 </div>
 
-                <div className="text-[10px] text-muted-foreground mt-2 border-t pt-2 dark:border-gray-800 flex items-center justify-between">
-                    <span className="flex items-center gap-1"><LayoutTemplate className="w-3 h-3"/> {blocks.length} Blocks</span>
+                <div className="text-[10px] text-muted-foreground mt-2 border-t pt-2 dark:border-gray-800 flex items-center justify-end">
                     <div className="flex gap-1">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.primary_color }} />
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.secondary_color }} />

@@ -1020,8 +1020,10 @@ export function AddClientContent({
       }
     });
 
-    if (!isEdit && !formData.password) {
+    if (!isEdit && !formData.password.trim()) {
       newErrors.password = "Password is required";
+    } else if (!isEdit && formData.password.trim().length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     if (!profilePic) {
@@ -1182,8 +1184,8 @@ export function AddClientContent({
                   <Input
                     value={formData.email}
                     onChange={(e) => {
-                      !isView &&
-                        setFormData({ ...formData, email: e.target.value });
+                      const val = e.target.value;
+                      !isView && setFormData((prev) => ({ ...prev, email: val }));
                       if (errors.email)
                         setErrors((prev) => ({ ...prev, email: "" }));
                     }}
@@ -1314,7 +1316,7 @@ export function AddClientContent({
           </div>
 
           {/* Right Column - Sidebar */}
-          <div className="flex-1 space-y-8 lg:sticky lg:top-8">
+          <div className="flex-1 space-y-8 lg:sticky lg:top-8 lg:max-h-[calc(100vh-86px)] lg:overflow-y-auto lg:pr-1 custom-scrollbar">
             {/* Action Buttons - Top of Sidebar */}
             {!isView && (
               <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">

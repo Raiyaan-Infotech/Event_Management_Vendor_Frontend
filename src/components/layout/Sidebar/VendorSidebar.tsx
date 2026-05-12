@@ -320,19 +320,19 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
               ${!isCollapsed ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10 absolute pointer-events-none"}`}
           >
             {vendor?.company_logo ? (
-              <div className="relative h-9 w-32">
-                <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain" />
-              </div>
+              <>
+                <div className="relative h-8 w-28">
+                  <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain object-center" />
+                </div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground dark:text-gray-400 truncate max-w-[140px] mt-0.5 text-center w-full">
+                  {vendor.company_name}
+                </p>
+              </>
             ) : (
               <span className="text-[19px] font-extrabold tracking-tight text-sidebar-foreground dark:text-gray-100 leading-none">
                 {vendor?.company_name ?? "Vendor Portal"}
               </span>
             )}
-            {/* {vendor?.cityRef?.name && (
-              <p className="text-[10px] font-bold uppercase tracking-[1px] text-muted-foreground dark:text-gray-400 m-0 p-0 mt-0.5 truncate max-w-[140px]">
-                {vendor.cityRef.name}
-              </p>
-            )} */}
           </div>
         </Link>
       </SidebarHeader>

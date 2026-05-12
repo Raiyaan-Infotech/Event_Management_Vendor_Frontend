@@ -15,6 +15,7 @@ export interface VendorClient {
   plan: string | null;
   is_active: 0 | 1 | 2; // 0=inactive, 1=active, 2=blocked
   login_access: 0 | 1;
+  send_credentials_to_email: 0 | 1;
   address: string | null;
   country: string | null;
   state: string | null;

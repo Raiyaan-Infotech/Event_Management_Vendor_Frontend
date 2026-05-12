@@ -51,6 +51,8 @@ interface Client {
   registrationType?: string;
   registrationDate?: string;
   created_at?: string;
+  login_access?: number;
+  send_credentials_to_email?: number;
 }
 
 import {
@@ -396,11 +398,33 @@ export default function ViewClientContent() {
                     </div>
                   );
                 })()}
-                <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 mt-2 ml-1 italic">
-                  <ChevronRight size={14} className="text-gray-300" />
-                  Registered: {client.created_at ? new Date(client.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "N/A"}
-                </div>
               </div>
+            </div>
+
+            {/* LOGIN ACCESS Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm space-y-4">
+              <div className="flex items-center gap-3 border-b border-gray-50 dark:border-gray-700/50 pb-4">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 flex items-center justify-center">
+                  <Lock size={16} />
+                </div>
+                <h3 className="text-[12px] font-black text-gray-800 dark:text-gray-100 uppercase tracking-[0.2em]">
+                  ACCESS & CREDENTIALS
+                </h3>
+              </div>
+              {[
+                { label: "Login Access", desc: "Client can log in to the portal", value: Number(client.login_access) === 1 },
+                { label: "Send Credentials To Email", desc: "Password emailed automatically", value: Number(client.send_credentials_to_email) === 1 },
+              ].map(({ label, desc, value }) => (
+                <div key={label} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[13px] font-bold text-gray-800 dark:text-gray-200">{label}</p>
+                    <p className="text-[11px] text-gray-400">{desc}</p>
+                  </div>
+                  <div className={`relative inline-flex h-6 w-11 items-center rounded-full ${value ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"}`}>
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${value ? "translate-x-6" : "translate-x-1"}`} />
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* CLIENT ID Detail Card */}

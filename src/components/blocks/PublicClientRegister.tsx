@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2, UserPlus } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 import { usePublicClientRegister } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
 
@@ -18,11 +18,13 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     name: "",
     email: "",
     mobile: "",
+    password: "",
+    confirm_password: "",
   };
 
-  const [form, setForm] = useState({
-    ...initialForm,
-  });
+  const [form, setForm] = useState({ ...initialForm });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -35,9 +37,16 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     setMessage("");
     setError("");
 
+    if (form.password !== form.confirm_password) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const { confirm_password, ...payload } = form;
+
     try {
       await registerMutation.mutateAsync({
-        ...form,
+        ...payload,
         address: null,
         country: null,
         state: null,
@@ -101,6 +110,20 @@ export default function PublicClientRegister({ data }: { data?: any }) {
             <label className="space-y-2">
               <span className="text-xs font-black uppercase tracking-widest text-gray-500">Mobile</span>
               <input required value={form.mobile} onChange={(e) => update("mobile", e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+            </label>
+            <label className="space-y-2 relative">
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password</span>
+              <input required type={showPassword ? "text" : "password"} value={form.password} onChange={(e) => update("password", e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-10 text-sm outline-none focus:border-gray-950" />
+              <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </label>
+            <label className="space-y-2 relative">
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Confirm Password</span>
+              <input required type={showConfirm ? "text" : "password"} value={form.confirm_password} onChange={(e) => update("confirm_password", e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-10 text-sm outline-none focus:border-gray-950" />
+              <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
+                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
             </label>
           </div>
 
