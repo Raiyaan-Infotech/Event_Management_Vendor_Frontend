@@ -1022,7 +1022,7 @@ export function AddClientContent({
 
     if (!isEdit && !formData.password.trim()) {
       newErrors.password = "Password is required";
-    } else if (!isEdit && formData.password.trim().length < 6) {
+    } else if (formData.password && formData.password.trim().length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
@@ -1185,11 +1185,11 @@ export function AddClientContent({
                     value={formData.email}
                     onChange={(e) => {
                       const val = e.target.value;
-                      !isView && setFormData((prev) => ({ ...prev, email: val }));
+                      !isView && !isEdit && setFormData((prev) => ({ ...prev, email: val }));
                       if (errors.email)
                         setErrors((prev) => ({ ...prev, email: "" }));
                     }}
-                    readOnly={isView}
+                    readOnly={isView || isEdit}
                     placeholder="Enter email address"
                     className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl transition-all text-[14px] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
                   />
@@ -1207,7 +1207,7 @@ export function AddClientContent({
                     value={formData.password}
                     onChange={(e) => {
                       !isView &&
-                        setFormData({ ...formData, password: e.target.value });
+                        setFormData((prev) => ({ ...prev, password: e.target.value }));
                       if (errors.password)
                         setErrors((prev) => ({ ...prev, password: "" }));
                     }}

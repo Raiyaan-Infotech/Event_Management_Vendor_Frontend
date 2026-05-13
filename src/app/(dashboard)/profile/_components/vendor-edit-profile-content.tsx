@@ -85,7 +85,10 @@ export function VendorEditProfileContent() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile.mutate(formData);
+    // Exclude email (readOnly) and social fields not in the DB model
+    const { email, youtube, facebook, instagram, ...rest } = formData as any;
+    void email; void youtube; void facebook; void instagram;
+    updateProfile.mutate(rest);
   };
 
   if (isLoading)

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { VendorMailContent } from './_components/vendor-mail-content';
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function MailPage() {
-  return <VendorMailContent />;
+  return (
+    <Suspense>
+      <VendorMailContent />
+    </Suspense>
+  );
 }

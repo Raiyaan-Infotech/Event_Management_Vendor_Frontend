@@ -81,6 +81,13 @@ export interface MailNotification {
   mail_id: number;
   is_read: number;
   created_at: string;
+  mail?: {
+    id: number;
+    subject: string;
+    sender_type: string;
+    sender_id: number;
+    sent_at: string | null;
+  };
 }
 
 // ─── Keys ────────────────────────────────────────────────────────────────────
@@ -342,7 +349,7 @@ export const useToggleMailRead = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => apiClient.patch(`/mail/${id}/read`),
-    onSuccess: () => inv(qc),
+    onSuccess: () => { inv(qc); qc.invalidateQueries({ queryKey: NOTIF_KEY }); },
   });
 };
 

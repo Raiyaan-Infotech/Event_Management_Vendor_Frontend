@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Star, Trash2, CheckSquare, RotateCw, MailOpen, Folder, ChevronDown, X,
 } from "lucide-react";
@@ -13,6 +13,7 @@ import {
   useVendorInbox,
   useVendorMailTrash,
   useVendorMail,
+  useToggleMailRead,
   useRestoreFromTrash,
   usePermanentDeleteMail,
   useBulkDeleteVendorMail,
@@ -47,6 +48,7 @@ export function VendorMailContent({
   subtitle = "Manage Your Emails and Communications",
 }: VendorMailContentProps = {}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeFolder, setActiveFolder] = useState("inbox");
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
@@ -55,10 +57,34 @@ export function VendorMailContent({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [selectedMailId, setSelectedMailId] = useState<number | null>(null);
 
+  // Auto-open mail from ?mailId= param (e.g. when navigating from notification page)
+  useEffect(() => {
+    const id = searchParams.get("mailId");
+    if (id) {
+      setActiveFolder("inbox");
+      setSelectedMailId(Number(id));
+    }
+  }, [searchParams]);
+
   const { data: mails = [], isLoading, refetch } = useVendorMails();
   const { data: inboxMails = [], isLoading: inboxLoading, refetch: refetchInbox } = useVendorInbox();
   const { data: trashMails = [], isLoading: trashLoading, refetch: refetchTrash } = useVendorMailTrash();
   const { data: mailDetail, isLoading: detailLoading } = useVendorMail(selectedMailId ?? undefined);
+  const toggleRead        = useToggleMailRead();
+
+  // Auto-mark as read when a mail is opened (inbox only — sent/drafts are always read)
+  // useRef prevents duplicate calls when inboxMails refetches after invalidation
+  const autoReadRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    if (!selectedMailId) return;
+    if (autoReadRef.current.has(selectedMailId)) return;
+    const mail = inboxMails.find((m) => m.id === selectedMailId);
+    if (mail && mail.is_read === 0) {
+      autoReadRef.current.add(selectedMailId);
+      toggleRead.mutate(selectedMailId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMailId, inboxMails]);
   const restoreMutation   = useRestoreFromTrash();
   const permDeleteMutation = usePermanentDeleteMail();
   const { data: folders = [] } = useVendorMailFolders();
@@ -87,7 +113,7 @@ export function VendorMailContent({
       return mails.filter((m) => m.custom_folder_id === folderId);
     }
     return mails;
-  }, [mails, activeFolder, starredIds]);
+  }, [mails, inboxMails, activeFolder, starredIds]);
 
   const folderLabel: Record<string, string> = {
     inbox: "Inbox", important: "Important", sent: "Sent Mail",
@@ -376,7 +402,15 @@ export function VendorMailContent({
                         if (mail.folder === "drafts") { router.push(`/mail/compose?draftId=${mail.id}`); return; }
                         setSelectedMailId(mail.id === selectedMailId ? null : mail.id);
                       }}
-                      className={`group flex items-start gap-4 pt-[22px] pb-[20px] pl-[30px] pr-6 border-b border-border transition-all cursor-pointer ${mail.id === selectedMailId ? "bg-primary/10 border-l-2 border-l-primary" : isSelected ? "bg-primary/5" : isRead ? "bg-card hover:bg-muted/20" : "bg-muted/10 hover:bg-muted/30"}`}
+                      className={`group relative flex items-start gap-4 pt-[22px] pb-[20px] pr-6 border-b border-border transition-all cursor-pointer
+                        ${mail.id === selectedMailId
+                          ? "bg-primary/10 border-l-[3px] border-l-primary pl-[27px]"
+                          : isSelected
+                            ? "bg-primary/5 border-l-[3px] border-l-primary/40 pl-[27px]"
+                            : isRead
+                              ? "bg-card hover:bg-muted/20 border-l-[3px] border-l-transparent pl-[27px]"
+                              : "bg-muted/10 hover:bg-muted/30 border-l-[3px] border-l-indigo-500 pl-[27px]"
+                        }`}
                     >
                       {/* Checkbox + star */}
                       <div className="flex items-center gap-[18px] shrink-0 mt-[1px]">
@@ -394,12 +428,17 @@ export function VendorMailContent({
 
                       {/* Content */}
                       <div className="flex flex-1 min-w-0 items-start gap-4 ml-2">
-                        <Avatar className="w-[32px] h-[32px] shrink-0 mt-0">
-                          <AvatarFallback className="bg-primary text-white font-bold text-[12px] rounded-full">{initials}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative shrink-0 mt-0">
+                          <Avatar className="w-[32px] h-[32px]">
+                            <AvatarFallback className="bg-primary text-white font-bold text-[12px] rounded-full">{initials}</AvatarFallback>
+                          </Avatar>
+                          {!isRead && (
+                            <span className="absolute -top-0.5 -right-0.5 w-[9px] h-[9px] bg-indigo-500 rounded-full border-2 border-background" />
+                          )}
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between mb-1.5">
-                            <p className={`text-[13px] font-bold truncate ${isRead ? "text-muted-foreground" : "text-foreground"} group-hover:text-primary transition-colors`}>
+                            <p className={`text-[13px] truncate group-hover:text-primary transition-colors ${isRead ? "font-semibold text-muted-foreground" : "font-black text-foreground"}`}>
                               {mail.to_email}
                             </p>
                             <div className="flex items-center gap-2 shrink-0 ml-4 -mt-0.5">
@@ -408,10 +447,10 @@ export function VendorMailContent({
                                   {mail.label}
                                 </span>
                               )}
-                              <span className="text-[12px] text-muted-foreground whitespace-nowrap">{time}</span>
+                              <span className={`text-[12px] whitespace-nowrap ${isRead ? "text-muted-foreground" : "text-foreground font-semibold"}`}>{time}</span>
                             </div>
                           </div>
-                          <p className={`text-[14px] mb-[7px] truncate ${isRead ? "font-medium text-foreground" : "font-bold text-foreground"}`}>{mail.subject}</p>
+                          <p className={`text-[14px] mb-[7px] truncate ${isRead ? "font-medium text-foreground/70" : "font-bold text-foreground"}`}>{mail.subject}</p>
                           <p className="text-[13px] text-muted-foreground truncate">{snippet}</p>
                         </div>
                       </div>
