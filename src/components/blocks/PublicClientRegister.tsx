@@ -37,6 +37,10 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     setMessage("");
     setError("");
 
+    if (form.password.trim().length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
     if (form.password !== form.confirm_password) {
       setError("Passwords do not match.");
       return;
