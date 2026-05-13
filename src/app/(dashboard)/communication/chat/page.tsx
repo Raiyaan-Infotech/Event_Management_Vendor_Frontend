@@ -1,5 +1,11 @@
-import { VendorMessagesContent } from "../../messages/_components/vendor-messages-content";
+import { ChatWorkspace } from "@/components/chat/ChatWorkspace";
 
 export default function CommunicationChatPage() {
-  return <VendorMessagesContent />;
+  return (
+    <ChatWorkspace
+      portalType="vendor"
+      title="Chat"
+      subtitle="Chat with admins and your clients in real time."
+    />
+  );
 }

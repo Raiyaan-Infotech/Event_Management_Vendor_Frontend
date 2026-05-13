@@ -764,7 +764,7 @@ export default function FooterPage() {
                   <Label className="text-sm font-semibold">Powered By</Label>
                   <Input
                     value={poweredBy}
-                    disabled
+                    onChange={(e) => setPoweredBy(e.target.value)}
                     placeholder="Type Powered By text..."
                     className="h-11 border-gray-200 dark:border-gray-800"
                   />
