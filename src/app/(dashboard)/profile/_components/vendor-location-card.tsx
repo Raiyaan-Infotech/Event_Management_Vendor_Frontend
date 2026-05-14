@@ -35,7 +35,7 @@ export function VendorLocationCard() {
               setIsEditingMap(true);
               setTempMapUrl(mapUrl);
             }}
-            className="flex items-center gap-1.5 text-primary text-[12px] font-bold uppercase transition-all hover:opacity-70"
+            className="flex items-center gap-1.5 text-primary text-[var(--vendor-control-text)] font-semibold uppercase transition-all hover:opacity-70"
           >
             <Edit size={14} /> Edit
           </button>
@@ -46,7 +46,7 @@ export function VendorLocationCard() {
         {isEditingMap ? (
           <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="bg-muted/30 p-4 rounded-[5px] border border-border">
-              <label className="block text-foreground text-[12px] font-bold mb-2 uppercase tracking-wide">
+              <label className="block text-foreground text-[var(--vendor-control-text)] font-semibold mb-2 uppercase tracking-wide">
                 Paste Google Maps Embed URL/Iframe
               </label>
               <textarea
@@ -58,13 +58,13 @@ export function VendorLocationCard() {
               <div className="flex gap-2">
                 <button
                   onClick={handleSaveMap}
-                  className="flex-1 py-2 bg-primary text-white text-[11px] font-bold rounded-[3px] uppercase shadow-sm hover:bg-primary/90"
+                  className="flex-1 py-2 bg-primary text-white text-[var(--vendor-control-text)] font-semibold rounded-[3px] uppercase shadow-sm hover:bg-primary/90"
                 >
                   Save Location
                 </button>
                 <button
                   onClick={() => setIsEditingMap(false)}
-                  className="px-4 py-2 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 active:scale-95 shadow-sm uppercase"
+                  className="px-4 py-2 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-sm uppercase"
                 >
                   <X size={14} strokeWidth={2.5} /> Cancel
                 </button>
@@ -96,7 +96,7 @@ export function VendorLocationCard() {
             </p>
             <button
               onClick={() => setIsEditingMap(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-card border border-primary text-primary text-[11px] font-bold rounded-[3px] uppercase hover:bg-primary hover:text-white transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-card border border-primary text-primary text-[var(--vendor-control-text)] font-semibold rounded-[3px] uppercase hover:bg-primary hover:text-white transition-all"
             >
               <Plus size={14} /> Add Location
             </button>

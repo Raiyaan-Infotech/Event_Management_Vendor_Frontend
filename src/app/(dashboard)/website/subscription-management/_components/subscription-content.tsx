@@ -26,7 +26,7 @@ function PlanCard({ plan, isCustom }: { plan: SubscriptionPlan; isCustom: boolea
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+            <div className={`w-12 h-12 rounded-[var(--vendor-radius-panel)] flex items-center justify-center ${
               isCustom ? "bg-purple-500/10 text-purple-600" : "bg-primary/10 text-primary"
             }`}>
               {isCustom ? <Star size={22} strokeWidth={2.5} /> : <CreditCard size={22} strokeWidth={2.5} />}
@@ -40,7 +40,7 @@ function PlanCard({ plan, isCustom }: { plan: SubscriptionPlan; isCustom: boolea
           </div>
 
           {/* Badge */}
-          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${
             isCustom
               ? "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300"
               : "bg-primary/10 text-primary"
@@ -60,7 +60,7 @@ function PlanCard({ plan, isCustom }: { plan: SubscriptionPlan; isCustom: boolea
             </span>
           )}
           {plan.validity && (
-            <span className="text-[12px] font-bold text-muted-foreground mb-1">/ {plan.validity} days</span>
+            <span className="text-[var(--vendor-control-text)] font-semibold text-muted-foreground mb-1">/ {plan.validity} days</span>
           )}
         </div>
 
@@ -69,7 +69,7 @@ function PlanCard({ plan, isCustom }: { plan: SubscriptionPlan; isCustom: boolea
           <div className="flex items-center gap-2 mb-6">
             <div className="flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full">
               <Clock size={13} className="text-muted-foreground" />
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+              <span className="text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wide">
                 Valid for {plan.validity} days
               </span>
             </div>
@@ -104,7 +104,7 @@ export default function SubscriptionContent() {
     return (
       <div className="h-[calc(100vh-86px)] overflow-y-auto bg-[#F8FAFC] dark:bg-black/40">
         <div className="max-w-[1700px] mx-auto px-6 py-8 space-y-8">
-          <Skeleton className="h-12 w-64 rounded-2xl" />
+          <Skeleton className="h-12 w-64 rounded-[var(--vendor-radius-panel)]" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => <Skeleton key={i} className="h-72 rounded-[2.5rem]" />)}
           </div>
@@ -142,7 +142,7 @@ export default function SubscriptionContent() {
 
         {/* Info banner for custom plan */}
         {isCustom && (
-          <div className="mt-6 flex items-center gap-3 bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-2xl px-5 py-3">
+          <div className="mt-6 flex items-center gap-3 bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-[var(--vendor-radius-panel)] px-5 py-3">
             <Star size={16} className="text-purple-500 shrink-0" />
             <p className="text-[13px] font-bold text-purple-700 dark:text-purple-300">
               This is a custom plan exclusively assigned to your account by the administrator.

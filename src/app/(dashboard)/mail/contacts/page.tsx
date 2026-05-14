@@ -145,13 +145,13 @@ export default function MailContactsPage() {
                     <>
                       <button
                         onClick={clearSelection}
-                        className="px-3 h-9 text-[12px] font-bold text-muted-foreground border border-border rounded-[5px] hover:bg-muted transition-colors"
+                        className="px-3 h-9 text-[var(--vendor-control-text)] font-semibold text-muted-foreground border border-border rounded-[5px] hover:bg-muted transition-colors"
                       >
                         Clear
                       </button>
                       <button
                         onClick={handleCompose}
-                        className="flex items-center gap-2 px-4 h-9 bg-primary text-white text-[12px] font-bold rounded-[5px] hover:brightness-110 transition-all shadow-sm whitespace-nowrap"
+                        className="flex items-center gap-2 px-4 h-9 bg-primary text-white text-[var(--vendor-control-text)] font-semibold rounded-[5px] hover:brightness-110 transition-all shadow-sm whitespace-nowrap"
                       >
                         <Mail size={13} /> Compose to {selected.size}
                       </button>
@@ -175,7 +175,7 @@ export default function MailContactsPage() {
                     {selectAll ? 'Deselect All' : 'Select All'}
                   </span>
                   {selected.size > 0 && (
-                    <span className="text-[12px] font-bold text-primary ml-1">· {selected.size} selected</span>
+                    <span className="text-[var(--vendor-control-text)] font-semibold text-primary ml-1">· {selected.size} selected</span>
                   )}
                 </div>
               )}
@@ -216,7 +216,7 @@ export default function MailContactsPage() {
                           </div>
 
                           <div className="flex items-center gap-3 shrink-0 ml-4">
-                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full capitalize ${TYPE_BADGE[c.type] ?? 'bg-muted text-muted-foreground'}`}>
+                            <span className={`text-[var(--vendor-control-text)] font-semibold px-2 py-0.5 rounded-full capitalize ${TYPE_BADGE[c.type] ?? 'bg-muted text-muted-foreground'}`}>
                               {c.type}
                             </span>
                             <button
@@ -224,7 +224,7 @@ export default function MailContactsPage() {
                                 e.stopPropagation();
                                 router.push(`/mail/compose?r0_id=${c.id}&r0_type=${c.type}&r0_name=${encodeURIComponent(c.name)}&count=1`);
                               }}
-                              className="flex items-center gap-1.5 px-3 h-8 text-[12px] font-bold text-primary border border-primary/30 rounded-[5px] hover:bg-primary/5 transition-colors"
+                              className="flex items-center gap-1.5 px-3 h-8 text-[var(--vendor-control-text)] font-semibold text-primary border border-primary/30 rounded-[5px] hover:bg-primary/5 transition-colors"
                             >
                               <Mail size={13} /> Compose
                             </button>

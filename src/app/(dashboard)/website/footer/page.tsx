@@ -46,11 +46,11 @@ const lucideIconMap: Record<string, React.ComponentType<{ className?: string; st
     .map(([k, v]) => [k.toLowerCase(), v as React.ComponentType<{ className?: string; style?: React.CSSProperties }>])
 );
 function SocialIcon({ name, color }: { name?: string | null; color?: string | null }) {
-  if (!name) return <Share2 className="size-4 text-gray-400" />;
+  if (!name) return <Share2 className="size-4 text-[var(--vendor-text-muted)]" />;
   const style = color ? { color } : undefined;
   if (name.includes(":")) return <Icon icon={name} className="size-4" style={style} />;
   const LucideIcon = lucideIconMap[name.toLowerCase()];
-  if (!LucideIcon) return <Share2 className="size-4 text-gray-400" />;
+  if (!LucideIcon) return <Share2 className="size-4 text-[var(--vendor-text-muted)]" />;
   return <LucideIcon className="size-4" style={style} />;
 }
 
@@ -291,10 +291,10 @@ export default function FooterPage() {
       <div className="max-w-[1700px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom duration-1000">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-poppins mb-1">
+          <h1 className="text-2xl font-bold text-[var(--vendor-text)] font-poppins mb-1">
             Footer
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-[var(--vendor-text-muted)]">
             Manage both brand identity and quick navigation links in a single
             view.
           </p>
@@ -304,12 +304,12 @@ export default function FooterPage() {
           {/* ── Left Column: Form Editors ─────────────────────── */}
           <div className="lg:col-span-9 space-y-8">
             {/* Section 1: Brand Identity */}
-            <div className="bg-white dark:bg-sidebar p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-6">
+            <div className="bg-white dark:bg-sidebar p-6 rounded-[var(--vendor-radius-panel)] shadow-sm border border-[var(--vendor-border)] space-y-6">
               <div className="flex items-center gap-3 border-b pb-4">
-                <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-[var(--vendor-primary-btn)]">
                   <ImageIcon size={20} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white font-poppins">
+                <h3 className="text-lg font-bold text-[var(--vendor-text)] font-poppins">
                   Footer Company Info
                 </h3>
               </div>
@@ -325,7 +325,7 @@ export default function FooterPage() {
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       placeholder="Enter company name..."
-                      className="h-12 border-gray-200 dark:border-gray-800 rounded-xl"
+                      className="h-12 border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)]"
                     />
                   </div>
                   <div className="space-y-2">
@@ -336,7 +336,7 @@ export default function FooterPage() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="Write short company description here..."
-                      className="min-h-[150px] border-gray-200 dark:border-gray-800 rounded-xl resize-none focus:bg-white bg-gray-50/30 transition-all font-medium leading-relaxed"
+                      className="min-h-[150px] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none focus:bg-white bg-gray-50/30 transition-all font-medium leading-relaxed"
                     />
                   </div>
                 </div>
@@ -345,7 +345,7 @@ export default function FooterPage() {
                 <div className="space-y-2">
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="h-full min-h-[250px] rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-white/5 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-all p-8 relative group"
+                    className="h-full min-h-[250px] rounded-[var(--vendor-radius-panel)] border-2 border-dashed border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/50 dark:bg-white/5 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-all p-8 relative group"
                   >
                     {logo ? (
                       <div className="relative h-32 w-full">
@@ -358,14 +358,14 @@ export default function FooterPage() {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-white dark:bg-sidebar shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <div className="w-16 h-16 rounded-[var(--vendor-radius-panel)] bg-white dark:bg-sidebar shadow-sm border border-[var(--vendor-border)] flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                           <Upload size={24} />
                         </div>
                         <div className="text-center">
-                          <p className="text-sm font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">
+                          <p className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">
                             UPLOAD LOGO
                           </p>
-                          <p className="text-[10px] font-semibold text-gray-400 mt-1 uppercase tracking-wider">
+                          <p className="text-[10px] font-semibold text-[var(--vendor-text-muted)] mt-1 uppercase tracking-wider">
                             PNG, JPG up to 5MB
                           </p>
                         </div>
@@ -386,20 +386,20 @@ export default function FooterPage() {
               {hasSocialMediaBlock && (
                 <div className="space-y-4 pt-4 border-t">
                   <div className="flex items-center justify-between">
-                    <Label className="text-sm font-bold uppercase tracking-wider text-gray-400">
+                    <Label className="text-sm font-bold uppercase tracking-wider text-[var(--vendor-text-muted)]">
                       Social Links
                     </Label>
                     <button
                       type="button"
                       onClick={() => router.push("/website/social-links")}
-                      className="flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                      className="flex items-center gap-1 text-[var(--vendor-control-text)] font-semibold text-primary hover:underline"
                     >
                       <ExternalLink size={11} /> Manage
                     </button>
                   </div>
 
                   {socialLinks.length === 0 ? (
-                    <p className="text-xs text-gray-400 italic py-2">
+                    <p className="text-xs text-[var(--vendor-text-muted)] italic py-2">
                       No social links added yet.{" "}
                       <button
                         type="button"
@@ -416,17 +416,17 @@ export default function FooterPage() {
                         return (
                           <div
                             key={link.id}
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                            className={`flex items-center gap-3 p-3 rounded-[var(--vendor-radius-control)] border transition-all ${
                               isOn
-                                ? "bg-gray-50/50 dark:bg-white/5 border-gray-100 dark:border-gray-800"
-                                : "bg-gray-50/20 dark:bg-white/2 border-gray-100/50 dark:border-gray-800/50 opacity-50"
+                                ? "bg-gray-50/50 dark:bg-white/5 border-[var(--vendor-border)]"
+                                : "bg-gray-50/20 dark:bg-white/2 border-[var(--vendor-border)]/50 dark:border-[var(--vendor-border)]/50 opacity-50"
                             }`}
                           >
                             <SocialIcon name={link.icon} color={link.icon_color} />
                             <span className="flex-1 min-w-0 text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">
                               {link.label}
                             </span>
-                            <span className="text-[10px] text-gray-400 truncate max-w-[100px] hidden sm:block">
+                            <span className="text-[10px] text-[var(--vendor-text-muted)] truncate max-w-[100px] hidden sm:block">
                               {link.url}
                             </span>
                             <button
@@ -453,15 +453,15 @@ export default function FooterPage() {
             </div>
 
             {/* Section 2: Quick Links */}
-            <div className="bg-white dark:bg-sidebar p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-6">
+            <div className="bg-white dark:bg-sidebar p-6 rounded-[var(--vendor-radius-panel)] shadow-sm border border-[var(--vendor-border)] space-y-6">
               <div className="flex items-center justify-between border-b pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center text-green-600">
+                  <div className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-green-50 dark:bg-green-500/10 flex items-center justify-center text-green-600">
                     <LinkIcon size={20} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white font-poppins">Footer Top List</h3>
-                    <p className="text-xs text-gray-400">Pages shown in the footer navigation</p>
+                    <h3 className="text-lg font-bold text-[var(--vendor-text)] font-poppins">Footer Top List</h3>
+                    <p className="text-xs text-[var(--vendor-text-muted)]">Pages shown in the footer navigation</p>
                   </div>
                 </div>
                 <Button
@@ -474,14 +474,14 @@ export default function FooterPage() {
 
               <div className="space-y-8">
                 <div className="space-y-2">
-                  <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                  <Label className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide px-1">
                     Footer Top List Heading
                   </Label>
                   <Input
                     value={quickLinksHeading}
                     onChange={(e) => setQuickLinksHeading(e.target.value)}
                     placeholder="Type Heading Here..."
-                    className="font-bold text-base h-10 bg-white dark:bg-sidebar border-gray-200 dark:border-gray-800"
+                    className="font-bold text-base h-10 bg-white dark:bg-sidebar border-[var(--vendor-border)] dark:border-[var(--vendor-border)]"
                   />
                 </div>
 
@@ -489,10 +489,10 @@ export default function FooterPage() {
                 {selectedLinks.length > 0 ? (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between px-1">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                      <p className="text-[var(--vendor-control-text)] font-semibold uppercase tracking-wider text-[var(--vendor-text-muted)]">
                         Footer page hierarchy
                       </p>
-                      <p className="text-[11px] font-semibold text-gray-400">
+                      <p className="text-[11px] font-semibold text-[var(--vendor-text-muted)]">
                         Drag to reorder
                       </p>
                     </div>
@@ -504,15 +504,15 @@ export default function FooterPage() {
                         onDragOver={(event) => event.preventDefault()}
                         onDrop={() => handleQuickLinkDrop(index)}
                         onDragEnd={() => setDraggedLinkIndex(null)}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/40 dark:bg-white/5 group cursor-move transition-all ${
+                        className={`flex items-center gap-3 px-4 py-3 rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] bg-gray-50/40 dark:bg-white/5 group cursor-move transition-all ${
                           draggedLinkIndex === index ? "opacity-50 border-primary/40" : "hover:border-primary/30"
                         }`}
                       >
                         <GripVertical size={15} className="text-gray-300 shrink-0" />
-                        <span className="w-6 h-6 rounded-lg bg-white dark:bg-sidebar border border-gray-100 dark:border-gray-800 flex items-center justify-center text-[10px] font-black text-gray-400">
+                        <span className="w-6 h-6 rounded-[var(--vendor-radius-control)] bg-white dark:bg-sidebar border border-[var(--vendor-border)] flex items-center justify-center text-[10px] font-black text-[var(--vendor-text-muted)]">
                           {index + 1}
                         </span>
-                        <FileText size={14} className="text-gray-400 shrink-0" />
+                        <FileText size={14} className="text-[var(--vendor-text-muted)] shrink-0" />
                         <span className="flex-1 text-sm font-semibold text-gray-700 dark:text-gray-200 truncate">
                           {link.pageName}
                         </span>
@@ -527,22 +527,22 @@ export default function FooterPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-10 text-center border-2 border-dashed border-gray-100 dark:border-gray-800/50 rounded-2xl">
+                  <div className="py-10 text-center border-2 border-dashed border-[var(--vendor-border)]/50 rounded-[var(--vendor-radius-panel)]">
                     <LinkIcon size={24} className="mx-auto text-gray-300 mb-2" />
-                    <p className="text-sm text-gray-400">No quick links yet.</p>
+                    <p className="text-sm text-[var(--vendor-text-muted)]">No quick links yet.</p>
                     <p className="text-xs text-gray-300 mt-1">Click &quot;Add Pages&quot; to choose pages for the footer.</p>
                   </div>
                 )}
 
                 {/* Newsletter Card */}
-                <div className="p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/5 space-y-4 shadow-sm">
+                <div className="p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-white/5 space-y-4 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
+                    <h3 className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] dark:text-gray-500 uppercase tracking-[0.2em] px-1">
                       Newsletter
                     </h3>
                   </div>
                   
-                  <div className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-sidebar transition-all">
+                  <div className="flex items-center gap-3 p-4 rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] bg-white dark:bg-sidebar transition-all">
                     <div className="flex items-center gap-3 transition-colors">
                       <input
                         type="checkbox"
@@ -562,8 +562,8 @@ export default function FooterPage() {
 
                   {newsletterEnabled && (
                     <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top duration-300">
-                      <div className="space-y-3 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-sidebar shadow-sm">
-                        <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                      <div className="space-y-3 p-5 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] bg-white dark:bg-sidebar shadow-sm">
+                        <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                            Subscribe our newsletter
                         </Label>
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -571,9 +571,9 @@ export default function FooterPage() {
                             value={newsletterEmailPreview}
                             onChange={(e) => setNewsletterEmailPreview(e.target.value)}
                             placeholder="Enter Email Address..."
-                            className="h-11 text-xs bg-gray-50/50 dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-xl font-medium focus:ring-2 focus:ring-primary/10 transition-all flex-1"
+                            className="h-11 text-xs bg-gray-50/50 dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium focus:ring-2 focus:ring-primary/10 transition-all flex-1"
                           />
-                          <Button className="h-11 px-8 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 active:scale-95 transition-all">
+                          <Button className="h-11 px-8 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-[var(--vendor-radius-control)] shadow-md shadow-primary/20 active:scale-95 transition-all">
                             Subscribe
                           </Button>
                         </div>
@@ -583,18 +583,18 @@ export default function FooterPage() {
                 </div>
 
                 {/* Contact Information [Multi-Mode] */}
-                <div className="p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/5 space-y-6 shadow-sm">
-                  <h3 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
+                <div className="p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-white/5 space-y-6 shadow-sm">
+                  <h3 className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] dark:text-gray-500 uppercase tracking-[0.2em] px-1">
                     Contact Info
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Default Contact */}
                     <div
                       onClick={() => setContactMode("default")}
-                      className={`group relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 cursor-pointer transition-all duration-300 ${
                         contactMode === "default"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
-                          : "border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-gray-200"
+                          : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-[var(--vendor-border)]"
                       }`}
                     >
                       <div className="flex items-center gap-3 mb-6">
@@ -613,7 +613,7 @@ export default function FooterPage() {
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-1">
-                          <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                          <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <Phone size={10} /> MOBILE
                           </Label>
                           <Input
@@ -625,11 +625,11 @@ export default function FooterPage() {
                               })
                             }
                             placeholder="Enter Mobile Number..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                          <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <Mail size={10} /> EMAIL
                           </Label>
                           <Input
@@ -641,11 +641,11 @@ export default function FooterPage() {
                               })
                             }
                             placeholder="Enter Email ID..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                          <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <MapPin size={10} /> ADDRESS
                           </Label>
                           <Textarea
@@ -657,7 +657,7 @@ export default function FooterPage() {
                               })
                             }
                             placeholder="Enter Address..."
-                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg resize-none leading-relaxed font-medium"
+                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium"
                           />
                         </div>
                       </div>
@@ -666,10 +666,10 @@ export default function FooterPage() {
                     {/* Alternative Contact */}
                     <div
                       onClick={() => setContactMode("alternate")}
-                      className={`group relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 cursor-pointer transition-all duration-300 ${
                         contactMode === "alternate"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
-                          : "border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-gray-200"
+                          : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-[var(--vendor-border)]"
                       }`}
                     >
                       <div className="flex items-center gap-3 mb-6">
@@ -688,7 +688,7 @@ export default function FooterPage() {
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-1">
-                          <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                          <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <Phone size={10} /> MOBILE
                           </Label>
                           <Input
@@ -700,11 +700,11 @@ export default function FooterPage() {
                               })
                             }
                             placeholder="Enter Mobile Number..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                          <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <Mail size={10} /> EMAIL
                           </Label>
                           <Input
@@ -716,11 +716,11 @@ export default function FooterPage() {
                               })
                             }
                             placeholder="Enter Email ID..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                          <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <MapPin size={10} /> ADDRESS
                           </Label>
                           <Textarea
@@ -732,7 +732,7 @@ export default function FooterPage() {
                               })
                             }
                             placeholder="Enter Address..."
-                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg resize-none leading-relaxed font-medium"
+                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium"
                           />
                         </div>
                       </div>
@@ -744,12 +744,12 @@ export default function FooterPage() {
             </div>
 
             {/* Section 3: Footer Bottom */}
-            <div className="bg-white dark:bg-sidebar p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-6">
+            <div className="bg-white dark:bg-sidebar p-6 rounded-[var(--vendor-radius-panel)] shadow-sm border border-[var(--vendor-border)] space-y-6">
               <div className="flex items-center gap-3 border-b pb-4">
-                <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-600">
+                <div className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-600">
                   <Copyright size={20} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white font-poppins">
+                <h3 className="text-lg font-bold text-[var(--vendor-text)] font-poppins">
                   Footer Bottom
                 </h3>
               </div>
@@ -762,7 +762,7 @@ export default function FooterPage() {
                     value={copyright}
                     onChange={(e) => setCopyright(e.target.value)}
                     placeholder="Type Copyright Text..."
-                    className="h-11 border-gray-200 dark:border-gray-800"
+                    className="h-11 border-[var(--vendor-border)] dark:border-[var(--vendor-border)]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -771,7 +771,7 @@ export default function FooterPage() {
                     value={poweredBy}
                     onChange={(e) => setPoweredBy(e.target.value)}
                     placeholder="Type Powered By text..."
-                    className="h-11 border-gray-200 dark:border-gray-800"
+                    className="h-11 border-[var(--vendor-border)] dark:border-[var(--vendor-border)]"
                   />
                 </div>
               </div>
@@ -780,7 +780,7 @@ export default function FooterPage() {
 
           {/* ── Right Column: Sticky Actions ─────────────────── */}
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
             <PersistenceActions 
               onSave={handleSave}
               onPreview={() => window.open("/preview", "_blank")}
@@ -812,19 +812,19 @@ export default function FooterPage() {
 
           {/* Search */}
           <div className="relative shrink-0 px-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-3.5" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--vendor-text-muted)] size-3.5" />
             <input
               placeholder="Search pages..."
               value={modalSearch}
               onChange={(e) => setModalSearch(e.target.value)}
-              className="w-full h-10 pl-9 pr-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium"
+              className="w-full h-10 pl-9 pr-3 bg-gray-50 dark:bg-white/5 border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium"
             />
           </div>
 
           {/* Pages as cards */}
           <div className="flex-1 overflow-y-auto custom-scrollbar px-1 py-1">
             {vendorPages.length === 0 ? (
-              <p className="text-center text-sm text-gray-400 py-8">No pages found. Create pages first.</p>
+              <p className="text-center text-sm text-[var(--vendor-text-muted)] py-8">No pages found. Create pages first.</p>
             ) : (
               <div className="grid grid-cols-1 gap-2">
                 {vendorPages
@@ -833,10 +833,10 @@ export default function FooterPage() {
                     const isSelected = selectedLinks.some((l) => l.page_id === page.id);
                     return (
                       <div key={page.id} onClick={() => togglePageLink(page)}
-                        className={`relative flex items-center gap-3 cursor-pointer rounded-xl border-2 p-4 transition-all select-none group ${
+                        className={`relative flex items-center gap-3 cursor-pointer rounded-[var(--vendor-radius-control)] border-2 p-4 transition-all select-none group ${
                           isSelected
                             ? "border-primary bg-primary/5 dark:bg-primary/10"
-                            : "border-gray-100 dark:border-gray-800 hover:border-primary/40 hover:bg-gray-50 dark:hover:bg-white/5"
+                            : "border-[var(--vendor-border)] hover:border-primary/40 hover:bg-gray-50 dark:hover:bg-white/5"
                         }`}>
                         {/* Check badge */}
                         {isSelected && (
@@ -844,7 +844,7 @@ export default function FooterPage() {
                             <Check size={10} className="text-white" />
                           </span>
                         )}
-                        <FileText size={20} className={`shrink-0 ${isSelected ? "text-primary" : "text-gray-300 group-hover:text-gray-400"}`} />
+                        <FileText size={20} className={`shrink-0 ${isSelected ? "text-primary" : "text-gray-300 group-hover:text-[var(--vendor-text-muted)]"}`} />
                         <p className={`flex-1 text-sm font-bold truncate leading-tight ${isSelected ? "text-primary" : "text-gray-700 dark:text-gray-200"}`}>
                           {page.name}
                         </p>
@@ -856,8 +856,8 @@ export default function FooterPage() {
           </div>
 
           {/* Footer */}
-          <div className="shrink-0 flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
-            <span className="text-xs text-gray-400 font-medium">
+          <div className="shrink-0 flex items-center justify-between pt-3 border-t border-[var(--vendor-border)]">
+            <span className="text-xs text-[var(--vendor-text-muted)] font-medium">
               {selectedLinks.length} page{selectedLinks.length !== 1 ? "s" : ""} selected
             </span>
             <Button onClick={() => setPageModalOpen(false)} className="h-9 px-6 text-xs font-bold">

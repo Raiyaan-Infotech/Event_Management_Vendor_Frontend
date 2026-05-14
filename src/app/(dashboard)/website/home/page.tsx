@@ -108,9 +108,9 @@ export default function WebsiteHomePage() {
       {/* Page Header */}
       <div className="max-w-[1700px] mx-auto mb-10">
         <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-2xl font-black tracking-tight text-[#1e293b] dark:text-white uppercase leading-none font-poppins">Home</h1>
+          <h1 className="text-[var(--vendor-title-text)] font-bold tracking-tight text-[#1e293b] dark:text-white uppercase leading-none font-poppins">Home</h1>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium font-poppins">Manage and select your website's home components</p>
+        <p className="text-sm text-[var(--vendor-text-muted)] font-medium font-poppins">Manage and select your website's home components</p>
       </div>
 
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -169,21 +169,21 @@ export default function WebsiteHomePage() {
                     </span>
                     <div className="flex items-center gap-1.5 text-green-500 ml-2">
                       <CheckCircle2 size={16} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Home Setup Guide</span>
+                      <span className="text-[10px] font-black uppercase tracking-wide">Home Setup Guide</span>
                     </div>
                   </div>
 
                   <h2 className="text-4xl md:text-5xl font-black text-[#1e293b] dark:text-white tracking-tight leading-tight font-poppins">
                     {GUIDE_STEPS[activeStep].title}
                   </h2>
-                  <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-xl font-poppins">
+                  <p className="text-lg md:text-xl text-[var(--vendor-text-muted)] font-medium leading-relaxed max-w-xl font-poppins">
                     {GUIDE_STEPS[activeStep].description}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 pt-4">
                   <Link href={GUIDE_STEPS[activeStep].link}>
-                    <Button className="h-14 px-8 bg-[#1e293b] hover:bg-black dark:bg-white dark:text-black text-white font-black text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-xl transition-all hover:-translate-y-1 duration-300">
+                    <Button className="h-14 px-8 bg-[#1e293b] hover:bg-black dark:bg-white dark:text-black text-white font-black text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-xl transition-all hover:-translate-y-1 duration-300">
                       <span>{GUIDE_STEPS[activeStep].linkLabel}</span>
                       <ArrowRight className="ml-2 size-4" />
                     </Button>
@@ -193,14 +193,14 @@ export default function WebsiteHomePage() {
                     <Button 
                       variant="outline" 
                       onClick={handlePrev}
-                      className="size-14 rounded-2xl border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-400 hover:text-gray-900"
+                      className="size-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-[var(--vendor-text-muted)] hover:text-gray-900"
                     >
                       <ArrowLeft size={20} />
                     </Button>
                     <Button 
                       variant="outline" 
                       onClick={handleNext}
-                      className="size-14 rounded-2xl border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-gray-400 hover:text-gray-900"
+                      className="size-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-[var(--vendor-text-muted)] hover:text-gray-900"
                     >
                       <ArrowRight size={20} />
                     </Button>
@@ -209,7 +209,7 @@ export default function WebsiteHomePage() {
 
                 {/* Decorative Sparkle */}
                 <div className="absolute top-8 right-8 opacity-10">
-                   <Sparkles size={80} className="text-gray-400" />
+                   <Sparkles size={80} className="text-[var(--vendor-text-muted)]" />
                 </div>
               </div>
 
@@ -219,8 +219,8 @@ export default function WebsiteHomePage() {
 
         {/* Action Suggestion
         <div className="lg:col-span-12 flex items-center justify-center pt-8">
-            <div className="flex items-center gap-4 px-8 py-4 rounded-3xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
-               <Settings2 className="text-blue-600 size-5" />
+            <div className="flex items-center gap-4 px-8 py-4 rounded-[var(--vendor-radius-panel)] bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
+               <Settings2 className="text-[var(--vendor-primary-btn)] size-5" />
                <p className="text-sm font-bold text-blue-900 dark:text-blue-300 font-poppins">
                  Need more help? Check the <Link href="/help" className="underline decoration-2 underline-offset-4 hover:text-blue-700">documentation</Link> or contact support.
                </p>

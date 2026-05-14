@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +9,7 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const normalizedStatus = status.toLowerCase();
-  
+
   let styles = "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20";
   let icon = <CheckCircle2 size={12} className="mr-1.5" />;
 
@@ -25,7 +25,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   }
 
   return (
-    <div className={cn("inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold border transition-all", styles, className)}>
+    <div className={cn("inline-flex items-center px-2.5 py-1 rounded-[var(--vendor-radius-pill)] text-[var(--vendor-caption-text)] font-bold border transition-colors", styles, className)}>
       {icon}
       {status}
     </div>

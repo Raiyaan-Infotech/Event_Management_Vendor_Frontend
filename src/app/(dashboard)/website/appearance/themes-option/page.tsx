@@ -67,7 +67,7 @@ const COLOR_FIELDS: {
     swatchLabel: "Footer",
     icon: Layout,
     bg: "bg-blue-50",
-    text: "text-blue-600",
+    text: "text-[var(--vendor-primary-btn)]",
   },
   {
     key: "text_color",
@@ -206,7 +206,7 @@ export default function ThemesOptionPage() {
       <div className="h-[calc(100vh-86px)] flex items-center justify-center">
         <div className="text-center space-y-2">
           <p className="text-gray-500 font-medium">No active theme set.</p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-[var(--vendor-text-muted)]">
             Go to{" "}
             <Link href="/website/theme" className="text-primary underline">
               Themes
@@ -259,7 +259,7 @@ export default function ThemesOptionPage() {
             </span>
           )}
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium font-poppins">
+        <p className="text-sm text-[var(--vendor-text-muted)] font-medium font-poppins">
           Choose a color palette or create your own custom colors.
         </p>
       </div>
@@ -267,12 +267,12 @@ export default function ThemesOptionPage() {
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* ── Left: Card Grid ── */}
         <div className="lg:col-span-9">
-          <section className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
+          <section className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
             <div className="mb-6 space-y-1">
-              <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight font-poppins">
+              <h2 className="text-lg font-black text-[var(--vendor-text)] uppercase tracking-tight font-poppins">
                 Select Color Mode
               </h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                 Pick a palette or use custom overrides
               </p>
             </div>
@@ -280,7 +280,7 @@ export default function ThemesOptionPage() {
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} className="h-40 rounded-3xl" />
+                  <Skeleton key={i} className="h-40 rounded-[var(--vendor-radius-panel)]" />
                 ))}
               </div>
             ) : (
@@ -294,12 +294,12 @@ export default function ThemesOptionPage() {
                     <Card
                       key={palette.id}
                       onClick={() => handleSelectCard(palette.id)}
-                      className={`relative cursor-pointer transition-all duration-500 rounded-3xl overflow-hidden border-2 group flex flex-col h-full ${
+                      className={`relative cursor-pointer transition-all duration-500 rounded-[var(--vendor-radius-panel)] overflow-hidden border-2 group flex flex-col h-full ${
                         isActive
                           ? "border-green-500 bg-white shadow-xl shadow-green-500/10 scale-[1.02]"
                           : isSelected
                             ? "border-primary bg-white shadow-xl shadow-primary/5 scale-[1.02]"
-                            : "border-transparent bg-white hover:border-gray-200 hover:shadow-lg dark:bg-sidebar dark:border-white/5"
+                            : "border-transparent bg-white hover:border-[var(--vendor-border)] hover:shadow-lg dark:bg-sidebar dark:border-white/5"
                       }`}
                     >
                       <CardContent className="p-5 flex flex-col h-full">
@@ -307,13 +307,13 @@ export default function ThemesOptionPage() {
                         <div className="flex items-start justify-between mb-4">
                           <div className="space-y-1">
                             <span
-                              className={`text-[11px] font-black uppercase tracking-[0.05em] transition-colors ${
+                              className={`text-[var(--vendor-control-text)] font-semibold uppercase tracking-[0.05em] transition-colors ${
                                 isActive ? "text-green-600" : "text-gray-500"
                               }`}
                             >
                               {palette.name}
                             </span>
-                            <p className="text-[10px] text-gray-400 font-medium">
+                            <p className="text-[10px] text-[var(--vendor-text-muted)] font-medium">
                               Admin palette
                             </p>
                           </div>
@@ -339,7 +339,7 @@ export default function ThemesOptionPage() {
                                       (palette as any)[key] || "#e5e7eb",
                                   }}
                                 />
-                                <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest whitespace-nowrap">
+                                <span className="text-[8px] font-black uppercase text-[var(--vendor-text-muted)] tracking-wide whitespace-nowrap">
                                   {swatchLabel}
                                 </span>
                               </div>
@@ -374,14 +374,14 @@ export default function ThemesOptionPage() {
                   return (
                     <Card
                       onClick={() => handleSelectCard("custom")}
-                      className={`relative cursor-pointer transition-all duration-500 rounded-3xl overflow-hidden border-2 group flex flex-col h-full ${
+                      className={`relative cursor-pointer transition-all duration-500 rounded-[var(--vendor-radius-panel)] overflow-hidden border-2 group flex flex-col h-full ${
                         isActive
                           ? "border-green-500 bg-white shadow-xl shadow-green-500/10 scale-[1.02]"
                           : isSelected
                             ? "border-primary bg-white shadow-xl shadow-primary/5 scale-[1.02]"
                             : hasCustom
-                              ? "border-transparent bg-white hover:border-gray-200 hover:shadow-lg dark:bg-sidebar"
-                              : "border-dashed border-gray-200 bg-white hover:border-gray-400/50 hover:shadow-lg dark:bg-sidebar dark:border-white/5"
+                              ? "border-transparent bg-white hover:border-[var(--vendor-border)] hover:shadow-lg dark:bg-sidebar"
+                              : "border-dashed border-[var(--vendor-border)] bg-white hover:border-gray-400/50 hover:shadow-lg dark:bg-sidebar dark:border-white/5"
                       }`}
                     >
                       <CardContent className="p-5 flex flex-col h-full">
@@ -389,13 +389,13 @@ export default function ThemesOptionPage() {
                         <div className="flex items-start justify-between mb-4">
                           <div className="space-y-1">
                             <span
-                              className={`text-[11px] font-black uppercase tracking-[0.05em] transition-colors ${
+                              className={`text-[var(--vendor-control-text)] font-semibold uppercase tracking-[0.05em] transition-colors ${
                                 isActive ? "text-green-600" : "text-gray-500"
                               }`}
                             >
                               Custom Colors
                             </span>
-                            <p className="text-[10px] text-gray-400 font-medium">
+                            <p className="text-[10px] text-[var(--vendor-text-muted)] font-medium">
                               Your per-theme overrides
                             </p>
                           </div>
@@ -407,7 +407,7 @@ export default function ThemesOptionPage() {
                             </div>
                           ) : (
                             <div className="border border-dashed border-gray-300 px-4 h-[26px] flex items-center rounded-full">
-                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+                              <span className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-wider">
                                 No overrides
                               </span>
                             </div>
@@ -427,12 +427,12 @@ export default function ThemesOptionPage() {
                                   className="flex flex-col items-center gap-2"
                                 >
                                   <div
-                                    className={`w-full h-2 rounded-full ring-1 ring-black/5 shadow-sm ${!color ? "border border-dashed border-gray-200 bg-gray-50" : ""}`}
+                                    className={`w-full h-2 rounded-full ring-1 ring-black/5 shadow-sm ${!color ? "border border-dashed border-[var(--vendor-border)] bg-gray-50" : ""}`}
                                     style={
                                       color ? { backgroundColor: color } : {}
                                     }
                                   />
-                                  <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest whitespace-nowrap">
+                                  <span className="text-[8px] font-black uppercase text-[var(--vendor-text-muted)] tracking-wide whitespace-nowrap">
                                     {swatchLabel}
                                   </span>
                                 </div>
@@ -466,7 +466,7 @@ export default function ThemesOptionPage() {
         {/* ── Right: Actions + Preview + Pickers ── */}
         <div className="lg:col-span-3 space-y-6">
           {/* Actions */}
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
               onPreview={handlePreview}
@@ -480,12 +480,12 @@ export default function ThemesOptionPage() {
           {/* Color pickers — only when Custom card selected */}
           {selectedCard === "custom" && (
             <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-              <div className="bg-white dark:bg-sidebar rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
+              <div className="bg-white dark:bg-sidebar rounded-[var(--vendor-radius-panel)] p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
                 <div className="mb-6 space-y-1">
-                  <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight font-poppins leading-tight">
+                  <h3 className="text-lg font-black text-[var(--vendor-text)] uppercase tracking-tight font-poppins leading-tight">
                     Manual Config
                   </h3>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                     Personalize color theme
                   </p>
                 </div>
@@ -494,10 +494,10 @@ export default function ThemesOptionPage() {
                   {COLOR_FIELDS.map(({ key, label, icon: Icon, bg, text }) => (
                     <div key={key} className="space-y-3">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${bg} ${text}`}>
+                        <div className={`p-2 rounded-[var(--vendor-radius-control)] ${bg} ${text}`}>
                           <Icon size={14} />
                         </div>
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                        <Label className="text-[10px] font-black uppercase tracking-wide text-gray-500">
                           {label}
                         </Label>
                       </div>
@@ -506,7 +506,7 @@ export default function ThemesOptionPage() {
                           type="color"
                           value={formData[key] || "#000000"}
                           onChange={(e) => handleChange(key, e.target.value)}
-                          className="w-10 h-10 p-1 rounded-lg border-2 cursor-pointer"
+                          className="w-10 h-10 p-1 rounded-[var(--vendor-radius-control)] border-2 cursor-pointer"
                         />
                         <Input
                           type="text"

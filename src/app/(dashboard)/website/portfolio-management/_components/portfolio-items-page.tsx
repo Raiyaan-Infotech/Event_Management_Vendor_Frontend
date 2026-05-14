@@ -96,16 +96,16 @@ export default function PortfolioItemsPage({ type }: Props) {
               <CardHeader className="p-10 pb-0">
                 <div className="flex items-center gap-4">
                   <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center",
+                    "w-12 h-12 rounded-[var(--vendor-radius-panel)] flex items-center justify-center",
                     isClient ? "bg-orange-500/10 text-orange-600" : "bg-purple-500/10 text-purple-600"
                   )}>
                     {isClient ? <Users size={24} /> : <Award size={24} />}
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-black uppercase tracking-tighter">
+                    <CardTitle className="text-[var(--vendor-title-text)] font-bold uppercase tracking-tighter">
                       {label}s
                     </CardTitle>
-                    <CardDescription className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    <CardDescription className="text-xs font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide mt-1">
                       Add logos of organizations you&apos;ve worked with (max 10).
                     </CardDescription>
                   </div>
@@ -124,7 +124,7 @@ export default function PortfolioItemsPage({ type }: Props) {
                 {isLoading ? (
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                     {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="aspect-square rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+                      <div key={i} className="aspect-square rounded-[var(--vendor-radius-panel)] bg-gray-100 dark:bg-gray-800 animate-pulse" />
                     ))}
                   </div>
                 ) : (
@@ -133,7 +133,7 @@ export default function PortfolioItemsPage({ type }: Props) {
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className="group relative aspect-square rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
+                        className="group relative aspect-square rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
                       >
                         <Image
                           src={resolveMediaUrl(item.image_path)}
@@ -147,7 +147,7 @@ export default function PortfolioItemsPage({ type }: Props) {
                             size="icon"
                             variant="destructive"
                             onClick={() => setItemToDelete(item)}
-                            className="w-8 h-8 rounded-xl shadow-xl"
+                            className="w-8 h-8 rounded-[var(--vendor-radius-control)] shadow-xl"
                           >
                             <Trash2 size={14} />
                           </Button>
@@ -170,13 +170,13 @@ export default function PortfolioItemsPage({ type }: Props) {
 
                     {/* Pending preview tiles */}
                     {pendingPreviews.map((p) => (
-                      <div key={p.id} className="relative aspect-square rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+                      <div key={p.id} className="relative aspect-square rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
                         <Image src={p.previewUrl} alt="preview" fill sizes="160px" className="object-contain p-4" unoptimized />
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                           {p.uploading ? (
                             <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin" />
                           ) : (
-                            <span className="text-[9px] font-black text-rose-400 uppercase tracking-widest">Error</span>
+                            <span className="text-[9px] font-black text-rose-400 uppercase tracking-wide">Error</span>
                           )}
                         </div>
                       </div>
@@ -185,12 +185,12 @@ export default function PortfolioItemsPage({ type }: Props) {
                     {/* Add tile */}
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-all group"
+                      className="aspect-square rounded-[var(--vendor-radius-panel)] border-2 border-dashed border-[var(--vendor-border)] dark:border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-all group"
                     >
                       <div className="w-9 h-9 rounded-full border-2 border-gray-300 group-hover:border-gray-500 flex items-center justify-center transition-colors">
-                        <Plus size={16} className="text-gray-400 group-hover:text-gray-600" />
+                        <Plus size={16} className="text-[var(--vendor-text-muted)] group-hover:text-gray-600" />
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                      <span className="text-[10px] font-black uppercase tracking-wide text-[var(--vendor-text-muted)] group-hover:text-gray-600">
                         Add {label}
                       </span>
                     </button>
@@ -202,7 +202,7 @@ export default function PortfolioItemsPage({ type }: Props) {
 
           {/* SIDEBAR */}
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8 animate-in fade-in slide-in-from-right duration-1000">
-            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <PersistenceActions
                 onSave={() => {
                   toast.success(`${label} logos saved!`);
@@ -230,30 +230,30 @@ export default function PortfolioItemsPage({ type }: Props) {
 
       {/* Delete confirmation */}
       <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-        <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
               <Trash2 size={40} strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">
               Remove {label}?
             </DialogTitle>
-            <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed">
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed">
               This logo will be permanently removed from your portfolio.
             </DialogDescription>
           </div>
-          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
             <Button
               variant="ghost"
               onClick={() => setItemToDelete(null)}
-              className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-[12px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100 transition-all"
             >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmDelete}
               disabled={deleteMutation.isPending}
-              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70"
+              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70"
             >
               {deleteMutation.isPending ? "Removing..." : "Confirm Delete"}
             </Button>

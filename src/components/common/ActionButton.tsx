@@ -9,25 +9,16 @@ interface ActionButtonProps extends ButtonProps {
   variant_type?: "Client" | "Staff" | "Payment" | "Event";
 }
 
-export function ActionButton({ label, icon: Icon = Plus, variant_type = "Client", className, ...props }: ActionButtonProps) {
-  let styles = "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/20";
-  
-  if (variant_type === "Staff") {
-    styles = "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/20";
-  } else if (variant_type === "Payment" || variant_type === "Event") {
-    styles = "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-emerald-500/20";
-  }
-
+export function ActionButton({ label, icon: Icon = Plus, className, ...props }: ActionButtonProps) {
   return (
-    <Button 
+    <Button
       className={cn(
-        "h-10 text-white text-[12px] font-bold gap-2 transition-all shadow-lg rounded-xl hover:-translate-y-0.5 active:scale-[0.98] uppercase tracking-wider",
-        styles,
-        className
+        "h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide shadow-sm",
+        className,
       )}
       {...props}
     >
-      <Icon size={16} strokeWidth={3} /> {label}
+      <Icon size={13} strokeWidth={2.5} /> {label}
     </Button>
   );
 }

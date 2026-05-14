@@ -782,7 +782,7 @@ function SearchableSelect({
     <div className="relative group">
       <div className="relative">
         <Icon
-          className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${disabled ? "text-gray-200" : error ? "text-rose-400" : "text-gray-300 group-focus-within:text-blue-500"}`}
+          className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${disabled ? "text-gray-200" : error ? "text-rose-400" : "text-gray-300 group-focus-within:text-[var(--vendor-primary-btn)]"}`}
           size={16}
         />
         <Input
@@ -803,7 +803,7 @@ function SearchableSelect({
           }}
           readOnly={disabled}
           placeholder={placeholder}
-          className={`h-10 pl-10 pr-10 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${disabled ? "bg-gray-50/50 cursor-default opacity-80" : error ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+          className={`h-10 pl-10 pr-10 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] shadow-sm ${disabled ? "bg-gray-50/50 cursor-default opacity-80" : error ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
         />
         {!disabled && (value || open) && (
           <button
@@ -827,7 +827,7 @@ function SearchableSelect({
       </div>
 
       {open && !disabled && (
-        <div className="absolute z-50 w-full mt-2 py-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute z-50 w-full mt-2 py-1 bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
           {filteredOptions.length > 0 ? (
             <>
               {/* Reset option at the top */}
@@ -838,7 +838,7 @@ function SearchableSelect({
                   setSearch("");
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-[13px] text-gray-400 italic hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border-b border-gray-50 dark:border-gray-800/50"
+                className="w-full text-left px-4 py-2 text-[var(--vendor-form-input-text)] text-[var(--vendor-text-muted)] italic hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border-b border-[var(--vendor-border)]/50"
               >
                 {placeholder}
               </button>
@@ -852,14 +852,14 @@ function SearchableSelect({
                     setSearch(opt);
                     setOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-[13px] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${value === opt ? "text-blue-600 font-bold bg-blue-50/50" : "text-gray-600 dark:text-gray-300"}`}
+                  className={`w-full text-left px-4 py-2 text-[var(--vendor-form-input-text)] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${value === opt ? "text-[var(--vendor-primary-btn)] font-bold bg-blue-50/50" : "text-gray-600 dark:text-gray-300"}`}
                 >
                   {opt}
                 </button>
               ))}
             </>
           ) : (
-            <div className="px-4 py-2 text-[12px] text-gray-400 italic">
+            <div className="px-4 py-2 text-[12px] text-[var(--vendor-text-muted)] italic">
               No results found
             </div>
           )}
@@ -1112,21 +1112,21 @@ export function AddClientContent({
               <div className="flex items-center gap-3 mb-2">
                 <Link
                   href="/clients"
-                  className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-100 dark:border-gray-800 text-gray-400 hover:text-blue-500 hover:border-blue-100 transition-all"
+                  className="w-9 h-9 flex items-center justify-center rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] text-[var(--vendor-text-muted)] hover:text-[var(--vendor-primary-btn)] hover:border-blue-100 transition-all"
                 >
                   <ArrowLeft size={18} />
                 </Link>
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-tight flex items-center gap-2">
+                <h1 className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tight flex items-center gap-2">
                   {isEdit ? "Edit Client Profile" : "Add Client"}
                   <Badge
                     variant="outline"
-                    className={`text-[10px] font-bold ml-1 ${isEdit ? "border-emerald-200 text-emerald-600" : "border-indigo-200 text-indigo-600"}`}
+                    className={`text-[var(--vendor-form-label-text)] font-bold ml-1 ${isEdit ? "border-emerald-200 text-emerald-600" : "border-indigo-200 text-indigo-600"}`}
                   >
                     {isEdit ? "UPDATE" : "REGISTRATION"}
                   </Badge>
                 </h1>
               </div>
-              <p className="text-sm text-gray-400 mt-1 italic tracking-tight font-medium leading-relaxed">
+              <p className="text-[var(--vendor-subtitle-text)] text-[var(--vendor-text-muted)] mt-1 italic tracking-tight font-medium leading-relaxed">
                 {isEdit
                   ? `You are currently updating the profile details of ${initialData?.name || "the client"}.`
                   : "Enter the client's details to create a new professional profile."}
@@ -1164,7 +1164,7 @@ export function AddClientContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter full name"
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl transition-all text-[14px] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-10 pl-12 border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1185,7 +1185,7 @@ export function AddClientContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter mobile number"
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl transition-all text-[14px] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.mobile ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-10 pl-12 border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.mobile ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1206,7 +1206,7 @@ export function AddClientContent({
                     }}
                     readOnly={isView || isEdit}
                     placeholder="Enter email address"
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl transition-all text-[14px] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-10 pl-12 border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1228,13 +1228,13 @@ export function AddClientContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter password"
-                    className={`h-12 pl-12 pr-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl transition-all text-[14px] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.password ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-10 pl-12 pr-12 border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.password ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                   {!isView && (
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors z-10"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--vendor-text-muted)] hover:text-[var(--vendor-primary-btn)] transition-colors z-10"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -1270,7 +1270,7 @@ export function AddClientContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter full address"
-                    className={`w-full pl-12 pr-3 py-3 border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl outline-none transition-all text-[14px] min-h-[100px] resize-none ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.address ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`w-full pl-12 pr-3 py-3 border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20 rounded-[var(--vendor-radius-control)] outline-none transition-all text-[var(--vendor-form-input-text)] min-h-[100px] resize-none ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.address ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1315,7 +1315,7 @@ export function AddClientContent({
                       }}
                       readOnly={isView}
                       placeholder="Enter locality"
-                      className={`h-10 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.locality ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                      className={`h-10 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.locality ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                     />
                   </FormGroup>
 
@@ -1336,7 +1336,7 @@ export function AddClientContent({
                       }}
                       readOnly={isView}
                       placeholder="Enter pincode"
-                      className={`h-10 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.pincode ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                      className={`h-10 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.pincode ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                     />
                   </FormGroup>
                 </div>
@@ -1347,7 +1347,7 @@ export function AddClientContent({
           <div className="flex-1 space-y-8 lg:sticky lg:top-8 lg:max-h-[calc(100vh-86px)] lg:overflow-y-auto lg:pr-1 custom-scrollbar">
             {/* Action Buttons - Top of Sidebar */}
             {!isView && (
-              <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <div className="vendor-panel vendor-panel-padded">
                 <PersistenceActions
                   onSave={handleSave}
                   onCancel={() => router.push("/clients")}
@@ -1357,19 +1357,19 @@ export function AddClientContent({
             )}
 
             {/* Section 4: Photo Card */}
-            <div className="bg-white dark:bg-gray-800/40 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm text-center">
+            <div className="vendor-panel vendor-panel-padded text-center">
               <div className="relative w-32 h-32 mx-auto mb-6 group cursor-pointer">
                 <div
                   className={`absolute inset-0 rounded-full bg-blue-500/10 ${!isView && "group-hover:bg-blue-500/20"} transition-all duration-300`}
                 />
-                <Avatar className="w-full h-full rounded-full border-4 border-white dark:border-gray-800 shadow-xl transition-transform duration-300 group-hover:scale-[1.02]">
+                <Avatar className="w-full h-full rounded-full border-4 border-white dark:border-[var(--vendor-border)] shadow-xl transition-transform duration-300 group-hover:scale-[1.02]">
                   <AvatarImage src={profilePic || undefined} />
                   <AvatarFallback className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-none transition-all">
                     <User size={48} className="text-gray-300" />
                   </AvatarFallback>
                 </Avatar>
                 {!isView && (
-                  <label className="absolute bottom-1 right-1 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-blue-700 transition-all border-4 border-white dark:border-[#1f2937] active:scale-95 z-20">
+                  <label className="absolute bottom-1 right-1 w-10 h-10 bg-[var(--vendor-primary-btn)] text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[var(--vendor-primary-btn-hover)] transition-all border-4 border-white dark:border-[#1f2937] active:scale-95 z-20">
                     <Camera size={18} />
                     <input
                       type="file"
@@ -1380,7 +1380,7 @@ export function AddClientContent({
                   </label>
                 )}
               </div>
-              <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 uppercase tracking-widest">
+              <h3 className="text-[var(--vendor-form-section-title-text)] font-semibold text-[var(--vendor-text)] uppercase tracking-wide">
                 Profile Picture{" "}
                 {!isView && <span className="text-red-500 ml-1">*</span>}
               </h3>
@@ -1393,7 +1393,7 @@ export function AddClientContent({
                 <div />
               </FormGroup>
               {!isView && (
-                <p className="text-[11px] text-gray-400 mt-1 uppercase tracking-tighter italic font-medium">
+                <p className="text-[var(--vendor-form-help-text)] text-[var(--vendor-text-muted)] mt-1 uppercase tracking-tighter italic font-medium">
                   Max 10MB
                 </p>
               )}
@@ -1401,31 +1401,31 @@ export function AddClientContent({
 
             {/* Registration & Plan Card */}
             <div
-              className={`bg-white dark:bg-[#1f2937] space-y-5 ${isView ? "border-none shadow-none p-0" : "rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]"}`}
+              className={`bg-[var(--vendor-panel-bg)] space-y-5 ${isView ? "border-none shadow-none p-0" : "vendor-panel vendor-panel-padded"}`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--vendor-radius-control)] bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Building size={16} />
                 </div>
-                <h3 className="text-[12px] font-bold text-gray-800 dark:text-gray-100 uppercase tracking-widest">
+                <h3 className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text)] uppercase tracking-wide">
                   Subscription Type{" "}
                   {!isView && <span className="text-red-500 ml-1">*</span>}
                 </h3>
               </div>
 
               {/* Radio Selector */}
-              <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
+              <div className="grid grid-cols-2 gap-2 p-1.5 bg-[var(--vendor-page-bg)] rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)]">
                 <button
                   type="button"
                   onClick={() => !isView && setRegistrationType("Guest")}
-                  className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${registrationType === "Guest" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"} ${isView ? "cursor-default" : ""}`}
+                  className={`flex items-center justify-center gap-2 py-2 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-bold transition-all duration-200 ${registrationType === "Guest" ? "bg-[var(--vendor-primary-btn)] text-[var(--vendor-primary-btn-text)] shadow-sm" : "text-[var(--vendor-text-muted)] hover:text-[var(--vendor-text)] hover:bg-[var(--vendor-table-row-hover)]"} ${isView ? "cursor-default" : ""}`}
                 >
                   <User size={14} /> Guest
                 </button>
                 <button
                   type="button"
                   onClick={() => !isView && setRegistrationType("Client")}
-                  className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${registrationType === "Client" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"} ${isView ? "cursor-default" : ""}`}
+                  className={`flex items-center justify-center gap-2 py-2 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-bold transition-all duration-200 ${registrationType === "Client" ? "bg-[var(--vendor-primary-btn)] text-[var(--vendor-primary-btn-text)] shadow-sm" : "text-[var(--vendor-text-muted)] hover:text-[var(--vendor-text)] hover:bg-[var(--vendor-table-row-hover)]"} ${isView ? "cursor-default" : ""}`}
                 >
                   <Building size={14} /> Client
                 </button>
@@ -1441,7 +1441,7 @@ export function AddClientContent({
                   className="animate-in fade-in slide-in-from-top-2 duration-300"
                 >
                   {isView ? (
-                    <div className="h-10 px-4 flex items-center bg-transparent text-[13px] font-black text-gray-800 border-none shadow-none">
+                    <div className="h-10 px-4 flex items-center bg-transparent text-[var(--vendor-form-input-text)] font-semibold text-gray-800 border-none shadow-none">
                       {selectedPlan || "No Plan Selected"}
                     </div>
                   ) : (
@@ -1454,13 +1454,13 @@ export function AddClientContent({
                       }}
                     >
                       <SelectTrigger
-                        className={`h-10 w-full border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${errors.selectedPlan ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:ring-4 focus:ring-blue-500/5"}`}
+                        className={`h-10 w-full border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] shadow-sm ${errors.selectedPlan ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                       >
                         <SelectValue placeholder="Select Plan" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl border-gray-100 shadow-xl">
+                      <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] shadow-xl">
                         {plans.map(p => (
-                          <SelectItem key={p.id} value={p.name} className="text-[13px] rounded-lg cursor-pointer">
+                          <SelectItem key={p.id} value={p.name} className="text-[var(--vendor-form-input-text)] rounded-[var(--vendor-radius-control)] cursor-pointer">
                             {p.name}
                           </SelectItem>
                         ))}
@@ -1471,20 +1471,20 @@ export function AddClientContent({
               ) : null}
 
               {/* Login & Access Fields */}
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-4">
+              <div className="pt-4 border-t border-[var(--vendor-border)] space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[13px] font-bold text-gray-800 dark:text-gray-200">
+                    <span className="text-[var(--vendor-form-input-text)] font-bold text-gray-800 dark:text-gray-200">
                       Login Access
                     </span>
-                    <span className="text-[11px] text-gray-400">
+                    <span className="text-[var(--vendor-form-help-text)] text-[var(--vendor-text-muted)]">
                       Allow client to log in to the portal
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => !isView && setLoginAccess(!loginAccess)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${loginAccess ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${loginAccess ? "bg-[var(--vendor-primary-btn)]" : "bg-gray-200 dark:bg-gray-700"}`}
                     disabled={isView}
                   >
                     <span
@@ -1495,10 +1495,10 @@ export function AddClientContent({
 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[13px] font-bold text-gray-800 dark:text-gray-200">
+                    <span className="text-[var(--vendor-form-input-text)] font-bold text-gray-800 dark:text-gray-200">
                       Send Credentials To Email
                     </span>
-                    <span className="text-[11px] text-gray-400">
+                    <span className="text-[var(--vendor-form-help-text)] text-[var(--vendor-text-muted)]">
                       Email password automatically
                     </span>
                   </div>
@@ -1508,7 +1508,7 @@ export function AddClientContent({
                       !isView &&
                       setSendCredentialsToEmail(!sendCredentialsToEmail)
                     }
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${sendCredentialsToEmail ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${sendCredentialsToEmail ? "bg-[var(--vendor-primary-btn)]" : "bg-gray-200 dark:bg-gray-700"}`}
                     disabled={isView}
                   >
                     <span
@@ -1520,17 +1520,17 @@ export function AddClientContent({
             </div>
 
             {/* Registration Tip Card */}
-            <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800/50 p-6 shadow-sm border-dashed">
+            <div className="vendor-panel vendor-panel-padded border-dashed bg-[var(--vendor-table-row-hover)]">
               <div>
-                <h4 className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-[0.1em] mb-1.5 flex items-center gap-2">
+                <h4 className="text-[var(--vendor-form-label-text)] font-bold text-[var(--vendor-primary-btn)] dark:text-blue-400 uppercase tracking-[0.1em] mb-1.5 flex items-center gap-2">
                   <Check
                     size={14}
-                    className="text-blue-600 dark:text-blue-400"
+                    className="text-[var(--vendor-primary-btn)] dark:text-blue-400"
                     strokeWidth={3}
                   />{" "}
                   Registration Tip
                 </h4>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed italic">
+                <p className="text-[var(--vendor-form-help-text)] text-[var(--vendor-text-muted)] font-medium leading-relaxed italic">
                   Ensure the mobile number is unique. This will be used as
                   the primary identifier for event notifications and login.
                 </p>
@@ -1552,3 +1552,4 @@ export function AddClientContent({
     </div>
   );
 }
+

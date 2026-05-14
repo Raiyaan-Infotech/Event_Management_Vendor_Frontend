@@ -32,9 +32,9 @@ export function ContentEditorSection({
   const [isHtmlMode, setIsHtmlMode] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-transparent animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
+    <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-transparent animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
       <div className="space-y-1 mb-6">
-         <label className="text-base font-bold text-gray-900 dark:text-white font-poppins">{label}</label>
+         <label className="text-base font-bold text-[var(--vendor-text)] font-poppins">{label}</label>
          <p className="text-xs text-muted-foreground">{description}</p>
       </div>
 
@@ -49,12 +49,12 @@ export function ContentEditorSection({
               variant="outline" 
               size="sm" 
               onClick={() => setIsHtmlMode(!isHtmlMode)}
-              className="h-8 text-xs font-semibold rounded-lg"
+              className="h-8 text-xs font-semibold rounded-[var(--vendor-radius-control)]"
             >
               {isHtmlMode ? "Switch to Visual" : "Switch to HTML"}
             </Button>
           </div>
-          <div className={`editor-container overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm relative w-full ${!isHtmlMode ? "min-h-[450px]" : "h-[450px]"}`}>
+          <div className={`editor-container overflow-hidden rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] shadow-sm relative w-full ${!isHtmlMode ? "min-h-[450px]" : "h-[450px]"}`}>
             {isHtmlMode ? (
               <textarea 
                 value={value}
@@ -73,27 +73,27 @@ export function ContentEditorSection({
           {/* Top actions */}
           <div className="flex items-center gap-3">
              {onSave && (
-               <Button onClick={onSave} className="flex-1 bg-primary hover:bg-primary/90 text-white h-11 text-sm font-semibold rounded-lg shadow-sm">
+               <Button onClick={onSave} className="flex-1 bg-primary hover:bg-primary/90 text-white h-11 text-sm font-semibold rounded-[var(--vendor-radius-control)] shadow-sm">
                  {saveLabel}
                </Button>
              )}
              {onReset && (
-               <Button onClick={onReset} variant="outline" className="flex-1 h-11 text-sm font-semibold rounded-lg">
+               <Button onClick={onReset} variant="outline" className="flex-1 h-11 text-sm font-semibold rounded-[var(--vendor-radius-control)]">
                  {resetLabel}
                </Button>
              )}
           </div>
 
           {/* Preview window */}
-          <div className="flex-1 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden flex flex-col shadow-sm bg-white dark:bg-sidebar min-h-[400px]">
-             <div className="bg-gray-50/80 dark:bg-white/5 border-b border-gray-100 dark:border-white/10 px-4 py-3 shrink-0">
+          <div className="flex-1 border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-panel)] overflow-hidden flex flex-col shadow-sm bg-white dark:bg-sidebar min-h-[400px]">
+             <div className="bg-gray-50/80 dark:bg-white/5 border-b border-[var(--vendor-border)] dark:border-white/10 px-4 py-3 shrink-0">
                 <span className="text-sm font-semibold tracking-tight text-gray-800 dark:text-gray-200">Live Preview</span>
              </div>
              <div className="p-6 bg-white dark:bg-sidebar overflow-y-auto h-full pb-10 custom-scrollbar">
                {(previewTitle || previewDescription) && (
-                 <div className="mb-6 pb-6 border-b border-gray-100 dark:border-white/10">
-                   {previewTitle && <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-poppins">{previewTitle}</h3>}
-                   {previewDescription && <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{previewDescription}</p>}
+                 <div className="mb-6 pb-6 border-b border-[var(--vendor-border)] dark:border-white/10">
+                   {previewTitle && <h3 className="text-xl font-bold text-[var(--vendor-text)] mb-2 font-poppins">{previewTitle}</h3>}
+                   {previewDescription && <p className="text-sm text-[var(--vendor-text-muted)] leading-relaxed">{previewDescription}</p>}
                  </div>
                )}
                <div 

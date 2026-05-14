@@ -62,7 +62,7 @@ export default function PortfolioItemsList({ type }: Props) {
       label: "ID",
       sortable: true,
       render: (item) => (
-        <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">
+        <span className="text-[12px] font-black text-[var(--vendor-text-muted)] group-hover:text-[var(--vendor-primary-btn)] transition-colors tracking-tighter">
           #{String(item.id).padStart(3, "0")}
         </span>
       ),
@@ -71,7 +71,7 @@ export default function PortfolioItemsList({ type }: Props) {
       key: "image_path",
       label: "LOGO",
       render: (item) => (
-        <div className="w-16 h-10 bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 relative shadow-sm group-hover:scale-110 transition-transform">
+        <div className="w-16 h-10 bg-gray-50 dark:bg-gray-800 rounded-[var(--vendor-radius-control)] overflow-hidden border border-[var(--vendor-border)] relative shadow-sm group-hover:scale-110 transition-transform">
           <Image
             src={resolveMediaUrl(item.image_path)}
             alt={`${label} logo`}
@@ -141,7 +141,7 @@ export default function PortfolioItemsList({ type }: Props) {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={paginated}
           columns={columns}
@@ -158,14 +158,14 @@ export default function PortfolioItemsList({ type }: Props) {
             <>
               <DropdownMenuItem
                 onClick={() => router.push(`/website/portfolio-management/${type}s/edit/${item.id}`)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer text-blue-500 focus:bg-blue-50"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-[var(--vendor-primary-btn)] focus:bg-blue-50"
               >
                 <Pencil size={15} />
                 <span className="text-[13px] font-semibold">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setItemToDelete(item)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
               >
                 <Trash2 size={15} />
                 <span className="text-[13px] font-semibold">Delete</span>
@@ -192,21 +192,21 @@ export default function PortfolioItemsList({ type }: Props) {
 
       {/* Delete confirmation */}
       <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-        <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
               <Trash2 size={40} strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">Remove {label}?</DialogTitle>
-            <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed">
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">Remove {label}?</DialogTitle>
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed">
               This logo will be permanently removed from your portfolio.
             </DialogDescription>
           </div>
-          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
-            <Button variant="ghost" onClick={() => setItemToDelete(null)} className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
+            <Button variant="ghost" onClick={() => setItemToDelete(null)} className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-[12px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100 transition-all">
               Cancel
             </Button>
-            <Button onClick={handleConfirmDelete} disabled={deleteMutation.isPending} className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70">
+            <Button onClick={handleConfirmDelete} disabled={deleteMutation.isPending} className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70">
               {deleteMutation.isPending ? "Removing..." : "Confirm Delete"}
             </Button>
           </DialogFooter>

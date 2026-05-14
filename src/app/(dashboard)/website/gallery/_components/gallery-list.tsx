@@ -120,7 +120,7 @@ export default function GalleryList({
           rightContent={
             <Button
               onClick={() => router.push("gallery/add")}
-              className="h-10 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-[12px] font-bold shadow-lg shadow-blue-500/20 flex items-center gap-3 transition-all hover:-translate-y-0.5 active:scale-95 border-none uppercase"
+              className="h-10 px-6 bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-3 transition-all hover:-translate-y-0.5 active:scale-95 border-none uppercase"
             >
               <Plus size={16} strokeWidth={3} /> ADD GALLERY
             </Button>
@@ -299,7 +299,7 @@ export default function GalleryList({
                     <div className={`relative w-7 h-4 rounded-full transition-colors ${item.imgView === "public" ? "bg-emerald-300/60" : "bg-rose-300/60"}`}>
                       <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200 ${item.imgView === "public" ? "left-[14px]" : "left-0.5"}`} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white leading-none">
+                    <span className="text-[10px] font-black uppercase tracking-wide text-white leading-none">
                       {item.imgView === "public" ? "Public" : "Private"}
                     </span>
                   </div>
@@ -316,14 +316,14 @@ export default function GalleryList({
                       <div className="absolute right-0 top-full mt-1 w-32 bg-card border border-border rounded-[5px] shadow-lg z-50 overflow-hidden">
                         <button
                           onClick={() => { onEdit(item); setOpenMenuId(null); }}
-                          className="w-full px-4 py-2.5 flex items-center gap-2 text-[12px] font-bold text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
+                          className="w-full px-4 py-2.5 flex items-center gap-2 text-[var(--vendor-control-text)] font-semibold text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
                         >
                           <Edit2 size={13} /> Edit
                         </button>
                         <div className="h-px bg-border" />
                         <button
                           onClick={() => { setItemToDelete(item); setOpenMenuId(null); }}
-                          className="w-full px-4 py-2.5 flex items-center gap-2 text-[12px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
+                          className="w-full px-4 py-2.5 flex items-center gap-2 text-[var(--vendor-control-text)] font-semibold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
                         >
                           <Trash2 size={13} /> Delete
                         </button>
@@ -453,15 +453,15 @@ export default function GalleryList({
 
       {/* ── Delete Confirmation Dialog ── */}
       <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-        <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
               <Trash2 size={40} strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">
               Delete Gallery Item?
             </DialogTitle>
-            <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed max-w-[280px]">
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed max-w-[280px]">
               You are about to permanently delete{" "}
               <span className="text-rose-600 underline underline-offset-4 decoration-rose-200">
                 {itemToDelete?.eventName}
@@ -469,17 +469,17 @@ export default function GalleryList({
               .
             </DialogDescription>
           </div>
-          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
             <Button
               variant="ghost"
               onClick={() => setItemToDelete(null)}
-              className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-[12px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100 transition-all"
             >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmDelete}
-              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all"
+              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all"
             >
               Confirm Delete
             </Button>

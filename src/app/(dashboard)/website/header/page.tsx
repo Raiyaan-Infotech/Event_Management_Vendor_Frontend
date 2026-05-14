@@ -105,7 +105,7 @@ export default function HeaderPage() {
       {/* Page Header */}
       <div className="max-w-[1700px] mx-auto mb-8">
         <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1">Header</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Manage your company logo, name, and city.</p>
+        <p className="text-sm text-[var(--vendor-text-muted)]">Manage your company logo, name, and city.</p>
       </div>
 
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -113,17 +113,17 @@ export default function HeaderPage() {
         <div className="lg:col-span-9 space-y-6">
 
           {/* Identity & Branding Card */}
-          <div className="bg-white dark:bg-sidebar p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
+          <div className="bg-white dark:bg-sidebar p-6 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
             <div className="mb-8 flex flex-col md:flex-row items-center justify-center gap-6 w-full px-4">
 
               {/* Current logo preview */}
-              <div className="group relative w-full max-w-[400px] aspect-[4/1] md:aspect-[3/1] rounded-3xl overflow-hidden bg-white dark:bg-[#121212] border-2 border-dashed border-gray-200 dark:border-white/10 shadow-sm flex-grow select-none">
+              <div className="group relative w-full max-w-[400px] aspect-[4/1] md:aspect-[3/1] rounded-[var(--vendor-radius-panel)] overflow-hidden bg-white dark:bg-[#121212] border-2 border-dashed border-[var(--vendor-border)] dark:border-white/10 shadow-sm flex-grow select-none">
                 {!logoImage ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50/50 dark:bg-white/2">
-                    <div className="w-10 h-10 rounded-2xl bg-white dark:bg-sidebar flex items-center justify-center text-gray-400 dark:text-gray-500 shadow-sm border border-gray-100 dark:border-white/5">
+                    <div className="w-10 h-10 rounded-[var(--vendor-radius-panel)] bg-white dark:bg-sidebar flex items-center justify-center text-[var(--vendor-text-muted)] dark:text-gray-500 shadow-sm border border-[var(--vendor-border)] dark:border-white/5">
                       <ImageIcon size={20} />
                     </div>
-                    <p className="text-[8px] text-gray-400/60 dark:text-gray-500/60">Recommended: 300 x 100 px</p>
+                    <p className="text-[8px] text-[var(--vendor-text-muted)]/60 dark:text-gray-500/60">Recommended: 300 x 100 px</p>
                   </div>
                 ) : (
                   <Image src={logoImage} alt="Logo Preview" fill className="object-cover" />
@@ -133,16 +133,16 @@ export default function HeaderPage() {
               {/* Logo upload */}
               <div
                 onClick={() => isEditing && document.getElementById("logo-upload")?.click()}
-                className={`group relative w-full max-w-[400px] aspect-[4/1] md:aspect-[3/1] rounded-3xl overflow-hidden transition-all duration-500 bg-white dark:bg-[#121212] flex-grow ${
+                className={`group relative w-full max-w-[400px] aspect-[4/1] md:aspect-[3/1] rounded-[var(--vendor-radius-panel)] overflow-hidden transition-all duration-500 bg-white dark:bg-[#121212] flex-grow ${
                   !isEditing ? "cursor-default brightness-95" : "cursor-pointer"
-                } border-2 border-dashed border-gray-200 dark:border-white/10 shadow-sm hover:border-primary/50`}
+                } border-2 border-dashed border-[var(--vendor-border)] dark:border-white/10 shadow-sm hover:border-primary/50`}
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50/50 dark:bg-white/2 transition-colors group-hover:bg-primary/5">
-                  <div className="w-10 h-10 rounded-2xl bg-white dark:bg-sidebar flex items-center justify-center text-gray-400 dark:text-gray-500 shadow-sm border border-gray-100 dark:border-white/5 transition-all duration-500 group-hover:scale-110 group-hover:text-primary group-hover:shadow-primary/20">
+                  <div className="w-10 h-10 rounded-[var(--vendor-radius-panel)] bg-white dark:bg-sidebar flex items-center justify-center text-[var(--vendor-text-muted)] dark:text-gray-500 shadow-sm border border-[var(--vendor-border)] dark:border-white/5 transition-all duration-500 group-hover:scale-110 group-hover:text-primary group-hover:shadow-primary/20">
                     {logoImage ? <ImageIcon size={20} className="text-primary" /> : <Plus size={20} />}
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">Upload Image</p>
-                  <p className="text-[8px] text-gray-400/60 dark:text-gray-500/60">Recommended: 300 x 100 px</p>
+                  <p className="text-[10px] font-black uppercase tracking-wide text-[var(--vendor-text-muted)] dark:text-gray-500">Upload Image</p>
+                  <p className="text-[8px] text-[var(--vendor-text-muted)]/60 dark:text-gray-500/60">Recommended: 300 x 100 px</p>
                 </div>
                 <input id="logo-upload" type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
               </div>
@@ -150,21 +150,21 @@ export default function HeaderPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-gray-900 dark:text-white">Company Name</Label>
+                <Label className="text-sm font-bold text-[var(--vendor-text)]">Company Name</Label>
                 <Input
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   disabled={!isEditing}
-                  className="h-12 bg-gray-50/50 focus:bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 rounded-xl transition-all disabled:opacity-80"
+                  className="h-12 bg-gray-50/50 focus:bg-white dark:bg-[#1e1e1e] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] transition-all disabled:opacity-80"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-gray-900 dark:text-white">City</Label>
+                <Label className="text-sm font-bold text-[var(--vendor-text)]">City</Label>
                 <Input
                   value={city}
                   disabled
                   readOnly
-                  className="h-12 bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 rounded-xl cursor-not-allowed opacity-60"
+                  className="h-12 bg-gray-50/50 dark:bg-[#1e1e1e] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] cursor-not-allowed opacity-60"
                 />
               </div>
             </div>
@@ -174,13 +174,13 @@ export default function HeaderPage() {
 
         {/* Sticky Sidebar Actions */}
         <div className="lg:col-span-3 space-y-4 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
             <Button
               onClick={() => setIsEditing(!isEditing)}
-              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
+              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
                 isEditing
                   ? "bg-amber-500 text-white border-none hover:bg-amber-600 shadow-amber-500/20"
-                  : "bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  : "bg-white dark:bg-[#1e293b] text-[var(--vendor-text)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] hover:bg-gray-50 dark:hover:bg-gray-800/50"
               }`}
             >
               <Edit className="size-4" />

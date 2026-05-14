@@ -234,7 +234,7 @@ export function ChatList({
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="text-primary text-[11px] font-bold hover:bg-primary/10"
+                  className="text-primary text-[var(--vendor-control-text)] font-semibold hover:bg-primary/10"
                   onClick={(e) => {
                     e.stopPropagation();
                     setActiveTab('recent');

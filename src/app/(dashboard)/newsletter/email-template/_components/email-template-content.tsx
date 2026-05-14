@@ -59,7 +59,7 @@ export default function EmailTemplateManagementContent() {
       key: "s_no",
       label: "S.No",
       render: (_: VendorEmailTemplate, index: number) => (
-        <span className="text-[12px] font-bold text-gray-600 dark:text-gray-400">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)]">
           {(currentPage - 1) * itemsPerPage + (index + 1)}
         </span>
       ),
@@ -82,7 +82,7 @@ export default function EmailTemplateManagementContent() {
         const snippet = plain.length > 200 ? plain.substring(0, 200) + "..." : plain || "No content provided";
         return (
           <div className="max-w-[500px] py-1">
-            <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 italic">
+            <p className="text-[12px] font-medium text-[var(--vendor-text-muted)] leading-relaxed line-clamp-2 italic">
               {snippet}
             </p>
           </div>
@@ -96,7 +96,7 @@ export default function EmailTemplateManagementContent() {
       render: (item) => (
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-          <span className="text-[12px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-tight">
+          <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)] uppercase tracking-tight">
             {item.category?.name || "—"}
           </span>
         </div>
@@ -137,12 +137,12 @@ export default function EmailTemplateManagementContent() {
         filterContent={
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Category Filter</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Category Filter</p>
               <Select value={filterCategoryId} onValueChange={(val) => { setFilterCategoryId(val); setCurrentPage(1); }}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100 font-bold">
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] font-bold">
                   <SelectItem value="All">All Categories</SelectItem>
                   {categories.map((cat: { id: number; name: string }) => (
                     <SelectItem key={cat.id} value={String(cat.id)}>
@@ -152,7 +152,7 @@ export default function EmailTemplateManagementContent() {
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="ghost" onClick={() => { setFilterCategoryId("All"); setCurrentPage(1); }} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all font-bold">
+            <Button variant="ghost" onClick={() => { setFilterCategoryId("All"); setCurrentPage(1); }} className="w-full h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide text-rose-500 hover:bg-rose-50 transition-all font-bold">
               Reset Filters
             </Button>
           </div>
@@ -168,7 +168,7 @@ export default function EmailTemplateManagementContent() {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={templates}
           columns={columns}
@@ -183,13 +183,13 @@ export default function EmailTemplateManagementContent() {
           noCard={true}
           actionContent={(item) => (
             <>
-              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/view/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
-                <Eye size={15} className="text-blue-500" /> <span className="text-[13px]">View</span>
+              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/view/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600 font-bold">
+                <Eye size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px]">View</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
+              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/edit/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600 font-bold">
                 <Edit size={15} className="text-emerald-500" /> <span className="text-[13px]">Edit</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">
+              <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">
                 <Trash2 size={15} /> <span className="text-[13px]">Delete</span>
               </DropdownMenuItem>
             </>

@@ -782,7 +782,7 @@ function SearchableSelect({
     <div className="relative group">
       <div className="relative">
         <Icon
-          className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${disabled ? "text-gray-200" : error ? "text-rose-400" : "text-gray-300 group-focus-within:text-blue-500"}`}
+          className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${disabled ? "text-gray-200" : error ? "text-rose-400" : "text-gray-300 group-focus-within:text-[var(--vendor-primary-btn)]"}`}
           size={16}
         />
         <Input
@@ -803,7 +803,7 @@ function SearchableSelect({
           }}
           readOnly={disabled}
           placeholder={placeholder}
-          className={`h-10 pl-10 pr-10 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${disabled ? "bg-gray-50/50 cursor-default opacity-80" : error ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+          className={`h-10 pl-10 pr-10 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[13px] shadow-sm ${disabled ? "bg-gray-50/50 cursor-default opacity-80" : error ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
         />
         {!disabled && (value || open) && (
           <button
@@ -827,7 +827,7 @@ function SearchableSelect({
       </div>
 
       {open && !disabled && (
-        <div className="absolute z-50 w-full mt-2 py-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute z-50 w-full mt-2 py-1 bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
           {filteredOptions.length > 0 ? (
             <>
               {/* Reset option at the top */}
@@ -838,7 +838,7 @@ function SearchableSelect({
                   setSearch("");
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-[13px] text-gray-400 italic hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border-b border-gray-50 dark:border-gray-800/50"
+                className="w-full text-left px-4 py-2 text-[13px] text-[var(--vendor-text-muted)] italic hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border-b border-[var(--vendor-border)]/50"
               >
                 {placeholder}
               </button>
@@ -852,14 +852,14 @@ function SearchableSelect({
                     setSearch(opt);
                     setOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-[13px] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${value === opt ? "text-blue-600 font-bold bg-blue-50/50" : "text-gray-600 dark:text-gray-300"}`}
+                  className={`w-full text-left px-4 py-2 text-[13px] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${value === opt ? "text-[var(--vendor-primary-btn)] font-bold bg-blue-50/50" : "text-gray-600 dark:text-gray-300"}`}
                 >
                   {opt}
                 </button>
               ))}
             </>
           ) : (
-            <div className="px-4 py-2 text-[12px] text-gray-400 italic">
+            <div className="px-4 py-2 text-[12px] text-[var(--vendor-text-muted)] italic">
               No results found
             </div>
           )}
@@ -877,6 +877,7 @@ import {
   VendorStaff,
 } from "@/hooks/use-vendor-staff";
 import { useVendorRoles } from "@/hooks/use-vendor-roles";
+import { useVendorDepartments } from "@/hooks/use-vendor-departments";
 import { ImageCropper } from "@/components/common/ImageCropper";
 
 interface AddStaffContentProps {
@@ -899,6 +900,7 @@ export default function AddStaffContent({
   const reassignRoleMutation = useReassignVendorStaffRole();
   const { data: memberData, isLoading } = useVendorStaffMember(id || "");
   const { data: rolesData } = useVendorRoles({ limit: 100 });
+  const { data: departmentsData } = useVendorDepartments({ limit: 100 });
 
   const effectiveData = initialData || memberData;
 
@@ -912,9 +914,10 @@ export default function AddStaffContent({
 
   const [formData, setFormData] = useState({
     name: effectiveData?.name || "",
-    designation: effectiveData?.designation || "",
-    role_id: effectiveData?.role_id || "",
-    mobile: effectiveData?.mobile || "",
+    designation:   effectiveData?.designation   || "",
+    role_id:       effectiveData?.role_id       || "",
+    department_id: effectiveData?.department_id || "",
+    mobile:        effectiveData?.mobile        || "",
     email: effectiveData?.email || "",
     password: "",
     address: effectiveData?.address || "",
@@ -937,9 +940,10 @@ export default function AddStaffContent({
     if (effectiveData) {
       setFormData({
         name: effectiveData.name || "",
-        designation: effectiveData.designation || "",
-        role_id: effectiveData.role_id || "",
-        dor: effectiveData.dor || "",
+        designation:   effectiveData.designation   || "",
+        role_id:       effectiveData.role_id       || "",
+        department_id: effectiveData.department_id || "",
+        dor:           effectiveData.dor           || "",
         mobile: effectiveData.mobile || "",
         email: effectiveData.email || "",
         password: "",
@@ -1062,18 +1066,18 @@ export default function AddStaffContent({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-4 mt-4">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-tight flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-[var(--vendor-text)] uppercase tracking-tight flex items-center gap-2">
                 {params.id
                   ? isView
                     ? "EMPLOYEE DETAILS"
                     : "EDIT EMPLOYEE"
                   : "ADD STAFF"}
               </h1>
-              <Badge className="bg-blue-600/10 text-blue-600 border-none px-3 py-1 font-black text-[10px] tracking-widest uppercase rounded-lg">
+              <Badge className="bg-[var(--vendor-primary-btn)]/10 text-[var(--vendor-primary-btn)] border-none px-3 py-1 font-black text-[10px] tracking-wide uppercase rounded-[var(--vendor-radius-control)]">
                 STAFF
               </Badge>
             </div>
-            <p className="text-sm font-medium text-gray-400">
+            <p className="text-sm font-medium text-[var(--vendor-text-muted)]">
               Enter the employee&apos;s professional details to manage their
               profile.
             </p>
@@ -1110,7 +1114,7 @@ export default function AddStaffContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter full name"
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1132,7 +1136,7 @@ export default function AddStaffContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter mobile number"
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.mobile ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.mobile ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1155,7 +1159,7 @@ export default function AddStaffContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter email address"
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.email ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1179,13 +1183,13 @@ export default function AddStaffContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter password"
-                    className={`h-12 pl-12 pr-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.password ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 pr-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.password ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                   {!isView && (
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors z-10"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--vendor-text-muted)] hover:text-[var(--vendor-primary-btn)] transition-colors z-10"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -1210,7 +1214,7 @@ export default function AddStaffContent({
                         setErrors((prev) => ({ ...prev, dob: "" }));
                     }}
                     readOnly={isView}
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.dob ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.dob ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
               </div>
@@ -1237,7 +1241,7 @@ export default function AddStaffContent({
                     <Input
                       value={formData.designation}
                       readOnly
-                      className="h-12 pl-12 focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800 rounded-2xl text-sm"
+                      className="h-12 pl-12 focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800 rounded-[var(--vendor-radius-panel)] text-sm"
                     />
                   ) : (
                     <Select
@@ -1256,7 +1260,7 @@ export default function AddStaffContent({
                       }}
                     >
                       <SelectTrigger
-                        className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm ${errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                        className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                       >
                         <SelectValue placeholder="Select designation" />
                       </SelectTrigger>
@@ -1265,6 +1269,32 @@ export default function AddStaffContent({
                           <SelectItem key={role.id} value={String(role.id)}>
                             {role.name}
                           </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </FormGroup>
+
+                {/* Department */}
+                <FormGroup label="Department" icon={Building} isView={isView}>
+                  {isView ? (
+                    <Input
+                      value={(departmentsData?.data ?? []).find((d) => String(d.id) === String(formData.department_id))?.name || "—"}
+                      readOnly
+                      className="h-12 pl-12 focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800 rounded-[var(--vendor-radius-panel)] text-sm"
+                    />
+                  ) : (
+                    <Select
+                      value={formData.department_id ? String(formData.department_id) : "none"}
+                      onValueChange={(val) => setFormData({ ...formData, department_id: val === "none" ? "" : val })}
+                    >
+                      <SelectTrigger className="h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10">
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Department</SelectItem>
+                        {(departmentsData?.data ?? []).filter((d) => d.is_active === 1).map((dept) => (
+                          <SelectItem key={dept.id} value={String(dept.id)}>{dept.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -1289,7 +1319,7 @@ export default function AddStaffContent({
                         setErrors((prev) => ({ ...prev, doj: "" }));
                     }}
                     readOnly={isView}
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.doj ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.doj ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1310,7 +1340,7 @@ export default function AddStaffContent({
                         setErrors((prev) => ({ ...prev, dor: "" }));
                     }}
                     readOnly={isView}
-                    className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.dor ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.dor ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
               </div>
@@ -1342,7 +1372,7 @@ export default function AddStaffContent({
                     }}
                     readOnly={isView}
                     placeholder="Enter full address"
-                    className={`w-full pl-12 pr-3 py-3 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl outline-none transition-all text-sm min-h-[100px] resize-none shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.address ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                    className={`w-full pl-12 pr-3 py-3 border border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] outline-none transition-all text-sm min-h-[100px] resize-none shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.address ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                   />
                 </FormGroup>
 
@@ -1482,7 +1512,7 @@ export default function AddStaffContent({
                       }}
                       readOnly={isView}
                       placeholder="Enter locality"
-                      className={`h-10 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.locality ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                      className={`h-10 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.locality ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                     />
                   </FormGroup>
 
@@ -1504,7 +1534,7 @@ export default function AddStaffContent({
                       }}
                       readOnly={isView}
                       placeholder="Enter pincode"
-                      className={`h-10 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.pincode ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                      className={`h-10 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.pincode ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                     />
                   </FormGroup>
                 </div>
@@ -1516,7 +1546,7 @@ export default function AddStaffContent({
           <div className="flex-1 space-y-8 lg:sticky lg:top-8">
             {/* Action Buttons - Top of Sidebar */}
             {!isView && (
-              <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 <PersistenceActions
                   onSave={handleSubmit}
                   onCancel={() => router.push("/staff")}
@@ -1526,19 +1556,19 @@ export default function AddStaffContent({
             )}
 
             {/* Section 4: Photo Card */}
-            <div className="bg-white dark:bg-gray-800/40 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm text-center">
+            <div className="bg-[var(--vendor-panel-bg)]/40 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm text-center">
               <div className="relative w-32 h-32 mx-auto mb-6 group cursor-pointer">
                 <div
                   className={`absolute inset-0 rounded-full bg-blue-500/10 ${!isView && "group-hover:bg-blue-500/20"} transition-all duration-300`}
                 />
-                <Avatar className="w-full h-full rounded-full border-4 border-white dark:border-gray-800 shadow-xl transition-transform duration-300 group-hover:scale-[1.02]">
+                <Avatar className="w-full h-full rounded-full border-4 border-white dark:border-[var(--vendor-border)] shadow-xl transition-transform duration-300 group-hover:scale-[1.02]">
                   <AvatarImage src={profilePic || undefined} />
                   <AvatarFallback className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-none transition-all">
                     <User size={48} className="text-gray-300" />
                   </AvatarFallback>
                 </Avatar>
                 {!isView && (
-                  <label className="absolute bottom-1 right-1 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-blue-700 transition-all border-4 border-white dark:border-[#1f2937] active:scale-95 z-20">
+                  <label className="absolute bottom-1 right-1 w-10 h-10 bg-[var(--vendor-primary-btn)] text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[var(--vendor-primary-btn-hover)] transition-all border-4 border-white dark:border-[#1f2937] active:scale-95 z-20">
                     <Camera size={18} />
                     <input
                       type="file"
@@ -1549,7 +1579,7 @@ export default function AddStaffContent({
                   </label>
                 )}
               </div>
-              <h3 className="text-sm font-black text-gray-800 dark:text-gray-100 uppercase tracking-widest">
+              <h3 className="text-sm font-black text-[var(--vendor-text)] uppercase tracking-wide">
                 PROFILE PICTURE{" "}
                 {!isView && <span className="text-red-500 ml-1">*</span>}
               </h3>
@@ -1561,32 +1591,32 @@ export default function AddStaffContent({
               >
                 <div /> {/* Invisible children for FormGroup spacing */}
               </FormGroup>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight mt-2 italic">
+              <p className="text-[10px] text-[var(--vendor-text-muted)] font-bold uppercase tracking-tight mt-2 italic">
                 MAX 10MB
               </p>
             </div>
 
             {/* Section 5: Access & Status */}
-            <div className="bg-white dark:bg-gray-800/40 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm space-y-8">
+            <div className="bg-[var(--vendor-panel-bg)]/40 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm space-y-8">
               {/* Login Access Toggle */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-600/10 text-emerald-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-[var(--vendor-radius-control)] bg-emerald-50 dark:bg-emerald-600/10 text-emerald-600 flex items-center justify-center">
                     <ShieldCheck size={16} />
                   </div>
-                  <h3 className="text-[12px] font-black text-gray-800 dark:text-gray-100 uppercase tracking-[0.2em]">
+                  <h3 className="text-[var(--vendor-form-section-title-text)] font-semibold text-[var(--vendor-text)] uppercase tracking-wide">
                     LOGIN ACCESS
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800">
+                <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-900/50 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)]">
                   <button
                     type="button"
                     onClick={() =>
                       !isView &&
                       setFormData({ ...formData, login_access: true })
                     }
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${formData.login_access ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
+                    className={`flex items-center justify-center gap-2 py-2.5 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold transition-all duration-300 ${formData.login_access ? "bg-[var(--vendor-primary-btn)] text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-[var(--vendor-text-muted)] hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
                   >
                     <ShieldCheck size={14} /> Allow
                   </button>
@@ -1596,7 +1626,7 @@ export default function AddStaffContent({
                       !isView &&
                       setFormData({ ...formData, login_access: false })
                     }
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 ${!formData.login_access ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-gray-400 hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
+                    className={`flex items-center justify-center gap-2 py-2.5 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold transition-all duration-300 ${!formData.login_access ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40 hover:-translate-y-0.5 hover:brightness-110 active:scale-95" : "text-[var(--vendor-text-muted)] hover:text-gray-600"} ${isView ? "cursor-default" : ""}`}
                   >
                     <ShieldAlert size={14} /> Deny
                   </button>
@@ -1605,7 +1635,7 @@ export default function AddStaffContent({
 
               {/* Employee Status */}
               <div className="space-y-4">
-                <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                <p className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide ml-1">
                   EMPLOYEE STATUS
                 </p>
                 <Select
@@ -1615,20 +1645,20 @@ export default function AddStaffContent({
                   }
                   disabled={isView}
                 >
-                  <SelectTrigger className="w-full h-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl focus:ring-0 transition-all font-bold text-[13px]">
+                  <SelectTrigger className="w-full h-12 border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/30 rounded-[var(--vendor-radius-panel)] focus:ring-0 transition-all font-bold text-[13px]">
                     <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-gray-100">
-                    <SelectItem value="active" className="rounded-xl">
+                  <SelectContent className="rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)]">
+                    <SelectItem value="active" className="rounded-[var(--vendor-radius-control)]">
                       Active
                     </SelectItem>
-                    <SelectItem value="inactive" className="rounded-xl">
+                    <SelectItem value="inactive" className="rounded-[var(--vendor-radius-control)]">
                       Inactive
                     </SelectItem>
-                    <SelectItem value="resigned" className="rounded-xl">
+                    <SelectItem value="resigned" className="rounded-[var(--vendor-radius-control)]">
                       Resigned
                     </SelectItem>
-                    <SelectItem value="relieved" className="rounded-xl">
+                    <SelectItem value="relieved" className="rounded-[var(--vendor-radius-control)]">
                       Relieved
                     </SelectItem>
                   </SelectContent>

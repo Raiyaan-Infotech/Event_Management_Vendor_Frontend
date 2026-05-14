@@ -197,31 +197,31 @@ export function CommunicationContactContent() {
                 <tr>
                   <th 
                     onClick={() => handleSort('name')}
-                    className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
+                    className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
                   >
                     Name <SortIcon column="name" />
                   </th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Phone</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Subject</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider">Phone</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider">Subject</th>
                   <th 
                     onClick={() => handleSort('status')}
-                    className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
+                    className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
                   >
                     Status <SortIcon column="status" />
                   </th>
                   <th 
                     onClick={() => handleSort('date')}
-                    className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
+                    className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
                   >
                     Date <SortIcon column="date" />
                   </th>
                   <th 
                     onClick={() => handleSort('repliedDate')}
-                    className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
+                    className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-primary transition-colors select-none"
                   >
                     Replied Date <SortIcon column="repliedDate" />
                   </th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -240,7 +240,7 @@ export function CommunicationContactContent() {
                       <p className="text-muted-foreground text-[13px] font-medium">{inq.subject}</p>
                     </td>
                     <td className="px-6 py-5">
-                      <span className={`inline-flex items-center justify-center w-[70px] h-6 rounded-[3px] text-[11px] font-bold uppercase ${
+                      <span className={`inline-flex items-center justify-center w-[70px] h-6 rounded-[3px] text-[var(--vendor-control-text)] font-semibold uppercase ${
                         inq.status === 'Read' ? 'bg-green-500 text-white' : 
                         inq.status === 'Replied' ? 'bg-primary text-white' :
                         'bg-red-500 text-white'
@@ -268,7 +268,7 @@ export function CommunicationContactContent() {
                       <div className="flex items-center justify-end gap-2">
                         <Link 
                           href={`/communication/contact/${inq.id}/view`}
-                          className="h-8 px-3 flex items-center gap-1.5 bg-[#5e7693] text-white rounded-[4px] text-[11px] font-bold hover:brightness-110 transition-all shadow-sm"
+                          className="h-8 px-3 flex items-center gap-1.5 bg-[#5e7693] text-white rounded-[4px] text-[var(--vendor-control-text)] font-semibold hover:brightness-110 transition-all shadow-sm"
                         >
                           <Eye size={14} /> View
                         </Link>

@@ -29,7 +29,7 @@ export default function EmailCampaignsContent() {
       key: "s_no",
       label: "S.No",
       render: (_, idx) => (
-        <span className="text-[12px] font-bold text-gray-500">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-500">
           {(currentPage - 1) * itemsPerPage + idx + 1}
         </span>
       ),
@@ -47,9 +47,9 @@ export default function EmailCampaignsContent() {
       key: "user_type",
       label: "User Type",
       render: (item) => (
-        <span className={`text-[11px] font-bold uppercase px-2.5 py-1 rounded-lg tracking-widest border ${
+        <span className={`text-[var(--vendor-control-text)] font-semibold uppercase px-2.5 py-1 rounded-[var(--vendor-radius-control)] tracking-wide border ${
           item.user_type === 'Guest'
-            ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20'
+            ? 'bg-blue-50 text-[var(--vendor-primary-btn)] border-blue-100 dark:bg-blue-500/10 dark:border-[var(--vendor-primary-btn)]/20'
             : 'bg-violet-50 text-violet-600 border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20'
         }`}>
           {item.user_type}
@@ -70,12 +70,12 @@ export default function EmailCampaignsContent() {
         item.success_count > 0 ? (
           <Link
             href={`/newsletter/mail-status?newsletter_id=${item.id}&status=Success`}
-            className="inline-flex items-center gap-1.5 text-[12px] font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 px-2.5 py-1 rounded-lg transition-all border border-emerald-100 dark:border-emerald-500/20"
+            className="inline-flex items-center gap-1.5 text-[var(--vendor-control-text)] font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 px-2.5 py-1 rounded-[var(--vendor-radius-control)] transition-all border border-emerald-100 dark:border-emerald-500/20"
           >
             <CheckCircle2 size={12} /> {item.success_count}
           </Link>
         ) : (
-          <span className="text-[12px] font-bold text-gray-400 px-2.5 py-1">0</span>
+          <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] px-2.5 py-1">0</span>
         )
       ),
     },
@@ -86,12 +86,12 @@ export default function EmailCampaignsContent() {
         item.failed_count > 0 ? (
           <Link
             href={`/newsletter/mail-status?newsletter_id=${item.id}&status=Failed`}
-            className="inline-flex items-center gap-1.5 text-[12px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 px-2.5 py-1 rounded-lg transition-all border border-rose-100 dark:border-rose-500/20"
+            className="inline-flex items-center gap-1.5 text-[var(--vendor-control-text)] font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 px-2.5 py-1 rounded-[var(--vendor-radius-control)] transition-all border border-rose-100 dark:border-rose-500/20"
           >
             <XCircle size={12} /> {item.failed_count}
           </Link>
         ) : (
-          <span className="text-[12px] font-bold text-gray-400 px-2.5 py-1">0</span>
+          <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] px-2.5 py-1">0</span>
         )
       ),
     },
@@ -102,12 +102,12 @@ export default function EmailCampaignsContent() {
         item.read_count > 0 ? (
           <Link
             href={`/newsletter/mail-status?newsletter_id=${item.id}&read=Read`}
-            className="inline-flex items-center gap-1.5 text-[12px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 px-2.5 py-1 rounded-lg transition-all border border-blue-100 dark:border-blue-500/20"
+            className="inline-flex items-center gap-1.5 text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-primary-btn)] bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 px-2.5 py-1 rounded-[var(--vendor-radius-control)] transition-all border border-blue-100 dark:border-[var(--vendor-primary-btn)]/20"
           >
             <Eye size={12} /> {item.read_count}
           </Link>
         ) : (
-          <span className="text-[12px] font-bold text-gray-400 px-2.5 py-1">0</span>
+          <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] px-2.5 py-1">0</span>
         )
       ),
     },
@@ -118,12 +118,12 @@ export default function EmailCampaignsContent() {
         item.unread_count > 0 ? (
           <Link
             href={`/newsletter/mail-status?newsletter_id=${item.id}&read=Unread`}
-            className="inline-flex items-center gap-1.5 text-[12px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-500/10 dark:hover:bg-gray-500/20 px-2.5 py-1 rounded-lg transition-all border border-gray-200 dark:border-gray-500/20"
+            className="inline-flex items-center gap-1.5 text-[var(--vendor-control-text)] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-500/10 dark:hover:bg-gray-500/20 px-2.5 py-1 rounded-[var(--vendor-radius-control)] transition-all border border-[var(--vendor-border)] dark:border-gray-500/20"
           >
             <EyeOff size={12} /> {item.unread_count}
           </Link>
         ) : (
-          <span className="text-[12px] font-bold text-gray-400 px-2.5 py-1">0</span>
+          <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] px-2.5 py-1">0</span>
         )
       ),
     },
@@ -131,7 +131,7 @@ export default function EmailCampaignsContent() {
       key: "createdAt",
       label: "Sent At",
       render: (item) => (
-        <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
+        <span className="text-[12px] font-medium text-[var(--vendor-text-muted)]">
           {format(new Date(item.createdAt), "dd MMM yyyy, HH:mm")}
         </span>
       ),
@@ -147,13 +147,13 @@ export default function EmailCampaignsContent() {
         rightContent={
           <div className="flex items-center gap-2">
             <Link href="/newsletter/send">
-              <Button variant="outline" className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white">
+              <Button variant="outline" className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wide bg-white">
                 <Send size={15} strokeWidth={2.5} className="text-emerald-500" /> Send Mail
               </Button>
             </Link>
             <Link href="/newsletter/mail-status">
-              <Button variant="outline" className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white">
-                <History size={15} strokeWidth={2.5} className="text-blue-500" /> Mail Status
+              <Button variant="outline" className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wide bg-white">
+                <History size={15} strokeWidth={2.5} className="text-[var(--vendor-primary-btn)]" /> Mail Status
               </Button>
             </Link>
           </div>
@@ -166,7 +166,7 @@ export default function EmailCampaignsContent() {
         placeholder="Search templates..."
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={paginated}
           columns={columns}

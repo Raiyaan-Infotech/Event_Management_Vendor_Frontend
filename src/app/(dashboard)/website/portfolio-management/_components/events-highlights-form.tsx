@@ -106,14 +106,14 @@ export default function EventsHighlightsForm() {
             <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none bg-white dark:bg-sidebar rounded-[2.5rem] overflow-hidden">
               <CardHeader className="p-10 pb-0">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600">
+                  <div className="w-12 h-12 rounded-[var(--vendor-radius-panel)] bg-blue-500/10 flex items-center justify-center text-[var(--vendor-primary-btn)]">
                     <Calendar size={24} />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-black uppercase tracking-tighter">
+                    <CardTitle className="text-[var(--vendor-title-text)] font-bold uppercase tracking-tighter">
                       Events Highlights
                     </CardTitle>
-                    <CardDescription className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    <CardDescription className="text-xs font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide mt-1">
                       Header, Detail, and {MIN_ROWS} required highlights (Label
                       + Value).
                     </CardDescription>
@@ -123,33 +123,33 @@ export default function EventsHighlightsForm() {
 
               <CardContent className="p-10 pt-8 space-y-4">
                 {/* Header and Detail Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8 border-b border-gray-100 dark:border-white/5 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8 border-b border-[var(--vendor-border)] dark:border-white/5 mb-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                    <label className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] ml-1">
                       Header
                     </label>
                     <Input
                       value={header}
                       onChange={(e) => setHeader(e.target.value)}
                       placeholder="e.g. Our Success Stories"
-                      className="h-14 rounded-2xl border-gray-100 dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                      className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">
+                    <label className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] ml-1">
                        Detail
                     </label>
                     <Input
                       value={detail}
                       onChange={(e) => setDetail(e.target.value)}
                       placeholder="e.g. Statistics of our best events"
-                      className="h-14 rounded-2xl border-gray-100 dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                      className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
                     />
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 mb-4 ml-1">
-                  <p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.2em]">
+                  <p className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-primary-btn)] uppercase tracking-[0.2em]">
                     Highlights Statistics
                   </p>
                   <div className="h-[1px] flex-1 bg-blue-50 dark:bg-blue-900/20" />
@@ -170,7 +170,7 @@ export default function EventsHighlightsForm() {
                             updateRow(index, "label", e.target.value)
                           }
                           placeholder="Label (e.g. Past Events)"
-                          className="h-14 rounded-2xl border-gray-100 dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                          className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
                         />
                       </div>
 
@@ -182,7 +182,7 @@ export default function EventsHighlightsForm() {
                             updateRow(index, "value", e.target.value)
                           }
                           placeholder="Value"
-                          className="h-14 rounded-2xl border-gray-100 dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold text-center"
+                          className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold text-center"
                         />
                       </div>
 
@@ -192,7 +192,7 @@ export default function EventsHighlightsForm() {
                           <button
                             type="button"
                             onClick={() => removeRow(index)}
-                            className="w-12 h-12 rounded-2xl border border-rose-100 dark:border-rose-500/20 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center justify-center transition-all"
+                            className="w-12 h-12 rounded-[var(--vendor-radius-panel)] border border-rose-100 dark:border-rose-500/20 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center justify-center transition-all"
                             title="Remove row"
                           >
                             <X size={18} />
@@ -205,7 +205,7 @@ export default function EventsHighlightsForm() {
 
                 {/* ADD button lives below the rows, not inside them */}
                 <div className="flex items-center justify-between pt-2">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                     {rows.length} / {MAX_ROWS} rows • Min {MIN_ROWS} required
                   </p>
                   <Button
@@ -213,8 +213,8 @@ export default function EventsHighlightsForm() {
                     onClick={addRow}
                     disabled={rows.length >= MAX_ROWS}
                     className={cn(
-                      "h-11 px-5 rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] transition-all disabled:opacity-40 disabled:shadow-none",
-                      "bg-blue-600 hover:bg-blue-700 text-white"
+                      "h-11 px-5 rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] transition-all disabled:opacity-40 disabled:shadow-none",
+                      "bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white"
                     )}
                   >
                     <Plus size={14} className="mr-1" /> Add Row
@@ -225,7 +225,7 @@ export default function EventsHighlightsForm() {
           </div>
 
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8 animate-in fade-in slide-in-from-right duration-1000">
-            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <PersistenceActions
                 onSave={handleSave}
                 onCancel={() => router.back()}

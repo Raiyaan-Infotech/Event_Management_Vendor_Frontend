@@ -98,16 +98,16 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
               <CardHeader className="p-10 pb-0">
                 <div className="flex items-center gap-4">
                   <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center",
+                    "w-12 h-12 rounded-[var(--vendor-radius-panel)] flex items-center justify-center",
                     isClient ? "bg-orange-500/10 text-orange-600" : "bg-purple-500/10 text-purple-600"
                   )}>
                     {isClient ? <Users size={24} /> : <Award size={24} />}
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-black uppercase tracking-tighter">
+                    <CardTitle className="text-[var(--vendor-title-text)] font-bold uppercase tracking-tighter">
                       Edit {label}
                     </CardTitle>
-                    <CardDescription className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    <CardDescription className="text-xs font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide mt-1">
                       Replace the current logo with a new image.
                     </CardDescription>
                   </div>
@@ -124,14 +124,14 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
                 />
 
                 {isLoading ? (
-                  <div className="w-full max-w-sm aspect-square rounded-3xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+                  <div className="w-full max-w-sm aspect-square rounded-[var(--vendor-radius-panel)] bg-gray-100 dark:bg-gray-800 animate-pulse" />
                 ) : (
                   <div
                     onClick={() => !displayUrl && !uploading && fileInputRef.current?.click()}
                     className={cn(
-                      "w-full max-w-sm aspect-square rounded-3xl border-2 border-dashed transition-all relative overflow-hidden flex flex-col items-center justify-center",
+                      "w-full max-w-sm aspect-square rounded-[var(--vendor-radius-panel)] border-2 border-dashed transition-all relative overflow-hidden flex flex-col items-center justify-center",
                       displayUrl
-                        ? "border-gray-200 dark:border-white/10"
+                        ? "border-[var(--vendor-border)] dark:border-white/10"
                         : cn(
                             "cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5",
                             isClient ? "border-orange-200 hover:border-orange-400" : "border-purple-200 hover:border-purple-400"
@@ -141,7 +141,7 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
                     {uploading ? (
                       <div className="flex flex-col items-center gap-3">
                         <div className={cn("w-10 h-10 border-2 border-t-transparent rounded-full animate-spin", isClient ? "border-orange-500" : "border-purple-500")} />
-                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Uploading…</p>
+                        <p className="text-[var(--vendor-control-text)] font-semibold text-gray-500 uppercase tracking-wider">Uploading…</p>
                       </div>
                     ) : displayUrl ? (
                       <>
@@ -154,7 +154,7 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
                           <Button
                             size="icon"
                             onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                            className="w-10 h-10 rounded-xl bg-white text-gray-800 hover:bg-gray-100 shadow-xl"
+                            className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-white text-gray-800 hover:bg-gray-100 shadow-xl"
                           >
                             <Upload size={18} />
                           </Button>
@@ -162,7 +162,7 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
                             size="icon"
                             variant="destructive"
                             onClick={(e) => { e.stopPropagation(); handleRemoveImage(); }}
-                            className="w-10 h-10 rounded-xl shadow-xl"
+                            className="w-10 h-10 rounded-[var(--vendor-radius-control)] shadow-xl"
                           >
                             <X size={18} />
                           </Button>
@@ -170,12 +170,12 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
                       </>
                     ) : (
                       <div className="flex flex-col items-center gap-4 p-8 text-center">
-                        <div className={cn("p-5 rounded-2xl", isClient ? "bg-orange-50 text-orange-500" : "bg-purple-50 text-purple-500")}>
+                        <div className={cn("p-5 rounded-[var(--vendor-radius-panel)]", isClient ? "bg-orange-50 text-orange-500" : "bg-purple-50 text-purple-500")}>
                           <Upload size={32} />
                         </div>
                         <div>
                           <p className="text-sm font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight">Click to upload logo</p>
-                          <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG — max 5MB</p>
+                          <p className="text-[11px] text-[var(--vendor-text-muted)] mt-1">PNG, JPG, SVG — max 5MB</p>
                         </div>
                       </div>
                     )}
@@ -187,7 +187,7 @@ export default function PortfolioItemsEdit({ type, id }: Props) {
 
           {/* SIDEBAR */}
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8 animate-in fade-in slide-in-from-right duration-1000">
-            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <PersistenceActions
                 onSave={handleSave}
                 onCancel={() => router.push(backPath)}

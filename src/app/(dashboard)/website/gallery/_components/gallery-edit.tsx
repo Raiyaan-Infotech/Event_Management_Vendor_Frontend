@@ -133,7 +133,7 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
     return (
       <div className="h-[calc(100vh-86px)] overflow-y-auto bg-[#F8FAFC] dark:bg-black/40">
         <div className="max-w-[1700px] mx-auto px-6 py-8 space-y-8">
-          <Skeleton className="h-12 w-64 rounded-2xl" />
+          <Skeleton className="h-12 w-64 rounded-[var(--vendor-radius-panel)]" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-9"><Skeleton className="h-[500px] w-full rounded-[2.5rem]" /></div>
             <div className="lg:col-span-3"><Skeleton className="h-40 w-full rounded-[2.5rem]" /></div>
@@ -153,12 +153,12 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
             <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none bg-white dark:bg-sidebar rounded-[2.5rem] overflow-hidden">
               <CardHeader className="p-10 pb-0">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                  <div className="w-12 h-12 rounded-[var(--vendor-radius-panel)] bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                     <Camera size={24} />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-black uppercase tracking-tighter">Gallery Details</CardTitle>
-                    <CardDescription className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    <CardTitle className="text-[var(--vendor-title-text)] font-bold uppercase tracking-tighter">Gallery Details</CardTitle>
+                    <CardDescription className="text-xs font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide mt-1">
                       Update the event information and images.
                     </CardDescription>
                   </div>
@@ -169,23 +169,23 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                 {/* Event Name + City */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Event Name</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Event Name</Label>
                     <Input
                       value={formData.eventName}
                       onChange={(e) => setFormData((prev) => ({ ...prev, eventName: e.target.value }))}
                       placeholder="Enter event name..."
-                      className="h-14 rounded-2xl border-gray-100 bg-gray-50/30 focus:bg-white transition-all font-bold"
+                      className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] bg-gray-50/30 focus:bg-white transition-all font-bold"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">City</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">City</Label>
                     <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-[var(--vendor-text-muted)]" />
                       <Input
                         value={formData.city}
                         onChange={(e) => setFormData((prev) => ({ ...prev, city: e.target.value }))}
                         placeholder="Location of event..."
-                        className="h-14 pl-12 rounded-2xl border-gray-100 bg-gray-50/30 focus:bg-white transition-all font-bold"
+                        className="h-14 pl-12 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] bg-gray-50/30 focus:bg-white transition-all font-bold"
                       />
                     </div>
                   </div>
@@ -194,10 +194,10 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                 {/* ── Image Upload Grid (portfolio style) ── */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between px-1">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)]">
                       Event Images
                     </Label>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                       {images.length}/{MAX_PER_VIEW} Photos
                     </span>
                   </div>
@@ -216,7 +216,7 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                     {images.map((img) => (
                       <div
                         key={img.id}
-                        className="group relative aspect-square rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
+                        className="group relative aspect-square rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 overflow-hidden bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
                       >
                         <Image
                           src={img.previewUrl}
@@ -229,7 +229,7 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <button
                             onClick={() => handleRemove(img.id)}
-                            className="w-8 h-8 rounded-xl bg-rose-600 hover:bg-rose-700 flex items-center justify-center text-white shadow-xl transition-all"
+                            className="w-8 h-8 rounded-[var(--vendor-radius-control)] bg-rose-600 hover:bg-rose-700 flex items-center justify-center text-white shadow-xl transition-all"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -242,12 +242,12 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                     {canAddMore && (
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-white/5 transition-all group"
+                        className="aspect-square rounded-[var(--vendor-radius-panel)] border-2 border-dashed border-[var(--vendor-border)] dark:border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-white/5 transition-all group"
                       >
                         <div className="w-9 h-9 rounded-full border-2 border-gray-300 group-hover:border-emerald-500 flex items-center justify-center transition-colors">
-                          <Plus size={16} className="text-gray-400 group-hover:text-emerald-600" />
+                          <Plus size={16} className="text-[var(--vendor-text-muted)] group-hover:text-emerald-600" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-emerald-600">
+                        <span className="text-[10px] font-black uppercase tracking-wide text-[var(--vendor-text-muted)] group-hover:text-emerald-600">
                           Add Photo
                         </span>
                       </button>
@@ -257,7 +257,7 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                     {images.length === 0 && (
                       <div className="col-span-full flex flex-col items-center justify-center py-10 text-gray-300">
                         <ImageIcon size={40} className="mb-2" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">No images yet</span>
+                        <span className="text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide">No images yet</span>
                       </div>
                     )}
                   </div>
@@ -269,8 +269,8 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8 animate-in fade-in slide-in-from-right duration-1000">
 
             {/* Visibility */}
-            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Visibility</p>
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)]">Visibility</p>
               <div className="flex items-center justify-between">
                 <span className="text-[13px] font-bold text-gray-600 dark:text-gray-300">Public / Private</span>
                 <div
@@ -280,7 +280,7 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                   <div className={`relative w-8 h-4 rounded-full ${imgView === 'public' ? 'bg-emerald-300/60' : 'bg-rose-300/60'}`}>
                     <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200 ${imgView === 'public' ? 'left-[18px]' : 'left-0.5'}`} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">{imgView === 'public' ? 'Public' : 'Private'}</span>
+                  <span className="text-[10px] font-black uppercase tracking-wide text-white">{imgView === 'public' ? 'Public' : 'Private'}</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
@@ -292,12 +292,12 @@ export default function GalleryEdit({ onSave, initialData, isLoading = false, lo
                   <div className={`relative w-8 h-4 rounded-full ${isActive ? 'bg-emerald-300/60' : 'bg-gray-200/60'}`}>
                     <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-200 ${isActive ? 'left-[18px]' : 'left-0.5'}`} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">{isActive ? 'ON' : 'OFF'}</span>
+                  <span className="text-[10px] font-black uppercase tracking-wide text-white">{isActive ? 'ON' : 'OFF'}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <PersistenceActions
                 onSave={handleSave}
                 onPreview={() => window.open("/preview?block=gallery", "_blank")}

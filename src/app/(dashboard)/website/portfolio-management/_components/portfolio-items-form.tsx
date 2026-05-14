@@ -77,16 +77,16 @@ export default function PortfolioItemsForm({ type }: Props) {
         <h1 className="text-2xl font-bold text-slate-800 dark:text-white uppercase tracking-tight">
           Add {label} Logo
         </h1>
-        <Button variant="ghost" onClick={() => router.push(backPath)} className="text-[12px] font-bold text-slate-500 hover:text-blue-600 gap-2">
+        <Button variant="ghost" onClick={() => router.push(backPath)} className="text-[var(--vendor-control-text)] font-semibold text-slate-500 hover:text-[var(--vendor-primary-btn)] gap-2">
           <RotateCcw size={14} className="rotate-90" /> BACK TO LIST
         </Button>
       </div>
 
       <div className="max-w-3xl mx-auto space-y-6 px-4">
-        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
           <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-4">
             <div className="flex items-center gap-3">
-              <div className={cn("p-2 rounded-lg", isClient ? "bg-orange-50 dark:bg-orange-950/30" : "bg-purple-50 dark:bg-purple-950/30")}>
+              <div className={cn("p-2 rounded-[var(--vendor-radius-control)]", isClient ? "bg-orange-50 dark:bg-orange-950/30" : "bg-purple-50 dark:bg-purple-950/30")}>
                 <ImageIcon className={cn("w-5 h-5", isClient ? "text-orange-600" : "text-purple-600")} />
               </div>
               <div>
@@ -105,7 +105,7 @@ export default function PortfolioItemsForm({ type }: Props) {
             <div
               onClick={() => !previewUrl && !uploading && fileInputRef.current?.click()}
               className={cn(
-                "w-full max-w-sm aspect-square rounded-3xl border-2 border-dashed transition-all relative overflow-hidden flex flex-col items-center justify-center",
+                "w-full max-w-sm aspect-square rounded-[var(--vendor-radius-panel)] border-2 border-dashed transition-all relative overflow-hidden flex flex-col items-center justify-center",
                 previewUrl
                   ? "border-slate-200"
                   : cn(
@@ -117,7 +117,7 @@ export default function PortfolioItemsForm({ type }: Props) {
               {uploading ? (
                 <div className="flex flex-col items-center gap-3">
                   <div className={cn("w-10 h-10 border-2 border-t-transparent rounded-full animate-spin", isClient ? "border-orange-500" : "border-purple-500")} />
-                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Uploading…</p>
+                  <p className="text-[var(--vendor-control-text)] font-semibold text-slate-500 uppercase tracking-wider">Uploading…</p>
                 </div>
               ) : previewUrl ? (
                 <>
@@ -126,7 +126,7 @@ export default function PortfolioItemsForm({ type }: Props) {
                     <Button
                       size="icon"
                       onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                      className="w-10 h-10 rounded-xl bg-white text-slate-800 hover:bg-slate-100 shadow-xl"
+                      className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-white text-slate-800 hover:bg-slate-100 shadow-xl"
                     >
                       <Upload size={18} />
                     </Button>
@@ -134,7 +134,7 @@ export default function PortfolioItemsForm({ type }: Props) {
                       size="icon"
                       variant="destructive"
                       onClick={(e) => { e.stopPropagation(); handleRemoveImage(); }}
-                      className="w-10 h-10 rounded-xl shadow-xl"
+                      className="w-10 h-10 rounded-[var(--vendor-radius-control)] shadow-xl"
                     >
                       <X size={18} />
                     </Button>
@@ -142,7 +142,7 @@ export default function PortfolioItemsForm({ type }: Props) {
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-4 p-8 text-center">
-                  <div className={cn("p-5 rounded-2xl", isClient ? "bg-orange-50 text-orange-500" : "bg-purple-50 text-purple-500")}>
+                  <div className={cn("p-5 rounded-[var(--vendor-radius-panel)]", isClient ? "bg-orange-50 text-orange-500" : "bg-purple-50 text-purple-500")}>
                     <Upload size={32} />
                   </div>
                   <div>
@@ -159,7 +159,7 @@ export default function PortfolioItemsForm({ type }: Props) {
               <Button
                 variant="ghost"
                 onClick={() => router.push(backPath)}
-                className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-[12px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100"
               >
                 Cancel
               </Button>
@@ -167,7 +167,7 @@ export default function PortfolioItemsForm({ type }: Props) {
                 onClick={handleSave}
                 disabled={!imagePath || addMutation.isPending}
                 className={cn(
-                  "flex-1 h-12 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest transition-all disabled:opacity-50",
+                  "flex-1 h-12 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide transition-all disabled:opacity-50",
                   isClient
                     ? "bg-orange-500 hover:bg-orange-600 shadow-[0_10px_20px_-5px_rgba(249,115,22,0.4)]"
                     : "bg-purple-600 hover:bg-purple-700 shadow-[0_10px_20px_-5px_rgba(147,51,234,0.4)]"

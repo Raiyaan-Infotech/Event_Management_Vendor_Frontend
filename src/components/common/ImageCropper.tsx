@@ -163,19 +163,19 @@ export function ImageCropper({
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden w-full max-w-lg shadow-2xl flex flex-col">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+      <div className="bg-white dark:bg-gray-900 rounded-[var(--vendor-radius-panel)] overflow-hidden w-full max-w-lg shadow-2xl flex flex-col">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--vendor-border)]">
           <div>
-            <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">Crop Profile Photo</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Drag to reposition · Scroll or slider to zoom · Output: <span className="font-semibold text-blue-500">{outputWidth} × {outputHeight} px</span>
+            <h3 className="text-base font-bold text-[var(--vendor-text)]">Crop Profile Photo</h3>
+            <p className="text-xs text-[var(--vendor-text-muted)] mt-0.5">
+              Drag to reposition · Scroll or slider to zoom · Output: <span className="font-semibold text-[var(--vendor-primary-btn)]">{outputWidth} × {outputHeight} px</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 text-[var(--vendor-text-muted)] hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><X size={20} /></button>
         </div>
 
         <div ref={containerRef} className="relative flex items-center justify-center bg-black select-none" style={{ minHeight: canvasSize.h }}>
-          {!imgLoaded && <div className="absolute inset-0 flex items-center justify-center"><div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>}
+          {!imgLoaded && <div className="absolute inset-0 flex items-center justify-center"><div className="w-10 h-10 border-4 border-[var(--vendor-primary-btn)] border-t-transparent rounded-full animate-spin" /></div>}
           <canvas ref={canvasRef} width={canvasSize.w} height={canvasSize.h}
             className={`touch-none ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
             style={{ display: imgLoaded ? "block" : "none" }}
@@ -185,16 +185,16 @@ export function ImageCropper({
           />
         </div>
 
-        <div className="flex items-center gap-3 px-5 py-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.1))} className="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"><ZoomOut size={16} /></button>
+        <div className="flex items-center gap-3 px-5 py-3 border-t border-[var(--vendor-border)] bg-gray-50 dark:bg-gray-800/50">
+          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.1))} className="p-1.5 rounded-[var(--vendor-radius-control)] text-gray-500 hover:text-[var(--vendor-primary-btn)] hover:bg-blue-50 transition-colors"><ZoomOut size={16} /></button>
           <input type="range" min={0.5} max={4} step={0.01} value={zoom} onChange={e => setZoom(Number(e.target.value))} className="flex-1 accent-blue-600" />
-          <button onClick={() => setZoom(z => Math.min(4, z + 0.1))} className="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"><ZoomIn size={16} /></button>
-          <span className="text-xs font-mono text-gray-400 w-10 text-right">{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom(z => Math.min(4, z + 0.1))} className="p-1.5 rounded-[var(--vendor-radius-control)] text-gray-500 hover:text-[var(--vendor-primary-btn)] hover:bg-blue-50 transition-colors"><ZoomIn size={16} /></button>
+          <span className="text-xs font-mono text-[var(--vendor-text-muted)] w-10 text-right">{Math.round(zoom * 100)}%</span>
         </div>
 
-        <div className="flex justify-end gap-3 px-5 py-4 border-t border-gray-100 dark:border-gray-800">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-500 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
-          <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shadow-lg shadow-blue-500/20">
+        <div className="flex justify-end gap-3 px-5 py-4 border-t border-[var(--vendor-border)]">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-500 border border-[var(--vendor-border)] dark:border-gray-700 rounded-[var(--vendor-radius-control)] hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] rounded-[var(--vendor-radius-control)] transition-colors shadow-lg shadow-blue-500/20">
             <Check size={15} strokeWidth={3} /> Crop & Save
           </button>
         </div>

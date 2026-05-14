@@ -24,25 +24,16 @@ export const ActionFooter = ({
   saveIcon: SaveIcon = Check,
   cancelIcon: CancelIcon = X,
   isSubmitting = false,
-  className
+  className,
 }: ActionFooterProps) => {
   return (
-    <div className={cn("space-y-4 pt-4 w-full", className)}>
-      <Button 
-        type="submit"
-        disabled={isSubmitting}
-        onClick={onSave}
-        className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-[13px] font-bold gap-2 transition-all duration-300 shadow-lg shadow-blue-500/20 rounded-xl hover:-translate-y-0.5 hover:shadow-blue-500/40 active:scale-[0.98] flex items-center justify-center uppercase tracking-widest disabled:opacity-50"
-      >
-        <SaveIcon size={18} strokeWidth={2.5} /> 
+    <div className={cn("space-y-3 pt-4 w-full", className)}>
+      <Button type="submit" disabled={isSubmitting} onClick={onSave} className="w-full h-12 gap-2 uppercase tracking-wide disabled:opacity-50">
+        <SaveIcon size={18} strokeWidth={2.5} />
         {isSubmitting ? "Processing..." : saveLabel}
       </Button>
 
-      <Button 
-        type="button"
-        onClick={onCancel}
-        className="w-full h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-bold gap-2 shadow-sm hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center"
-      >
+      <Button type="button" variant="outline" onClick={onCancel} className="w-full h-12 gap-2 uppercase tracking-wide border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
         <CancelIcon size={18} strokeWidth={2.5} /> {cancelLabel}
       </Button>
     </div>

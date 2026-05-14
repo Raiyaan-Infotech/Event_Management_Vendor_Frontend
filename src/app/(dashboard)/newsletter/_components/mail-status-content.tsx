@@ -63,7 +63,7 @@ export default function MailStatusContent() {
       key: "s_no", 
       label: "S.No", 
       render: (_, index) => (
-        <span className="text-[12px] font-bold text-gray-600 dark:text-gray-400">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)]">
           {(currentPage - 1) * itemsPerPage + (index + 1)}
         </span>
       ) 
@@ -83,7 +83,7 @@ export default function MailStatusContent() {
       label: "Email", 
       sortable: true,
       render: (item) => (
-        <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
+        <span className="text-[12px] font-medium text-[var(--vendor-text-muted)]">
           {item.email}
         </span>
       )
@@ -93,7 +93,7 @@ export default function MailStatusContent() {
       label: "Membership", 
       sortable: true,
       render: (item) => (
-        <span className="text-[11px] font-bold text-blue-500 uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-500/20">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-primary-btn)] uppercase tracking-wide bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-[var(--vendor-radius-control)] border border-blue-100 dark:border-[var(--vendor-primary-btn)]/20">
           {item.membership}
         </span>
       )
@@ -103,7 +103,7 @@ export default function MailStatusContent() {
       label: "Template", 
       sortable: true,
       render: (item) => (
-        <span className="text-[12px] font-bold text-gray-700 dark:text-gray-300">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-700 dark:text-gray-300">
           {item.template}
         </span>
       )
@@ -117,12 +117,12 @@ export default function MailStatusContent() {
           {item.status === "Success" ? (
             <>
               <CheckCircle2 size={14} className="text-emerald-500" />
-              <span className="text-[11px] font-black uppercase tracking-[0.1em] text-emerald-600">Success</span>
+              <span className="text-[var(--vendor-control-text)] font-semibold uppercase tracking-[0.1em] text-emerald-600">Success</span>
             </>
           ) : (
             <>
               <XCircle size={14} className="text-rose-500" />
-              <span className="text-[11px] font-black uppercase tracking-[0.1em] text-rose-600">Failed</span>
+              <span className="text-[var(--vendor-control-text)] font-semibold uppercase tracking-[0.1em] text-rose-600">Failed</span>
             </>
           )}
         </div>
@@ -135,11 +135,11 @@ export default function MailStatusContent() {
       render: (item) => (
         <div className="flex items-center gap-2">
           {item.readStatus === "Read" ? (
-             <Eye size={14} className="text-blue-500" />
+             <Eye size={14} className="text-[var(--vendor-primary-btn)]" />
           ) : (
-             <EyeOff size={14} className="text-gray-400" />
+             <EyeOff size={14} className="text-[var(--vendor-text-muted)]" />
           )}
-          <span className={`text-[11px] font-bold uppercase tracking-widest ${item.readStatus === "Read" ? "text-blue-600" : "text-gray-500"}`}>
+          <span className={`text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide ${item.readStatus === "Read" ? "text-[var(--vendor-primary-btn)]" : "text-gray-500"}`}>
             {item.readStatus}
           </span>
         </div>
@@ -188,8 +188,8 @@ export default function MailStatusContent() {
         total={logs.length}
         rightContent={
           <Link href="/newsletter">
-            <Button variant="ghost" className="gap-2 text-gray-400 hover:text-gray-900 transition-all font-bold text-[11px] uppercase tracking-[0.2em] hover:bg-transparent">
-               <ArrowLeft size={16} className="text-blue-500" strokeWidth={3} /> Back to Newsletter
+            <Button variant="ghost" className="gap-2 text-[var(--vendor-text-muted)] hover:text-gray-900 transition-all font-bold text-[11px] uppercase tracking-[0.2em] hover:bg-transparent">
+               <ArrowLeft size={16} className="text-[var(--vendor-primary-btn)]" strokeWidth={3} /> Back to Newsletter
             </Button>
           </Link>
         }
@@ -203,12 +203,12 @@ export default function MailStatusContent() {
         filterContent={
           <div className="space-y-4">
              <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Subscription</p>
+                <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Subscription</p>
                 <Select value={filterSubscription} onValueChange={setFilterSubscription}>
-                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                   <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50">
                       <SelectValue placeholder="All" />
                    </SelectTrigger>
-                   <SelectContent className="rounded-xl font-bold">
+                   <SelectContent className="rounded-[var(--vendor-radius-control)] font-bold">
                       <SelectItem value="All">All</SelectItem>
                       <SelectItem value="Subscribed">Subscribers Only</SelectItem>
                       <SelectItem value="Unsubscribed">Unsubscribers Only</SelectItem>
@@ -216,12 +216,12 @@ export default function MailStatusContent() {
                 </Select>
              </div>
              <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Delivery Status</p>
+                <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Delivery Status</p>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
-                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                   <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50">
                       <SelectValue placeholder="All Status" />
                    </SelectTrigger>
-                   <SelectContent className="rounded-xl font-bold">
+                   <SelectContent className="rounded-[var(--vendor-radius-control)] font-bold">
                       <SelectItem value="All">All Status</SelectItem>
                       <SelectItem value="Success">Success Only</SelectItem>
                       <SelectItem value="Failed">Failed Only</SelectItem>
@@ -229,12 +229,12 @@ export default function MailStatusContent() {
                 </Select>
              </div>
              <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Plan / Membership</p>
+                <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Plan / Membership</p>
                 <Select value={filterPlan} onValueChange={setFilterPlan}>
-                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                   <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50">
                       <SelectValue placeholder="All Plans" />
                    </SelectTrigger>
-                   <SelectContent className="rounded-xl font-bold">
+                   <SelectContent className="rounded-[var(--vendor-radius-control)] font-bold">
                       <SelectItem value="All">All Plans</SelectItem>
                       <SelectItem value="Guest">Guest</SelectItem>
                       {planOptions.map(p => (
@@ -244,19 +244,19 @@ export default function MailStatusContent() {
                 </Select>
              </div>
              <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Read Status</p>
+                <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Read Status</p>
                 <Select value={filterReadStatus} onValueChange={setFilterReadStatus}>
-                   <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50">
+                   <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50">
                       <SelectValue placeholder="All" />
                    </SelectTrigger>
-                   <SelectContent className="rounded-xl font-bold">
+                   <SelectContent className="rounded-[var(--vendor-radius-control)] font-bold">
                       <SelectItem value="All">All</SelectItem>
                       <SelectItem value="Read">Read Only</SelectItem>
                       <SelectItem value="Unread">Unread Only</SelectItem>
                    </SelectContent>
                 </Select>
              </div>
-             <Button variant="ghost" onClick={() => { setFilterStatus("All"); setFilterPlan("All"); setFilterReadStatus("All"); setFilterSubscription("All"); }} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all font-bold">
+             <Button variant="ghost" onClick={() => { setFilterStatus("All"); setFilterPlan("All"); setFilterReadStatus("All"); setFilterSubscription("All"); }} className="w-full h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide text-rose-500 hover:bg-rose-50 transition-all font-bold">
                 Reset
              </Button>
           </div>
@@ -272,7 +272,7 @@ export default function MailStatusContent() {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable 
           data={paginatedData}
           columns={columns}
@@ -286,7 +286,7 @@ export default function MailStatusContent() {
           sortConfig={sortConfig}
           noCard={true}
           actionContent={(item) => (
-              <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">
+              <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">
                  <Trash2 size={15} /> <span className="text-[13px]">Delete Log</span>
               </DropdownMenuItem>
           )}
@@ -309,7 +309,7 @@ export default function MailStatusContent() {
                   : "No results match your filters"}
               </h4>
               {logs.length > 0 && (
-                <p className="text-sm text-gray-400 font-medium">Try adjusting or resetting your filters</p>
+                <p className="text-sm text-[var(--vendor-text-muted)] font-medium">Try adjusting or resetting your filters</p>
               )}
             </div>
           }

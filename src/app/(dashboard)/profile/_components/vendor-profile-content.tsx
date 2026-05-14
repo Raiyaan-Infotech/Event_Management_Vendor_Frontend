@@ -84,7 +84,7 @@ export function VendorProfileContent() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 py-3.5 flex items-center justify-center gap-2 text-[12px] font-bold rounded-[3px] transition-all outline-none ${
+                    className={`flex-1 py-3.5 flex items-center justify-center gap-2 text-[var(--vendor-control-text)] font-semibold rounded-[3px] transition-all outline-none ${
                       activeTab === tab.id
                         ? "bg-card text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"

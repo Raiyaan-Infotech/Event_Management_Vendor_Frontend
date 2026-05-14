@@ -86,7 +86,7 @@ export default function ContactInfoPage() {
       {/* Page Header */}
       <div className="max-w-[1700px] mx-auto mb-8">
         <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1">Contact Info</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-[var(--vendor-text-muted)]">
           Manage the contact details shown in your website header and footer.
         </p>
       </div>
@@ -94,16 +94,16 @@ export default function ContactInfoPage() {
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Main Card */}
         <div className="lg:col-span-9">
-          <div className="bg-white dark:bg-sidebar p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
+          <div className="bg-white dark:bg-sidebar p-8 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
 
             {/* Card Header */}
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
+              <div className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-primary/5 flex items-center justify-center text-primary">
                 <Contact size={20} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Contact Info</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <h3 className="text-xl font-bold text-[var(--vendor-text)]">Contact Info</h3>
+                <p className="text-xs text-[var(--vendor-text-muted)] mt-0.5">
                   These details appear in your website header and footer.
                 </p>
               </div>
@@ -114,14 +114,14 @@ export default function ContactInfoPage() {
               {/* Default Contact */}
               <div
                 onClick={() => isEditing && setContactMode("default")}
-                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 ${
+                className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 transition-all duration-300 ${
                   isEditing ? "cursor-pointer" : "cursor-default"
                 } ${
                   contactMode === "default"
                     ? "border-primary bg-primary/5 shadow-md shadow-primary/5" + (isEditing ? " scale-[1.02]" : "")
                     : isEditing
-                      ? "border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5 opacity-60 hover:opacity-100 hover:border-gray-200"
-                      : "border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5"
+                      ? "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 opacity-60 hover:opacity-100 hover:border-[var(--vendor-border)]"
+                      : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5"
                 }`}
               >
                 <div className="flex items-center gap-3 mb-6">
@@ -137,7 +137,7 @@ export default function ContactInfoPage() {
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                    <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                       <Phone className="size-2.5" /> MOBILE
                     </Label>
                     <Input
@@ -145,11 +145,11 @@ export default function ContactInfoPage() {
                       onChange={(e) => setDefaultContact({ ...defaultContact, mobile: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Enter Mobile Number..."
-                      className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                      className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                    <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                       <Mail className="size-2.5" /> EMAIL
                     </Label>
                     <Input
@@ -157,11 +157,11 @@ export default function ContactInfoPage() {
                       onChange={(e) => setDefaultContact({ ...defaultContact, email: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Enter Email ID..."
-                      className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                      className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                    <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                       <MapPin className="size-2.5" /> ADDRESS
                     </Label>
                     <Textarea
@@ -169,7 +169,7 @@ export default function ContactInfoPage() {
                       onChange={(e) => setDefaultContact({ ...defaultContact, address: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Enter Address..."
-                      className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg resize-none leading-relaxed font-medium"
+                      className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium"
                     />
                   </div>
                 </div>
@@ -178,14 +178,14 @@ export default function ContactInfoPage() {
               {/* Alternative Contact */}
               <div
                 onClick={() => isEditing && setContactMode("alternative")}
-                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 ${
+                className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 transition-all duration-300 ${
                   isEditing ? "cursor-pointer" : "cursor-default"
                 } ${
                   contactMode === "alternative"
                     ? "border-primary bg-primary/5 shadow-md shadow-primary/5" + (isEditing ? " scale-[1.02]" : "")
                     : isEditing
-                      ? "border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5 opacity-60 hover:opacity-100 hover:border-gray-200"
-                      : "border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-white/5"
+                      ? "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 opacity-60 hover:opacity-100 hover:border-[var(--vendor-border)]"
+                      : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5"
                 }`}
               >
                 <div className="flex items-center gap-3 mb-6">
@@ -201,7 +201,7 @@ export default function ContactInfoPage() {
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                    <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                       <Phone className="size-2.5" /> MOBILE
                     </Label>
                     <Input
@@ -209,12 +209,12 @@ export default function ContactInfoPage() {
                       onChange={(e) => setAltContact({ ...altContact, mobile: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Enter Mobile Number..."
-                      className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                      className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                     />
                   </div>
                   
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                    <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                       <Mail className="size-2.5" /> EMAIL
                     </Label>
                     <Input
@@ -222,11 +222,11 @@ export default function ContactInfoPage() {
                       onChange={(e) => setAltContact({ ...altContact, email: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Enter Email ID..."
-                      className="h-10 text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg font-medium"
+                      className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                    <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                       <MapPin className="size-2.5" /> ADDRESS
                     </Label>
                     <Textarea
@@ -234,7 +234,7 @@ export default function ContactInfoPage() {
                       onChange={(e) => setAltContact({ ...altContact, address: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Enter Address..."
-                      className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-gray-100 dark:border-gray-800 rounded-lg resize-none leading-relaxed font-medium"
+                      className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium"
                     />
                   </div>
                 </div>
@@ -246,13 +246,13 @@ export default function ContactInfoPage() {
 
         {/* Sticky Sidebar */}
         <div className="lg:col-span-3 space-y-4 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
             <Button
               onClick={() => setIsEditing(!isEditing)}
-              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
+              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
                 isEditing
                   ? "bg-amber-500 text-white border-none hover:bg-amber-600 shadow-amber-500/20"
-                  : "bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  : "bg-white dark:bg-[#1e293b] text-[var(--vendor-text)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] hover:bg-gray-50 dark:hover:bg-gray-800/50"
               }`}
             >
               <Edit className="size-4" />
@@ -270,31 +270,31 @@ export default function ContactInfoPage() {
           </div>
 
           {/* Quick summary panel */}
-          <div className="bg-white dark:bg-sidebar/50 p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Default</p>
+          <div className="bg-[var(--vendor-panel-bg)] p-4 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--vendor-text-muted)]">Default</p>
             {[
               { icon: Phone,  value: defaultContact.mobile  },
               { icon: Mail,   value: defaultContact.email   },
               { icon: MapPin, value: defaultContact.address },
             ].map(({ icon: Icon, value }, i) => (
               <div key={i} className="flex items-start gap-2">
-                <Icon className="size-3 text-gray-400 mt-0.5 shrink-0" />
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                <Icon className="size-3 text-[var(--vendor-text-muted)] mt-0.5 shrink-0" />
+                <p className="text-[11px] text-[var(--vendor-text-muted)] truncate">
                   {value || <span className="italic text-gray-300 dark:text-gray-600">Not set</span>}
                 </p>
               </div>
             ))}
 
-            <div className="border-t border-gray-100 dark:border-white/5 pt-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">Alternative</p>
+            <div className="border-t border-[var(--vendor-border)] dark:border-white/5 pt-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--vendor-text-muted)] mb-2">Alternative</p>
               {[
                 { icon: Phone,  value: altContact.mobile      },
                 { icon: Mail,   value: altContact.email       },
                 { icon: MapPin, value: altContact.address     },
               ].map(({ icon: Icon, value }, i) => (
                 <div key={i} className="flex items-start gap-2 mb-2">
-                  <Icon className="size-3 text-gray-400 mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                  <Icon className="size-3 text-[var(--vendor-text-muted)] mt-0.5 shrink-0" />
+                  <p className="text-[11px] text-[var(--vendor-text-muted)] truncate">
                     {value || <span className="italic text-gray-300 dark:text-gray-600">Not set</span>}
                   </p>
                 </div>

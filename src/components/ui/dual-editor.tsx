@@ -16,14 +16,14 @@ export function DualEditor({ value, onChange, placeholder = "Type here...", minH
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between mb-1">
-         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+         <span className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
             {isHtmlMode ? "HTML Editor" : "Text Editor"}
          </span>
-        <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-lg">
+        <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-[var(--vendor-radius-control)]">
           <button
             onClick={() => setIsHtmlMode(false)}
             className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${
-              !isHtmlMode ? "bg-white dark:bg-[#1e1e1e] shadow-sm text-primary" : "text-gray-400"
+              !isHtmlMode ? "bg-white dark:bg-[#1e1e1e] shadow-sm text-primary" : "text-[var(--vendor-text-muted)]"
             }`}
           >
             Visual
@@ -31,7 +31,7 @@ export function DualEditor({ value, onChange, placeholder = "Type here...", minH
           <button
             onClick={() => setIsHtmlMode(true)}
             className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${
-              isHtmlMode ? "bg-white dark:bg-[#1e1e1e] shadow-sm text-primary" : "text-gray-400"
+              isHtmlMode ? "bg-white dark:bg-[#1e1e1e] shadow-sm text-primary" : "text-[var(--vendor-text-muted)]"
             }`}
           >
             HTML
@@ -39,7 +39,7 @@ export function DualEditor({ value, onChange, placeholder = "Type here...", minH
         </div>
       </div>
       <div 
-        className={`rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden bg-gray-50 focus-within:bg-white dark:bg-[#1e1e1e] transition-all relative ${!isHtmlMode ? "min-h-fit" : ""}`}
+        className={`rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] overflow-hidden bg-gray-50 focus-within:bg-white dark:bg-[#1e1e1e] transition-all relative ${!isHtmlMode ? "min-h-fit" : ""}`}
         style={{ minHeight: isHtmlMode ? minHeight : 'auto' }}
       >
         {isHtmlMode ? (

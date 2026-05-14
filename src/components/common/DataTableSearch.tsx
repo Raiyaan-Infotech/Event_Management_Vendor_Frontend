@@ -2,11 +2,13 @@ import React from "react";
 import { Search, Filter, Columns } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { vendorUi } from "@/lib/vendor-ui";
 
 interface DataTableSearchProps {
   searchQuery: string;
@@ -18,37 +20,43 @@ interface DataTableSearchProps {
   isFiltered?: boolean;
 }
 
-export function DataTableSearch({ 
-  searchQuery, 
-  onSearchChange, 
-  placeholder, 
-  filterContent, 
+export function DataTableSearch({
+  searchQuery,
+  onSearchChange,
+  placeholder,
+  filterContent,
   columnContent,
   rightContent,
-  isFiltered = false
+  isFiltered = false,
 }: DataTableSearchProps) {
   return (
-    <div className="shrink-0 bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row gap-4 items-center">
+    <div className={cn("shrink-0 flex flex-col md:flex-row gap-3 items-center", vendorUi.panel.base, "p-3")}>
       <div className="relative flex-1 w-full md:w-auto group">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 transition-colors group-focus-within:text-blue-500">
+        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--vendor-text-muted)] transition-colors group-focus-within:text-[var(--vendor-primary-btn)]">
           <Search size={18} />
         </div>
-        <Input 
+        <Input
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={placeholder} 
-          className="h-12 w-full pl-12 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5 transition-all text-sm font-medium"
+          placeholder={placeholder}
+          className="h-9 w-full pl-10 bg-[var(--vendor-page-bg)] transition-all text-[12px] font-medium"
         />
       </div>
       <div className="flex items-center gap-2">
         {filterContent && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={`h-12 px-6 border-gray-100 dark:border-gray-800 transition-all rounded-2xl gap-2 font-bold text-[11px] uppercase tracking-widest ${isFiltered ? "text-blue-500 border-blue-500/20 bg-blue-50/50" : "text-gray-400 hover:bg-gray-100"}`}>
-                <Filter size={16} /> Filters {isFiltered && "•"}
+              <Button
+                variant="outline"
+                className={cn(
+                  "h-9 px-3 gap-2 text-[10px] uppercase tracking-wide",
+                  isFiltered && "text-[var(--vendor-primary-btn)] border-[var(--vendor-primary-btn)] bg-[var(--vendor-table-row-hover)]"
+                )}
+              >
+                <Filter size={16} /> Filters {isFiltered && "*"}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-2xl p-3 border-gray-100 shadow-2xl">
+            <DropdownMenuContent align="end" className="w-56 rounded-[var(--vendor-radius-panel)] p-3 border-[var(--vendor-border)] shadow-[var(--vendor-shadow-panel)]">
               {filterContent}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -57,11 +65,11 @@ export function DataTableSearch({
         {columnContent && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-12 px-6 border-gray-100 dark:border-gray-800 transition-all rounded-2xl gap-2 font-bold text-[11px] uppercase tracking-widest text-gray-400 hover:bg-gray-100">
+              <Button variant="outline" className="h-9 px-3 gap-2 text-[10px] uppercase tracking-wide">
                 <Columns size={16} /> Columns
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 rounded-2xl p-3 border-gray-100 shadow-2xl overflow-hidden">
+            <DropdownMenuContent align="end" className="w-64 rounded-[var(--vendor-radius-panel)] p-3 border-[var(--vendor-border)] shadow-[var(--vendor-shadow-panel)] overflow-hidden">
               {columnContent}
             </DropdownMenuContent>
           </DropdownMenu>

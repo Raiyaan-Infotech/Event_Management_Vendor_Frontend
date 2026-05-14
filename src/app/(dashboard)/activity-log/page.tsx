@@ -34,15 +34,15 @@ function getIconAndColor(action: string) {
     case 'login':
       return { Icon: LogIn,    color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' };
     case 'logout':
-      return { Icon: LogOut,   color: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' };
+      return { Icon: LogOut,   color: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-[var(--vendor-text-muted)]' };
     case 'update_profile':
-      return { Icon: User,     color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' };
+      return { Icon: User,     color: 'bg-blue-100 text-[var(--vendor-primary-btn)] dark:bg-blue-950/40 dark:text-blue-400' };
     case 'change_password':
       return { Icon: Key,      color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' };
     case 'failed_login':
       return { Icon: AlertTriangle, color: 'bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-400' };
     case 'new_device':
-      return { Icon: Smartphone, color: 'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' };
+      return { Icon: Smartphone, color: 'bg-blue-100 text-[var(--vendor-primary-btn)] dark:bg-blue-950/40 dark:text-blue-400' };
     case '2fa':
       return { Icon: Shield,   color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' };
     default:
@@ -110,7 +110,7 @@ export default function ActivityLogPage() {
       value: data?.pagination.total ?? 0,
       Icon: Activity,
       bg:   'bg-blue-50 dark:bg-blue-950/30',
-      icon: 'text-blue-600 dark:text-blue-400',
+      icon: 'text-[var(--vendor-primary-btn)] dark:text-blue-400',
     },
     {
       label: 'Auth Events',
@@ -150,20 +150,20 @@ export default function ActivityLogPage() {
         {/* Stats Row */}
         <div className="shrink-0 grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map(({ label, value, Icon, bg, icon }) => (
-            <div key={label} className="bg-card border border-border rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${bg}`}>
+            <div key={label} className="bg-card border border-border rounded-[var(--vendor-radius-panel)] px-5 py-4 flex items-center gap-4 shadow-sm">
+              <div className={`w-10 h-10 rounded-[var(--vendor-radius-control)] flex items-center justify-center shrink-0 ${bg}`}>
                 <Icon className={`w-5 h-5 ${icon}`} />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground leading-none">{value}</p>
-                <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mt-1.5">{label}</p>
+                <p className="text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wide mt-1.5">{label}</p>
               </div>
             </div>
           ))}
         </div>
 
         {/* Main Card */}
-        <div className="flex-1 min-h-0 bg-card rounded-3xl border border-border overflow-hidden flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.03)]">
+        <div className="flex-1 min-h-0 bg-card rounded-[var(--vendor-radius-panel)] border border-border overflow-hidden flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.03)]">
           {/* Toolbar */}
           <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-border/60 bg-muted/10">
             <div className="relative w-full sm:w-72 group">
@@ -173,7 +173,7 @@ export default function ActivityLogPage() {
                 placeholder="Search activity…"
                 value={search}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 border border-border rounded-xl text-sm bg-muted/30 focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all font-medium"
+                className="w-full pl-9 pr-4 py-2.5 border border-border rounded-[var(--vendor-radius-control)] text-sm bg-muted/30 focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all font-medium"
               />
             </div>
 
@@ -183,7 +183,7 @@ export default function ActivityLogPage() {
                 <button
                   key={id}
                   onClick={() => handleCategoryChange(id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                  className={`px-3 py-1.5 rounded-[var(--vendor-radius-control)] text-xs font-bold uppercase tracking-wider transition-all ${
                     category === id
                       ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                       : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -193,7 +193,7 @@ export default function ActivityLogPage() {
                 </button>
               ))}
               <div className="h-6 w-px bg-border mx-1" />
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-all">
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--vendor-radius-control)] text-xs font-bold uppercase tracking-wider bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-all">
                 <Download className="w-3.5 h-3.5" />
                 Export
               </button>
@@ -202,13 +202,13 @@ export default function ActivityLogPage() {
 
           {/* Result count strip */}
           <div className="shrink-0 flex items-center justify-between px-6 py-2.5 bg-muted/20 border-b border-border/40">
-            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wide">
               Showing <span className="text-foreground">{activities.length}</span> Results
               {category !== 'all' && (
                 <> IN <span className="text-primary">{CATEGORIES.find((c) => c.id === category)?.label}</span></>
               )}
             </span>
-            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
               <Calendar className="w-3 h-3" />
               Last 30 days
             </span>
@@ -255,9 +255,9 @@ export default function ActivityLogPage() {
                         <p className="text-sm font-bold text-foreground leading-tight group-hover:text-primary transition-colors">{formatActionTitle(activity.action)}</p>
                         <p className="text-[13px] text-muted-foreground leading-snug mt-1 font-medium">{activity.description ?? '—'}</p>
                         <div className="flex items-center gap-3 mt-1.5">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">{device}</span>
+                          <span className="text-[10px] font-black uppercase tracking-wide text-muted-foreground/50">{device}</span>
                           <span className="size-1 rounded-full bg-border" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{cat}</span>
+                          <span className="text-[10px] font-black uppercase tracking-wide text-primary/70">{cat}</span>
                         </div>
                       </div>
 
@@ -277,14 +277,14 @@ export default function ActivityLogPage() {
           {/* Pagination Footer */}
           {!isLoading && totalPages > 1 && (
             <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-border/60 bg-muted/5">
-              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wide">
                 Page <span className="text-foreground">{currentPage}</span> of {totalPages}
               </span>
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className="w-9 h-9 flex items-center justify-center rounded-[var(--vendor-radius-control)] border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -292,7 +292,7 @@ export default function ActivityLogPage() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-9 h-9 flex items-center justify-center rounded-xl text-xs font-black transition-all ${
+                    className={`w-9 h-9 flex items-center justify-center rounded-[var(--vendor-radius-control)] text-xs font-black transition-all ${
                       p === currentPage
                         ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
                         : 'border border-border text-muted-foreground hover:bg-muted'
@@ -304,7 +304,7 @@ export default function ActivityLogPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className="w-9 h-9 flex items-center justify-center rounded-[var(--vendor-radius-control)] border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -327,22 +327,22 @@ export default function ActivityLogPage() {
             onClick={() => setDetailEntry(null)}
           >
             <div
-              className="bg-card border border-border rounded-3xl shadow-2xl p-8 max-w-md w-full animate-in zoom-in-95 duration-200"
+              className="bg-card border border-border rounded-[var(--vendor-radius-panel)] shadow-2xl p-8 max-w-md w-full animate-in zoom-in-95 duration-200"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start justify-between mb-8">
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-current/10 ${color}`}>
+                  <div className={`w-12 h-12 rounded-[var(--vendor-radius-panel)] flex items-center justify-center shadow-lg shadow-current/10 ${color}`}>
                     <Icon className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-foreground leading-tight">{formatActionTitle(detailEntry.action)}</h3>
-                    <span className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mt-1.5 block">{cat}</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-wide leading-none mt-1.5 block">{cat}</span>
                   </div>
                 </div>
                 <button
                   onClick={() => setDetailEntry(null)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                  className="w-10 h-10 flex items-center justify-center rounded-[var(--vendor-radius-control)] text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 >
                   ✕
                 </button>
@@ -357,7 +357,7 @@ export default function ActivityLogPage() {
                   { label: 'IP Address',  value: detailEntry.ip_address ?? '—' },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex flex-col py-4 first:pt-0 last:pb-0">
-                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1.5">{label}</span>
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wide mb-1.5">{label}</span>
                     <span className="text-sm font-bold text-foreground leading-relaxed">{value}</span>
                   </div>
                 ))}
@@ -365,7 +365,7 @@ export default function ActivityLogPage() {
 
               <button
                 onClick={() => setDetailEntry(null)}
-                className="w-full mt-8 bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0"
+                className="w-full mt-8 bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-[var(--vendor-radius-panel)] font-bold text-sm transition-all shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0"
               >
                 Done
               </button>

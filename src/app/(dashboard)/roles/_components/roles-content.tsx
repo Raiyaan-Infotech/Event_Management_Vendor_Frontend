@@ -57,10 +57,10 @@ export default function RolesContent() {
       sortable: true,
       render: (item) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
-            <Shield size={16} className="text-blue-600" />
+          <div className="w-9 h-9 rounded-[var(--vendor-radius-control)] bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+            <Shield size={16} className="text-[var(--vendor-primary-btn)]" />
           </div>
-          <span className="font-bold text-sm text-gray-800 dark:text-gray-100 uppercase tracking-tight">{item.name}</span>
+          <span className="font-bold text-sm text-[var(--vendor-text)] uppercase tracking-tight">{item.name}</span>
         </div>
       ),
     },
@@ -69,7 +69,7 @@ export default function RolesContent() {
       label: "Description",
       sortable: true,
       render: (item) => (
-        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate font-medium italic">
+        <p className="text-sm text-[var(--vendor-text-muted)] max-w-xs truncate font-medium italic">
           {item.description || "—"}
         </p>
       ),
@@ -149,7 +149,7 @@ export default function RolesContent() {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={roles}
           columns={roleColumns}
@@ -166,13 +166,13 @@ export default function RolesContent() {
             <>
               <DropdownMenuItem
                 onClick={() => router.push(`/roles/edit/${item.id}`)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-700"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-700"
               >
-                <Edit2 size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">Edit</span>
+                <Edit2 size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setRoleToDelete(item)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
               >
                 <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
               </DropdownMenuItem>
@@ -198,22 +198,22 @@ export default function RolesContent() {
       </div>
 
       <Dialog open={roleToDelete !== null} onOpenChange={(open) => { if (!open) setRoleToDelete(null); }}>
-        <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl">
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-xl mb-8">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-xl mb-8">
               <Trash2 size={40} strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">Delete Role?</DialogTitle>
-            <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed max-w-[280px]">
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">Delete Role?</DialogTitle>
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed max-w-[280px]">
               Are you sure you want to delete the role &quot;{roleToDelete?.name}&quot;? This may affect staff permissions.
             </DialogDescription>
           </div>
-          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
-            <Button variant="ghost" onClick={() => setRoleToDelete(null)} className="flex-1 h-12 rounded-2xl font-bold uppercase tracking-widest text-gray-400">Cancel</Button>
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
+            <Button variant="ghost" onClick={() => setRoleToDelete(null)} className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold uppercase tracking-wide text-[var(--vendor-text-muted)]">Cancel</Button>
             <Button
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
-              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg"
+              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black uppercase tracking-wide shadow-lg"
             >
               {deleteMutation.isPending ? "Deleting..." : "Delete"}
             </Button>

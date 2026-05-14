@@ -1,0 +1,184 @@
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, Building2, Edit2, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  Dialog, DialogContent, DialogDescription, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { PageHeader } from "@/components/common/PageHeader";
+import { DataTable, Column } from "@/components/common/DataTable";
+import { DataTableSearch } from "@/components/common/DataTableSearch";
+import { PaginationControls } from "@/components/common/PaginationControls";
+import { ActionButton } from "@/components/common/ActionButton";
+import { ColumnToggle } from "@/components/common/ColumnToggle";
+import {
+  useVendorDepartments, useDeleteVendorDepartment, type VendorDepartment,
+} from "@/hooks/use-vendor-departments";
+
+export default function DepartmentsContent() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery]   = useState("");
+  const [currentPage, setCurrentPage]   = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortConfig, setSortConfig]     = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "id", order: "desc" });
+  const [selectedIds, setSelectedIds]   = useState<(string | number)[]>([]);
+  const [deptToDelete, setDeptToDelete] = useState<VendorDepartment | null>(null);
+
+  const { data, isLoading } = useVendorDepartments({ page: currentPage, limit: itemsPerPage, search: searchQuery });
+  const deleteMutation = useDeleteVendorDepartment();
+
+  const departments = data?.data ?? [];
+  const total       = data?.pagination?.total ?? 0;
+
+  const columns: Column<VendorDepartment>[] = [
+    {
+      key: "name",
+      label: "Department",
+      sortable: true,
+      render: (item) => (
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-[var(--vendor-radius-control)] bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+            <Building2 size={16} className="text-indigo-600" />
+          </div>
+          <span className="font-bold text-sm text-[var(--vendor-text)] uppercase tracking-tight">{item.name}</span>
+        </div>
+      ),
+    },
+    {
+      key: "description",
+      label: "Description",
+      sortable: true,
+      render: (item) => (
+        <p className="text-sm text-[var(--vendor-text-muted)] max-w-xs truncate font-medium italic">
+          {item.description || "—"}
+        </p>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Status",
+      sortable: true,
+      render: (item) =>
+        item.is_active === 1 ? (
+          <span className="inline-flex items-center text-[10px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-100 dark:border-emerald-500/20 uppercase">
+            <CheckCircle2 size={12} className="mr-1.5" /> Active
+          </span>
+        ) : (
+          <span className="inline-flex items-center text-[10px] font-black text-amber-600 bg-amber-50 dark:bg-amber-500/10 px-3 py-1 rounded-full border border-amber-100 dark:border-amber-500/20 uppercase">
+            <XCircle size={12} className="mr-1.5" /> Inactive
+          </span>
+        ),
+    },
+  ];
+
+  const allColumnKeys = columns.map((c) => c.key);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumnKeys);
+  const [tempColumns, setTempColumns]       = useState<string[]>(allColumnKeys);
+
+  const handleDelete = async () => {
+    if (!deptToDelete) return;
+    deleteMutation.mutate(deptToDelete.id, {
+      onSuccess: () => { toast.success(`Department "${deptToDelete.name}" deleted`); setDeptToDelete(null); },
+    });
+  };
+
+  return (
+    <div className="h-[calc(100vh-86px)] flex flex-col space-y-4 max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden pt-8 pb-3">
+      <PageHeader
+        title="DEPARTMENTS"
+        subtitle="Manage staff departments for your organisation."
+        total={total}
+        rightContent={
+          <ActionButton
+            label="ADD DEPARTMENT"
+            variant_type="Client"
+            icon={Plus}
+            onClick={() => router.push("/settings/department/create")}
+          />
+        }
+      />
+
+      <DataTableSearch
+        searchQuery={searchQuery}
+        onSearchChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
+        placeholder="Search departments..."
+        isFiltered={false}
+        columnContent={
+          <ColumnToggle
+            columns={columns.map((c) => ({ key: c.key, label: c.label }))}
+            tempColumns={tempColumns}
+            onToggle={(key) => setTempColumns((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key])}
+            onToggleAll={() => setTempColumns(tempColumns.length === allColumnKeys.length ? [] : allColumnKeys)}
+            onSave={() => { setVisibleColumns(tempColumns); toast.success("Columns updated"); }}
+          />
+        }
+      />
+
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+        <DataTable
+          data={departments}
+          columns={columns}
+          visibleColumns={visibleColumns}
+          selectedIds={selectedIds}
+          rowIdKey="id"
+          loading={isLoading}
+          onSelect={(id) => setSelectedIds((prev) => prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id])}
+          onSelectAll={() => setSelectedIds(selectedIds.length === departments.length ? [] : departments.map((d) => d.id))}
+          onSort={(key) => setSortConfig((prev) => ({ key, order: prev.key === key && prev.order === "asc" ? "desc" : "asc" }))}
+          sortConfig={sortConfig}
+          noCard={true}
+          actionContent={(item) => (
+            <>
+              <DropdownMenuItem onClick={() => router.push(`/settings/department/edit/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-700">
+                <Edit2 size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold">Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDeptToDelete(item)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
+                <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
+              </DropdownMenuItem>
+            </>
+          )}
+          emptyContent={
+            <div className="flex flex-col items-center justify-center space-y-5 animate-in fade-in duration-700">
+              <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+                <Building2 size={32} />
+              </div>
+              <h4 className="text-2xl font-bold text-gray-800">No departments found</h4>
+            </div>
+          }
+        />
+        <PaginationControls
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          totalResults={total}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
+        />
+      </div>
+
+      <Dialog open={deptToDelete !== null} onOpenChange={(open) => { if (!open) setDeptToDelete(null); }}>
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl">
+          <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-xl mb-8">
+              <Trash2 size={40} strokeWidth={2.5} />
+            </div>
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">Delete Department?</DialogTitle>
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed max-w-[280px]">
+              Are you sure you want to delete &quot;{deptToDelete?.name}&quot;?
+            </DialogDescription>
+          </div>
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
+            <Button variant="ghost" onClick={() => setDeptToDelete(null)} className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold uppercase tracking-wide text-[var(--vendor-text-muted)]">Cancel</Button>
+            <Button onClick={handleDelete} disabled={deleteMutation.isPending} className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black uppercase tracking-wide shadow-lg">
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

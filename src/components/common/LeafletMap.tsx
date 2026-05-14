@@ -57,7 +57,7 @@ export default function LeafletMap({
   readOnly = false
 }: LeafletMapProps) {
   return (
-    <div className="w-full h-full min-h-[400px] relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+    <div className="w-full h-full min-h-[400px] relative rounded-[var(--vendor-radius-panel)] overflow-hidden border border-[var(--vendor-border)]">
       <MapContainer 
         center={center} 
         zoom={zoom} 

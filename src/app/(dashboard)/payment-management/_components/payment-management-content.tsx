@@ -51,28 +51,28 @@ export default function PaymentManagementContent() {
   
   const paymentColumns: Column<Payment>[] = [
     { key: "orderId", label: "Order ID", sortable: true, render: (item) => <span className="text-[12px] font-black text-gray-800 dark:text-gray-200 tracking-tight">{item.orderId}</span> },
-    { key: "eventId", label: "Event ID", sortable: true, render: (item) => <span className="text-[12px] font-bold text-gray-500 uppercase tracking-tighter">#{item.eventId}</span> },
-    { key: "clientId", label: "Client ID", sortable: true, render: (item) => <Badge variant="outline" className="text-[10px] font-black border-gray-200/60 text-gray-400 bg-white dark:bg-gray-800">{item.clientId}</Badge> },
+    { key: "eventId", label: "Event ID", sortable: true, render: (item) => <span className="text-[var(--vendor-control-text)] font-semibold text-gray-500 uppercase tracking-tighter">#{item.eventId}</span> },
+    { key: "clientId", label: "Client ID", sortable: true, render: (item) => <Badge variant="outline" className="text-[10px] font-black border-[var(--vendor-border)]/60 text-[var(--vendor-text-muted)] bg-[var(--vendor-panel-bg)]">{item.clientId}</Badge> },
     { key: "clientName", label: "Client Name", sortable: true, render: (item) => (
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-[11px] font-black uppercase">
+        <div className="w-8 h-8 rounded-[var(--vendor-radius-control)] bg-blue-500 text-white flex items-center justify-center text-[var(--vendor-control-text)] font-semibold uppercase">
            {item.clientName.charAt(0)}
         </div>
         <span className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">{item.clientName}</span>
       </div>
     )},
     { key: "type", label: "Type", sortable: true, render: (item) => (
-      <div className="flex items-center gap-1.5 py-1 px-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg w-fit border border-gray-100 dark:border-gray-700">
-         <CreditCard size={12} className="text-gray-400" />
-         <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400">{item.type}</span>
+      <div className="flex items-center gap-1.5 py-1 px-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-[var(--vendor-radius-control)] w-fit border border-[var(--vendor-border)]">
+         <CreditCard size={12} className="text-[var(--vendor-text-muted)]" />
+         <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)]">{item.type}</span>
       </div>
     )},
     { key: "date", label: "Date", sortable: true, render: (item) => <span className="text-[12px] font-black text-gray-500 tracking-tighter">{item.date}</span> },
-    { key: "transactionId", label: "Transaction ID", sortable: true, render: (item) => <span className="text-[11px] font-bold text-blue-500 font-mono tracking-tighter">{item.transactionId}</span> },
+    { key: "transactionId", label: "Transaction ID", sortable: true, render: (item) => <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-primary-btn)] font-mono tracking-tighter">{item.transactionId}</span> },
     { key: "status", label: "Status", sortable: true, render: (item) => <StatusBadge status={item.status} /> },
     { key: "paidAmount", label: "Paid Amount", sortable: true, render: (item) => <span className="text-[14px] font-black text-emerald-600 tracking-tighter">₹{item.paidAmount?.toLocaleString()}</span> },
-    { key: "vendorDiscount", label: "Vendor Discount", sortable: true, render: (item) => <span className="text-[13px] font-bold text-gray-400 tracking-tighter">₹{item.vendorDiscount?.toLocaleString()}</span> },
-    { key: "referralDiscount", label: "Referral Discount", sortable: true, render: (item) => <span className="text-[13px] font-medium text-gray-400 tracking-tighter">₹{item.referralDiscount?.toLocaleString()}</span> },
+    { key: "vendorDiscount", label: "Vendor Discount", sortable: true, render: (item) => <span className="text-[13px] font-bold text-[var(--vendor-text-muted)] tracking-tighter">₹{item.vendorDiscount?.toLocaleString()}</span> },
+    { key: "referralDiscount", label: "Referral Discount", sortable: true, render: (item) => <span className="text-[13px] font-medium text-[var(--vendor-text-muted)] tracking-tighter">₹{item.referralDiscount?.toLocaleString()}</span> },
   ];
 
   const allColumnKeys = paymentColumns.map(c => c.key);
@@ -137,10 +137,10 @@ export default function PaymentManagementContent() {
         rightContent={
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
               <Upload size={15} strokeWidth={2.5} /> Import
             </Button>
-            <Button variant="outline" onClick={handleExport} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
+            <Button variant="outline" onClick={handleExport} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
               <Download size={15} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/payment-management/add">
@@ -158,32 +158,32 @@ export default function PaymentManagementContent() {
         filterContent={
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Payment Status</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Payment Status</p>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100">
-                  <SelectItem value="All" className="text-[12px] font-bold">All Status</SelectItem>
-                  <SelectItem value="Paid" className="text-[12px] font-bold">Paid</SelectItem>
-                  <SelectItem value="Pending" className="text-[12px] font-bold">Pending</SelectItem>
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)]">
+                  <SelectItem value="All" className="text-[var(--vendor-control-text)] font-semibold">All Status</SelectItem>
+                  <SelectItem value="Paid" className="text-[var(--vendor-control-text)] font-semibold">Paid</SelectItem>
+                  <SelectItem value="Pending" className="text-[var(--vendor-control-text)] font-semibold">Pending</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Payment Type</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Payment Type</p>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100">
-                  <SelectItem value="All" className="text-[12px] font-bold">All Types</SelectItem>
-                  <SelectItem value="Online" className="text-[12px] font-bold">Online</SelectItem>
-                  <SelectItem value="Offline" className="text-[12px] font-bold">Offline</SelectItem>
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)]">
+                  <SelectItem value="All" className="text-[var(--vendor-control-text)] font-semibold">All Types</SelectItem>
+                  <SelectItem value="Online" className="text-[var(--vendor-control-text)] font-semibold">Online</SelectItem>
+                  <SelectItem value="Offline" className="text-[var(--vendor-control-text)] font-semibold">Offline</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="ghost" onClick={() => { setFilterStatus("All"); setFilterType("All"); }} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all">Reset Filters</Button>
+            <Button variant="ghost" onClick={() => { setFilterStatus("All"); setFilterType("All"); }} className="w-full h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide text-rose-500 hover:bg-rose-50 transition-all">Reset Filters</Button>
           </div>
         }
         columnContent={
@@ -197,7 +197,7 @@ export default function PaymentManagementContent() {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable 
           data={paginatedData}
           columns={paymentColumns}
@@ -211,8 +211,8 @@ export default function PaymentManagementContent() {
           sortConfig={sortConfig}
           noCard={true}
           actionContent={() => (
-            <DropdownMenuItem className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
-               <Download size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">Receipt</span>
+            <DropdownMenuItem className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600">
+               <Download size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold">Receipt</span>
             </DropdownMenuItem>
           )}
           emptyContent={

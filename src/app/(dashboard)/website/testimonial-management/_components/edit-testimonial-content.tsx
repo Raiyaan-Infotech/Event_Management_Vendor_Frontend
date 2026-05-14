@@ -123,7 +123,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
   const isBusy = uploading || updateItem.isPending;
 
   if (isLoading) return (
-    <div className="p-20 text-center font-bold text-gray-400 animate-pulse uppercase tracking-[0.3em]">
+    <div className="p-20 text-center font-bold text-[var(--vendor-text-muted)] animate-pulse uppercase tracking-[0.3em]">
       Loading Testimonial Data...
     </div>
   );
@@ -132,17 +132,17 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-[#F8FAFC] dark:bg-black">
       <div className="max-w-[1700px] mx-auto mb-10 space-y-6">
         <Link href="/website/testimonial-management">
-          <Button variant="ghost" className="w-fit text-gray-500 hover:text-blue-600 gap-2 p-0 h-auto font-bold uppercase tracking-widest text-[10px]">
+          <Button variant="ghost" className="w-fit text-gray-500 hover:text-[var(--vendor-primary-btn)] gap-2 p-0 h-auto font-bold uppercase tracking-wide text-[10px]">
             <ArrowLeft size={16} /> Back to Listings
           </Button>
         </Link>
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-sm border border-blue-500/10">
+          <div className="w-14 h-14 rounded-[var(--vendor-radius-panel)] bg-blue-500/10 flex items-center justify-center text-[var(--vendor-primary-btn)] shadow-sm border border-[var(--vendor-primary-btn)]/10">
             <Edit size={28} />
           </div>
           <div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white font-poppins uppercase tracking-tighter">Edit Testimonial</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide">Update the feedback details for ID: #{id}</p>
+            <h1 className="text-3xl font-black text-[var(--vendor-text)] font-poppins uppercase tracking-tighter">Edit Testimonial</h1>
+            <p className="text-sm text-[var(--vendor-text-muted)] font-medium tracking-wide">Update the feedback details for ID: #{id}</p>
           </div>
         </div>
       </div>
@@ -151,45 +151,45 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
 
         {/* LEFT: FORM FIELDS (9 Columns) */}
         <div className="lg:col-span-9 space-y-6">
-          <div className="bg-white dark:bg-sidebar p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-800">
+          <div className="bg-white dark:bg-sidebar p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-[var(--vendor-border)]">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
               <div className="space-y-8">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Customer Name <span className="text-rose-500">*</span></Label>
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Customer Name <span className="text-rose-500">*</span></Label>
                   <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" size={20} />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[var(--vendor-primary-btn)] transition-colors" size={20} />
                     <Input
                       value={formData.customer_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
                       placeholder="e.g. John Doe"
-                      className="h-14 pl-12 rounded-2xl border-gray-200 dark:border-gray-800 bg-gray-50/10 focus:bg-white transition-all font-bold"
+                      className="h-14 pl-12 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/10 focus:bg-white transition-all font-bold"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Event Name</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Event Name</Label>
                   <div className="relative group">
                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                     <Input
                       value={formData.event_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, event_name: e.target.value }))}
                       placeholder="e.g. Wedding Ceremony"
-                      className="h-14 pl-12 rounded-2xl border-gray-200 dark:border-gray-800 bg-gray-50/10 focus:bg-white transition-all font-bold"
+                      className="h-14 pl-12 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/10 focus:bg-white transition-all font-bold"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4 flex flex-col h-full">
-                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Customer Portrait</Label>
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Customer Portrait</Label>
                 <div
                   onClick={() => !preview && fileInputRef.current?.click()}
                   className={cn(
                     "w-full rounded-[2.5rem] border-2 border-dashed transition-all p-1 relative flex flex-col items-center justify-center overflow-hidden min-h-[180px]",
                     preview
                       ? "border-emerald-500/20 bg-emerald-50/10 dark:bg-emerald-500/5 group"
-                      : "border-gray-200 dark:border-gray-800 bg-gray-50/30 hover:bg-gray-50 cursor-pointer"
+                      : "border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/30 hover:bg-gray-50 cursor-pointer"
                   )}
                 >
                   {preview ? (
@@ -200,7 +200,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
                           variant="destructive"
                           size="icon"
                           onClick={(e) => { e.stopPropagation(); setPreview(""); setImageFile(null); }}
-                          className="w-12 h-12 rounded-2xl"
+                          className="w-12 h-12 rounded-[var(--vendor-radius-panel)]"
                         >
                           <X size={20} />
                         </Button>
@@ -212,7 +212,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
                         <Upload size={40} />
                       </div>
                       <div>
-                        <p className="text-xs font-black uppercase tracking-widest text-gray-800 dark:text-gray-200">Update Photo</p>
+                        <p className="text-xs font-black uppercase tracking-wide text-gray-800 dark:text-gray-200">Update Photo</p>
                       </div>
                     </div>
                   )}
@@ -222,7 +222,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
             </div>
 
             <div className="space-y-4">
-              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Client Feedback <span className="text-rose-500">*</span></Label>
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Client Feedback <span className="text-rose-500">*</span></Label>
               <QuillEditor
                 value={formData.client_feedback}
                 onChange={({ html }) => setFormData(prev => ({ ...prev, client_feedback: html }))}
@@ -235,7 +235,7 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
 
         {/* RIGHT: ACTIONS & STATUS (3 Columns) */}
         <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
               onPreview={() => window.open("/preview?block=testimonial", "_blank")}
@@ -245,10 +245,10 @@ export default function EditTestimonialContent({ id }: EditTestimonialContentPro
             />
           </div>
 
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
-            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Visibility Status</Label>
-            <div className="flex items-center justify-between bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 transition-all">
-              <span className={cn("text-xs font-bold uppercase tracking-widest", formData.is_active ? "text-emerald-500" : "text-gray-400")}>
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+            <Label className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Visibility Status</Label>
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-white/5 p-4 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 transition-all">
+              <span className={cn("text-xs font-bold uppercase tracking-wide", formData.is_active ? "text-emerald-500" : "text-[var(--vendor-text-muted)]")}>
                 {formData.is_active ? "Showing" : "Hidden"}
               </span>
               <Switch checked={formData.is_active} onCheckedChange={(v) => setFormData(prev => ({ ...prev, is_active: v }))} />

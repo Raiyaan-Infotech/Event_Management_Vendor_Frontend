@@ -64,30 +64,30 @@ export default function TestimonialManagementContent() {
   const testimonialColumns: Column<Testimonial>[] = [
     { key: "customer_name", label: "Customer", sortable: true, render: (item) => (
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 relative overflow-hidden flex items-center justify-center shrink-0 border border-gray-100 dark:border-gray-700">
+        <div className="w-10 h-10 rounded-[var(--vendor-radius-control)] bg-gray-100 dark:bg-gray-800 relative overflow-hidden flex items-center justify-center shrink-0 border border-[var(--vendor-border)]">
           {item.customer_portrait ? (
             <Image src={item.customer_portrait} alt={item.customer_name} fill className="object-cover" />
           ) : (
-            <User size={18} className="text-gray-400" />
+            <User size={18} className="text-[var(--vendor-text-muted)]" />
           )}
         </div>
         <div className="flex flex-col">
           <span className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">{item.customer_name}</span>
-          <span className="text-[10px] font-bold text-gray-400 tracking-tighter">ID: #{item.id}</span>
+          <span className="text-[10px] font-bold text-[var(--vendor-text-muted)] tracking-tighter">ID: #{item.id}</span>
         </div>
       </div>
     )},
     { key: "event_name", label: "Event Name", sortable: true, render: (item) => (
       <div className="flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-orange-500" />
-        <span className="text-[12px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-tight">{item.event_name || "General Event"}</span>
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)] uppercase tracking-tight">{item.event_name || "General Event"}</span>
       </div>
     )},
     { key: "client_feedback", label: "Review Content", sortable: false, render: (item) => (
       <div className="flex gap-2 max-w-[400px]">
         <Quote size={14} className="text-gray-300 shrink-0 mt-1" />
         <p
-          className="text-[12px] font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed italic"
+          className="text-[12px] font-medium text-[var(--vendor-text-muted)] line-clamp-2 leading-relaxed italic"
           dangerouslySetInnerHTML={{ __html: item.client_feedback ? `"${item.client_feedback}"` : '—' }}
         />
       </div>
@@ -100,8 +100,8 @@ export default function TestimonialManagementContent() {
           disabled={toggleStatus.isPending}
         />
         <Badge variant="outline" className={cn(
-          "text-[10px] uppercase font-black tracking-widest px-2 py-0 border-none transition-colors",
-          item.is_active ? "text-emerald-500 bg-emerald-50" : "text-gray-400 bg-gray-50"
+          "text-[10px] uppercase font-black tracking-wide px-2 py-0 border-none transition-colors",
+          item.is_active ? "text-emerald-500 bg-emerald-50" : "text-[var(--vendor-text-muted)] bg-gray-50"
         )}>
           {item.is_active ? "Showing" : "Hidden"}
         </Badge>
@@ -168,19 +168,19 @@ export default function TestimonialManagementContent() {
         filterContent={
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Display Status</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Display Status</p>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100">
-                  <SelectItem value="All" className="text-[12px] font-bold">All Status</SelectItem>
-                  <SelectItem value="Showing" className="text-[12px] font-bold">Showing</SelectItem>
-                  <SelectItem value="Hidden" className="text-[12px] font-bold">Hidden</SelectItem>
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)]">
+                  <SelectItem value="All" className="text-[var(--vendor-control-text)] font-semibold">All Status</SelectItem>
+                  <SelectItem value="Showing" className="text-[var(--vendor-control-text)] font-semibold">Showing</SelectItem>
+                  <SelectItem value="Hidden" className="text-[var(--vendor-control-text)] font-semibold">Hidden</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="ghost" onClick={() => setFilterStatus("All")} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all">
+            <Button variant="ghost" onClick={() => setFilterStatus("All")} className="w-full h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide text-rose-500 hover:bg-rose-50 transition-all">
               Reset Filters
             </Button>
           </div>
@@ -196,7 +196,7 @@ export default function TestimonialManagementContent() {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={paginatedData}
           columns={testimonialColumns}
@@ -211,13 +211,13 @@ export default function TestimonialManagementContent() {
           noCard={true}
           actionContent={(item) => (
             <>
-              <DropdownMenuItem onClick={() => setItemToView(item)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
-                <Eye size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">View</span>
+              <DropdownMenuItem onClick={() => setItemToView(item)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600">
+                <Eye size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold">View</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/website/testimonial-management/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
+              <DropdownMenuItem onClick={() => router.push(`/website/testimonial-management/edit/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600">
                 <Edit size={15} className="text-emerald-500" /> <span className="text-[13px] font-semibold">Edit</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setItemToDelete(item)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
+              <DropdownMenuItem onClick={() => setItemToDelete(item)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
                 <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
               </DropdownMenuItem>
             </>
@@ -248,9 +248,9 @@ export default function TestimonialManagementContent() {
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 border border-blue-500/10 relative">
+                  <div className="w-16 h-16 rounded-[var(--vendor-radius-panel)] bg-blue-500/10 flex items-center justify-center text-[var(--vendor-primary-btn)] border border-[var(--vendor-primary-btn)]/10 relative">
                     {itemToView.customer_portrait ? (
-                      <Image src={itemToView.customer_portrait} alt={itemToView.customer_name} width={64} height={64} className="object-cover rounded-xl" />
+                      <Image src={itemToView.customer_portrait} alt={itemToView.customer_name} width={64} height={64} className="object-cover rounded-[var(--vendor-radius-control)]" />
                     ) : (
                       <User size={32} />
                     )}
@@ -261,26 +261,26 @@ export default function TestimonialManagementContent() {
                     )}
                   </div>
                   <div>
-                    <DialogTitle className="text-2xl font-black text-gray-900 dark:text-white font-poppins uppercase tracking-tight">{itemToView.customer_name}</DialogTitle>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{itemToView.event_name || "General Event"}</p>
+                    <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] font-poppins uppercase tracking-tight">{itemToView.customer_name}</DialogTitle>
+                    <p className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">{itemToView.event_name || "General Event"}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase text-gray-400 mb-1">Status</p>
+                  <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] mb-1">Status</p>
                   <Badge className={cn("rounded-full px-3", itemToView.is_active ? "bg-emerald-500" : "bg-gray-400")}>
                     {itemToView.is_active ? "SHOWING" : "HIDDEN"}
                   </Badge>
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl relative">
-                <Quote size={24} className="text-blue-500/20 absolute top-4 left-4" />
+              <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-[var(--vendor-radius-panel)] relative">
+                <Quote size={24} className="text-[var(--vendor-primary-btn)]/20 absolute top-4 left-4" />
                 <div
                   className="text-sm font-medium text-gray-600 dark:text-gray-300 italic leading-relaxed pl-6 pt-2"
                   dangerouslySetInnerHTML={{ __html: itemToView.client_feedback ?? '' }}
                 />
               </div>
               <DialogFooter>
-                <Button onClick={() => setItemToView(null)} className="w-full h-12 rounded-2xl bg-[#001720] font-bold uppercase tracking-widest text-xs">Close</Button>
+                <Button onClick={() => setItemToView(null)} className="w-full h-12 rounded-[var(--vendor-radius-panel)] bg-[#001720] font-bold uppercase tracking-wide text-xs">Close</Button>
               </DialogFooter>
             </div>
           )}
@@ -291,7 +291,7 @@ export default function TestimonialManagementContent() {
       <Dialog open={!!itemToDelete} onOpenChange={(o) => !o && setItemToDelete(null)}>
         <DialogContent className="sm:max-w-[420px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
           <div className="bg-rose-50 p-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-3xl bg-white flex items-center justify-center text-rose-500 shadow-xl mb-6">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-white flex items-center justify-center text-rose-500 shadow-xl mb-6">
               <Trash2 size={40} />
             </div>
             <DialogTitle className="text-xl font-black text-gray-800 uppercase tracking-tight">Delete Testimonial?</DialogTitle>
@@ -300,8 +300,8 @@ export default function TestimonialManagementContent() {
             </DialogDescription>
           </div>
           <DialogFooter className="p-8 bg-white flex flex-row gap-4">
-            <Button variant="ghost" onClick={() => setItemToDelete(null)} className="flex-1 h-12 rounded-2xl font-bold text-xs uppercase tracking-widest text-gray-400">Cancel</Button>
-            <Button onClick={handleDelete} disabled={deleteItem.isPending} className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest">
+            <Button variant="ghost" onClick={() => setItemToDelete(null)} className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-xs uppercase tracking-wide text-[var(--vendor-text-muted)]">Cancel</Button>
+            <Button onClick={handleDelete} disabled={deleteItem.isPending} className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-xs uppercase tracking-wide">
               {deleteItem.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>

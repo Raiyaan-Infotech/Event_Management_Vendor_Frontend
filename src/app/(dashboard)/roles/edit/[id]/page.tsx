@@ -13,7 +13,7 @@ export default function EditRolePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm text-gray-400">Loading role...</p>
+        <p className="text-sm text-[var(--vendor-text-muted)]">Loading role...</p>
       </div>
     );
   }
@@ -21,7 +21,7 @@ export default function EditRolePage() {
   if (!role) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm text-gray-400">Role not found.</p>
+        <p className="text-sm text-[var(--vendor-text-muted)]">Role not found.</p>
       </div>
     );
   }

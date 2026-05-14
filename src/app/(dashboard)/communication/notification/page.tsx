@@ -70,10 +70,10 @@ export default function NotificationPage() {
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead className="bg-muted/30 border-b border-border">
                 <tr>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Subject</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">From</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-right">Status</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider">Subject</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider">From</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-4 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider text-right">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -118,7 +118,7 @@ export default function NotificationPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-end">
-                          <span className={`inline-flex items-center justify-center w-[64px] h-6 rounded-[3px] text-[11px] font-bold uppercase ${
+                          <span className={`inline-flex items-center justify-center w-[64px] h-6 rounded-[3px] text-[var(--vendor-control-text)] font-semibold uppercase ${
                             n.is_read === 0 ? 'bg-rose-500 text-white' : 'bg-green-500 text-white'
                           }`}>
                             {n.is_read === 0 ? 'Unread' : 'Read'}

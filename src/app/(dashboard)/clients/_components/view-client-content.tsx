@@ -103,14 +103,14 @@ export default function ViewClientContent() {
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(true)}
-              className="h-10 px-6 rounded-xl border-gray-100 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all font-bold text-[12px] uppercase tracking-wider flex items-center gap-2 shadow-sm"
+              className="h-10 px-6 rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all font-bold text-[12px] uppercase tracking-wider flex items-center gap-2 shadow-sm"
             >
               <Trash2 size={16} /> Delete
             </Button>
             <Link href={`/clients/edit/${client.id}`}>
               <Button
                 variant="outline"
-                className="h-10 px-6 rounded-xl border-gray-100 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-all font-bold text-[12px] uppercase tracking-wider flex items-center gap-2 shadow-sm"
+                className="h-10 px-6 rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] hover:bg-blue-50 hover:text-[var(--vendor-primary-btn)] hover:border-blue-100 transition-all font-bold text-[12px] uppercase tracking-wider flex items-center gap-2 shadow-sm"
               >
                 <Edit2 size={16} /> Edit Client
               </Button>
@@ -120,14 +120,14 @@ export default function ViewClientContent() {
 
         {/* Main Header Card */}
         <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">
+          <h1 className="text-3xl font-black text-[var(--vendor-text)] uppercase tracking-tighter">
             VIEW CLIENT
           </h1>
-          <Badge className="bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 border-none px-3 py-1 font-black text-[10px] tracking-widest uppercase rounded-lg">
+          <Badge className="bg-[var(--vendor-primary-btn)]/10 text-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn)]/20 border-none px-3 py-1 font-black text-[10px] tracking-wide uppercase rounded-[var(--vendor-radius-control)]">
             REGISTRATION
           </Badge>
         </div>
-        <p className="text-sm font-medium text-gray-400 -mt-6">
+        <p className="text-sm font-medium text-[var(--vendor-text-muted)] -mt-6">
           Client&apos;s professional profile and account details.
         </p>
 
@@ -135,23 +135,23 @@ export default function ViewClientContent() {
           {/* Left Column: Information Cards */}
           <div className="flex-[2] space-y-6">
             {/* PRIMARY INFORMATION */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm">
+            <div className="bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm">
               <div className="flex items-center gap-4 border-b border-gray-50 dark:border-gray-700/50 pb-5 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-600/10 text-blue-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-[var(--vendor-radius-panel)] bg-blue-50 dark:bg-[var(--vendor-primary-btn)]/10 text-[var(--vendor-primary-btn)] flex items-center justify-center">
                   <User size={24} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-gray-800 dark:text-gray-100 uppercase tracking-widest">
+                  <h3 className="text-sm font-black text-[var(--vendor-text)] uppercase tracking-wide">
                     PRIMARY INFORMATION
                   </h3>
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tight">
+                  <p className="text-[11px] text-[var(--vendor-text-muted)] font-bold uppercase tracking-tight">
                     Basic details of the client account
                   </p>
                 </div>
               </div>
 
               <div className="space-y-6">
-                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">
+                <p className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] mb-4">
                   Contact
                 </p>
 
@@ -173,19 +173,19 @@ export default function ViewClientContent() {
                   ].map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex flex-col md:flex-row md:items-center py-4 border-b border-gray-50 dark:border-gray-700/30 last:border-0 hover:bg-gray-50/50 transition-colors px-3 rounded-xl group/row"
+                      className="flex flex-col md:flex-row md:items-center py-4 border-b border-gray-50 dark:border-gray-700/30 last:border-0 hover:bg-gray-50/50 transition-colors px-3 rounded-[var(--vendor-radius-control)] group/row"
                     >
                       <div className="flex items-center gap-3 md:w-64">
                         <item.icon
                           size={15}
-                          className="text-gray-300 group-hover/row:text-blue-500 transition-colors"
+                          className="text-gray-300 group-hover/row:text-[var(--vendor-primary-btn)] transition-colors"
                         />
-                        <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">
+                        <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                           {item.label}
                         </span>
                       </div>
                       <span
-                        className={`text-[15px] font-bold tracking-tight ${item.isEmail ? "text-blue-600 underline underline-offset-4 decoration-blue-200" : "text-gray-800 dark:text-gray-200"}`}
+                        className={`text-[15px] font-bold tracking-tight ${item.isEmail ? "text-[var(--vendor-primary-btn)] underline underline-offset-4 decoration-blue-200" : "text-gray-800 dark:text-gray-200"}`}
                       >
                         {item.value}
                       </span>
@@ -196,16 +196,16 @@ export default function ViewClientContent() {
             </div>
 
             {/* ADDRESS DETAILS */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm">
+            <div className="bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm">
               <div className="flex items-center gap-4 border-b border-gray-50 dark:border-gray-700/50 pb-5 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-600/10 text-orange-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-[var(--vendor-radius-panel)] bg-orange-50 dark:bg-orange-600/10 text-orange-600 flex items-center justify-center">
                   <MapPin size={24} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-gray-800 dark:text-gray-100 uppercase tracking-widest">
+                  <h3 className="text-sm font-black text-[var(--vendor-text)] uppercase tracking-wide">
                     ADDRESS DETAILS
                   </h3>
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tight">
+                  <p className="text-[11px] text-[var(--vendor-text-muted)] font-bold uppercase tracking-tight">
                     Physical location and correspondence info
                   </p>
                 </div>
@@ -213,17 +213,17 @@ export default function ViewClientContent() {
 
               <div className="space-y-8">
                 <div>
-                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">
+                  <p className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] mb-4">
                     Location
                   </p>
                   <div className="space-y-4">
-                    <div className="flex flex-col md:flex-row md:items-start py-5 border-b border-gray-50 dark:border-gray-700/30 hover:bg-gray-50/50 transition-colors px-3 rounded-xl group/row">
+                    <div className="flex flex-col md:flex-row md:items-start py-5 border-b border-gray-50 dark:border-gray-700/30 hover:bg-gray-50/50 transition-colors px-3 rounded-[var(--vendor-radius-control)] group/row">
                       <div className="flex items-center gap-3 md:w-64">
                         <Home
                           size={15}
                           className="text-gray-300 group-hover/row:text-orange-500 transition-colors"
                         />
-                        <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">
+                        <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                           Street Address
                         </span>
                       </div>
@@ -249,14 +249,14 @@ export default function ViewClientContent() {
                       ].map((item, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center py-4 border-b border-gray-50 dark:border-gray-700/30 hover:bg-gray-50/50 transition-colors px-3 rounded-xl group/row"
+                          className="flex items-center py-4 border-b border-gray-50 dark:border-gray-700/30 hover:bg-gray-50/50 transition-colors px-3 rounded-[var(--vendor-radius-control)] group/row"
                         >
                           <div className="flex items-center gap-3 min-w-[130px]">
                             <item.icon
                               size={15}
                               className="text-gray-300 group-hover/row:text-orange-500 transition-colors"
                             />
-                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                            <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                               {item.label}
                             </span>
                           </div>
@@ -278,14 +278,14 @@ export default function ViewClientContent() {
                       ].map((item, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center py-4 hover:bg-gray-50/50 transition-colors px-3 rounded-xl group/row"
+                          className="flex items-center py-4 hover:bg-gray-50/50 transition-colors px-3 rounded-[var(--vendor-radius-control)] group/row"
                         >
                           <div className="flex items-center gap-3 min-w-[130px]">
                             <item.icon
                               size={15}
                               className="text-gray-300 group-hover/row:text-orange-500 transition-colors"
                             />
-                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                            <span className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                               {item.label}
                             </span>
                           </div>
@@ -304,29 +304,29 @@ export default function ViewClientContent() {
           {/* Right Column: Support Cards */}
           <div className="flex-1 space-y-6">
             {/* Profile Quick Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm text-center space-y-6">
+            <div className="bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm text-center space-y-6">
               <div className="relative w-32 h-32 mx-auto scale-110">
                 <Avatar className="w-full h-full rounded-full border-4 border-white dark:border-gray-700 shadow-2xl">
                   <AvatarImage src={client.profile_pic || undefined} />
-                  <AvatarFallback className="bg-blue-50 text-blue-600 text-3xl font-black">
+                  <AvatarFallback className="bg-blue-50 text-[var(--vendor-primary-btn)] text-3xl font-black">
                     {client.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
               </div>
               <div>
-                <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">
+                <h2 className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">
                   {client.name}
                 </h2>
-                <p className="text-sm font-bold text-gray-400">
+                <p className="text-sm font-bold text-[var(--vendor-text-muted)]">
                   {client.email}
                 </p>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <Badge className="bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 border-none px-4 py-1.5 font-black text-[10px] tracking-widest uppercase rounded-lg">
+                <Badge className="bg-[var(--vendor-primary-btn)]/10 text-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn)]/20 border-none px-4 py-1.5 font-black text-[10px] tracking-wide uppercase rounded-[var(--vendor-radius-control)]">
                   {client.registration_type}
                 </Badge>
                 <Badge
-                  className={`${client.is_active === 1 ? "bg-emerald-500/10 text-emerald-500" : client.is_active === 0 ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"} hover:opacity-80 border-none px-4 py-1.5 font-black text-[10px] tracking-widest uppercase rounded-lg flex items-center gap-1.5`}
+                  className={`${client.is_active === 1 ? "bg-emerald-500/10 text-emerald-500" : client.is_active === 0 ? "bg-amber-500/10 text-amber-500" : "bg-rose-500/10 text-rose-500"} hover:opacity-80 border-none px-4 py-1.5 font-black text-[10px] tracking-wide uppercase rounded-[var(--vendor-radius-control)] flex items-center gap-1.5`}
                 >
                   <div
                     className={`w-1.5 h-1.5 rounded-full ${client.is_active === 1 ? "bg-emerald-500 animate-pulse" : client.is_active === 0 ? "bg-amber-500" : "bg-rose-500"}`}
@@ -341,50 +341,50 @@ export default function ViewClientContent() {
             </div>
 
             {/* SUBSCRIPTION TYPE Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm space-y-6">
+            <div className="bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-600/10 text-blue-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--vendor-radius-control)] bg-blue-50 dark:bg-[var(--vendor-primary-btn)]/10 text-[var(--vendor-primary-btn)] flex items-center justify-center">
                   <Plus size={16} />
                 </div>
-                <h3 className="text-[12px] font-black text-gray-800 dark:text-gray-100 uppercase tracking-[0.2em]">
+                <h3 className="text-[var(--vendor-form-section-title-text)] font-semibold text-[var(--vendor-text)] uppercase tracking-wide">
                   SUBSCRIPTION TYPE
                 </h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-900/50 rounded-2xl border border-gray-50 dark:border-gray-800">
+              <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50/50 dark:bg-gray-900/50 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)]">
                 <Button
                   variant="ghost"
                   disabled={client.registration_type !== "guest"}
-                  className={`h-11 rounded-xl font-black text-[11px] uppercase tracking-widest gap-2 ${client.registration_type === "guest" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700" : "text-gray-400 opacity-50"}`}
+                  className={`h-11 rounded-[var(--vendor-radius-control)] font-black text-[11px] uppercase tracking-wide gap-2 ${client.registration_type === "guest" ? "bg-[var(--vendor-panel-bg)] text-[var(--vendor-primary-btn)] shadow-sm border border-[var(--vendor-border)]" : "text-[var(--vendor-text-muted)] opacity-50"}`}
                 >
                   <User size={14} /> Guest
                 </Button>
                 <Button
                   variant="ghost"
                   disabled={client.registration_type !== "client"}
-                  className={`h-11 rounded-xl font-black text-[11px] uppercase tracking-widest gap-2 ${client.registration_type === "client" ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700" : "text-gray-400 opacity-50"}`}
+                  className={`h-11 rounded-[var(--vendor-radius-control)] font-black text-[11px] uppercase tracking-wide gap-2 ${client.registration_type === "client" ? "bg-[var(--vendor-panel-bg)] text-[var(--vendor-primary-btn)] shadow-sm border border-[var(--vendor-border)]" : "text-[var(--vendor-text-muted)] opacity-50"}`}
                 >
                   <Building size={14} /> Client
                 </Button>
               </div>
 
               <div className="space-y-4 mt-6">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                <p className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-wide ml-1">
                   SELECTED PLAN
                 </p>
                 {(() => {
                   const planData = plans.find(p => p.name === client.plan);
                   const planColor = planData?.label_color;
                   return (
-                    <div className="h-14 px-6 rounded-2xl bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between group">
+                    <div className="h-14 px-6 rounded-[var(--vendor-radius-panel)] bg-gray-50/50 dark:bg-gray-800/50 border border-[var(--vendor-border)] flex items-center justify-between group">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        <div className="w-8 h-8 rounded-[var(--vendor-radius-control)] flex items-center justify-center"
                           style={planColor ? { backgroundColor: planColor + '22', color: planColor } : { backgroundColor: '#eff6ff', color: '#2563eb' }}
                         >
                           <Building size={16} />
                         </div>
                         <span
-                          className="text-[12px] font-black uppercase tracking-widest px-3 py-1 rounded-full"
+                          className="text-[12px] font-black uppercase tracking-wide px-3 py-1 rounded-full"
                           style={planColor
                             ? { backgroundColor: planColor + '22', color: planColor, border: `1px solid ${planColor}44` }
                             : { backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
@@ -392,7 +392,7 @@ export default function ViewClientContent() {
                           {client.plan || "No Plan"}
                         </span>
                       </div>
-                      <Badge className="bg-emerald-500 text-white font-black text-[9px] px-2 rounded-md uppercase tracking-widest">
+                      <Badge className="bg-emerald-500 text-white font-black text-[9px] px-2 rounded-md uppercase tracking-wide">
                         Active
                       </Badge>
                     </div>
@@ -402,12 +402,12 @@ export default function ViewClientContent() {
             </div>
 
             {/* LOGIN ACCESS Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm space-y-4">
+            <div className="bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm space-y-4">
               <div className="flex items-center gap-3 border-b border-gray-50 dark:border-gray-700/50 pb-4">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--vendor-radius-control)] bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 flex items-center justify-center">
                   <Lock size={16} />
                 </div>
-                <h3 className="text-[12px] font-black text-gray-800 dark:text-gray-100 uppercase tracking-[0.2em]">
+                <h3 className="text-[var(--vendor-form-section-title-text)] font-semibold text-[var(--vendor-text)] uppercase tracking-wide">
                   ACCESS & CREDENTIALS
                 </h3>
               </div>
@@ -418,9 +418,9 @@ export default function ViewClientContent() {
                 <div key={label} className="flex items-center justify-between">
                   <div>
                     <p className="text-[13px] font-bold text-gray-800 dark:text-gray-200">{label}</p>
-                    <p className="text-[11px] text-gray-400">{desc}</p>
+                    <p className="text-[11px] text-[var(--vendor-text-muted)]">{desc}</p>
                   </div>
-                  <div className={`relative inline-flex h-6 w-11 items-center rounded-full ${value ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"}`}>
+                  <div className={`relative inline-flex h-6 w-11 items-center rounded-full ${value ? "bg-[var(--vendor-primary-btn)]" : "bg-gray-200 dark:bg-gray-700"}`}>
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${value ? "translate-x-6" : "translate-x-1"}`} />
                   </div>
                 </div>
@@ -428,15 +428,15 @@ export default function ViewClientContent() {
             </div>
 
             {/* CLIENT ID Detail Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm">
+            <div className="bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] p-8 shadow-sm">
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-wide">
                   CLIENT ID
                 </p>
-                <h3 className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">
+                <h3 className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">
                   {client.client_id}
                 </h3>
-                <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic pt-2">
+                <p className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide italic pt-2">
                   Record No. #{client.id.toString().padStart(2, "0")}
                 </p>
               </div>
@@ -446,31 +446,31 @@ export default function ViewClientContent() {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl">
             <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-900/10 dark:to-gray-900 p-10 flex flex-col items-center text-center">
-              <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-xl mb-8 animate-bounce">
+              <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-xl mb-8 animate-bounce">
                 <Trash2 size={40} strokeWidth={2.5} />
               </div>
-              <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">
+              <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">
                 Discard Record?
               </DialogTitle>
-              <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed max-w-[280px]">
+              <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed max-w-[280px]">
                 Are you certain you want to delete{" "}
                 <span className="text-rose-600">{client.name}</span>? This
                 operation cannot be undone.
               </DialogDescription>
             </div>
-            <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
+            <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
               <Button
                 variant="outline"
                 onClick={() => setDeleteDialogOpen(false)}
-                className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-black gap-2 shadow-sm hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center uppercase tracking-widest"
+                className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-[var(--vendor-radius-control)] text-[13px] font-black gap-2 shadow-sm hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center uppercase tracking-wide"
               >
                 <X size={16} strokeWidth={2.5} /> Cancel
               </Button>
               <Button
                 onClick={handleDelete}
-                className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-lg shadow-rose-500/30 transition-all"
+                className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-lg shadow-rose-500/30 transition-all"
               >
                 Confirm Delete
               </Button>

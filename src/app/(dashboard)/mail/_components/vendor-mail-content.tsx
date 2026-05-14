@@ -225,14 +225,14 @@ export function VendorMailContent({
                         <button
                           onClick={(e) => { e.stopPropagation(); handleRestoreOne(mail.id); }}
                           disabled={restoreMutation.isPending}
-                          className="px-3 h-8 text-[12px] font-bold border border-border rounded-[4px] text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                          className="px-3 h-8 text-[var(--vendor-control-text)] font-semibold border border-border rounded-[4px] text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                         >
                           Restore
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); handlePermanentDeleteOne(mail.id); }}
                           disabled={permDeleteMutation.isPending}
-                          className="px-3 h-8 text-[12px] font-bold border border-destructive/30 rounded-[4px] text-destructive hover:bg-destructive/5 transition-colors disabled:opacity-50"
+                          className="px-3 h-8 text-[var(--vendor-control-text)] font-semibold border border-destructive/30 rounded-[4px] text-destructive hover:bg-destructive/5 transition-colors disabled:opacity-50"
                         >
                           Delete
                         </button>
@@ -329,7 +329,7 @@ export function VendorMailContent({
                       <button
                         onClick={() => setMoveOpen((o) => !o)}
                         disabled={isWorking}
-                        className="flex items-center gap-1.5 px-3 h-[36px] text-[12px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted rounded-[3px] transition-all border border-border disabled:opacity-40"
+                        className="flex items-center gap-1.5 px-3 h-[36px] text-[var(--vendor-control-text)] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted rounded-[3px] transition-all border border-border disabled:opacity-40"
                       >
                         <Folder size={14} /> Move to <ChevronDown size={12} className={`transition-transform ${moveOpen ? "rotate-180" : ""}`} />
                       </button>
@@ -337,7 +337,7 @@ export function VendorMailContent({
                       {moveOpen && (
                         <div className="absolute right-0 top-[40px] z-50 bg-card border border-border rounded-[5px] shadow-xl min-w-[180px] py-1">
                           {/* Labels section */}
-                          <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Label</p>
+                          <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Label</p>
                           {LABELS.map(({ key, label }) => (
                             <button key={key} onClick={() => handleMoveToLabel(key)}
                               className="w-full text-left px-4 py-2 text-[13px] hover:bg-muted text-foreground transition-colors">
@@ -353,7 +353,7 @@ export function VendorMailContent({
                           {customFolders.length > 0 && (
                             <>
                               <div className="border-t border-border my-1" />
-                              <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">My Folder</p>
+                              <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">My Folder</p>
                               {customFolders.map((f) => (
                                 <button key={f.id} onClick={() => handleMoveToFolder(f.id)}
                                   className="w-full text-left px-4 py-2 text-[13px] hover:bg-muted text-foreground transition-colors">
@@ -470,7 +470,7 @@ export function VendorMailContent({
                     {/* Detail header */}
                     <div className="p-5 border-b border-border flex items-start justify-between gap-4 shrink-0">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                        <p className="text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                           {mailDetail.recipientRow
                             ? `From: ${mailDetail.mail.sender_type.charAt(0).toUpperCase() + mailDetail.mail.sender_type.slice(1)}`
                             : `To: ${(mailDetail.mail.recipients ?? []).filter(r => r.role === "to").length} recipient(s)`}
@@ -494,7 +494,7 @@ export function VendorMailContent({
                     {!mailDetail.recipientRow && (mailDetail.mail.recipients ?? []).length > 0 && (
                       <div className="px-5 py-2.5 border-b border-border bg-muted/30 shrink-0 flex flex-wrap gap-1.5">
                         {(mailDetail.mail.recipients ?? []).map((r) => (
-                          <span key={r.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-muted text-[11px] font-bold text-foreground capitalize">
+                          <span key={r.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-muted text-[var(--vendor-control-text)] font-semibold text-foreground capitalize">
                             <span className="text-muted-foreground">{r.role.toUpperCase()}:</span> {r.recipient_type}#{r.recipient_id}
                           </span>
                         ))}

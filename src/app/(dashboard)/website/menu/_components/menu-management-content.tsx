@@ -259,11 +259,11 @@ export default function MenuManagementContent() {
 
       {/* ── LEFT: Create Menu Item ──────────────────────────────────────────── */}
       <div className="flex flex-col space-y-4 animate-in fade-in slide-in-from-left duration-700">
-        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
           <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
-                <Layout className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-[var(--vendor-radius-control)]">
+                <Layout className="w-5 h-5 text-[var(--vendor-primary-btn)] dark:text-blue-400" />
               </div>
               <div>
                 <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">
@@ -284,22 +284,22 @@ export default function MenuManagementContent() {
                 placeholder="e.g. Services, About, Company"
                 value={parentLabel}
                 onChange={(e) => setParentLabel(e.target.value)}
-                className="rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
+                className="rounded-[var(--vendor-radius-control)] border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
               />
             </div>
 
             {/* Page search */}
             <div className="space-y-1.5">
               <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Select Pages</Label>
-              <div className="rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden bg-white/50 dark:bg-slate-900/50">
+              <div className="rounded-[var(--vendor-radius-control)] border border-slate-100 dark:border-slate-800 overflow-hidden bg-white/50 dark:bg-slate-900/50">
                 <div className="p-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-white/5">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 size-3.5" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--vendor-text-muted)] size-3.5" />
                     <input
                       placeholder="Search pages..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="w-full h-9 pl-9 pr-3 bg-white dark:bg-sidebar border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium"
+                      className="w-full h-9 pl-9 pr-3 bg-white dark:bg-sidebar border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export default function MenuManagementContent() {
                         key={page.id}
                         onClick={() => togglePage(page.id)}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all select-none",
+                          "flex items-center gap-3 px-3 py-2 rounded-[var(--vendor-radius-control)] cursor-pointer transition-all select-none",
                           checked
                             ? "bg-primary/5 border border-primary/20"
                             : "hover:bg-slate-50 dark:hover:bg-slate-800/40 border border-transparent"
@@ -344,7 +344,7 @@ export default function MenuManagementContent() {
         <div className="flex gap-3">
           <Button
             onClick={editingId ? handleUpdate : handleCreate}
-            className="flex-[2] h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+            className="flex-[2] h-12 bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
           >
             {editingId ? <Pencil className="size-4" /> : <Plus className="size-4" />}
             {editingId ? "UPDATE" : "CREATE MENU"}
@@ -352,7 +352,7 @@ export default function MenuManagementContent() {
           <Button
             variant="outline"
             onClick={clearForm}
-            className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-bold gap-2 active:scale-[0.98] flex items-center justify-center"
+            className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-[var(--vendor-radius-control)] text-[13px] font-bold gap-2 active:scale-[0.98] flex items-center justify-center"
           >
             <X className="size-4" strokeWidth={2.5} />
             {editingId ? "CANCEL" : "CLEAR"}
@@ -362,10 +362,10 @@ export default function MenuManagementContent() {
 
       {/* ── RIGHT: Menu Hierarchy ───────────────────────────────────────────── */}
       <div className="flex flex-col space-y-4 animate-in fade-in slide-in-from-right duration-700 delay-300">
-        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
           <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-[var(--vendor-radius-control)]">
                 <GripVertical className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
@@ -377,14 +377,14 @@ export default function MenuManagementContent() {
 
           <CardContent className="pt-4">
             {/* Fixed: Home (always first) */}
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mb-2 opacity-70">
+            <div className="flex items-center gap-3 p-3 rounded-[var(--vendor-radius-control)] border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mb-2 opacity-70">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Fixed</span>
               <span className="flex-1 text-sm font-bold text-slate-600 dark:text-slate-300">Home</span>
               <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">no child</span>
             </div>
 
             {/* Fixed: About Us */}
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mb-2 opacity-70">
+            <div className="flex items-center gap-3 p-3 rounded-[var(--vendor-radius-control)] border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mb-2 opacity-70">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Fixed</span>
               <span className="flex-1 text-sm font-bold text-slate-600 dark:text-slate-300">About Us</span>
               <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">no child</span>
@@ -407,7 +407,7 @@ export default function MenuManagementContent() {
                   >
                     {/* Parent row */}
                     <div className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-800 group transition-all cursor-move",
+                      "flex items-center gap-3 p-3 rounded-[var(--vendor-radius-control)] border border-slate-100 dark:border-slate-800 group transition-all cursor-move",
                       "bg-white dark:bg-slate-900 hover:border-blue-200 dark:hover:border-blue-900",
                       "shadow-[0_2px_4px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]",
                     )}>
@@ -415,7 +415,7 @@ export default function MenuManagementContent() {
 
                       <button
                         onClick={() => toggleOpen(item.id)}
-                        className="text-slate-400 hover:text-blue-500 transition-colors flex-shrink-0"
+                        className="text-slate-400 hover:text-[var(--vendor-primary-btn)] transition-colors flex-shrink-0"
                       >
                         {item.isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </button>
@@ -429,7 +429,7 @@ export default function MenuManagementContent() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 flex-shrink-0"
+                        className="h-7 w-7 text-slate-400 hover:text-[var(--vendor-primary-btn)] hover:bg-blue-50 dark:hover:bg-blue-950/30 flex-shrink-0"
                         onClick={() => handleEdit(item)}
                         title="Edit"
                       >
@@ -451,7 +451,7 @@ export default function MenuManagementContent() {
                         {item.children.map((child, ci) => (
                           <div
                             key={child.page_id}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-[var(--vendor-radius-control)] border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
                           >
                             <FileText size={13} className="text-slate-400 flex-shrink-0" />
                             <span className="flex-1 text-sm font-medium text-slate-600 dark:text-slate-300 truncate">{child.label}</span>
@@ -459,14 +459,14 @@ export default function MenuManagementContent() {
                               <button
                                 disabled={ci === 0}
                                 onClick={() => moveChild(item.id, ci, "up")}
-                                className="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-[var(--vendor-primary-btn)] hover:bg-blue-50 dark:hover:bg-blue-950/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                               >
                                 <ChevronRight size={12} className="-rotate-90" />
                               </button>
                               <button
                                 disabled={ci === item.children.length - 1}
                                 onClick={() => moveChild(item.id, ci, "down")}
-                                className="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-[var(--vendor-primary-btn)] hover:bg-blue-50 dark:hover:bg-blue-950/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                               >
                                 <ChevronRight size={12} className="rotate-90" />
                               </button>
@@ -481,13 +481,13 @@ export default function MenuManagementContent() {
             )}
 
             {/* Fixed: Contact Us (always last) */}
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mt-2 opacity-70">
+            <div className="flex items-center gap-3 p-3 rounded-[var(--vendor-radius-control)] border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 mt-2 opacity-70">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">Fixed</span>
               <span className="flex-1 text-sm font-bold text-slate-600 dark:text-slate-300">Contact Us</span>
               <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">no child</span>
             </div>
 
-            <div className="mt-4 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/30 text-center">
+            <div className="mt-4 p-3 rounded-[var(--vendor-radius-control)] border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/30 text-center">
               <p className="text-xs text-slate-400 font-medium italic">
                 Drag page groups to reorder · Home, About Us, and Contact Us are always fixed
               </p>
@@ -500,7 +500,7 @@ export default function MenuManagementContent() {
           <Button
             onClick={handleSave}
             disabled={updateMutation.isPending}
-            className="flex-[2] h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+            className="flex-[2] h-12 bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
           >
             <Save className="size-4" />
             {updateMutation.isPending ? "SAVING..." : "SAVE MENU"}
@@ -508,7 +508,7 @@ export default function MenuManagementContent() {
           <Button
             variant="outline"
             onClick={handleReset}
-            className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-xl text-[13px] font-bold gap-2 active:scale-[0.98] flex items-center justify-center"
+            className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-[var(--vendor-radius-control)] text-[13px] font-bold gap-2 active:scale-[0.98] flex items-center justify-center"
           >
             <X className="size-4" strokeWidth={2.5} />
             RESET
@@ -519,7 +519,7 @@ export default function MenuManagementContent() {
 
     {/* ── Delete Confirmation Dialog ─────────────────────────────────────── */}
     <Dialog open={!!deleteTargetId} onOpenChange={(open) => { if (!open) setDeleteTargetId(null); }}>
-      <DialogContent className="max-w-sm rounded-2xl">
+      <DialogContent className="max-w-sm rounded-[var(--vendor-radius-panel)]">
         <DialogHeader>
           <DialogTitle className="text-base font-bold text-slate-800 dark:text-slate-100">
             Delete Menu Item
@@ -535,13 +535,13 @@ export default function MenuManagementContent() {
         <DialogFooter className="gap-2 mt-2">
           <Button
             variant="outline"
-            className="rounded-xl"
+            className="rounded-[var(--vendor-radius-control)]"
             onClick={() => setDeleteTargetId(null)}
           >
             Cancel
           </Button>
           <Button
-            className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white border-none"
+            className="rounded-[var(--vendor-radius-control)] bg-rose-600 hover:bg-rose-700 text-white border-none"
             onClick={() => {
               if (deleteTargetId) handleDelete(deleteTargetId);
               setDeleteTargetId(null);

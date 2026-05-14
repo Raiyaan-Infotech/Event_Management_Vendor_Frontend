@@ -16,9 +16,9 @@ const InternalThemePreview = ({ theme }: { theme: any }) => {
     const blocks = normalizeHomeBlocks(theme.home_blocks);
     
     return (
-        <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner flex flex-col p-3">
+        <div className="relative w-full h-full rounded-[var(--vendor-radius-panel)] overflow-hidden border border-[var(--vendor-border)] dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner flex flex-col p-3">
              {/* Mini Browser Header */}
-             <div className="flex items-center gap-1.5 mb-3 border-b pb-2 dark:border-gray-800">
+             <div className="flex items-center gap-1.5 mb-3 border-b pb-2 dark:border-[var(--vendor-border)]">
                 <div className="h-2 w-2 rounded-full bg-red-400"></div>
                 <div className="h-2 w-2 rounded-full bg-yellow-400"></div>
                 <div className="h-2 w-2 rounded-full bg-green-400"></div>
@@ -29,14 +29,14 @@ const InternalThemePreview = ({ theme }: { theme: any }) => {
                 {/* Header Bar */}
                 <div className="h-4 w-full rounded-md" style={{ backgroundColor: theme.header_color || '#e5e7eb' }} />
                 {/* Hero block simulation */}
-                <div className="h-16 w-full rounded-lg" style={{ backgroundColor: theme.primary_color || '#d1d5db' }} />
+                <div className="h-16 w-full rounded-[var(--vendor-radius-control)]" style={{ backgroundColor: theme.primary_color || '#d1d5db' }} />
                 
                 <div className="grid grid-cols-3 gap-2">
-                    <div className="h-12 col-span-2 rounded-lg" style={{ backgroundColor: theme.secondary_color || '#d1d5db' }} />
-                    <div className="h-12 col-span-1 border rounded-lg dark:border-gray-700" />
+                    <div className="h-12 col-span-2 rounded-[var(--vendor-radius-control)]" style={{ backgroundColor: theme.secondary_color || '#d1d5db' }} />
+                    <div className="h-12 col-span-1 border rounded-[var(--vendor-radius-control)] dark:border-gray-700" />
                 </div>
 
-                <div className="text-[10px] text-muted-foreground mt-2 border-t pt-2 dark:border-gray-800 flex items-center justify-end">
+                <div className="text-[10px] text-muted-foreground mt-2 border-t pt-2 dark:border-[var(--vendor-border)] flex items-center justify-end">
                     <div className="flex gap-1">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.primary_color }} />
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.secondary_color }} />
@@ -104,7 +104,7 @@ export function VendorThemeContent() {
     if (subLoading || themeLoading) {
         return (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-72 w-full rounded-2xl" />)}
+                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-72 w-full rounded-[var(--vendor-radius-panel)]" />)}
             </div>
         );
     }
@@ -146,7 +146,7 @@ export function VendorThemeContent() {
                                         : isSelected 
                                         ? "border-blue-600 shadow-[0_20px_50px_-12px_rgba(59,130,246,0.15)] scale-[1.02]" 
                                         : "border-transparent shadow-[0_10px_30px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:scale-[1.01]"
-                                } dark:border-gray-800`}
+                                } dark:border-[var(--vendor-border)]`}
                             >
                                 {/* Theme Preview Webpage Area */}
                                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-[#0f0f0f]">
@@ -167,7 +167,7 @@ export function VendorThemeContent() {
                                         />
                                     ) : (
                                         <div className="w-full h-full p-6">
-                                            <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner">
+                                            <div className="relative w-full h-full rounded-[var(--vendor-radius-panel)] overflow-hidden border border-[var(--vendor-border)] dark:border-white/5 bg-white dark:bg-[#121212] shadow-inner">
                                                 <InternalThemePreview theme={theme} />
                                             </div>
                                         </div>
@@ -177,15 +177,15 @@ export function VendorThemeContent() {
                                 {/* Content Area */}
                                 <div className="p-8 pt-2 space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider font-poppins">{theme.name}</span>
+                                        <span className="text-sm font-black text-[var(--vendor-text)] uppercase tracking-wider font-poppins">{theme.name}</span>
                                     </div>
                                     <div className="grid grid-cols-1 gap-3">
                                         <Button
                                             onClick={(e) => { e.stopPropagation(); handleActivate(theme.id); }}
-                                            className={`h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-xl transition-all duration-300 shadow-sm active:scale-95 ${
+                                            className={`h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-[var(--vendor-radius-control)] transition-all duration-300 shadow-sm active:scale-95 ${
                                                 isActivated 
                                                     ? "bg-green-500 hover:bg-green-600 text-white cursor-default" 
-                                                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
+                                                    : "bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white shadow-blue-600/20"
                                             }`}
                                         >
                                             {isActivated ? "ACTIVATED" : "ACTIVATE"}
@@ -196,7 +196,7 @@ export function VendorThemeContent() {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-xl bg-[#e2e2e2] hover:bg-[#d4d4d4] dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-white transition-all duration-300 active:scale-95 flex items-center justify-center"
+                                            className="h-12 w-full font-black text-[12px] tracking-[0.2em] uppercase rounded-[var(--vendor-radius-control)] bg-[#e2e2e2] hover:bg-[#d4d4d4] dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-white transition-all duration-300 active:scale-95 flex items-center justify-center"
                                         >
                                             PREVIEW
                                         </Link>

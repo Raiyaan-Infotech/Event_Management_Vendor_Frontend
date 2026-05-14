@@ -63,7 +63,7 @@ export default function ContactUsManagementPage() {
     <div className={cn("flex items-center justify-between py-1", isNested && "pl-8")}>
       <span className={cn(
         "text-xs font-bold uppercase tracking-[0.1em]",
-        isNested ? "text-gray-400 text-[10px]" : "text-gray-900 dark:text-white"
+        isNested ? "text-[var(--vendor-text-muted)] text-[10px]" : "text-[var(--vendor-text)]"
       )}>
         {label}
       </span>
@@ -75,7 +75,7 @@ export default function ContactUsManagementPage() {
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar bg-[#F8FAFC] dark:bg-black">
       <div className="max-w-[1600px] mx-auto mb-12 animate-in fade-in slide-in-from-bottom duration-1000">
         <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1">Contact Us</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide">Configure layout modules and visibility options for your public contact page.</p>
+        <p className="text-sm text-[var(--vendor-text-muted)] font-medium tracking-wide">Configure layout modules and visibility options for your public contact page.</p>
       </div>
 
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
@@ -86,12 +86,12 @@ export default function ContactUsManagementPage() {
             <div className="p-10 space-y-12">
               
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-[#001720] text-white flex items-center justify-center shadow-2xl">
+                <div className="w-14 h-14 rounded-[var(--vendor-radius-panel)] bg-[#001720] text-white flex items-center justify-center shadow-2xl">
                   <Sliders size={28} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white font-poppins uppercase tracking-tight">Configuration Options</h3>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">Section Display Controls</p>
+                  <h3 className="text-xl font-black text-[var(--vendor-text)] font-poppins uppercase tracking-tight">Configuration Options</h3>
+                  <p className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-[0.4em]">Section Display Controls</p>
                 </div>
               </div>
 
@@ -107,20 +107,20 @@ export default function ContactUsManagementPage() {
                     
                     {/* Position Toggle */}
                     <div className="flex items-center justify-between pl-8 py-1">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400">Position</span>
-                      <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-xl gap-1">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--vendor-text-muted)]">Position</span>
+                      <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-[var(--vendor-radius-control)] gap-1">
                         <button 
                           onClick={() => setOptions({...options, position: "RIGHT"})}
-                          className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all flex items-center gap-1.5", 
-                          options.position === "RIGHT" ? "bg-white dark:bg-sidebar shadow-md text-blue-600 scale-105" : "text-gray-400")}
+                          className={cn("px-4 py-1.5 rounded-[var(--vendor-radius-control)] text-[9px] font-black uppercase transition-all flex items-center gap-1.5", 
+                          options.position === "RIGHT" ? "bg-white dark:bg-sidebar shadow-md text-[var(--vendor-primary-btn)] scale-105" : "text-[var(--vendor-text-muted)]")}
                         >
                           <AlignRight size={12} />
                           Right
                         </button>
                         <button 
                           onClick={() => setOptions({...options, position: "CENTER"})}
-                          className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all flex items-center gap-1.5", 
-                          options.position === "CENTER" ? "bg-white dark:bg-sidebar shadow-md text-blue-600 scale-105" : "text-gray-400")}
+                          className={cn("px-4 py-1.5 rounded-[var(--vendor-radius-control)] text-[9px] font-black uppercase transition-all flex items-center gap-1.5", 
+                          options.position === "CENTER" ? "bg-white dark:bg-sidebar shadow-md text-[var(--vendor-primary-btn)] scale-105" : "text-[var(--vendor-text-muted)]")}
                         >
                           <AlignCenter size={12} />
                           Center
@@ -141,7 +141,7 @@ export default function ContactUsManagementPage() {
 
         {/* RIGHT: ACTIONS (3 Columns) */}
         <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions 
               onSave={handleSave}
               onPreview={() => window.open("/preview?previewPage=contact", "_blank")}

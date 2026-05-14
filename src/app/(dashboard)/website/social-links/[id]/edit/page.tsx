@@ -22,11 +22,11 @@ const lucideMap: Record<string, React.ComponentType<{ className?: string; style?
 );
 
 function DynamicIcon({ name, color, size = 'h-7 w-7' }: { name?: string; color?: string; size?: string }) {
-  if (!name) return <Share2 className={`${size} text-gray-400`} />;
+  if (!name) return <Share2 className={`${size} text-[var(--vendor-text-muted)]`} />;
   const style = color ? { color } : undefined;
   if (name.includes(':')) return <Icon icon={name} className={size} style={style} />;
   const LucideIcon = lucideMap[name.toLowerCase()];
-  if (!LucideIcon) return <Share2 className={`${size} text-gray-400`} />;
+  if (!LucideIcon) return <Share2 className={`${size} text-[var(--vendor-text-muted)]`} />;
   return <LucideIcon className={size} style={style} />;
 }
 
@@ -88,13 +88,13 @@ export default function EditSocialLinkPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1">Edit Social Link</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Update your social media link details.</p>
+          <p className="text-sm text-[var(--vendor-text-muted)]">Update your social media link details.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Form */}
           <div className="lg:col-span-9">
-            <div className="bg-white dark:bg-sidebar p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-gray-100 dark:border-gray-800 space-y-6">
+            <div className="bg-white dark:bg-sidebar p-8 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-[var(--vendor-border)] space-y-6">
 
               {/* Icon preview + picker */}
               <div className="space-y-3">
@@ -103,12 +103,12 @@ export default function EditSocialLinkPage() {
                   <button
                     type="button"
                     onClick={() => setPickerOpen(true)}
-                    className="flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 hover:border-primary/50 transition-colors"
+                    className="flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-[var(--vendor-radius-control)] border-2 border-dashed border-[var(--vendor-border)] dark:border-gray-700 bg-gray-50 dark:bg-white/5 hover:border-primary/50 transition-colors"
                     title="Browse icons"
                   >
                     <DynamicIcon name={icon} color={iconColor} />
                     {!icon && (
-                      <span className="text-[9px] text-gray-400 leading-none">Browse</span>
+                      <span className="text-[9px] text-[var(--vendor-text-muted)] leading-none">Browse</span>
                     )}
                   </button>
 
@@ -124,7 +124,7 @@ export default function EditSocialLinkPage() {
                         <button
                           type="button"
                           onClick={() => setIcon('')}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--vendor-text-muted)] hover:text-gray-600"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
@@ -142,7 +142,7 @@ export default function EditSocialLinkPage() {
                     type="color"
                     value={iconColor}
                     onChange={e => setIconColor(e.target.value)}
-                    className="h-11 w-11 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent p-0.5"
+                    className="h-11 w-11 cursor-pointer rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] dark:border-gray-700 bg-transparent p-0.5"
                   />
                   <Input
                     value={iconColor}
@@ -151,7 +151,7 @@ export default function EditSocialLinkPage() {
                     className="flex-1 h-11"
                   />
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center border border-gray-100 dark:border-gray-800 flex-shrink-0"
+                    className="w-11 h-11 rounded-[var(--vendor-radius-control)] flex items-center justify-center border border-[var(--vendor-border)] flex-shrink-0"
                     style={{ background: `${iconColor}18` }}
                   >
                     <DynamicIcon name={icon || 'Share2'} color={iconColor} size="h-5 w-5" />
@@ -192,7 +192,7 @@ export default function EditSocialLinkPage() {
                     onChange={e => setSortOrder(Number(e.target.value))}
                     className="h-11 w-28"
                   />
-                  <p className="text-[11px] text-gray-400">Lower = shown first</p>
+                  <p className="text-[11px] text-[var(--vendor-text-muted)]">Lower = shown first</p>
                 </div>
 
                 <div className="space-y-2">
@@ -202,7 +202,7 @@ export default function EditSocialLinkPage() {
                       checked={isActive}
                       onCheckedChange={setIsActive}
                     />
-                    <span className={`text-sm font-semibold ${isActive ? 'text-green-600' : 'text-gray-400'}`}>
+                    <span className={`text-sm font-semibold ${isActive ? 'text-green-600' : 'text-[var(--vendor-text-muted)]'}`}>
                       {isActive ? 'Visible' : 'Hidden'}
                     </span>
                   </div>
@@ -214,25 +214,25 @@ export default function EditSocialLinkPage() {
           {/* Sidebar */}
           <div className="lg:col-span-3 lg:sticky lg:top-8 space-y-4">
             {/* Live preview */}
-            <div className="bg-white dark:bg-sidebar p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Preview</p>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-white/5">
+            <div className="bg-white dark:bg-sidebar p-5 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-sm space-y-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--vendor-text-muted)]">Preview</p>
+              <div className="flex items-center gap-3 p-3 rounded-[var(--vendor-radius-control)] bg-gray-50 dark:bg-white/5">
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  className="w-10 h-10 rounded-[var(--vendor-radius-control)] flex items-center justify-center flex-shrink-0"
                   style={{ background: iconColor ? `${iconColor}18` : '#f1f5f9' }}
                 >
                   <DynamicIcon name={icon || 'Share2'} color={iconColor} size="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                  <p className="text-sm font-bold text-[var(--vendor-text)] truncate">
                     {label || 'Label'}
                   </p>
-                  <p className="text-[11px] text-gray-400 truncate">{url || 'https://...'}</p>
+                  <p className="text-[11px] text-[var(--vendor-text-muted)] truncate">{url || 'https://...'}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-sidebar/50 p-5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+            <div className="bg-[var(--vendor-panel-bg)] p-5 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-sm">
               <PersistenceActions
                 onSave={handleSave}
                 onPreview={() => window.open('/preview?block=social_media', '_blank')}

@@ -30,6 +30,7 @@ import { PaginationControls } from "@/components/common/PaginationControls";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
 import { SafeImage } from "@/components/ui/safe-image";
+import { vendorUi } from "@/lib/vendor-ui";
 import { useVendorClients, useDeleteVendorClient, useToggleVendorClientLoginAccess, useUpdateVendorClientStatus, VendorClient } from "@/hooks/use-vendor-clients";
 import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
@@ -58,7 +59,7 @@ export default function ClientsListContent() {
       label: "ID",
       sortable: true,
       render: (item) => (
-        <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">
+        <span className={vendorUi.table.textTiny}>
           #{item.id.toString().padStart(2, "0")}
         </span>
       ),
@@ -68,7 +69,7 @@ export default function ClientsListContent() {
       label: "Client ID",
       sortable: true,
       render: (item) => (
-        <Badge variant="outline" className="font-mono text-[10px] font-bold border-gray-200/60 dark:border-gray-800 text-gray-500 bg-white dark:bg-gray-800/50 py-0.5">
+        <Badge variant="outline" className={vendorUi.table.codeBadge}>
           {item.client_id}
         </Badge>
       ),
@@ -78,9 +79,9 @@ export default function ClientsListContent() {
       label: "Client Name",
       sortable: true,
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 whitespace-nowrap">
           {item.profile_pic ? (
-            <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-blue-500/10 group-hover:scale-110 transition-transform duration-300 border border-gray-100 dark:border-gray-800 relative">
+            <div className="w-8 h-8 shrink-0 rounded-full overflow-hidden border border-[var(--vendor-border)] relative">
               <SafeImage
                 src={item.profile_pic}
                 alt={item.name}
@@ -89,12 +90,12 @@ export default function ClientsListContent() {
               />
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[14px] font-bold shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300 uppercase">
+            <div className="w-8 h-8 shrink-0 rounded-full bg-[var(--vendor-primary-btn)] flex items-center justify-center text-[var(--vendor-primary-btn-text)] text-[var(--vendor-control-text)] font-semibold uppercase">
               {item.name.charAt(0)}
             </div>
           )}
-          <div>
-            <p className="text-[14px] font-black text-gray-800 dark:text-gray-100 leading-none mb-2 group-hover:text-blue-600 transition-colors uppercase tracking-tight">
+          <div className="min-w-0">
+            <p className={`${vendorUi.table.textStrong} max-w-[240px] truncate leading-5 uppercase`}>
               {item.name}
             </p>
             {(() => {
@@ -102,12 +103,12 @@ export default function ClientsListContent() {
               return (
                 <Badge
                   variant="outline"
-                  className="text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0 rounded-full"
+                  className="h-5 text-[var(--vendor-caption-text)] font-bold uppercase tracking-wide px-2 py-0 rounded-[var(--vendor-radius-pill)]"
                   style={planColor
                     ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
                     : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
                 >
-                  {item.plan || "—"}
+                  {item.plan || "-"}
                 </Badge>
               );
             })()}
@@ -119,33 +120,33 @@ export default function ClientsListContent() {
       key: "mobile",
       label: "Mobile",
       sortable: true,
-      render: (item) => <p className="text-[13px] font-black text-gray-700 dark:text-gray-300 tracking-tight">{item.mobile}</p>,
+      render: (item) => <p className={vendorUi.table.textStrong}>{item.mobile}</p>,
     },
     {
       key: "email",
       label: "Email",
       sortable: true,
-      render: (item) => <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 transition-colors group-hover:text-blue-400">{item.email}</p>,
+      render: (item) => <p className={`${vendorUi.table.textMuted} transition-colors group-hover:text-[var(--vendor-primary-btn)]`}>{item.email}</p>,
     },
     {
       key: "city",
       label: "City",
       sortable: true,
-      render: (item) => <p className="text-[13px] font-black text-gray-700 dark:text-gray-300 tracking-tight">{item.city}</p>,
+      render: (item) => <p className={vendorUi.table.textStrong}>{item.city}</p>,
     },
     {
       key: "login_access",
       label: "Login Access",
       sortable: false,
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 whitespace-nowrap">
           <Switch
             checked={!!item.login_access}
             onCheckedChange={() => toggleLoginAccess.mutate({ id: item.id, login_access: item.login_access ? 0 : 1 })}
             disabled={toggleLoginAccess.isPending}
             className="transition-all"
           />
-          <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+          <span className={vendorUi.table.textTiny}>
             {item.login_access ? "Allowed" : "Denied"}
           </span>
         </div>
@@ -156,14 +157,14 @@ export default function ClientsListContent() {
       label: "Status",
       sortable: true,
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 whitespace-nowrap">
           <Switch
             checked={item.is_active === 1}
             onCheckedChange={() => updateStatusMutation.mutate({ id: item.id, is_active: item.is_active === 1 ? 0 : 1 })}
             disabled={updateStatusMutation.isPending}
             className="transition-all"
           />
-          <span className="text-[12px] font-semibold text-gray-600 dark:text-gray-400">
+          <span className={vendorUi.table.textTiny}>
             {statusLabels[item.is_active.toString()] || "Active"}
           </span>
         </div>
@@ -247,11 +248,11 @@ export default function ClientsListContent() {
         rightContent={
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
-              <Upload size={15} strokeWidth={2.5} /> Import
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
+              <Upload size={13} strokeWidth={2.5} /> Import
             </Button>
-            <Button variant="outline" onClick={handleExport} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
-              <Download size={15} strokeWidth={2.5} /> Export
+            <Button variant="outline" onClick={handleExport} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
+              <Download size={13} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/clients/add">
               <ActionButton label="ADD CLIENT" variant_type="Client" />
@@ -268,34 +269,34 @@ export default function ClientsListContent() {
         filterContent={
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Subscription Plan</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Subscription Plan</p>
               <Select value={filterPlan} onValueChange={setFilterPlan}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Plans" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100">
-                  <SelectItem value="All" className="text-[12px] font-bold">All Plans</SelectItem>
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)]">
+                  <SelectItem value="All" className="text-[var(--vendor-control-text)] font-semibold">All Plans</SelectItem>
                   {plans.map(p => (
-                    <SelectItem key={p.id} value={p.name} className="text-[12px] font-bold">{p.name}</SelectItem>
+                    <SelectItem key={p.id} value={p.name} className="text-[var(--vendor-control-text)] font-semibold">{p.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Account Status</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Account Status</p>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100">
-                  <SelectItem value="All" className="text-[12px] font-bold">All Status</SelectItem>
-                  <SelectItem value="1"   className="text-[12px] font-bold">Active</SelectItem>
-                  <SelectItem value="0"   className="text-[12px] font-bold">Inactive</SelectItem>
-                  <SelectItem value="2"   className="text-[12px] font-bold">Blocked</SelectItem>
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)]">
+                  <SelectItem value="All" className="text-[var(--vendor-control-text)] font-semibold">All Status</SelectItem>
+                  <SelectItem value="1"   className="text-[var(--vendor-control-text)] font-semibold">Active</SelectItem>
+                  <SelectItem value="0"   className="text-[var(--vendor-control-text)] font-semibold">Inactive</SelectItem>
+                  <SelectItem value="2"   className="text-[var(--vendor-control-text)] font-semibold">Blocked</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="ghost" onClick={() => { setFilterPlan("All"); setFilterStatus("All"); }} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all">
+            <Button variant="ghost" onClick={() => { setFilterPlan("All"); setFilterStatus("All"); }} className="w-full h-8 rounded-[var(--vendor-radius-control)] text-[10px] font-semibold uppercase tracking-wide text-rose-500 hover:bg-rose-50 transition-all">
               Reset Filters
             </Button>
           </div>
@@ -328,13 +329,13 @@ export default function ClientsListContent() {
         sortConfig={sortConfig}
         actionContent={(item) => (
           <>
-            <DropdownMenuItem onClick={() => router.push(`/clients/view/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
-              <Eye size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold">View</span>
+            <DropdownMenuItem onClick={() => router.push(`/clients/view/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600">
+              <Eye size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold">View</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push(`/clients/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600">
+            <DropdownMenuItem onClick={() => router.push(`/clients/edit/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600">
               <Edit2 size={15} className="text-emerald-500" /> <span className="text-[13px] font-semibold">Edit</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setClientToDelete(item)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
+            <DropdownMenuItem onClick={() => setClientToDelete(item)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
               <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
             </DropdownMenuItem>
           </>
@@ -357,30 +358,30 @@ export default function ClientsListContent() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!clientToDelete} onOpenChange={(open) => !open && setClientToDelete(null)}>
-        <DialogContent className="sm:max-w-[420px] rounded-[40px] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
           <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8 animate-in zoom-in duration-500">
               <Trash2 size={40} strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-2xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter">Discard Client?</DialogTitle>
-            <DialogDescription className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed max-w-[280px]">
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">Discard Client?</DialogTitle>
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed max-w-[280px]">
               You are about to permanently remove{" "}
               <span className="text-rose-600 underline underline-offset-4 decoration-rose-200">{clientToDelete?.name}</span>{" "}
               and all associated records.
             </DialogDescription>
           </div>
-          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-gray-50 dark:border-gray-800">
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
             <Button
               variant="ghost"
               onClick={() => setClientToDelete(null)}
-              className="flex-1 h-12 rounded-2xl font-bold text-[12px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-[12px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100 transition-all"
             >
               Cancel
             </Button>
             <Button
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
-              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70"
+              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70"
             >
               {deleteMutation.isPending ? "Deleting..." : "Confirm Delete"}
             </Button>

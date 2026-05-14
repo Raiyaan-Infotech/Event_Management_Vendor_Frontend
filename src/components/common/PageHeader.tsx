@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { vendorUi } from "@/lib/vendor-ui";
 
 interface PageHeaderProps {
   title: string;
@@ -12,25 +13,19 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, total, rightContent }: PageHeaderProps) {
   return (
-    <div className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div className="shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-tight flex items-center gap-2">
+        <h1 className={`${vendorUi.type.pageTitle} flex items-center gap-2`}>
           {title}
           {total !== undefined && (
-            <Badge variant="outline" className="text-[11px] font-extrabold border-blue-200 text-blue-600 bg-blue-50/50 px-2.5 py-0.5 ml-1">
+            <Badge variant="outline" className="text-[10px] font-bold border-[var(--vendor-primary-btn)]/20 text-[var(--vendor-primary-btn)] bg-[var(--vendor-table-row-hover)] px-2 py-0.5 ml-1">
               {total} TOTAL
             </Badge>
           )}
         </h1>
-        <p className="text-sm text-gray-400 mt-1 italic tracking-tight font-medium">
-          {subtitle}
-        </p>
+        <p className="mt-1 text-[13px] leading-5 font-medium text-[var(--vendor-text-muted)]">{subtitle}</p>
       </div>
-      {rightContent && (
-        <div className="flex items-center gap-2">
-          {rightContent}
-        </div>
-      )}
+      {rightContent && <div className="flex items-center gap-2">{rightContent}</div>}
     </div>
   );
 }

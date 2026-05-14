@@ -180,7 +180,7 @@ export function MailSidebar({ activeFolder = 'inbox', onFolderChange }: MailSide
                 <button
                   onClick={handleCreate}
                   disabled={createFolder.isPending}
-                  className="text-primary text-[12px] font-bold hover:opacity-80 disabled:opacity-50"
+                  className="text-primary text-[var(--vendor-control-text)] font-semibold hover:opacity-80 disabled:opacity-50"
                 >
                   Add
                 </button>
@@ -210,7 +210,7 @@ export function MailSidebar({ activeFolder = 'inbox', onFolderChange }: MailSide
                     <button
                       onClick={() => handleEditSave(folder.id)}
                       disabled={updateFolder.isPending}
-                      className="text-primary text-[12px] font-bold hover:opacity-80 disabled:opacity-50"
+                      className="text-primary text-[var(--vendor-control-text)] font-semibold hover:opacity-80 disabled:opacity-50"
                     >
                       Save
                     </button>

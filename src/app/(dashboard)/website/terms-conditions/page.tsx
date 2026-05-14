@@ -35,12 +35,12 @@ export default function TermsConditionsPage() {
     <div className="h-[calc(100vh-86px)] overflow-y-auto px-6 py-8 custom-scrollbar">
       <div className="max-w-[1700px] mx-auto mb-8">
         <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1">Terms & Conditions</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Write your terms and conditions for customers.</p>
+        <p className="text-sm text-[var(--vendor-text-muted)]">Write your terms and conditions for customers.</p>
       </div>
 
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-9 space-y-6">
-          <div className="bg-white dark:bg-sidebar p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
+          <div className="bg-white dark:bg-sidebar p-6 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
             <RichTextEditor
               key={isEditing ? "edit" : "view"}
               value={content}
@@ -53,13 +53,13 @@ export default function TermsConditionsPage() {
         </div>
 
         <div className="lg:col-span-3 space-y-4 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
             <Button
               onClick={() => setIsEditing(!isEditing)}
-              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-2xl shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
+              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
                 isEditing
                   ? "bg-amber-500 text-white border-none hover:bg-amber-600 shadow-amber-500/20"
-                  : "bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  : "bg-white dark:bg-[#1e293b] text-[var(--vendor-text)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] hover:bg-gray-50 dark:hover:bg-gray-800/50"
               }`}
             >
               <Edit className="size-4" />

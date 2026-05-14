@@ -109,7 +109,7 @@ function ContactPickerPanel({
         if (role !== 'to' && chips.length === 0) return null;
         return (
           <div key={role} className="flex items-start gap-4 border-b border-border py-2.5">
-            <label className="w-14 text-[12px] font-bold text-muted-foreground uppercase tracking-wider shrink-0 pt-1">
+            <label className="w-14 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider shrink-0 pt-1">
               {role.toUpperCase()}
             </label>
             <div className="flex-1 flex flex-wrap gap-1.5 items-center min-h-[26px]">
@@ -127,7 +127,7 @@ function ContactPickerPanel({
 
       {/* Search trigger */}
       <div className="flex items-center gap-4 border-b border-border py-2.5">
-        <label className="w-14 text-[12px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
+        <label className="w-14 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider shrink-0">
           Add
         </label>
         <div className="relative flex-1">
@@ -168,7 +168,7 @@ function ContactPickerPanel({
                             onClick={() => handleAdd(c, role)}
                             disabled={atLimit}
                             title={atLimit ? `Max ${LIMITS[role]} ${label} recipients` : undefined}
-                            className={`px-2 py-0.5 rounded text-[11px] font-bold transition-opacity ${atLimit ? 'opacity-30 cursor-not-allowed bg-muted text-muted-foreground' : cls}`}
+                            className={`px-2 py-0.5 rounded text-[var(--vendor-control-text)] font-semibold transition-opacity ${atLimit ? 'opacity-30 cursor-not-allowed bg-muted text-muted-foreground' : cls}`}
                           >
                             {label}
                           </button>
@@ -313,7 +313,7 @@ export function ComposeContent({ initialRecipients, draftId, initialSubject = ''
 
                 {/* SUBJECT */}
                 <div className="flex items-center gap-4 border-b border-border py-3">
-                  <label className="w-14 text-[12px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
+                  <label className="w-14 text-[var(--vendor-control-text)] font-semibold text-muted-foreground uppercase tracking-wider shrink-0">
                     Subject
                   </label>
                   <input

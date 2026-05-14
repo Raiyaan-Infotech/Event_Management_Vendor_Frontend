@@ -1,0 +1,45 @@
+export const vendorUi = {
+  page: {
+    shell: "h-[calc(100vh-86px)] overflow-y-auto custom-scrollbar bg-[var(--vendor-page-bg)]",
+    inner: "max-w-[1700px] mx-auto px-[var(--vendor-page-x)] py-[var(--vendor-page-y)]",
+  },
+  panel: {
+    base: "bg-[var(--vendor-panel-bg)] dark:bg-[var(--vendor-panel-bg)] border border-[var(--vendor-border)] rounded-[var(--vendor-radius-panel)] shadow-[var(--vendor-shadow-panel)]",
+    padded: "p-[var(--vendor-panel-padding)]",
+    header: "border-b border-[var(--vendor-border)] pb-4 mb-6",
+  },
+  table: {
+    wrapper: "bg-[var(--vendor-panel-bg)] border border-[var(--vendor-border)] rounded-[var(--vendor-radius-panel)] shadow-[var(--vendor-shadow-panel)] overflow-hidden",
+    table: "w-full min-w-[1100px] border-separate border-spacing-0 text-left text-[var(--vendor-table-text)]",
+    head: "sticky top-0 z-20 bg-[var(--vendor-table-head-bg)] shadow-sm",
+    headRow: "border-b border-[var(--vendor-border)]",
+    headCell: "px-[var(--vendor-table-x)] py-[var(--vendor-table-head-y)] text-[var(--vendor-table-head-text)] font-semibold uppercase tracking-normal text-[var(--vendor-text-muted)] align-middle whitespace-nowrap",
+    body: "divide-y divide-[var(--vendor-border)]",
+    row: "h-[var(--vendor-table-row-height)] transition-colors duration-200 even:bg-[var(--vendor-table-row-alt)] odd:bg-[var(--vendor-panel-bg)] hover:bg-[var(--vendor-table-row-hover)]",
+    rowSelected: "bg-primary/10 hover:bg-primary/10",
+    cell: "px-[var(--vendor-table-x)] py-[var(--vendor-table-row-y)] text-[var(--vendor-text)] align-middle",
+    text: "text-[var(--vendor-table-text)] font-medium text-[var(--vendor-text)] tracking-normal",
+    textStrong: "text-[var(--vendor-table-text)] font-semibold text-[var(--vendor-text)] tracking-normal",
+    textMuted: "text-[var(--vendor-table-text)] font-medium text-[var(--vendor-text-muted)] tracking-normal",
+    textTiny: "text-[var(--vendor-caption-text)] font-medium text-[var(--vendor-text-muted)] tracking-normal",
+    codeBadge: "font-mono text-[var(--vendor-caption-text)] font-semibold border-[var(--vendor-border)]/60 dark:border-[var(--vendor-border)] text-[var(--vendor-text-muted)] bg-[var(--vendor-panel-bg)]/50 py-0.5",
+  },
+  type: {
+    pageTitle: "text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tight",
+    pageSubtitle: "text-[var(--vendor-subtitle-text)] text-[var(--vendor-text-muted)] mt-1 font-medium",
+    sectionTitle: "text-[var(--vendor-section-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-wide",
+    sectionSubtitle: "text-[var(--vendor-caption-text)] text-[var(--vendor-text-muted)] font-semibold uppercase tracking-wide",
+  },
+  form: {
+    label: "text-[var(--vendor-form-label-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide",
+    help: "text-[var(--vendor-form-help-text)] font-medium text-[var(--vendor-text-muted)]",
+    input: "text-[var(--vendor-form-input-text)] font-medium",
+    sectionTitle: "text-[var(--vendor-form-section-title-text)] font-semibold text-[var(--vendor-text)] uppercase tracking-wide",
+    sectionSubtitle: "text-[var(--vendor-form-section-subtitle-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide",
+  },
+  control: {
+    button: "rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-bold",
+    iconButton: "rounded-[var(--vendor-radius-control)]",
+    input: "rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)]",
+  },
+} as const;

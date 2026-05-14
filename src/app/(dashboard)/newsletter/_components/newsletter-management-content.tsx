@@ -82,7 +82,7 @@ export default function NewsletterManagementContent({ type }: Props) {
       key: "s_no",
       label: "S.No",
       render: (_, index) => (
-        <span className="text-[12px] font-bold text-gray-600 dark:text-gray-400">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)]">
           {(currentPage - 1) * itemsPerPage + (index + 1)}
         </span>
       ),
@@ -102,7 +102,7 @@ export default function NewsletterManagementContent({ type }: Props) {
       label: "Email",
       sortable: true,
       render: (item) => (
-        <span className="text-[12px] text-gray-600 dark:text-gray-400">{item.email}</span>
+        <span className="text-[12px] text-gray-600 dark:text-[var(--vendor-text-muted)]">{item.email}</span>
       ),
     },
     {
@@ -113,7 +113,7 @@ export default function NewsletterManagementContent({ type }: Props) {
         const planColor = plans.find(p => p.name === item.rawPlan)?.label_color;
         return (
           <span
-            className="text-[12px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border"
+            className="text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide px-3 py-1 rounded-full border"
             style={planColor
               ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
               : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
@@ -142,7 +142,7 @@ export default function NewsletterManagementContent({ type }: Props) {
             >
               <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${isSubscribed ? "translate-x-6" : "translate-x-1"}`} />
             </button>
-            <span className={`text-[11px] font-black uppercase tracking-widest ${isSubscribed ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+            <span className={`text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide ${isSubscribed ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
               {item.status}
             </span>
           </div>
@@ -213,7 +213,7 @@ export default function NewsletterManagementContent({ type }: Props) {
         subtitle={subtitle}
         total={rows.length}
         rightContent={
-          <Button variant="outline" onClick={handleExport} className="h-10 text-[11px] font-black gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-widest bg-white">
+          <Button variant="outline" onClick={handleExport} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wide bg-white">
             <Download size={15} strokeWidth={2.5} /> Export
           </Button>
         }
@@ -227,12 +227,12 @@ export default function NewsletterManagementContent({ type }: Props) {
         filterContent={
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Membership Filter</p>
+              <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Membership Filter</p>
               <Select value={filterMembership} onValueChange={setFilterMembership}>
-                <SelectTrigger className="h-10 rounded-xl text-[12px] font-bold border-gray-100 bg-gray-50/50 focus:ring-0">
+                <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Memberships" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-gray-100 font-bold">
+                <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] font-bold">
                   <SelectItem value="All">All</SelectItem>
                   <SelectItem value="Guest">Guest</SelectItem>
                   {plans.map(p => (
@@ -242,7 +242,7 @@ export default function NewsletterManagementContent({ type }: Props) {
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="ghost" onClick={() => setFilterMembership("All")} className="w-full h-10 rounded-xl text-[11px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all">
+            <Button variant="ghost" onClick={() => setFilterMembership("All")} className="w-full h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold uppercase tracking-wide text-rose-500 hover:bg-rose-50 transition-all">
               Reset Filters
             </Button>
           </div>
@@ -270,7 +270,7 @@ export default function NewsletterManagementContent({ type }: Props) {
                 : bulkUpdate.mutate({ from: 'subscribed', to: 'unsubscribed' }),
             })}
             disabled={bulkUpdate.isPending || bulkUpdateIds.isPending || rows.length === 0}
-            className="h-10 text-[11px] font-black gap-2 uppercase tracking-widest bg-rose-500 hover:bg-rose-600 text-white rounded-xl shadow-sm border-none disabled:opacity-60"
+            className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 uppercase tracking-wide bg-rose-500 hover:bg-rose-600 text-white rounded-[var(--vendor-radius-control)] shadow-sm border-none disabled:opacity-60"
           >
             <Users size={15} strokeWidth={2.5} />
             {bulkUpdate.isPending || bulkUpdateIds.isPending ? 'Updating...' : selectedIds.length > 0 ? `Unsubscribe (${selectedIds.length})` : 'Unsubscribers'}
@@ -286,7 +286,7 @@ export default function NewsletterManagementContent({ type }: Props) {
                 : bulkUpdate.mutate({ from: 'unsubscribed', to: 'subscribed' }),
             })}
             disabled={bulkUpdate.isPending || bulkUpdateIds.isPending || rows.length === 0}
-            className="h-10 text-[11px] font-black gap-2 uppercase tracking-widest bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm border-none disabled:opacity-60"
+            className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 uppercase tracking-wide bg-emerald-500 hover:bg-emerald-600 text-white rounded-[var(--vendor-radius-control)] shadow-sm border-none disabled:opacity-60"
           >
             <Users size={15} strokeWidth={2.5} />
             {bulkUpdate.isPending || bulkUpdateIds.isPending ? 'Updating...' : selectedIds.length > 0 ? `Subscribe (${selectedIds.length})` : 'Subscribers'}
@@ -294,7 +294,7 @@ export default function NewsletterManagementContent({ type }: Props) {
         )}
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={paginatedData}
           columns={columns}
@@ -309,8 +309,8 @@ export default function NewsletterManagementContent({ type }: Props) {
           noCard={true}
           actionContent={() => (
             <>
-              <DropdownMenuItem onClick={() => toast.info("Update plan from the Clients module")} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
-                <Users size={15} className="text-blue-500" /> <span className="text-[13px]">View Client</span>
+              <DropdownMenuItem onClick={() => toast.info("Update plan from the Clients module")} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600 font-bold">
+                <Users size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px]">View Client</span>
               </DropdownMenuItem>
             </>
           )}
@@ -338,27 +338,27 @@ export default function NewsletterManagementContent({ type }: Props) {
       <Dialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
         <DialogContent className="sm:max-w-[400px] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
           <div className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-800/60 dark:to-[#111827] p-10 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 flex items-center justify-center text-blue-500 shadow-lg mb-6">
+            <div className="w-16 h-16 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-[var(--vendor-primary-btn)] shadow-lg mb-6">
               <Users size={28} strokeWidth={2.5} />
             </div>
-            <DialogTitle className="text-xl font-black text-gray-800 dark:text-gray-100 uppercase tracking-tight">
+            <DialogTitle className="text-xl font-black text-[var(--vendor-text)] uppercase tracking-tight">
               Confirm Action
             </DialogTitle>
-            <DialogDescription className="mt-3 text-gray-500 dark:text-gray-400 font-bold text-sm leading-relaxed">
+            <DialogDescription className="mt-3 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed">
               {confirmAction?.label}
             </DialogDescription>
           </div>
-          <DialogFooter className="p-6 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-3 border-t border-gray-100 dark:border-gray-800">
+          <DialogFooter className="p-6 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-3 border-t border-[var(--vendor-border)]">
             <Button
               variant="ghost"
               onClick={() => setConfirmAction(null)}
-              className="flex-1 h-11 rounded-2xl font-black text-[11px] uppercase tracking-widest text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              className="flex-1 h-11 rounded-[var(--vendor-radius-panel)] font-black text-[11px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100 transition-all"
             >
               Cancel
             </Button>
             <Button
               onClick={() => { confirmAction?.onConfirm(); setConfirmAction(null); }}
-              className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg transition-all"
+              className="flex-1 h-11 bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white rounded-[var(--vendor-radius-panel)] font-black text-[11px] uppercase tracking-wide shadow-lg transition-all"
             >
               Confirm
             </Button>

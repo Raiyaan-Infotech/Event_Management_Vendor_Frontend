@@ -57,7 +57,7 @@ export default function PagesListContent() {
       label: "ID",
       sortable: true,
       render: (item) => (
-        <span className="text-[12px] font-black text-gray-400 group-hover:text-blue-500 transition-colors tracking-tighter">
+        <span className="text-[12px] font-black text-[var(--vendor-text-muted)] group-hover:text-[var(--vendor-primary-btn)] transition-colors tracking-tighter">
           #{item.id.toString().padStart(2, '0')}
         </span>
       ),
@@ -67,7 +67,7 @@ export default function PagesListContent() {
       label: "NAME",
       sortable: true,
       render: (item) => (
-        <p className="text-[14px] font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 transition-colors tracking-tight">
+        <p className="text-[14px] font-bold text-[var(--vendor-text)] group-hover:text-[var(--vendor-primary-btn)] transition-colors tracking-tight">
           {item.name}
         </p>
       ),
@@ -105,10 +105,10 @@ export default function PagesListContent() {
         rightContent={
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
               <Upload size={15} strokeWidth={2.5} /> Import
             </Button>
-            <Button variant="outline" onClick={handleExport} className="h-10 text-[12px] font-bold gap-2 border-slate-200 dark:border-gray-800 text-slate-600 hover:bg-slate-50 transition-all rounded-xl shadow-sm uppercase tracking-wider">
+            <Button variant="outline" onClick={handleExport} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
               <Download size={15} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/website/pages/create">
@@ -134,7 +134,7 @@ export default function PagesListContent() {
         }
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={pages}
           columns={pageColumns}
@@ -151,19 +151,19 @@ export default function PagesListContent() {
             <>
               <DropdownMenuItem
                 onClick={() => router.push(`/website/pages/view/${item.id}`)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-700"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-700"
               >
                 <Eye size={15} className="text-violet-500" /> <span className="text-[13px] font-semibold">View</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => router.push(`/website/pages/edit/${item.id}`)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer"
               >
-                <Edit2 size={15} className="text-blue-500" /> <span className="text-[13px] font-semibold text-gray-600">Edit</span>
+                <Edit2 size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold text-gray-600">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => deletePage(item.id)}
-                className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
               >
                 <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
               </DropdownMenuItem>

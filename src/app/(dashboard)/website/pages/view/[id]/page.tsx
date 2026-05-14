@@ -43,29 +43,29 @@ export default function ViewWebsitePage({ params }: ViewPageProps) {
               {page.name}
             </h1>
           </div>
-          <Button asChild variant="outline" className="border-gray-200 shadow-sm">
+          <Button asChild variant="outline" className="border-[var(--vendor-border)] shadow-sm">
             <Link href="/website/pages" className="gap-2 font-semibold">
               <ArrowLeft size={15} /> Back to Pages
             </Link>
           </Button>
         </div>
 
-        <Card className="border border-gray-100 dark:border-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <CardHeader className="border-b border-gray-100 dark:border-gray-800">
+        <Card className="border border-[var(--vendor-border)] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <CardHeader className="border-b border-[var(--vendor-border)]">
             <CardTitle className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-200">
               Page Overview
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-xl border border-gray-100 dark:border-gray-800 p-4 bg-white dark:bg-[#111827]">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Page Name</p>
+              <div className="rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] p-4 bg-white dark:bg-[#111827]">
+                <p className="text-[10px] font-black uppercase tracking-wide text-[var(--vendor-text-muted)]">Page Name</p>
                 <p className="text-[15px] font-bold text-gray-900 dark:text-gray-100 mt-1">{page.name}</p>
               </div>
-              <div className="rounded-xl border border-gray-100 dark:border-gray-800 p-4 bg-white dark:bg-[#111827]">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Created At</p>
+              <div className="rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] p-4 bg-white dark:bg-[#111827]">
+                <p className="text-[10px] font-black uppercase tracking-wide text-[var(--vendor-text-muted)]">Created At</p>
                 <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-200 mt-1 flex items-center gap-2">
-                  <CalendarDays size={14} className="text-blue-500" />
+                  <CalendarDays size={14} className="text-[var(--vendor-primary-btn)]" />
                   {new Date(page.createdAt).toLocaleDateString()}
                 </p>
               </div>
@@ -73,8 +73,8 @@ export default function ViewWebsitePage({ params }: ViewPageProps) {
           </CardContent>
         </Card>
 
-        <Card className="border border-gray-100 dark:border-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col">
-          <CardHeader className="border-b border-gray-100 dark:border-gray-800 flex flex-row items-center justify-between">
+        <Card className="border border-[var(--vendor-border)] shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col">
+          <CardHeader className="border-b border-[var(--vendor-border)] flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-200">
               Description
             </CardTitle>
@@ -84,8 +84,8 @@ export default function ViewWebsitePage({ params }: ViewPageProps) {
           </CardContent>
         </Card>
 
-        <Card className="border border-gray-100 dark:border-gray-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col">
-          <CardHeader className="border-b border-gray-100 dark:border-gray-800 flex flex-row items-center justify-between">
+        <Card className="border border-[var(--vendor-border)] shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col">
+          <CardHeader className="border-b border-[var(--vendor-border)] flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-200 flex items-center gap-2">
               <FileText size={15} className="text-indigo-500" /> Content Full Preview
             </CardTitle>

@@ -49,7 +49,7 @@ function LocationSelect({
 
   if (isView) {
     return (
-      <div className="h-10 px-4 flex items-center text-[13px] font-black text-gray-800 dark:text-gray-100">
+      <div className="h-10 px-4 flex items-center text-[13px] font-black text-[var(--vendor-text)]">
         {value || "—"}
       </div>
     );
@@ -61,7 +61,7 @@ function LocationSelect({
         <Icon
           size={16}
           className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 transition-colors pointer-events-none
-            ${hasError ? "text-rose-400" : disabled ? "text-gray-200" : "text-gray-300 group-focus-within:text-blue-500"}`}
+            ${hasError ? "text-rose-400" : disabled ? "text-gray-200" : "text-gray-300 group-focus-within:text-[var(--vendor-primary-btn)]"}`}
         />
         <input
           value={open ? search : value || ""}
@@ -78,8 +78,8 @@ function LocationSelect({
           onBlur={() => setTimeout(() => setOpen(false), 200)}
           readOnly={disabled}
           placeholder={isLoading ? "Loading…" : placeholder}
-          className={`h-10 w-full pl-9 pr-8 border bg-white dark:bg-gray-800/20 rounded-xl text-[13px] shadow-sm outline-none transition-all
-            ${hasError ? "border-rose-500 ring-4 ring-rose-500/5" : "border-gray-100 dark:border-gray-800 focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}
+          className={`h-10 w-full pl-9 pr-8 border bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] text-[13px] shadow-sm outline-none transition-all
+            ${hasError ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)] focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}
             ${disabled ? "opacity-60 cursor-default" : ""}
             ${!disabled && value ? "font-medium" : ""}`}
         />
@@ -91,17 +91,17 @@ function LocationSelect({
       </div>
 
       {open && !disabled && (
-        <div className="absolute z-50 w-full mt-2 py-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute z-50 w-full mt-2 py-1 bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] shadow-xl max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
           <button
             type="button"
             onMouseDown={() => { onValueChange(""); setOpen(false); }}
-            className="w-full text-left px-4 py-2 text-[12px] text-gray-400 italic hover:bg-rose-50 dark:hover:bg-rose-500/10 border-b border-gray-50 dark:border-gray-800/50"
+            className="w-full text-left px-4 py-2 text-[12px] text-[var(--vendor-text-muted)] italic hover:bg-rose-50 dark:hover:bg-rose-500/10 border-b border-[var(--vendor-border)]/50"
           >
             {placeholder}
           </button>
 
           {isLoading ? (
-            <div className="px-4 py-3 text-[12px] text-gray-400 text-center italic">Loading…</div>
+            <div className="px-4 py-3 text-[12px] text-[var(--vendor-text-muted)] text-center italic">Loading…</div>
           ) : filtered.length > 0 ? (
             filtered.map((opt) => (
               <button
@@ -109,13 +109,13 @@ function LocationSelect({
                 type="button"
                 onMouseDown={() => { onValueChange(opt.name); setOpen(false); }}
                 className={`w-full text-left px-4 py-2 text-[13px] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors
-                  ${value === opt.name ? "text-blue-600 font-bold bg-blue-50/50" : "text-gray-600 dark:text-gray-300"}`}
+                  ${value === opt.name ? "text-[var(--vendor-primary-btn)] font-bold bg-blue-50/50" : "text-gray-600 dark:text-gray-300"}`}
               >
                 {opt.name}
               </button>
             ))
           ) : (
-            <div className="px-4 py-2 text-[12px] text-gray-400 italic">No results found</div>
+            <div className="px-4 py-2 text-[12px] text-[var(--vendor-text-muted)] italic">No results found</div>
           )}
         </div>
       )}

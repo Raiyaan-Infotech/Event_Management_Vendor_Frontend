@@ -156,10 +156,10 @@ export default function AdvanceSliderContent() {
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-black p-6 space-y-6 flex flex-col animate-in fade-in duration-700">
       <div className="px-4 pb-2 flex items-center justify-between">
-        <h1 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">
+        <h1 className="text-[var(--vendor-title-text)] font-bold text-slate-800 dark:text-white uppercase tracking-tighter">
           {isEditing ? "Edit Advance Slider" : "Advance Slider Workspace"}
         </h1>
-        <Button variant="ghost" onClick={() => router.push("/website/home-slider/advance-slider")} className="text-[12px] font-bold text-slate-500 hover:text-indigo-600 gap-2">
+        <Button variant="ghost" onClick={() => router.push("/website/home-slider/advance-slider")} className="text-[var(--vendor-control-text)] font-semibold text-slate-500 hover:text-indigo-600 gap-2">
           <RotateCcw size={14} className="rotate-90" /> BACK TO LIST
         </Button>
       </div>
@@ -167,10 +167,10 @@ export default function AdvanceSliderContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start px-4 text-slate-700">
         {/* Main form */}
         <div className="lg:col-span-9 space-y-6">
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
             <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-[var(--vendor-radius-control)]">
                   <Sliders className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
@@ -218,9 +218,9 @@ export default function AdvanceSliderContent() {
                       <SelectValue placeholder="Select a page" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none" className="text-[12px] font-bold text-slate-400">No page linked</SelectItem>
+                      <SelectItem value="none" className="text-[var(--vendor-control-text)] font-semibold text-slate-400">No page linked</SelectItem>
                       {pages.map((page) => (
-                        <SelectItem key={page.id} value={String(page.id)} className="text-[12px] font-bold">
+                        <SelectItem key={page.id} value={String(page.id)} className="text-[var(--vendor-control-text)] font-semibold">
                           {page.name}
                         </SelectItem>
                       ))}
@@ -238,17 +238,17 @@ export default function AdvanceSliderContent() {
               <div className="space-y-8">
                 <div className="grid grid-cols-3 gap-6">
                   <div className="space-y-3">
-                    <Label className="text-[11px] font-bold text-slate-500 uppercase">Overlay Opacity</Label>
+                    <Label className="text-[var(--vendor-control-text)] font-semibold text-slate-500 uppercase">Overlay Opacity</Label>
                     <input type="range" min="0" max="100" value={formData.overlay_opacity} onChange={(e) => setFormData({ ...formData, overlay_opacity: parseInt(e.target.value) })} className="w-full accent-indigo-600" />
                     <p className="text-[10px] font-bold text-slate-400">{formData.overlay_opacity}%</p>
                   </div>
                   <div className="space-y-3">
-                    <Label className="text-[11px] font-bold text-slate-500 uppercase">Image Blur</Label>
+                    <Label className="text-[var(--vendor-control-text)] font-semibold text-slate-500 uppercase">Image Blur</Label>
                     <input type="range" min="0" max="20" value={formData.image_blur} onChange={(e) => setFormData({ ...formData, image_blur: parseInt(e.target.value) })} className="w-full accent-indigo-600" />
                     <p className="text-[10px] font-bold text-slate-400">{formData.image_blur}px</p>
                   </div>
                   <div className="space-y-3">
-                    <Label className="text-[11px] font-bold text-slate-500 uppercase">Brightness</Label>
+                    <Label className="text-[var(--vendor-control-text)] font-semibold text-slate-500 uppercase">Brightness</Label>
                     <input type="range" min="0" max="200" value={formData.image_brightness} onChange={(e) => setFormData({ ...formData, image_brightness: parseInt(e.target.value) })} className="w-full accent-indigo-600" />
                     <p className="text-[10px] font-bold text-slate-400">{formData.image_brightness}%</p>
                   </div>
@@ -273,14 +273,14 @@ export default function AdvanceSliderContent() {
                   <div
                     onClick={() => !previewImage && !imageUploading && fileInputRef.current?.click()}
                     className={cn(
-                      "w-full aspect-video rounded-2xl border-2 border-dashed transition-all relative overflow-hidden group flex flex-col items-center justify-center bg-white",
+                      "w-full aspect-video rounded-[var(--vendor-radius-panel)] border-2 border-dashed transition-all relative overflow-hidden group flex flex-col items-center justify-center bg-white",
                       previewImage ? "border-indigo-500/20" : "border-slate-200 cursor-pointer"
                     )}
                   >
                     {imageUploading ? (
                       <div className="text-center space-y-3">
                         <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Uploading…</p>
+                        <p className="text-[var(--vendor-control-text)] font-semibold text-slate-500 uppercase tracking-wider">Uploading…</p>
                       </div>
                     ) : previewImage ? (
                       <>
@@ -308,7 +308,7 @@ export default function AdvanceSliderContent() {
 
         {/* Right sidebar */}
         <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
               onReset={isEditing ? resetForm : undefined}
@@ -318,7 +318,7 @@ export default function AdvanceSliderContent() {
             />
           </div>
 
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl p-6 space-y-6">
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] p-6 space-y-6">
             <div className="space-y-2">
               <Label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">Status</Label>
               <Select value={formData.status} onValueChange={(v: "published" | "draft") => setFormData({ ...formData, status: v })}>
@@ -338,17 +338,17 @@ export default function AdvanceSliderContent() {
           </Card>
 
           {/* Live preview */}
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
             <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-[var(--vendor-radius-control)]">
                   <Eye className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">Live Preview</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-5">
-              <div className="relative aspect-[16/10] bg-slate-950 rounded-2xl overflow-hidden flex flex-col items-center justify-center shadow-2xl">
+              <div className="relative aspect-[16/10] bg-slate-950 rounded-[var(--vendor-radius-panel)] overflow-hidden flex flex-col items-center justify-center shadow-2xl">
                 {previewImage && (
                   <Image src={previewImage} alt="Live" fill className="object-cover transition-all duration-500" style={{ filter: `blur(${formData.image_blur}px) brightness(${formData.image_brightness}%)` }} />
                 )}
@@ -364,7 +364,7 @@ export default function AdvanceSliderContent() {
                     {formData.description || "Description will appear here…"}
                   </p>
                   {formData.button_label && (
-                    <Button style={{ backgroundColor: formData.button_color }} className="h-8 px-6 rounded-full text-white text-[9px] font-black uppercase tracking-widest shadow-xl mt-2">
+                    <Button style={{ backgroundColor: formData.button_color }} className="h-8 px-6 rounded-full text-white text-[9px] font-black uppercase tracking-wide shadow-xl mt-2">
                       {formData.button_label}
                     </Button>
                   )}
@@ -406,7 +406,7 @@ export default function AdvanceSliderContent() {
                 </Button>
               )}
             </div>
-            <Button onClick={() => setPreviewOpen(false)} variant="secondary" size="icon" className="absolute top-10 right-10 w-12 h-12 rounded-2xl bg-white/10 hover:bg-white text-white hover:text-black backdrop-blur-3xl border-none transition-all shadow-2xl z-50">
+            <Button onClick={() => setPreviewOpen(false)} variant="secondary" size="icon" className="absolute top-10 right-10 w-12 h-12 rounded-[var(--vendor-radius-panel)] bg-white/10 hover:bg-white text-white hover:text-black backdrop-blur-3xl border-none transition-all shadow-2xl z-50">
               <X size={24} />
             </Button>
           </div>

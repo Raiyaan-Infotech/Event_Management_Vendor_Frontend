@@ -80,7 +80,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   if (mode !== "add" && isLoading) {
-    return <div className="p-20 text-center font-bold animate-pulse text-gray-400 uppercase tracking-widest">Loading Template Data...</div>;
+    return <div className="p-20 text-center font-bold animate-pulse text-[var(--vendor-text-muted)] uppercase tracking-wide">Loading Template Data...</div>;
   }
 
   const title = mode === "add" ? "Add Email Template" : mode === "edit" ? "Edit Email Template" : "View Email Template";
@@ -91,7 +91,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
       {/* Header Section */}
       <div className="max-w-[1700px] mx-auto mb-8">
         <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1 font-poppins">{title}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-tight">{subtitle}</p>
+        <p className="text-sm text-[var(--vendor-text-muted)] font-medium tracking-tight">{subtitle}</p>
       </div>
 
       <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000 pb-10">
@@ -99,12 +99,12 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
         <div className="lg:col-span-9 space-y-6 relative z-0">
 
           {/* Template Details Card */}
-          <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
+          <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Name Field */}
               <div className="space-y-3">
                 <div className="flex items-center gap-1 ml-1">
-                  <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Template Name</Label>
+                  <Label className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide">Template Name</Label>
                   {mode !== "view" && <span className="text-rose-500 font-bold">*</span>}
                 </div>
                 <Input
@@ -112,28 +112,28 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                   onChange={(e) => updateForm("name", e.target.value)}
                   placeholder="Enter Template name.."
                   readOnly={mode === "view"}
-                  className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-gray-100 dark:border-gray-800 rounded-xl text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 disabled:opacity-80"
+                  className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20 disabled:opacity-80"
                 />
               </div>
 
               {/* Category Dropdown */}
               <div className="space-y-3">
                 <div className="flex items-center gap-1 ml-1">
-                  <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Category</Label>
+                  <Label className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide">Category</Label>
                   {mode !== "view" && <span className="text-rose-500 font-bold">*</span>}
                 </div>
                 {mode === "view" ? (
                   <Input
                     value={template?.category?.name || "—"}
                     readOnly
-                    className="h-11 bg-gray-50 dark:bg-[#181d23] border-gray-100 dark:border-gray-800 rounded-xl text-sm font-bold shadow-sm disabled:opacity-80"
+                    className="h-11 bg-gray-50 dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm disabled:opacity-80"
                   />
                 ) : (
                   <Select value={formData.category_id} onValueChange={(val) => updateForm("category_id", val)}>
-                    <SelectTrigger className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-gray-100 dark:border-gray-800 rounded-xl text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20">
+                    <SelectTrigger className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border-gray-100 font-bold">
+                    <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] font-bold">
                       {categories.map((cat: { id: number; name: string }) => (
                         <SelectItem key={cat.id} value={String(cat.id)}>
                           {cat.name}
@@ -147,12 +147,12 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
           </div>
 
           {/* Email Content Card */}
-          <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none overflow-hidden">
+          <div className="bg-white dark:bg-sidebar p-6 md:p-8 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none overflow-hidden">
             <div className="space-y-3">
                <div className="flex items-center gap-1 ml-1">
-                 <Label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.2em]">Description</Label>
+                 <Label className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide">Description</Label>
                </div>
-               <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#181d23]/50 overflow-hidden shadow-sm">
+               <div className="rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-[#181d23]/50 overflow-hidden shadow-sm">
                   <RichTextEditor
                     value={formData.description}
                     onChange={(val) => updateForm("description", val)}
@@ -167,7 +167,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
 
         {/* Action Sidebar: Right Side (3 cols) */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 transition-all">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-0 transition-all">
             <PersistenceActions
               onSave={mode !== "view" ? handleSave : undefined}
               onCancel={() => router.push("/newsletter/email-template")}

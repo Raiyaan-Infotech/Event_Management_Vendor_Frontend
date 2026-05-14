@@ -133,7 +133,7 @@ export default function SimpleSliderContent() {
         <h1 className="text-2xl font-bold text-[#1e293b] dark:text-white mb-1">
           {isEditing ? "Edit Simple Slider" : "Add Simple Slider"}
         </h1>
-        <Button variant="ghost" onClick={() => router.push("/website/home-slider/simple-slider")} className="text-[12px] font-bold text-slate-500 hover:text-blue-600 gap-2">
+        <Button variant="ghost" onClick={() => router.push("/website/home-slider/simple-slider")} className="text-[var(--vendor-control-text)] font-semibold text-slate-500 hover:text-[var(--vendor-primary-btn)] gap-2">
           <RotateCcw size={14} className="rotate-90" /> BACK TO LIST
         </Button>
       </div>
@@ -141,11 +141,11 @@ export default function SimpleSliderContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start px-4">
         {/* Form */}
         <div className="lg:col-span-9 space-y-6">
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
             <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
-                  <Layout className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="p-2 bg-blue-50 dark:bg-blue-950/30 rounded-[var(--vendor-radius-control)]">
+                  <Layout className="w-5 h-5 text-[var(--vendor-primary-btn)] dark:text-blue-400" />
                 </div>
                 <div>
                   <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100 uppercase tracking-tight">Slider Details</CardTitle>
@@ -185,9 +185,9 @@ export default function SimpleSliderContent() {
                       <SelectValue placeholder="Select a page" />
                     </SelectTrigger>
                     <SelectContent className="rounded-sm border-slate-100">
-                      <SelectItem value="none" className="text-[12px] font-bold text-slate-400">No page linked</SelectItem>
+                      <SelectItem value="none" className="text-[var(--vendor-control-text)] font-semibold text-slate-400">No page linked</SelectItem>
                       {pages.map((page) => (
-                        <SelectItem key={page.id} value={String(page.id)} className="text-[12px] font-bold">
+                        <SelectItem key={page.id} value={String(page.id)} className="text-[var(--vendor-control-text)] font-semibold">
                           {page.name}
                         </SelectItem>
                       ))}
@@ -220,14 +220,14 @@ export default function SimpleSliderContent() {
                 <div
                   onClick={() => !previewImage && !imageUploading && fileInputRef.current?.click()}
                   className={cn(
-                    "w-full aspect-[16/10] rounded-2xl border-2 border-dashed transition-all relative overflow-hidden group flex flex-col items-center justify-center p-2",
-                    previewImage ? "border-blue-500/20 bg-blue-50/5" : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
+                    "w-full aspect-[16/10] rounded-[var(--vendor-radius-panel)] border-2 border-dashed transition-all relative overflow-hidden group flex flex-col items-center justify-center p-2",
+                    previewImage ? "border-[var(--vendor-primary-btn)]/20 bg-blue-50/5" : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
                   )}
                 >
                   {imageUploading ? (
                     <div className="text-center space-y-3">
-                      <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                      <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Uploading…</p>
+                      <div className="w-8 h-8 border-2 border-[var(--vendor-primary-btn)] border-t-transparent rounded-full animate-spin mx-auto" />
+                      <p className="text-[var(--vendor-control-text)] font-semibold text-slate-500 uppercase tracking-wider">Uploading…</p>
                     </div>
                   ) : previewImage ? (
                     <>
@@ -240,11 +240,11 @@ export default function SimpleSliderContent() {
                     </>
                   ) : (
                     <div className="text-center space-y-4">
-                      <div className="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm inline-block text-blue-500 group-hover:scale-110 transition-transform duration-500">
+                      <div className="p-4 bg-white dark:bg-slate-800 rounded-[var(--vendor-radius-panel)] shadow-sm inline-block text-[var(--vendor-primary-btn)] group-hover:scale-110 transition-transform duration-500">
                         <Upload size={28} />
                       </div>
                       <div>
-                        <p className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Choose Image</p>
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300">Choose Image</p>
                         <p className="text-[10px] font-medium text-slate-400 mt-1">Recommended: 1800 × 900 px</p>
                       </div>
                     </div>
@@ -258,7 +258,7 @@ export default function SimpleSliderContent() {
 
         {/* Right sidebar */}
         <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-          <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <PersistenceActions
               onSave={handleSave}
               onPreview={() => window.open("/preview?block=simple_slider", "_blank")}
@@ -268,7 +268,7 @@ export default function SimpleSliderContent() {
             />
           </div>
 
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl p-6 space-y-6">
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] p-6 space-y-6">
             <div className="space-y-2">
               <Label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">Status</Label>
               <Select value={formData.status} onValueChange={(v: "published" | "draft") => setFormData({ ...formData, status: v })}>
@@ -288,10 +288,10 @@ export default function SimpleSliderContent() {
           </Card>
 
           {/* Live preview */}
-          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden">
+          <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-[var(--vendor-radius-panel)] overflow-hidden">
             <CardHeader className="border-b border-slate-100 dark:border-slate-800/60 pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-[var(--vendor-radius-control)]">
                   <ImageIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">Live Preview</CardTitle>
@@ -306,13 +306,13 @@ export default function SimpleSliderContent() {
                 )}
                 {formData.button_label && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/5">
-                    <Button style={{ backgroundColor: formData.button_color }} className="h-9 px-8 rounded-full text-white text-[11px] font-bold shadow-xl animate-in zoom-in duration-300 tracking-wider uppercase">
+                    <Button style={{ backgroundColor: formData.button_color }} className="h-9 px-8 rounded-full text-white text-[var(--vendor-control-text)] font-semibold shadow-xl animate-in zoom-in duration-300 tracking-wider uppercase">
                       {formData.button_label}
                     </Button>
                   </div>
                 )}
               </div>
-              <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-widest italic">Desktop Visualization</p>
+              <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-wide italic">Desktop Visualization</p>
             </CardContent>
           </Card>
         </div>

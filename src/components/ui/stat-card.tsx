@@ -12,7 +12,7 @@ export interface StatCardProps {
 
 export function StatCard({ title, value, icon: Icon, iconColor, bgColor, trend }: StatCardProps) {
   return (
-    <Card className="border-none shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] rounded-2xl bg-white overflow-hidden">
+    <Card className="border-none shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] rounded-[var(--vendor-radius-panel)] bg-white overflow-hidden">
       <CardContent className="p-7">
         <div className="flex items-center justify-between">
           <div className="relative">

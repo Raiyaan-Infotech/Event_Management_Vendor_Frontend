@@ -224,7 +224,7 @@ export function ContactViewContent({ id }: { id: string }) {
                 <div className="absolute bottom-4 right-4 flex items-center gap-2">
                   <button
                     onClick={() => setIsReplying(false)}
-                    className="px-6 py-2 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-lg text-[13px] font-bold flex items-center justify-center gap-2 active:scale-95 shadow-sm uppercase"
+                    className="px-6 py-2 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-[var(--vendor-radius-control)] text-[13px] font-bold flex items-center justify-center gap-2 active:scale-95 shadow-sm uppercase"
                   >
                     <X size={16} strokeWidth={2.5} />{" "}
                     Cancel 

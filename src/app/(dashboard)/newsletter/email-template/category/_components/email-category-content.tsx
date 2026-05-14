@@ -40,7 +40,7 @@ export default function EmailCategoryContent() {
       key: "s_no",
       label: "S.No",
       render: (_: EmailCategory, index: number) => (
-        <span className="text-[12px] font-bold text-gray-600 dark:text-gray-400">
+        <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)]">
           {(currentPage - 1) * itemsPerPage + (index + 1)}
         </span>
       ),
@@ -60,7 +60,7 @@ export default function EmailCategoryContent() {
       label: "Description",
       render: (item) => (
         <div className="max-w-[400px] py-1">
-          <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 italic">
+          <p className="text-[12px] font-medium text-[var(--vendor-text-muted)] leading-relaxed line-clamp-2 italic">
             {item.description || "—"}
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function EmailCategoryContent() {
       key: "is_active",
       label: "Status",
       render: (item) => (
-        <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${item.is_active ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500"}`}>
+        <span className={`text-[var(--vendor-control-text)] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full ${item.is_active ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500"}`}>
           {item.is_active ? "Active" : "Inactive"}
         </span>
       ),
@@ -105,7 +105,7 @@ export default function EmailCategoryContent() {
         placeholder="Search categories..."
       />
 
-      <div className="flex-1 min-h-0 flex flex-col bg-white dark:bg-[#1f2937] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-[var(--vendor-panel-bg)] rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
         <DataTable
           data={categories}
           columns={columns}
@@ -120,10 +120,10 @@ export default function EmailCategoryContent() {
           noCard={true}
           actionContent={(item) => (
             <>
-              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/category/edit/${item.id}`)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-gray-600 font-bold">
+              <DropdownMenuItem onClick={() => router.push(`/newsletter/email-template/category/edit/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600 font-bold">
                 <Edit size={15} className="text-emerald-500" /> <span className="text-[13px]">Edit</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-lg py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">
+              <DropdownMenuItem onClick={() => handleDelete(item.id)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50 font-bold">
                 <Trash2 size={15} /> <span className="text-[13px]">Delete</span>
               </DropdownMenuItem>
             </>

@@ -131,14 +131,14 @@ export default function RoleForm({ role }: RoleFormProps) {
       {/* Left Column: Form Content */}
       <div className="lg:col-span-9 space-y-6">
         {/* Role Details */}
-        <CommonCard title="Role Details" subtitle="Basic information" icon={Shield} iconColorClass="text-blue-600" iconBgClass="bg-blue-50 dark:bg-blue-500/10">
+        <CommonCard title="Role Details" subtitle="Basic information" icon={Shield} iconColorClass="text-[var(--vendor-primary-btn)]" iconBgClass="bg-blue-50 dark:bg-blue-500/10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormGroup label="Role Name" icon={Shield} error={errors.name} required>
               <Input
                 value={name}
                 onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: "" })); }}
                 placeholder="e.g. Event Coordinator"
-                className={`h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm ${errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}`}
+                className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
               />
             </FormGroup>
             <FormGroup label="Description" icon={FileText}>
@@ -146,11 +146,11 @@ export default function RoleForm({ role }: RoleFormProps) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Short description"
-                className="h-12 pl-12 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-2xl text-sm shadow-sm focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"
+                className="h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"
               />
             </FormGroup>
           </div>
-          <div className="flex items-center justify-between mt-6 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
+          <div className="flex items-center justify-between mt-6 p-4 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
             <Switch checked={isActive} onCheckedChange={setIsActive} />
           </div>
@@ -159,7 +159,7 @@ export default function RoleForm({ role }: RoleFormProps) {
         {/* Permissions */}
         <CommonCard title="Permissions" subtitle="Assign module permissions" icon={Shield} iconColorClass="text-purple-600" iconBgClass="bg-purple-50 dark:bg-purple-500/10">
           {/* Select All */}
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--vendor-border)]">
             <div className="flex items-center gap-3">
               <Checkbox
                 checked={allSelected}
@@ -168,13 +168,13 @@ export default function RoleForm({ role }: RoleFormProps) {
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Select All Permissions</span>
             </div>
             <div className="flex items-center gap-3 text-xs">
-              <button type="button" className="text-blue-600 hover:underline" onClick={() => setExpandedModules(new Set())}>
+              <button type="button" className="text-[var(--vendor-primary-btn)] hover:underline" onClick={() => setExpandedModules(new Set())}>
                 Collapse all
               </button>
               <span className="text-gray-300">|</span>
               <button
                 type="button"
-                className="text-blue-600 hover:underline"
+                className="text-[var(--vendor-primary-btn)] hover:underline"
                 onClick={() => setExpandedModules(new Set(modules?.map((m) => m.slug) ?? []))}
               >
                 Expand all
@@ -183,7 +183,7 @@ export default function RoleForm({ role }: RoleFormProps) {
           </div>
 
           {modulesLoading ? (
-            <div className="text-center py-8 text-sm text-gray-400">Loading permissions...</div>
+            <div className="text-center py-8 text-sm text-[var(--vendor-text-muted)]">Loading permissions...</div>
           ) : (
             <div className="space-y-2">
               {modules?.map((mod) => {
@@ -193,7 +193,7 @@ export default function RoleForm({ role }: RoleFormProps) {
                 const modSomeSelected = modPermIds.some((id) => selectedPermissions.has(id));
 
                 return (
-                  <div key={mod.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                  <div key={mod.id} className="rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] overflow-hidden">
                     {/* Module Header */}
                     <div
                       className="flex items-center gap-3 px-4 py-3 bg-gray-50/80 dark:bg-gray-800/30 cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors"
@@ -205,9 +205,9 @@ export default function RoleForm({ role }: RoleFormProps) {
                         onCheckedChange={(checked) => toggleModuleAll(mod.permissions, !!checked)}
                         onClick={(e) => e.stopPropagation()}
                       />
-                      {isExpanded ? <ChevronDown size={16} className="text-gray-400" /> : <ChevronRight size={16} className="text-gray-400" />}
+                      {isExpanded ? <ChevronDown size={16} className="text-[var(--vendor-text-muted)]" /> : <ChevronRight size={16} className="text-[var(--vendor-text-muted)]" />}
                       <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{mod.name}</span>
-                      <span className="text-[10px] font-bold text-gray-400 ml-auto">
+                      <span className="text-[10px] font-bold text-[var(--vendor-text-muted)] ml-auto">
                         {modPermIds.filter((id) => selectedPermissions.has(id)).length}/{modPermIds.length}
                       </span>
                     </div>
@@ -224,7 +224,7 @@ export default function RoleForm({ role }: RoleFormProps) {
                                 checked={selectedPermissions.has(perm.id)}
                                 onCheckedChange={() => togglePermission(perm.id)}
                               />
-                              <label htmlFor={`perm-${perm.id}`} className="text-sm cursor-pointer capitalize text-gray-600 dark:text-gray-400">
+                              <label htmlFor={`perm-${perm.id}`} className="text-sm cursor-pointer capitalize text-gray-600 dark:text-[var(--vendor-text-muted)]">
                                 {action}
                               </label>
                             </div>
@@ -242,7 +242,7 @@ export default function RoleForm({ role }: RoleFormProps) {
 
       {/* Right Column: Sticky Sidebar Actions */}
       <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-        <div className="bg-white dark:bg-sidebar/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <PersistenceActions 
             onSave={handleSubmit}
             onCancel={() => router.push("/roles")}
