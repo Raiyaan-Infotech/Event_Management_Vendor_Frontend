@@ -134,6 +134,9 @@ export default function FooterPage() {
       address: vendor.company_address || "",
     });
 
+    // Contact mode — persist which radio was selected
+    setContactMode(((vendor as any).contact_mode as "default" | "alternate") || "default");
+
     // Newsletter
     setNewsletterEnabled((vendor as any).newsletter_status === 1);
     setNewsletterEmailPreview("");
@@ -223,6 +226,7 @@ export default function FooterPage() {
       short_description: description,
       poweredby: poweredBy,
       copywrite: copyright,
+      contact_mode: contactMode,
       footer_links,
       newsletter_status: newsletterEnabled ? 1 : 0,
     } as never);
@@ -255,6 +259,7 @@ export default function FooterPage() {
     if (!vendor) return;
     setLogo(vendor.company_logo || "");
     setCompanyName(vendor.company_name || "");
+    setContactMode(((vendor as any).contact_mode as "default" | "alternate") || "default");
     setDefaultContact({
       mobile: vendor.company_contact || "",
       email: vendor.company_email || "",
@@ -270,7 +275,7 @@ export default function FooterPage() {
     setDescription(vendor.short_description || "");
     setQuickLinksHeading(vendor.footer_links?.[0]?.heading || "Quick Links");
     setSelectedLinks([]);
-    setNewsletterEnabled(false);
+    setNewsletterEnabled((vendor as any).newsletter_status === 1);
     setNewsletterEmailPreview("");
     toast.info("All settings reset.");
   };

@@ -37,14 +37,24 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     setMessage("");
     setError("");
 
-    if (form.password.trim().length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (form.password !== form.confirm_password) {
-      setError("Passwords do not match.");
-      return;
-    }
+    if (!form.name.trim())   { setError("Full name is required."); return; }
+    if (/^\s+$/.test(form.name)) { setError("Full name must not be only spaces."); return; }
+    if (!form.mobile.trim()) { setError("Mobile number is required."); return; }
+    if (/^\s+$/.test(form.mobile)) { setError("Mobile number must not be only spaces."); return; }
+
+    const emailRegex = /^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/;
+    if (!form.email.trim())  { setError("Email is required."); return; }
+    if (!emailRegex.test(form.email.trim())) { setError("Enter a valid email address."); return; }
+
+    const pw = form.password;
+    if (!pw.trim()) { setError("Password is required."); return; }
+    if (/\s/.test(pw)) { setError("Password must not contain spaces."); return; }
+    if (pw.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (!/[A-Z]/.test(pw)) { setError("Password must include at least 1 uppercase letter."); return; }
+    if (!/[a-z]/.test(pw)) { setError("Password must include at least 1 lowercase letter."); return; }
+    if (!/[0-9]/.test(pw)) { setError("Password must include at least 1 number."); return; }
+    if (!/[^A-Za-z0-9]/.test(pw)) { setError("Password must include at least 1 special character."); return; }
+    if (pw !== form.confirm_password) { setError("Passwords do not match."); return; }
 
     const { confirm_password, ...payload } = form;
 

@@ -1002,28 +1002,43 @@ export function AddClientContent({
     const newErrors: Record<string, string> = {};
 
     const requiredFields = [
-      { key: "name", label: "Full Name" },
-      { key: "mobile", label: "Mobile Number" },
-      { key: "email", label: "Email Address" },
-      { key: "address", label: "Street Address" },
-      { key: "country", label: "Country" },
-      { key: "state", label: "State" },
-      { key: "district", label: "District" },
-      { key: "city", label: "City" },
+      { key: "name",     label: "Full Name" },
+      { key: "mobile",   label: "Mobile Number" },
+      { key: "email",    label: "Email Address" },
+      { key: "address",  label: "Street Address" },
       { key: "locality", label: "Locality" },
-      { key: "pincode", label: "Pincode" },
+      { key: "pincode",  label: "Pincode" },
     ];
 
     requiredFields.forEach((field) => {
-      if (!formData[field.key as keyof typeof formData]) {
+      if (!formData[field.key as keyof typeof formData].trim()) {
         newErrors[field.key] = `${field.label} is required`;
       }
     });
 
-    if (!isEdit && !formData.password.trim()) {
+    // Location selects — required
+    if (!formData.country)  newErrors.country  = "Country is required";
+    if (!formData.state)    newErrors.state    = "State is required";
+    if (!formData.district) newErrors.district = "District is required";
+    if (!formData.city)     newErrors.city     = "City is required";
+
+    // Email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    // Password policy
+    const pw = formData.password;
+    if (!isEdit && !pw.trim()) {
       newErrors.password = "Password is required";
-    } else if (formData.password && formData.password.trim().length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else if (pw && pw.trim()) {
+      if (/\s/.test(pw))              newErrors.password = "Password must not contain spaces";
+      else if (pw.length < 8)         newErrors.password = "Password must be at least 8 characters";
+      else if (!/[A-Z]/.test(pw))     newErrors.password = "Must include at least 1 uppercase letter";
+      else if (!/[a-z]/.test(pw))     newErrors.password = "Must include at least 1 lowercase letter";
+      else if (!/[0-9]/.test(pw))     newErrors.password = "Must include at least 1 number";
+      else if (!/[^A-Za-z0-9]/.test(pw)) newErrors.password = "Must include at least 1 special character";
     }
 
     if (!profilePic) {
@@ -1262,9 +1277,22 @@ export function AddClientContent({
                 <LocationSelects
                   values={{ country: formData.country, state: formData.state, district: formData.district, city: formData.city }}
                   onChange={(loc: LocationValues) => {
-                    if (!isView) setFormData((prev) => ({ ...prev, ...loc }));
+                    if (!isView) {
+                      setFormData((prev) => ({ ...prev, ...loc }));
+                      // clear errors for any field that just got a value
+                      setErrors((prev) => {
+                        const cleared: Record<string, string> = { ...prev };
+                        if (loc.country)  delete cleared.country;
+                        if (loc.state)    delete cleared.state;
+                        if (loc.district) delete cleared.district;
+                        if (loc.city)     delete cleared.city;
+                        return cleared;
+                      });
+                    }
                   }}
                   isView={isView}
+                  required
+                  errors={{ country: errors.country, state: errors.state, district: errors.district, city: errors.city }}
                 />
 
                   <FormGroup

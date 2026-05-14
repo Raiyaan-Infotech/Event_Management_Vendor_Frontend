@@ -120,9 +120,10 @@ export default function AdvanceSliderContent() {
   const resetForm = () => setFormData(getDefaultForm());
 
   const handleSave = () => {
-    if (!formData.title) return toast.error("Title is required.");
-    if (!formData.button_label) return toast.error("Button Label is required.");
-    if (!formData.image_path) return toast.error("Slider image is required.");
+    if (!formData.title.trim())        return toast.error("Title is required.");
+    if (!formData.button_label.trim()) return toast.error("Button Label is required.");
+    if (!formData.page_id)             return toast.error("Button URL (page) is required.");
+    if (!formData.image_path)          return toast.error("Slider image is required.");
 
     const payload = {
       type: "advanced" as const,

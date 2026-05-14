@@ -232,9 +232,11 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
           <Link href={homeHref} className="flex items-center gap-3 no-underline shrink-0">
             {logoSrc && <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={36} height={36} className="h-9 w-9 object-contain rounded-md" unoptimized />}
             <div className="flex flex-col leading-none">
-              <span className="text-lg font-extrabold tracking-tight" style={{ color: primary }}>
-                {vendor.company_name || "Vendor"}
-              </span>
+              {vendor.company_name && (
+                <span className="text-lg font-extrabold tracking-tight" style={{ color: primary }}>
+                  {vendor.company_name}
+                </span>
+              )}
               {cityName && (
                 <span className="mt-1 text-[10px] font-medium uppercase tracking-wider text-gray-400">
                   {cityName}
@@ -295,7 +297,7 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
             <Link href={homeHref} className="flex items-center gap-3 no-underline">
               {logoSrc && <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={36} height={36} className="h-9 w-9 object-contain rounded-md bg-white/10 p-1" unoptimized />}
               <div>
-                <span className="text-lg font-extrabold tracking-tight text-white leading-none block">{vendor.company_name || "Vendor"}</span>
+                {vendor.company_name && <span className="text-lg font-extrabold tracking-tight text-white leading-none block">{vendor.company_name}</span>}
                 {cityName && (
                   <span className="text-[10px] text-white/60 font-medium uppercase tracking-wider">{cityName}</span>
                 )}

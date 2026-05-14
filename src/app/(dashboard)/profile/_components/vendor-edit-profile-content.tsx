@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   useVendorMe,
   useUpdateVendorProfile,
@@ -85,6 +86,8 @@ export function VendorEditProfileContent() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name?.trim())         { toast.error("User name is required"); return; }
+    if (!formData.company_name?.trim()) { toast.error("Company name is required"); return; }
     // Exclude email (readOnly) and social fields not in the DB model
     const { email, youtube, facebook, instagram, ...rest } = formData as any;
     void email; void youtube; void facebook; void instagram;

@@ -33,11 +33,18 @@ export default function CreateWebsitePage() {
     }));
   };
 
+  const stripHtmlText = (html: string) => {
+    if (typeof document === "undefined") return html.replace(/<[^>]*>/g, "").trim();
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return (div.textContent || div.innerText || "").trim();
+  };
+
   const handleSave = () => {
-    if (!formData.name.trim() || !formData.description.trim() || !formData.content.trim()) {
-      toast.error("Please fill in all mandatory fields");
-      return;
-    }
+    if (!formData.name.trim()) { toast.error("Page name is required"); return; }
+    if (!formData.description.trim()) { toast.error("Short description is required"); return; }
+    if (!stripHtmlText(formData.content)) { toast.error("Page content is required"); return; }
+
     if (formData.name.trim().length > PAGE_NAME_MAX_LENGTH) {
       toast.error(`Page name must be ${PAGE_NAME_MAX_LENGTH} characters or less`);
       return;

@@ -28,6 +28,7 @@ function LocationSelect({
   disabled = false,
   isLoading = false,
   isView = false,
+  hasError = false,
 }: {
   value: string;
   onValueChange: (name: string) => void;
@@ -37,6 +38,7 @@ function LocationSelect({
   disabled?: boolean;
   isLoading?: boolean;
   isView?: boolean;
+  hasError?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -59,7 +61,7 @@ function LocationSelect({
         <Icon
           size={16}
           className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 transition-colors pointer-events-none
-            ${disabled ? "text-gray-200" : "text-gray-300 group-focus-within:text-blue-500"}`}
+            ${hasError ? "text-rose-400" : disabled ? "text-gray-200" : "text-gray-300 group-focus-within:text-blue-500"}`}
         />
         <input
           value={open ? search : value || ""}
@@ -76,8 +78,8 @@ function LocationSelect({
           onBlur={() => setTimeout(() => setOpen(false), 200)}
           readOnly={disabled}
           placeholder={isLoading ? "Loading…" : placeholder}
-          className={`h-10 w-full pl-9 pr-8 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800/20 rounded-xl text-[13px] shadow-sm outline-none transition-all
-            focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5
+          className={`h-10 w-full pl-9 pr-8 border bg-white dark:bg-gray-800/20 rounded-xl text-[13px] shadow-sm outline-none transition-all
+            ${hasError ? "border-rose-500 ring-4 ring-rose-500/5" : "border-gray-100 dark:border-gray-800 focus:border-blue-500/20 focus:ring-4 focus:ring-blue-500/5"}
             ${disabled ? "opacity-60 cursor-default" : ""}
             ${!disabled && value ? "font-medium" : ""}`}
         />
@@ -126,10 +128,14 @@ export function LocationSelects({
   values,
   onChange,
   isView = false,
+  required = false,
+  errors = {},
 }: {
   values: LocationValues;
   onChange: (values: LocationValues) => void;
   isView?: boolean;
+  required?: boolean;
+  errors?: Partial<Record<keyof LocationValues, string>>;
 }) {
   const [countryId,  setCountryId]  = useState<number | null>(null);
   const [stateId,    setStateId]    = useState<number | null>(null);
@@ -186,28 +192,28 @@ export function LocationSelects({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-      <FormGroup label="Country" required={!isView} isView={isView}>
+      <FormGroup label="Country" required={required && !isView} isView={isView} error={errors.country}>
         <LocationSelect value={values.country} onValueChange={handleCountry}
           options={countries} placeholder="Select Country" icon={Flag}
-          isLoading={loadingCountries} isView={isView} />
+          isLoading={loadingCountries} isView={isView} hasError={!!errors.country} />
       </FormGroup>
 
-      <FormGroup label="State" required={!isView} isView={isView}>
+      <FormGroup label="State" required={required && !isView} isView={isView} error={errors.state}>
         <LocationSelect value={values.state} onValueChange={handleState}
           options={states} placeholder={values.country ? "Select State" : "Select Country First"}
-          icon={Globe} disabled={!countryId} isLoading={loadingStates} isView={isView} />
+          icon={Globe} disabled={!countryId} isLoading={loadingStates} isView={isView} hasError={!!errors.state} />
       </FormGroup>
 
-      <FormGroup label="District" required={!isView} isView={isView}>
+      <FormGroup label="District" required={required && !isView} isView={isView} error={errors.district}>
         <LocationSelect value={values.district} onValueChange={handleDistrict}
           options={districts} placeholder={values.state ? "Select District" : "Select State First"}
-          icon={Building} disabled={!stateId} isLoading={loadingDistricts} isView={isView} />
+          icon={Building} disabled={!stateId} isLoading={loadingDistricts} isView={isView} hasError={!!errors.district} />
       </FormGroup>
 
-      <FormGroup label="City" required={!isView} isView={isView}>
+      <FormGroup label="City" required={required && !isView} isView={isView} error={errors.city}>
         <LocationSelect value={values.city} onValueChange={handleCity}
           options={cities} placeholder={values.district ? "Select City" : "Select District First"}
-          icon={Building} disabled={!districtId} isLoading={loadingCities} isView={isView} />
+          icon={Building} disabled={!districtId} isLoading={loadingCities} isView={isView} hasError={!!errors.city} />
       </FormGroup>
     </div>
   );

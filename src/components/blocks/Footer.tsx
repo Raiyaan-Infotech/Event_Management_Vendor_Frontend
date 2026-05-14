@@ -133,10 +133,18 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
     return null;
   };
 
-  const baseLinks: { label: string; href: string }[] = pages.map(p => ({
-    label: p.name,
-    href: legalHrefForLabel(p.name) || pageHref(p.id),
-  }));
+  // Only show pages explicitly added via footer management (footer_links config)
+  const footerLinksConfig = vendor.footer_links as { heading?: string; page_ids?: number[] }[] | null | undefined;
+  const configuredPageIds = footerLinksConfig?.length
+    ? new Set(footerLinksConfig.flatMap((c) => c.page_ids ?? []))
+    : null;
+
+  const baseLinks: { label: string; href: string }[] = pages
+    .filter((p) => configuredPageIds ? configuredPageIds.has(p.id) : false)
+    .map((p) => ({
+      label: p.name,
+      href: legalHrefForLabel(p.name) || pageHref(p.id),
+    }));
 
   const legalLinks = [
     ...(hasTerms   ? [{ label: "Terms & Conditions", href: legalHref("terms", "terms-conditions") }] : []),
@@ -181,7 +189,7 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
               {logoSrc && (
                 <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={44} height={44} className="h-11 w-11 object-contain rounded-lg bg-white/10 p-1" unoptimized />
               )}
-              <p className="text-lg font-extrabold leading-tight" style={{ color: text }}>{vendor.company_name || "Vendor"}</p>
+              <p className="text-lg font-extrabold leading-tight" style={{ color: text }}>{vendor.company_name || ""}</p>
             </div>
             {vendor.short_description && (
               <p className="text-sm leading-relaxed opacity-60" style={{ color: text }}>{vendor.short_description}</p>
@@ -226,7 +234,9 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
 
         <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs opacity-40" style={{ color: text }}>&copy; {year} {vendor.copywrite || vendor.company_name}. All rights reserved.</p>
-          {vendor.poweredby && <p className="text-xs opacity-30" style={{ color: text }}>Powered by {vendor.poweredby}</p>}
+          {(vendor.poweredby || isPreview) && (
+            <p className="text-xs opacity-30" style={{ color: text }}>Powered by {vendor.poweredby || "Your Platform Name"}</p>
+          )}
         </div>
       </div>
     </footer>
@@ -244,7 +254,7 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
             {logoSrc && (
               <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={56} height={56} className="h-14 w-14 object-contain rounded-xl bg-white/10 p-1" unoptimized />
             )}
-            <p className="text-2xl font-extrabold leading-tight" style={{ color: text }}>{vendor.company_name || "Vendor"}</p>
+            <p className="text-2xl font-extrabold leading-tight" style={{ color: text }}>{vendor.company_name || ""}</p>
           </div>
           {vendor.short_description && (
             <p className="text-sm opacity-50 max-w-md leading-relaxed" style={{ color: text }}>{vendor.short_description}</p>
@@ -300,7 +310,9 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
 
         <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs opacity-40" style={{ color: text }}>&copy; {year} {vendor.copywrite || vendor.company_name}. All rights reserved.</p>
-          {vendor.poweredby && <p className="text-xs opacity-30" style={{ color: text }}>Powered by {vendor.poweredby}</p>}
+          {(vendor.poweredby || isPreview) && (
+            <p className="text-xs opacity-30" style={{ color: text }}>Powered by {vendor.poweredby || "Your Platform Name"}</p>
+          )}
         </div>
       </div>
     </footer>

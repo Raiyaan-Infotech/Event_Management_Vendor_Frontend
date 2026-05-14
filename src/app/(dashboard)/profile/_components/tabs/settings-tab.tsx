@@ -37,6 +37,9 @@ export function SettingsTab() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name?.trim())            { toast.error("Full name is required"); return; }
+    if (!formData.company_name?.trim())    { toast.error("Company name is required"); return; }
+    if (!formData.company_contact?.trim()) { toast.error("Contact number is required"); return; }
     updateProfile.mutate(formData);
   };
 

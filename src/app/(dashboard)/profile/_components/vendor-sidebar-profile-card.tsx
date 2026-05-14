@@ -94,7 +94,7 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
         )}
       </div>
       <h5 className="text-foreground text-[22px] font-bold mb-1">{vendor?.name || 'Vendor Name'}</h5>
-      <p className="text-muted-foreground text-[13px] mb-6">{vendor?.company_name || 'Vendor Company'}</p>
+      {vendor?.company_name && <p className="text-muted-foreground text-[13px] mb-6">{vendor.company_name}</p>}
 
       <div className="text-left mb-6">
         <h6 className="text-foreground text-[15px] font-bold mb-2">Company Email</h6>

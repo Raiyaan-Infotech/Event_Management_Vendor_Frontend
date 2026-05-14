@@ -57,7 +57,7 @@ export function PublicNavbar({ vendor, colors, slug }: PublicNavbarProps) {
                 className="text-xl font-extrabold tracking-tight leading-none"
                 style={{ color: primaryColor }}
               >
-                {vendor.company_name || 'Vendor'}
+                {vendor.company_name || ''}
               </span>
               {((vendor as any).locality?.name || (vendor as any).district?.name || (vendor as any).company_address) && (
                 <span className="text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70" style={{ color: textColor }}>

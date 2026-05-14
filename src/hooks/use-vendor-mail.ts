@@ -147,25 +147,31 @@ const useRawTrash = () =>
 
 // ─── Flat helpers ─────────────────────────────────────────────────────────────
 
-const flattenSent = (m: MailApiData): VendorMail => ({
-  id: m.id,
-  to_email: m.recipients?.filter(r => r.role === 'to').length
-    ? `${m.recipients!.filter(r => r.role === 'to').length} recipient(s)`
-    : 'Sent',
-  subject: m.subject,
-  body: m.body,
-  folder: 'sent',
-  status: m.status,
-  is_read: 1,
-  is_active: m.sender_is_active ?? 1,
-  label: m.sender_label ?? null,
-  custom_folder_id: m.sender_custom_folder_id ?? null,
-  error_message: m.error_message ?? null,
-  sent_at: m.sent_at,
-  created_at: m.createdAt,
-  updated_at: m.updatedAt,
-  recipients: m.recipients ?? [],
-});
+const flattenSent = (m: MailApiData): VendorMail => {
+  const toRecipients = m.recipients?.filter(r => r.role === 'to') ?? [];
+  const toDisplay = toRecipients.length
+    ? toRecipients
+        .map(r => (r as any).recipient_name || (r as any).recipient_email || r.recipient_type)
+        .join(', ')
+    : '';
+  return {
+    id: m.id,
+    to_email: toDisplay ? `To: ${toDisplay}` : 'Sent',
+    subject: m.subject,
+    body: m.body,
+    folder: 'sent',
+    status: m.status,
+    is_read: 1,
+    is_active: m.sender_is_active ?? 1,
+    label: m.sender_label ?? null,
+    custom_folder_id: m.sender_custom_folder_id ?? null,
+    error_message: m.error_message ?? null,
+    sent_at: m.sent_at,
+    created_at: m.createdAt,
+    updated_at: m.updatedAt,
+    recipients: m.recipients ?? [],
+  };
+};
 
 const flattenDraft = (m: MailApiData): VendorMail => ({
   id: m.id,
