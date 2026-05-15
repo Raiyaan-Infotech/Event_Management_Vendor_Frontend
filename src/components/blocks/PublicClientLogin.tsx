@@ -40,7 +40,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
   return (
     <section className="w-full bg-gray-50 px-6 py-16 md:px-10">
       <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-stretch">
-        <form onSubmit={submit} className="bg-white p-6 shadow-sm md:p-8">
+        <form onSubmit={submit} noValidate className="bg-white p-6 shadow-sm md:p-8">
           <div className="mb-8 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full text-white" style={{ backgroundColor: primary }}>
               <LogIn className="h-5 w-5" />

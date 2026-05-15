@@ -179,6 +179,8 @@ export const useUpdateVendorAbout = (successMessage?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
+      // Clear preview cache so the next preview open reflects the new contact/mode data
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success(successMessage ?? 'About company updated successfully');
     },
     onError: (error: unknown) => {

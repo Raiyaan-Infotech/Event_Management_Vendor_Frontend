@@ -39,3 +39,43 @@ export function resolveMediaUrl(url: string | null | undefined): string {
 
   return normalizedUrl;
 }
+
+// ── Status toggle ───────────────────────────────────────────────────────────
+// Standard onStatusToggle handler for CommonTable.
+// Usage: onStatusToggle={makeStatusToggle(updateMutation)}
+export function makeStatusToggle<T extends { id: number }>(
+  mutate: (args: { id: number; data: { is_active: number } }) => void
+) {
+  return (row: T, val: boolean) => mutate({ id: row.id, data: { is_active: val ? 1 : 0 } });
+}
+
+// ── Pagination ──────────────────────────────────────────────────────────────
+// Backend returns { total, page, limit, totalPages }.
+// TablePagination needs { totalItems, hasNextPage, hasPrevPage, limit }.
+export function normalizePagination(
+  raw: any,
+  page: number,
+  limit: number
+) {
+  if (!raw) return null;
+  const total      = raw.total ?? raw.totalItems ?? 0;
+  const totalPages = raw.totalPages ?? Math.ceil(total / limit);
+  return {
+    page,
+    totalItems:  total,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPrevPage: page > 1,
+    limit,
+  };
+}
+
+// ── Row normalizer ──────────────────────────────────────────────────────────
+// CommonTable reads `row.created_at` (snake_case) but Sequelize returns
+// `createdAt` (camelCase). Call this before passing rows to CommonTable.
+export function normalizeRows<T extends Record<string, any>>(rows: T[]): T[] {
+  return rows.map((r) => ({
+    ...r,
+    created_at: r.created_at ?? r.createdAt ?? "",
+  }));
+}

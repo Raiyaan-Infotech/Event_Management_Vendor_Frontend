@@ -1071,16 +1071,20 @@ export function AddClientContent({
       send_credentials_to_email: sendCredentialsToEmail ? 1 : 0,
     };
 
-    if (isEdit) {
-      await updateMutation.mutateAsync({
-        id: initialData.id,
-        data: submissionData,
-      });
-    } else {
-      await createMutation.mutateAsync(submissionData);
+    try {
+      if (isEdit) {
+        await updateMutation.mutateAsync({ id: initialData.id, data: submissionData });
+      } else {
+        await createMutation.mutateAsync(submissionData);
+      }
+      router.push("/clients");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg = e?.response?.data?.message || e?.message || "";
+      if (msg.toLowerCase().includes("email")) {
+        setErrors((prev) => ({ ...prev, email: "This email is already registered." }));
+      }
     }
-
-    router.push("/clients");
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

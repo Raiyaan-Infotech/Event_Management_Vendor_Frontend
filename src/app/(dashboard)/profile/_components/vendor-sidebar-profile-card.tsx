@@ -99,7 +99,7 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
       <div className="text-left mb-6">
         <h6 className="text-foreground text-[15px] font-bold mb-2">Company Email</h6>
         <p className="text-muted-foreground text-[13px] leading-relaxed truncate">
-          {vendor?.company_email || vendor?.email}
+          {vendor?.company_email || <span className="italic text-muted-foreground/60">Not set</span>}
         </p>
       </div>
 

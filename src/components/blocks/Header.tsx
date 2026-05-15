@@ -47,6 +47,12 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
   const primary  = colors.primary_color || "#2563eb";
   const headerBg = colors.header_color  || "#ffffff";
   const navText  = colors.text_color    || "#1e293b";
+
+  // Respect contact_mode — same as Footer and ContactUs blocks
+  const isAlt       = vendor.contact_mode === "alternative";
+  const headerPhone = isAlt ? (vendor.contact   || vendor.company_contact) : vendor.company_contact;
+  const headerEmail = isAlt ? (vendor.alt_email || vendor.company_email)  : vendor.company_email;
+
   const cityName =
     vendor.locality?.name ||
     vendor.city ||
@@ -305,14 +311,14 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
             </Link>
 
             <div className="hidden md:flex items-center gap-5">
-              {vendor.company_contact && (
-                <a href={`tel:${vendor.company_contact}`} className="flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors">
-                  <Phone className="size-3.5" /> {vendor.company_contact}
+              {headerPhone && (
+                <a href={`tel:${headerPhone}`} className="flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors">
+                  <Phone className="size-3.5" /> {headerPhone}
                 </a>
               )}
-              {vendor.company_email && (
-                <a href={`mailto:${vendor.company_email}`} className="flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors">
-                  <Mail className="size-3.5" /> {vendor.company_email}
+              {headerEmail && (
+                <a href={`mailto:${headerEmail}`} className="flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white transition-colors">
+                  <Mail className="size-3.5" /> {headerEmail}
                 </a>
               )}
               {showRegister ? (

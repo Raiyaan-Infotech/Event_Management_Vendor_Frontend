@@ -41,6 +41,12 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
   const [newsletterMessage, setNewsletterMessage] = useState("");
   const newsletterMutation = usePublicNewsletterSubscribe(publicSlug);
 
+  // Respect contact_mode — same logic as ContactUs block
+  const isAlt        = vendor.contact_mode === "alternative";
+  const footerPhone   = isAlt ? (vendor.contact    || vendor.company_contact) : vendor.company_contact;
+  const footerEmail   = isAlt ? (vendor.alt_email  || vendor.company_email)  : vendor.company_email;
+  const footerAddress = isAlt ? (vendor.address    || vendor.company_address) : vendor.company_address;
+
   const footerBg = colors.footer_color  || "#1e293b";
   const primary  = colors.primary_color || "#2563eb";
   const text     = "#e2e8f0";
@@ -195,9 +201,9 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
               <p className="text-sm leading-relaxed opacity-60" style={{ color: text }}>{vendor.short_description}</p>
             )}
             <div className="space-y-2 pt-1">
-              {vendor.company_address && <p className="flex items-start gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0 mt-0.5">📍</span><span>{vendor.company_address}</span></p>}
-              {vendor.company_contact && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">📞</span><a href={`tel:${vendor.company_contact}`} className="hover:opacity-100">{vendor.company_contact}</a></p>}
-              {vendor.company_email   && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">✉</span><a href={`mailto:${vendor.company_email}`} className="hover:opacity-100 break-all">{vendor.company_email}</a></p>}
+              {footerAddress && <p className="flex items-start gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0 mt-0.5">📍</span><span>{footerAddress}</span></p>}
+              {footerPhone   && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">📞</span><a href={`tel:${footerPhone}`} className="hover:opacity-100">{footerPhone}</a></p>}
+              {footerEmail   && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">✉</span><a href={`mailto:${footerEmail}`} className="hover:opacity-100 break-all">{footerEmail}</a></p>}
             </div>
             {socialRow}
           </div>
@@ -285,9 +291,9 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider mb-5" style={{ color: primary }}>Contact Us</h3>
             <div className="space-y-2.5">
-              {vendor.company_address && <p className="flex items-start gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0 mt-0.5">📍</span><span>{vendor.company_address}</span></p>}
-              {vendor.company_contact && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">📞</span><a href={`tel:${vendor.company_contact}`} className="hover:opacity-100">{vendor.company_contact}</a></p>}
-              {vendor.company_email   && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">✉</span><a href={`mailto:${vendor.company_email}`} className="hover:opacity-100 break-all">{vendor.company_email}</a></p>}
+              {footerAddress && <p className="flex items-start gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0 mt-0.5">📍</span><span>{footerAddress}</span></p>}
+              {footerPhone   && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">📞</span><a href={`tel:${footerPhone}`} className="hover:opacity-100">{footerPhone}</a></p>}
+              {footerEmail   && <p className="flex items-center gap-2 text-sm opacity-60" style={{ color: text }}><span className="shrink-0">✉</span><a href={`mailto:${footerEmail}`} className="hover:opacity-100 break-all">{footerEmail}</a></p>}
             </div>
           </div>
 
