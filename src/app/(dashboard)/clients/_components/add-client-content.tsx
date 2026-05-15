@@ -881,6 +881,7 @@ import {
 } from "@/hooks/use-vendor-clients";
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { LocationSelects, type LocationValues } from "@/components/common/LocationSelects";
+import { validateMobile, validateEmail } from "@/lib/validation";
 
 // ... existing code ...
 
@@ -1016,6 +1017,12 @@ export function AddClientContent({
       }
     });
 
+    // Mobile format
+    if (!newErrors.mobile) {
+      const mobileErr = validateMobile(formData.mobile);
+      if (mobileErr) newErrors.mobile = mobileErr;
+    }
+
     // Location selects — required
     if (!formData.country)  newErrors.country  = "Country is required";
     if (!formData.state)    newErrors.state    = "State is required";
@@ -1023,9 +1030,9 @@ export function AddClientContent({
     if (!formData.city)     newErrors.city     = "City is required";
 
     // Email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
-      newErrors.email = "Enter a valid email address";
+    if (!newErrors.email && formData.email.trim()) {
+      const emailErr = validateEmail(formData.email);
+      if (emailErr) newErrors.email = emailErr;
     }
 
     // Password policy

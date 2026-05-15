@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 import { usePublicClientRegister } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
+import { validateMobile } from "@/lib/validation";
 
 export default function PublicClientRegister({ data }: { data?: any }) {
   const slug = data?.slug || "";
@@ -36,8 +37,9 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     setFieldErrors({});
 
     // Validate one field at a time — stop on first error
-    if (!form.name.trim())   { setOneError("name",  "Full name is required."); return; }
-    if (!form.mobile.trim()) { setOneError("mobile","Mobile number is required."); return; }
+    if (!form.name.trim()) { setOneError("name", "Full name is required."); return; }
+    const mobileErr = validateMobile(form.mobile);
+    if (mobileErr) { setOneError("mobile", mobileErr); return; }
 
     const emailRegex = /^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/;
     if (!form.email.trim())                        { setOneError("email", "Email is required."); return; }

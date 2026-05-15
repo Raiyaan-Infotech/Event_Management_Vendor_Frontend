@@ -879,6 +879,7 @@ import {
 import { useVendorRoles } from "@/hooks/use-vendor-roles";
 import { useVendorDepartments } from "@/hooks/use-vendor-departments";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { validateMobile } from "@/lib/validation";
 
 interface AddStaffContentProps {
   initialData?: any;
@@ -1017,7 +1018,8 @@ export default function AddStaffContent({
     const newErrors: Record<string, string> = {};
     if (!formData.name) newErrors.name = "Full name is required";
     if (!formData.role_id) newErrors.designation = "Designation is required";
-    if (!formData.mobile) newErrors.mobile = "Mobile number is required";
+    const mobileErr = validateMobile(formData.mobile || "");
+    if (mobileErr) newErrors.mobile = mobileErr;
     if (!formData.email) newErrors.email = "Email address is required";
     if (!id && !formData.password) newErrors.password = "Password is required";
     if (!formData.city) newErrors.city = "City is required";
