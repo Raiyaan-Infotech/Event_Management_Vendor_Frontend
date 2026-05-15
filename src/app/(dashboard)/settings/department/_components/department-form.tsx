@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { CommonCard } from "@/components/common/CommonCard";
 import { FormGroup } from "@/components/common/FormGroup";
@@ -63,7 +62,7 @@ export default function DepartmentForm({ department }: DepartmentFormProps) {
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000">
+    <div className="max-w-[1700px] mx-auto px-6 pb-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000">
       {/* Left Column */}
       <div className="lg:col-span-9 space-y-6">
         <CommonCard
@@ -84,18 +83,18 @@ export default function DepartmentForm({ department }: DepartmentFormProps) {
             </FormGroup>
 
             <FormGroup label="Description" icon={FileText}>
-              <Textarea
+              <Input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Short description (optional)"
-                className="pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 min-h-[80px] resize-none"
+                className="h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"
               />
             </FormGroup>
           </div>
 
           <div className="flex items-center justify-between mt-6 p-4 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-gray-800/20">
             <div>
-              <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Active</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
               <p className="text-xs text-[var(--vendor-text-muted)] mt-0.5">Inactive departments will not appear in staff assignment</p>
             </div>
             <Switch checked={isActive} onCheckedChange={setIsActive} />
@@ -105,7 +104,7 @@ export default function DepartmentForm({ department }: DepartmentFormProps) {
 
       {/* Right Column: Actions */}
       <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
-        <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
           <PersistenceActions
             onSave={handleSubmit}
             onCancel={() => router.push("/settings/department")}

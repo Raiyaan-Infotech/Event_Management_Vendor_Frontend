@@ -42,7 +42,7 @@ export function ColumnToggle({
               onCheckedChange={() => {}}
               className="border-gray-300 data-[state=checked]:bg-[var(--vendor-primary-btn)] data-[state=checked]:border-blue-600 pointer-events-none"
             />
-            <span className="text-[12px] font-black uppercase tracking-tight cursor-pointer flex-1">
+            <span className="text-[10px] font-black uppercase tracking-tight cursor-pointer flex-1">
               {col.label}
             </span>
           </div>

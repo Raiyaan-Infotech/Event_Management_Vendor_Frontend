@@ -261,7 +261,7 @@ export default function ContactInfoPage() {
 
             <PersistenceActions
               onSave={handleSave}
-              onPreview={() => window.open("/preview", "_blank")}
+              onPreview={() => window.open("/preview?previewPage=contact", "_blank")}
               onReset={handleReset}
               onCancel={() => router.push("/website/management")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}

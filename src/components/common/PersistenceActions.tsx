@@ -40,9 +40,11 @@ export const PersistenceActions = ({
 }: PersistenceActionsProps) => {
   return (
     <div className={cn("space-y-3 w-full", className)}>
-      <Button type="button" onClick={onPreview} variant="outline" className="w-full h-10 gap-2 uppercase tracking-wide text-[var(--vendor-control-text)] font-semibold">
-        <PreviewIcon size={16} /> {previewLabel}
-      </Button>
+      {onPreview && (
+        <Button type="button" onClick={onPreview} variant="outline" className="w-full h-10 gap-2 uppercase tracking-wide text-[var(--vendor-control-text)] font-semibold">
+          <PreviewIcon size={16} /> {previewLabel}
+        </Button>
+      )}
 
       <Button type="submit" disabled={isSubmitting} onClick={onSave} className="w-full h-10 gap-2 uppercase tracking-wide text-[var(--vendor-control-text)] font-semibold shadow-sm disabled:opacity-50">
         <SaveIcon size={16} strokeWidth={2.5} />

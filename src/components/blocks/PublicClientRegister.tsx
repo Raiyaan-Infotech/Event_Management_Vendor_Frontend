@@ -14,69 +14,74 @@ export default function PublicClientRegister({ data }: { data?: any }) {
   const primary = colors.primary_color || "#2563eb";
   const registerMutation = usePublicClientRegister(publicSlug);
 
-  const initialForm = {
-    name: "",
-    email: "",
-    mobile: "",
-    password: "",
-    confirm_password: "",
-  };
-
+  const initialForm = { name: "", email: "", mobile: "", password: "", confirm_password: "" };
   const [form, setForm] = useState({ ...initialForm });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    if (fieldErrors[key]) setFieldErrors((prev) => ({ ...prev, [key]: "" }));
+  };
+
+  const setOneError = (key: string, msg: string) => {
+    setFieldErrors({ [key]: msg });
   };
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage("");
-    setError("");
+    setFieldErrors({});
 
-    if (!form.name.trim())   { setError("Full name is required."); return; }
-    if (/^\s+$/.test(form.name)) { setError("Full name must not be only spaces."); return; }
-    if (!form.mobile.trim()) { setError("Mobile number is required."); return; }
-    if (/^\s+$/.test(form.mobile)) { setError("Mobile number must not be only spaces."); return; }
+    // Validate one field at a time — stop on first error
+    if (!form.name.trim())   { setOneError("name",  "Full name is required."); return; }
+    if (!form.mobile.trim()) { setOneError("mobile","Mobile number is required."); return; }
 
     const emailRegex = /^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/;
-    if (!form.email.trim())  { setError("Email is required."); return; }
-    if (!emailRegex.test(form.email.trim())) { setError("Enter a valid email address."); return; }
+    if (!form.email.trim())                        { setOneError("email", "Email is required."); return; }
+    if (!emailRegex.test(form.email.trim()))        { setOneError("email", "Enter a valid email address."); return; }
 
     const pw = form.password;
-    if (!pw.trim()) { setError("Password is required."); return; }
-    if (/\s/.test(pw)) { setError("Password must not contain spaces."); return; }
-    if (pw.length < 8) { setError("Password must be at least 8 characters."); return; }
-    if (!/[A-Z]/.test(pw)) { setError("Password must include at least 1 uppercase letter."); return; }
-    if (!/[a-z]/.test(pw)) { setError("Password must include at least 1 lowercase letter."); return; }
-    if (!/[0-9]/.test(pw)) { setError("Password must include at least 1 number."); return; }
-    if (!/[^A-Za-z0-9]/.test(pw)) { setError("Password must include at least 1 special character."); return; }
-    if (pw !== form.confirm_password) { setError("Passwords do not match."); return; }
+    if (!pw.trim())                   { setOneError("password", "Password is required."); return; }
+    if (/\s/.test(pw))                { setOneError("password", "Password must not contain spaces."); return; }
+    if (pw.length < 8)                { setOneError("password", "Password must be at least 8 characters."); return; }
+    if (!/[A-Z]/.test(pw))           { setOneError("password", "Password must include at least 1 uppercase letter."); return; }
+    if (!/[a-z]/.test(pw))           { setOneError("password", "Password must include at least 1 lowercase letter."); return; }
+    if (!/[0-9]/.test(pw))           { setOneError("password", "Password must include at least 1 number."); return; }
+    if (!/[^A-Za-z0-9]/.test(pw))   { setOneError("password", "Password must include at least 1 special character."); return; }
+    if (!form.confirm_password.trim()) { setOneError("confirm_password", "Please confirm your password."); return; }
+    if (pw !== form.confirm_password)  { setOneError("confirm_password", "Passwords do not match."); return; }
 
     const { confirm_password, ...payload } = form;
 
     try {
       await registerMutation.mutateAsync({
         ...payload,
-        address: null,
-        country: null,
-        state: null,
-        district: null,
-        city: null,
-        locality: null,
-        pincode: null,
+        name: payload.name.trim(),
+        mobile: payload.mobile.trim(),
+        email: payload.email.trim(),
+        address: null, country: null, state: null, district: null,
+        city: null, locality: null, pincode: null,
         subscribe_newsletter: true,
       });
-
       setMessage("Registration completed. Your details are now added with this vendor.");
       setForm({ ...initialForm });
     } catch (err: any) {
-      setError(err?.message || "Registration failed. Please try again.");
+      const msg: string = err?.message || "Registration failed. Please try again.";
+      if (msg.toLowerCase().includes("email")) {
+        setOneError("email", "This email is already registered.");
+      } else {
+        setFieldErrors({ _form: msg });
+      }
     }
   };
+
+  const FieldError = ({ field }: { field: string }) =>
+    fieldErrors[field] ? (
+      <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors[field]}</p>
+    ) : null;
 
   return (
     <section className="w-full bg-gray-50 px-6 py-16 md:px-10">
@@ -101,7 +106,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
           </div>
         </aside>
 
-        <form onSubmit={submit} className="bg-white p-6 shadow-sm md:p-8">
+        <form onSubmit={submit} noValidate className="bg-white p-6 shadow-sm md:p-8">
           <div className="mb-8 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full text-white" style={{ backgroundColor: primary }}>
               <UserPlus className="h-5 w-5" />
@@ -113,31 +118,74 @@ export default function PublicClientRegister({ data }: { data?: any }) {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
+            {/* Full Name */}
             <label className="space-y-2 md:col-span-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Full Name</span>
-              <input required value={form.name} onChange={(e) => update("name", e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Full Name <span className="text-red-500">*</span></span>
+              <input
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                placeholder="Enter full name"
+                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.name ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+              />
+              <FieldError field="name" />
             </label>
+
+            {/* Email */}
             <label className="space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email</span>
-              <input required type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email <span className="text-red-500">*</span></span>
+              <input
+                type="text"
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                placeholder="Enter email address"
+                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+              />
+              <FieldError field="email" />
             </label>
+
+            {/* Mobile */}
             <label className="space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Mobile</span>
-              <input required value={form.mobile} onChange={(e) => update("mobile", e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Mobile <span className="text-red-500">*</span></span>
+              <input
+                type="text"
+                value={form.mobile}
+                onChange={(e) => update("mobile", e.target.value)}
+                placeholder="Enter mobile number"
+                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.mobile ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+              />
+              <FieldError field="mobile" />
             </label>
+
+            {/* Password */}
             <label className="space-y-2 relative">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password</span>
-              <input required type={showPassword ? "text" : "password"} value={form.password} onChange={(e) => update("password", e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-10 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password <span className="text-red-500">*</span></span>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={(e) => update("password", e.target.value)}
+                placeholder="Enter password"
+                className={`h-12 w-full border px-4 pr-10 text-sm outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+              />
               <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
+              <FieldError field="password" />
             </label>
+
+            {/* Confirm Password */}
             <label className="space-y-2 relative">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Confirm Password</span>
-              <input required type={showConfirm ? "text" : "password"} value={form.confirm_password} onChange={(e) => update("confirm_password", e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-10 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Confirm Password <span className="text-red-500">*</span></span>
+              <input
+                type={showConfirm ? "text" : "password"}
+                value={form.confirm_password}
+                onChange={(e) => update("confirm_password", e.target.value)}
+                placeholder="Confirm password"
+                className={`h-12 w-full border px-4 pr-10 text-sm outline-none focus:border-gray-950 ${fieldErrors.confirm_password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+              />
               <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
                 {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
+              <FieldError field="confirm_password" />
             </label>
           </div>
 
@@ -146,10 +194,16 @@ export default function PublicClientRegister({ data }: { data?: any }) {
               <CheckCircle2 className="h-4 w-4" /> {message}
             </div>
           )}
-          {error && <p className="mt-5 bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{error}</p>}
+          {fieldErrors._form && (
+            <p className="mt-5 bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{fieldErrors._form}</p>
+          )}
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <button disabled={registerMutation.isPending} className="inline-flex h-12 items-center justify-center px-7 text-sm font-black uppercase tracking-widest text-white disabled:opacity-60" style={{ backgroundColor: primary }}>
+            <button
+              disabled={registerMutation.isPending}
+              className="inline-flex h-12 items-center justify-center px-7 text-sm font-black uppercase tracking-widest text-white disabled:opacity-60"
+              style={{ backgroundColor: primary }}
+            >
               {registerMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Register
             </button>

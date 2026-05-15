@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { CommonCard } from "@/components/common/CommonCard";
@@ -16,7 +15,6 @@ import {
   useAssignPermissions,
   useVendorModules,
   type VendorRole,
-  type VendorModule,
   type VendorPermission,
 } from "@/hooks/use-vendor-roles";
 
@@ -127,7 +125,7 @@ export default function RoleForm({ role }: RoleFormProps) {
   const allSelected = allPermissionIds.length > 0 && allPermissionIds.every((id) => selectedPermissions.has(id));
 
   return (
-    <div className="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000">
+    <div className="max-w-[1700px] mx-auto px-6 pb-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom duration-1000">
       {/* Left Column: Form Content */}
       <div className="lg:col-span-9 space-y-6">
         {/* Role Details */}

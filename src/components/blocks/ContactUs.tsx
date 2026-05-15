@@ -9,10 +9,15 @@ export default function ContactUs({ data, settings }: { data?: any; settings?: R
   const primary = colors.primary_color || "#2563eb";
   const text = colors.text_color || "#111827";
 
+  const isAlt = vendor.contact_mode === "alternative";
+  const phone   = isAlt ? (vendor.contact   || vendor.company_contact) : vendor.company_contact;
+  const email   = isAlt ? (vendor.alt_email  || vendor.company_email)  : vendor.company_email;
+  const address = isAlt ? (vendor.address   || vendor.company_address) : vendor.company_address;
+
   const contactItems = [
-    { icon: Phone, label: "Phone", value: vendor.company_contact, href: vendor.company_contact ? `tel:${vendor.company_contact}` : undefined },
-    { icon: Mail, label: "Email", value: vendor.company_email, href: vendor.company_email ? `mailto:${vendor.company_email}` : undefined },
-    { icon: MapPin, label: "Address", value: vendor.company_address },
+    { icon: Phone,  label: "Phone",   value: phone,   href: phone   ? `tel:${phone}`       : undefined },
+    { icon: Mail,   label: "Email",   value: email,   href: email   ? `mailto:${email}`    : undefined },
+    { icon: MapPin, label: "Address", value: address },
   ].filter(item => item.value);
 
   if (variant === "variant_2") {
