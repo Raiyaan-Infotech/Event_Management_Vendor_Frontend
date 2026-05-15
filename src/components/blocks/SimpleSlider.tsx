@@ -25,6 +25,8 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
 
   const primary = colors.primary_color || "#7c3aed";
   const img = resolveMediaUrl(slide.image_path);
+  const btnLabel = slide.button_label;
+  const pageHref = slide.page_slug ? `/${data?.slug || ""}/page/${slide.page_slug}` : slide.page_id ? `/${data?.slug || ""}/page/${slide.page_id}` : "#";
   const next = () => setCurrent((p) => (p + 1) % slides.length);
   const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
 
@@ -134,3 +136,4 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
     </div>
   );
 }
+

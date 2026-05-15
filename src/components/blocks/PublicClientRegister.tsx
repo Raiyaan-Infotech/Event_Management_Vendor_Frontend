@@ -27,34 +27,33 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     if (fieldErrors[key]) setFieldErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
-  const setOneError = (key: string, msg: string) => {
-    setFieldErrors({ [key]: msg });
-  };
+  const setOneError = (key: string, msg: string) => { setFieldErrors({ [key]: msg }); };
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage("");
     setFieldErrors({});
 
-    // Validate one field at a time — stop on first error
-    if (!form.name.trim()) { setOneError("name", "Full name is required."); return; }
+    const nextErrors: Record<string, string> = {};
+    if (!form.name.trim()) nextErrors.name = "Full name is required.";
     const mobileErr = validateMobile(form.mobile);
-    if (mobileErr) { setOneError("mobile", mobileErr); return; }
+    if (mobileErr) nextErrors.mobile = mobileErr;
 
     const emailRegex = /^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/;
-    if (!form.email.trim())                        { setOneError("email", "Email is required."); return; }
-    if (!emailRegex.test(form.email.trim()))        { setOneError("email", "Enter a valid email address."); return; }
+    if (!form.email.trim()) nextErrors.email = "Email is required.";
+    else if (!emailRegex.test(form.email.trim())) nextErrors.email = "Enter a valid email address.";
 
     const pw = form.password;
-    if (!pw.trim())                   { setOneError("password", "Password is required."); return; }
-    if (/\s/.test(pw))                { setOneError("password", "Password must not contain spaces."); return; }
-    if (pw.length < 8)                { setOneError("password", "Password must be at least 8 characters."); return; }
-    if (!/[A-Z]/.test(pw))           { setOneError("password", "Password must include at least 1 uppercase letter."); return; }
-    if (!/[a-z]/.test(pw))           { setOneError("password", "Password must include at least 1 lowercase letter."); return; }
-    if (!/[0-9]/.test(pw))           { setOneError("password", "Password must include at least 1 number."); return; }
-    if (!/[^A-Za-z0-9]/.test(pw))   { setOneError("password", "Password must include at least 1 special character."); return; }
-    if (!form.confirm_password.trim()) { setOneError("confirm_password", "Please confirm your password."); return; }
-    if (pw !== form.confirm_password)  { setOneError("confirm_password", "Passwords do not match."); return; }
+    if (!pw) nextErrors.password = "Password is required.";
+    else if (/\s/.test(pw)) nextErrors.password = "Password must not contain spaces.";
+    else if (pw.length < 8) nextErrors.password = "Password must be at least 8 characters.";
+    else if (!/[A-Z]/.test(pw)) nextErrors.password = "Password must include at least 1 uppercase letter.";
+    else if (!/[a-z]/.test(pw)) nextErrors.password = "Password must include at least 1 lowercase letter.";
+    else if (!/[0-9]/.test(pw)) nextErrors.password = "Password must include at least 1 number.";
+    else if (!/[^A-Za-z0-9]/.test(pw)) nextErrors.password = "Password must include at least 1 special character.";
+    if (!form.confirm_password) nextErrors.confirm_password = "Please confirm your password.";
+    else if (pw !== form.confirm_password) nextErrors.confirm_password = "Passwords do not match.";
+    if (Object.keys(nextErrors).length) { setFieldErrors(nextErrors); return; }
 
     const { confirm_password, ...payload } = form;
 
@@ -63,7 +62,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
         ...payload,
         name: payload.name.trim(),
         mobile: payload.mobile.trim(),
-        email: payload.email.trim(),
+        email: payload.email.trim().toLowerCase(),
         address: null, country: null, state: null, district: null,
         city: null, locality: null, pincode: null,
         subscribe_newsletter: true,
@@ -171,6 +170,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
               <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
+              <p className="mt-1 text-xs font-semibold text-gray-500">Minimum 8 characters with uppercase, lowercase, number, and special character. Spaces are not allowed.</p>
               <FieldError field="password" />
             </label>
 
@@ -218,3 +218,5 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     </section>
   );
 }
+
+

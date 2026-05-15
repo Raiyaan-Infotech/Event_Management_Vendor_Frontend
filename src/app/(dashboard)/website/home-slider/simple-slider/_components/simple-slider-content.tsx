@@ -104,6 +104,7 @@ export default function SimpleSliderContent() {
   const handleSave = () => {
     if (!formData.title.trim())        return toast.error("Title is required.");
     if (!formData.button_label.trim()) return toast.error("Button Label is required.");
+    if (!formData.page_id) return toast.error("Linked Page is required.");
     if (!formData.image_path)          return toast.error("Slider image is required.");
 
     const payload = {
@@ -176,7 +177,7 @@ export default function SimpleSliderContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Linked Page</Label>
+                  <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Linked Page <span className="text-rose-500">*</span></Label>
                   <Select
                     value={formData.page_id ? String(formData.page_id) : "none"}
                     onValueChange={(v) => setFormData({ ...formData, page_id: v === "none" ? null : Number(v) })}
@@ -185,7 +186,7 @@ export default function SimpleSliderContent() {
                       <SelectValue placeholder="Select a page" />
                     </SelectTrigger>
                     <SelectContent className="rounded-sm border-slate-100">
-                      <SelectItem value="none" className="text-[var(--vendor-control-text)] font-semibold text-slate-400">No page linked</SelectItem>
+                      <SelectItem value="none" className="text-[var(--vendor-control-text)] font-semibold text-slate-400">Select linked page</SelectItem>
                       {pages.map((page) => (
                         <SelectItem key={page.id} value={String(page.id)} className="text-[var(--vendor-control-text)] font-semibold">
                           {page.name}
@@ -329,3 +330,5 @@ export default function SimpleSliderContent() {
     </div>
   );
 }
+
+

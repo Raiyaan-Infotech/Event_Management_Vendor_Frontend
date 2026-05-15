@@ -146,7 +146,7 @@ export function VendorThemeContent() {
                                         : isSelected 
                                         ? "border-blue-600 shadow-[0_20px_50px_-12px_rgba(59,130,246,0.15)] scale-[1.02]" 
                                         : "border-transparent shadow-[0_10px_30px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:scale-[1.01]"
-                                } dark:border-[var(--vendor-border)]`}
+                                }`}
                             >
                                 {/* Theme Preview Webpage Area */}
                                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-[#0f0f0f]">
@@ -209,3 +209,4 @@ export function VendorThemeContent() {
         </div>
     );
 }
+

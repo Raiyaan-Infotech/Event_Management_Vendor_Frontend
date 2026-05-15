@@ -38,6 +38,7 @@ import { useVendorPages } from "@/hooks/use-vendor-pages";
 import { useVendorSocialLinks, useToggleSocialLink } from "@/hooks/use-vendor-social-links";
 import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import apiClient from "@/lib/api-client";
+import { validateEmail, validateMobile } from "@/lib/validation";
 
 // ─── Social icon renderer ─────────────────────────────────────────────────────
 const lucideIconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = Object.fromEntries(
@@ -869,3 +870,4 @@ export default function FooterPage() {
     </div>
   );
 }
+

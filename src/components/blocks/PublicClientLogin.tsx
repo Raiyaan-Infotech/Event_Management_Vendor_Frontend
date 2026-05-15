@@ -25,8 +25,13 @@ export default function PublicClientLogin({ data }: { data?: any }) {
     setMessage("");
     setError("");
 
+    const emailValue = email.trim().toLowerCase();
+    if (!emailValue) { setError("Email is required."); return; }
+    if (!/^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/.test(emailValue)) { setError("Enter a valid email address."); return; }
+    if (!password) { setError("Password is required."); return; }
+
     try {
-      const payload = await loginMutation.mutateAsync({ email, password });
+      const payload = await loginMutation.mutateAsync({ email: emailValue, password });
 
       if (typeof window !== "undefined") {
         window.localStorage.setItem(`vendor_client_${publicSlug}`, JSON.stringify(payload.data));
@@ -54,12 +59,12 @@ export default function PublicClientLogin({ data }: { data?: any }) {
           <div className="space-y-4">
             <label className="block space-y-2">
               <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email</span>
-              <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
             </label>
             <label className="block space-y-2">
               <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password</span>
               <div className="relative">
-                <input required type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-11 text-sm outline-none focus:border-gray-950" />
+                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-11 text-sm outline-none focus:border-gray-950" />
                 <button type="button" tabIndex={-1} onClick={() => setShowPassword((p) => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -102,3 +107,5 @@ export default function PublicClientLogin({ data }: { data?: any }) {
     </section>
   );
 }
+
+

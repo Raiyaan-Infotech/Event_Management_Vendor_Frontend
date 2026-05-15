@@ -44,6 +44,8 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
   const blur = slide.image_blur ?? 0;
   const brightness = slide.image_brightness ?? 100;
   const imgStyle = { filter: `blur(${blur}px) brightness(${brightness}%)` };
+  const pageHref = slide.page_slug ? `/${data?.slug || ""}/page/${slide.page_slug}` : slide.page_id ? `/${data?.slug || ""}/page/${slide.page_id}` : "#";
+  const buttonClass = "w-fit cursor-pointer rounded-xl px-8 py-3 text-sm font-black uppercase tracking-widest text-white shadow-2xl";
   const backgroundImage = (
     <Image src={img} alt="" fill sizes="100vw" className="object-cover" style={imgStyle} priority unoptimized />
   );
@@ -64,7 +66,7 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
           )}
           {title && <h1 className="text-5xl font-black leading-tight tracking-tight" style={{ color: titleColor }}>{title}</h1>}
           {desc && <p className="max-w-xl text-base font-medium leading-relaxed" style={{ color: descColor }}>{desc}</p>}
-          {btnLabel && <div className="w-fit cursor-pointer rounded-xl px-8 py-3 text-sm font-black uppercase tracking-widest text-white shadow-2xl" style={{ backgroundColor: btnColor }}>{btnLabel}</div>}
+          {btnLabel && <a href={pageHref} className={buttonClass} style={{ backgroundColor: btnColor }}>{btnLabel}</a>}
         </div>
       </div>
     );
@@ -83,9 +85,9 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
               {title && <h1 className="text-5xl font-black leading-none text-white">{title}</h1>}
               {desc && <p className="text-sm font-medium leading-7 text-white/65">{desc}</p>}
               {btnLabel && (
-                <div className="inline-flex px-7 py-3 text-xs font-black uppercase tracking-widest text-white" style={{ backgroundColor: btnColor || primary }}>
+                <a href={pageHref} className="inline-flex px-7 py-3 text-xs font-black uppercase tracking-widest text-white" style={{ backgroundColor: btnColor || primary }}>
                   {btnLabel}
-                </div>
+                </a>
               )}
             </div>
             <div className="mt-8 grid grid-cols-3 gap-2">
@@ -128,7 +130,7 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
         <div className={`relative z-10 flex w-full flex-col gap-5 px-8 ${alignClass}`}>
           {title && <h1 className="max-w-3xl text-6xl font-black leading-none tracking-tight" style={{ color: titleColor }}>{title}</h1>}
           {desc && <p className="max-w-xl text-base font-medium" style={{ color: descColor }}>{desc}</p>}
-          {btnLabel && <div className="w-fit cursor-pointer rounded-2xl px-8 py-3.5 text-sm font-black uppercase tracking-widest" style={{ backgroundColor: btnColor, color: "#fff" }}>{btnLabel}</div>}
+          {btnLabel && <a href={pageHref} className="w-fit cursor-pointer rounded-2xl px-8 py-3.5 text-sm font-black uppercase tracking-widest" style={{ backgroundColor: btnColor, color: "#fff" }}>{btnLabel}</a>}
         </div>
       </div>
     );
@@ -162,3 +164,7 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
     </div>
   );
 }
+
+
+
+

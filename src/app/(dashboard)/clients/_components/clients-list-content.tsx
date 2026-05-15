@@ -34,6 +34,11 @@ import { vendorUi } from "@/lib/vendor-ui";
 import { useVendorClients, useDeleteVendorClient, useToggleVendorClientLoginAccess, useUpdateVendorClientStatus, VendorClient } from "@/hooks/use-vendor-clients";
 import { useVendorSubscription } from "@/hooks/use-vendor-subscription";
 
+const getClientPlanLabel = (item: VendorClient) => {
+  const type = String((item as any).registration_type || "").toLowerCase();
+  if (type === "guest") return "Guest";
+  return item.plan || "No Plan";
+};
 const statusLabels: Record<string, string> = {
   "1": "Active",
   "0": "Inactive",
@@ -99,7 +104,7 @@ export default function ClientsListContent() {
               {item.name}
             </p>
             {(() => {
-              const planColor = plans.find(p => p.name === item.plan)?.label_color;
+              const planColor = plans.find(p => p.name === getClientPlanLabel(item))?.label_color;
               return (
                 <Badge
                   variant="outline"
@@ -108,7 +113,7 @@ export default function ClientsListContent() {
                     ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
                     : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
                 >
-                  {item.plan || "-"}
+                  {getClientPlanLabel(item)}
                 </Badge>
               );
             })()}
@@ -220,7 +225,7 @@ export default function ClientsListContent() {
     const csvContent = [
       headers.join(","),
       ...clients.map((c) =>
-        [c.id, `"${c.client_id}"`, `"${c.name}"`, `"${c.mobile}"`, `"${c.email}"`, `"${c.city}"`, `"${c.plan}"`, `"${c.is_active}"`].join(",")
+        [c.id, `"${c.client_id}"`, `"${c.name}"`, `"${c.mobile}"`, `"${c.email}"`, `"${c.city}"`, `"${getClientPlanLabel(c)}"`, `"${c.is_active}"`].join(",")
       ),
     ].join("\n");
 
@@ -391,3 +396,4 @@ export default function ClientsListContent() {
     </div>
   );
 }
+

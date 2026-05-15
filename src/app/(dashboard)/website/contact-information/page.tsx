@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { WebsiteSettingsPageSkeleton } from "@/components/boneyard/website-settings-page-skeleton";
+import { validateEmail, validateMobile } from "@/lib/validation";
 
 export default function ContactInfoPage() {
   const router = useRouter();
@@ -138,7 +139,7 @@ export default function ContactInfoPage() {
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                      <Phone className="size-2.5" /> MOBILE
+                      <Phone className="size-2.5" /> MOBILE <span className="text-rose-500">*</span>
                     </Label>
                     <Input
                       value={defaultContact.mobile}
@@ -150,7 +151,7 @@ export default function ContactInfoPage() {
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                      <Mail className="size-2.5" /> EMAIL
+                      <Mail className="size-2.5" /> EMAIL <span className="text-rose-500">*</span>
                     </Label>
                     <Input
                       value={defaultContact.email}
@@ -162,7 +163,7 @@ export default function ContactInfoPage() {
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                      <MapPin className="size-2.5" /> ADDRESS
+                      <MapPin className="size-2.5" /> ADDRESS <span className="text-rose-500">*</span>
                     </Label>
                     <Textarea
                       value={defaultContact.address}
@@ -202,7 +203,7 @@ export default function ContactInfoPage() {
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                      <Phone className="size-2.5" /> MOBILE
+                      <Phone className="size-2.5" /> MOBILE <span className="text-rose-500">*</span>
                     </Label>
                     <Input
                       value={altContact.mobile}
@@ -215,7 +216,7 @@ export default function ContactInfoPage() {
                   
                   <div className="space-y-1">
                     <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                      <Mail className="size-2.5" /> EMAIL
+                      <Mail className="size-2.5" /> EMAIL <span className="text-rose-500">*</span>
                     </Label>
                     <Input
                       value={altContact.email}
@@ -227,7 +228,7 @@ export default function ContactInfoPage() {
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                      <MapPin className="size-2.5" /> ADDRESS
+                      <MapPin className="size-2.5" /> ADDRESS <span className="text-rose-500">*</span>
                     </Label>
                     <Textarea
                       value={altContact.address}
@@ -306,3 +307,4 @@ export default function ContactInfoPage() {
     </div>
   );
 }
+

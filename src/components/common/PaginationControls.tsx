@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -8,6 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { designConfig } from "@/lib/design-config";
 
 interface PaginationControlsProps {
   currentPage: number;
@@ -29,19 +31,17 @@ export function PaginationControls({
   const end = Math.min(currentPage * itemsPerPage, totalResults);
 
   return (
-    <div className="shrink-0 px-4 py-3 bg-[var(--vendor-panel-bg)] border-t border-[var(--vendor-border)] flex items-center justify-between">
+    <div className={designConfig.data.pagination}>
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <p className="text-[10px] text-[var(--vendor-text-muted)] font-semibold uppercase tracking-wide whitespace-nowrap">
-            Records per page:
-          </p>
+          <p className={cn(designConfig.type.caption, "uppercase tracking-wide whitespace-nowrap")}>Records per page:</p>
           <Select value={itemsPerPage.toString()} onValueChange={(value) => onItemsPerPageChange(Number(value))}>
-            <SelectTrigger className="h-8 w-[64px] text-[11px] uppercase tracking-wide">
+            <SelectTrigger className={cn("h-8 w-[64px] uppercase tracking-wide", designConfig.control.select)}>
               <SelectValue placeholder={itemsPerPage.toString()} />
             </SelectTrigger>
             <SelectContent className="min-w-[70px]">
               {[5, 10, 15, 20, 25, 50].map((value) => (
-                <SelectItem key={value} value={value.toString()} className="text-[10px] font-semibold cursor-pointer">
+                <SelectItem key={value} value={value.toString()} className={cn(designConfig.type.caption, "font-semibold cursor-pointer")}>
                   {value}
                 </SelectItem>
               ))}
@@ -49,7 +49,7 @@ export function PaginationControls({
           </Select>
         </div>
 
-        <p className="text-[10px] text-[var(--vendor-text-muted)] font-semibold uppercase tracking-wide hidden sm:block">
+        <p className={cn(designConfig.type.caption, "font-semibold uppercase tracking-wide hidden sm:block")}>
           Showing <span className="text-[var(--vendor-primary-btn)]">{start}-{end}</span> of <span className="text-[var(--vendor-text)]">{totalResults}</span> results
         </p>
       </div>
@@ -59,7 +59,7 @@ export function PaginationControls({
         </Button>
 
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-          <Button key={page} onClick={() => onPageChange(page)} variant={currentPage === page ? "default" : "outline"} className="h-8 w-8 p-0 text-[11px] font-semibold">
+          <Button key={page} onClick={() => onPageChange(page)} variant={currentPage === page ? "default" : "outline"} className={cn("h-8 w-8 p-0", designConfig.type.caption, "font-semibold")}>
             {page}
           </Button>
         ))}

@@ -191,13 +191,12 @@ export const MiniNavbar = ({
 }) => {
   const companyName = vendorData?.vendor?.company_name || "Sample";
   const companyLogo = vendorData?.vendor?.company_logo ? imgUrl(vendorData.vendor.company_logo) : null;
-  const city = vendorData?.vendor?.locality?.name || "City";
+  const city = (vendorData?.vendor as any)?.city?.name || (vendorData?.vendor as any)?.city || (vendorData?.vendor as any)?.locality?.name || (vendorData?.vendor as any)?.locality || "City";
   const navLabels = previewMenuLabels(vendorData);
   const slug = (vendorData as any)?.slug;
   const registerHref = slug === "preview" ? "/preview?previewPage=register" : (slug ? `/${slug}/register` : "#");
   const loginHref = slug === "preview" ? "/preview?previewPage=login" : (slug ? `/${slug}/login` : "#");
-  const homeBlocks = normalizeHomeBlocks(vendorData?.home_blocks);
-  const showRegister = homeBlocks.some((block) => block.block_type === "register" && block.is_visible);
+  const showRegister = true;
 
   const links = (
     <div className={cn("hidden min-[450px]:flex items-center", isFullPage ? "gap-8" : "gap-4")}>
@@ -258,7 +257,14 @@ export const MiniFooter = ({
   colors, isFullPage, vendorData,
 }: {
   colors?: ThemeColors; isFullPage?: boolean; vendorData?: VendorPreviewData;
-}) => (
+} ) => {
+  const vendor = vendorData?.vendor as any;
+  const contactMode = vendor?.contact_mode || "company";
+  const useAlt = contactMode === "alternative";
+  const contactPhone = (useAlt ? vendor?.alternate_contact : vendor?.company_contact) || vendor?.company_contact || "+91 9876543210";
+  const contactEmail = (useAlt ? vendor?.alternate_email : vendor?.company_email) || vendor?.company_email || "hello@company.com";
+  const contactAddress = (useAlt ? vendor?.alternate_address : vendor?.company_address) || vendor?.company_address || "123 Event St, Gala City";
+  return (
   <div
     className={cn("border-t border-white/5 flex flex-col transition-all", isFullPage ? "px-16 py-16 gap-16" : "px-10 py-10 gap-10")}
     style={{ backgroundColor: colors?.footer || "#0a0a0a" }}
@@ -315,9 +321,9 @@ export const MiniFooter = ({
         <span className={cn("font-black text-white uppercase tracking-widest block", isFullPage ? "text-[14px]" : "text-[10px]")}>Contact Info</span>
         <div className="flex flex-col gap-5">
           {[
-            { icon: Phone,  value: vendorData?.vendor?.company_contact || "+91 9876543210" },
-            { icon: Mail,   value: vendorData?.vendor?.company_email   || "hello@company.com" },
-            { icon: MapPin, value: vendorData?.vendor?.company_address || "123 Event St, Gala City" },
+            { icon: Phone,  value: contactPhone },
+            { icon: Mail,   value: contactEmail },
+            { icon: MapPin, value: contactAddress },
           ].map(({ icon: Icon, value }) => (
             <div key={value} className="flex items-center gap-3">
               <div className={cn("flex items-center justify-center rounded-lg bg-white/5 border border-white/10", isFullPage ? "size-10" : "size-7")}>
@@ -355,7 +361,8 @@ export const MiniFooter = ({
       </div>
     </div>
   </div>
-);
+  );
+};
 
 // ─── Theme 1 ──────────────────────────────────────────────────────────────────
 const Theme1Preview = ({
@@ -770,3 +777,4 @@ export const ThemePreview = ({ themeId, colors, className, isFullPage, vendorDat
     </div>
   );
 };
+

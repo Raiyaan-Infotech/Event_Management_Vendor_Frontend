@@ -904,7 +904,7 @@ export function AddClientContent({
   const [formData, setFormData] = useState({
     name: (initialData?.name as string) || "",
     mobile: (initialData?.mobile as string) || "",
-    email: (initialData?.email as string) || "",
+    email: ((initialData?.email as string) || "").toLowerCase(),
     password:
       (initialData?.password as string) || (isEdit || isView ? "••••••••" : ""),
     address: (initialData?.address as string) || "",
@@ -943,7 +943,7 @@ export function AddClientContent({
       setFormData({
         name: initialData.name || "",
         mobile: initialData.mobile || "",
-        email: initialData.email || "",
+        email: (initialData.email || "").toLowerCase(),
         password: "",
         address: initialData.address || "",
         country: initialData.country || "",
@@ -1027,7 +1027,7 @@ export function AddClientContent({
     if (!formData.country)  newErrors.country  = "Country is required";
     if (!formData.state)    newErrors.state    = "State is required";
     if (!formData.district) newErrors.district = "District is required";
-    if (!formData.city)     newErrors.city     = "City is required";
+    if (cityOptions.length > 0 && !formData.city) newErrors.city = "City is required";
 
     // Email format
     if (!newErrors.email && formData.email.trim()) {
@@ -1039,7 +1039,7 @@ export function AddClientContent({
     const pw = formData.password;
     if (!isEdit && !pw.trim()) {
       newErrors.password = "Password is required";
-    } else if (pw && pw.trim()) {
+    } else if (pw) {
       if (/\s/.test(pw))              newErrors.password = "Password must not contain spaces";
       else if (pw.length < 8)         newErrors.password = "Password must be at least 8 characters";
       else if (!/[A-Z]/.test(pw))     newErrors.password = "Must include at least 1 uppercase letter";
@@ -1064,6 +1064,7 @@ export function AddClientContent({
 
     const submissionData: any = {
       ...formData,
+      email: formData.email.trim().toLowerCase(),
       profile_pic: profilePic,
       registration_type: registrationType,
       plan: registrationType === "Guest" ? null : selectedPlan,
@@ -1211,7 +1212,7 @@ export function AddClientContent({
                     value={formData.email}
                     onChange={(e) => {
                       const val = e.target.value;
-                      !isView && !isEdit && setFormData((prev) => ({ ...prev, email: val }));
+                      !isView && !isEdit && setFormData((prev) => ({ ...prev, email: val.toLowerCase() }));
                       if (errors.email)
                         setErrors((prev) => ({ ...prev, email: "" }));
                     }}
@@ -1249,6 +1250,11 @@ export function AddClientContent({
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
+                  )}
+                  {!isView && (
+                    <p className="mt-2 pl-1 text-[11px] font-medium leading-5 text-[var(--vendor-text-muted)]">
+                      Minimum 8 characters with uppercase, lowercase, number, and special character. Spaces are not allowed. Leave blank on edit to keep the current password.
+                    </p>
                   )}
                 </FormGroup>
               </div>
@@ -1478,6 +1484,11 @@ export function AddClientContent({
                       </SelectContent>
                     </Select>
                   )}
+                  {!isView && (
+                    <p className="mt-2 pl-1 text-[11px] font-medium leading-5 text-[var(--vendor-text-muted)]">
+                      Minimum 8 characters with uppercase, lowercase, number, and special character. Spaces are not allowed. Leave blank on edit to keep the current password.
+                    </p>
+                  )}
                 </FormGroup>
               ) : null}
 
@@ -1563,4 +1574,8 @@ export function AddClientContent({
     </div>
   );
 }
+
+
+
+
 
