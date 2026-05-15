@@ -48,6 +48,15 @@ export default function ContactInfoPage() {
   }, [vendor]);
 
   const handleSave = async () => {
+    const active = contactMode === "default" ? defaultContact : altContact;
+    if (!active.mobile.trim()) { toast.error("Mobile number is required."); return; }
+    const mobileErr = validateMobile(active.mobile);
+    if (mobileErr) { toast.error(mobileErr); return; }
+    if (!active.email.trim()) { toast.error("Email address is required."); return; }
+    const emailErr = validateEmail(active.email);
+    if (emailErr) { toast.error(emailErr); return; }
+    if (!active.address.trim()) { toast.error("Address is required."); return; }
+
     await updateMutation.mutateAsync({
       company_contact: defaultContact.mobile,
       company_email:   defaultContact.email,

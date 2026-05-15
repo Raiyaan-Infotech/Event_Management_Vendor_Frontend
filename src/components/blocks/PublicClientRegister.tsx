@@ -6,6 +6,7 @@ import { CheckCircle2, Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 import { usePublicClientRegister } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
 import { validateMobile } from "@/lib/validation";
+import { PasswordHint } from "@/components/common/PasswordHint";
 
 export default function PublicClientRegister({ data }: { data?: any }) {
   const slug = data?.slug || "";
@@ -170,7 +171,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
               <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
-              <p className="mt-1 text-xs font-semibold text-gray-500">Minimum 8 characters with uppercase, lowercase, number, and special character. Spaces are not allowed.</p>
+              <PasswordHint password={form.password} />
               <FieldError field="password" />
             </label>
 

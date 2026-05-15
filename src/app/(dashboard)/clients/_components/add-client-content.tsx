@@ -882,6 +882,7 @@ import {
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { LocationSelects, type LocationValues } from "@/components/common/LocationSelects";
 import { validateMobile, validateEmail } from "@/lib/validation";
+import { PasswordHint } from "@/components/common/PasswordHint";
 
 // ... existing code ...
 
@@ -1037,15 +1038,16 @@ export function AddClientContent({
 
     // Password policy
     const pw = formData.password;
+    const pwChanged = pw && pw !== "••••••••"; // treat placeholder as "unchanged"
     if (!isEdit && !pw.trim()) {
       newErrors.password = "Password is required";
-    } else if (pw) {
-      if (/\s/.test(pw))              newErrors.password = "Password must not contain spaces";
-      else if (pw.length < 8)         newErrors.password = "Password must be at least 8 characters";
-      else if (!/[A-Z]/.test(pw))     newErrors.password = "Must include at least 1 uppercase letter";
-      else if (!/[a-z]/.test(pw))     newErrors.password = "Must include at least 1 lowercase letter";
-      else if (!/[0-9]/.test(pw))     newErrors.password = "Must include at least 1 number";
-      else if (!/[^A-Za-z0-9]/.test(pw)) newErrors.password = "Must include at least 1 special character";
+    } else if (pwChanged) {
+      if (/\s/.test(pw))                  newErrors.password = "Password must not contain spaces";
+      else if (pw.length < 8)             newErrors.password = "Must be at least 8 characters";
+      else if (!/[A-Z]/.test(pw))         newErrors.password = "Must include at least 1 uppercase letter";
+      else if (!/[a-z]/.test(pw))         newErrors.password = "Must include at least 1 lowercase letter";
+      else if (!/[0-9]/.test(pw))         newErrors.password = "Must include at least 1 number";
+      else if (!/[^A-Za-z0-9]/.test(pw))  newErrors.password = "Must include at least 1 special character";
     }
 
     if (!profilePic) {
@@ -1071,6 +1073,10 @@ export function AddClientContent({
       login_access: loginAccess ? 1 : 0,
       send_credentials_to_email: sendCredentialsToEmail ? 1 : 0,
     };
+    // Don't send password if empty, whitespace-only, or unchanged placeholder
+    if (!submissionData.password || !submissionData.password.trim() || submissionData.password === "••••••••") {
+      delete submissionData.password;
+    }
 
     try {
       if (isEdit) {
@@ -1251,11 +1257,7 @@ export function AddClientContent({
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   )}
-                  {!isView && (
-                    <p className="mt-2 pl-1 text-[11px] font-medium leading-5 text-[var(--vendor-text-muted)]">
-                      Minimum 8 characters with uppercase, lowercase, number, and special character. Spaces are not allowed. Leave blank on edit to keep the current password.
-                    </p>
-                  )}
+                  {!isView && <PasswordHint password={formData.password === "••••••••" ? "" : formData.password} />}
                 </FormGroup>
               </div>
             </CommonCard>
@@ -1484,11 +1486,7 @@ export function AddClientContent({
                       </SelectContent>
                     </Select>
                   )}
-                  {!isView && (
-                    <p className="mt-2 pl-1 text-[11px] font-medium leading-5 text-[var(--vendor-text-muted)]">
-                      Minimum 8 characters with uppercase, lowercase, number, and special character. Spaces are not allowed. Leave blank on edit to keep the current password.
-                    </p>
-                  )}
+                  {!isView && <PasswordHint password={formData.password === "••••••••" ? "" : formData.password} />}
                 </FormGroup>
               ) : null}
 

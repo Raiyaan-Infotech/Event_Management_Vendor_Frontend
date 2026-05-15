@@ -53,7 +53,7 @@ export function SettingsTab() {
     <div className="space-y-6 animate-in fade-in duration-300">
       <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
         <div className="space-y-2">
-          <label className="block text-foreground text-[14px] font-bold">Full Name</label>
+          <label className="block text-foreground text-[14px] font-bold">Full Name <span className="text-red-500">*</span></label>
           <input 
             name="name"
             type="text" 
@@ -64,7 +64,7 @@ export function SettingsTab() {
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-foreground text-[14px] font-bold">Company Name</label>
+          <label className="block text-foreground text-[14px] font-bold">Company Name <span className="text-red-500">*</span></label>
           <input 
             name="company_name"
             type="text" 
@@ -75,7 +75,7 @@ export function SettingsTab() {
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-foreground text-[14px] font-bold">Contact Number</label>
+          <label className="block text-foreground text-[14px] font-bold">Contact Number <span className="text-red-500">*</span></label>
           <input 
             name="company_contact"
             type="tel" 

@@ -19,14 +19,13 @@ export default function ViewWebsitePage({ params }: ViewPageProps) {
   const router = useRouter();
   const { data: page, isLoading } = useVendorPage(Number(id));
 
-  if (isLoading) return <WebsiteDetailsPageSkeleton />;
-
   useEffect(() => {
     if (!isLoading && !page) {
       router.replace("/website/pages");
     }
   }, [isLoading, page, router]);
 
+  if (isLoading) return <WebsiteDetailsPageSkeleton />;
   if (!page) return null;
 
   const htmlContent = page.content || "<p>No content given.</p>";

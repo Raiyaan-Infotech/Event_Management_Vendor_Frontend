@@ -68,7 +68,8 @@ export function VendorThemeContent() {
     // Pre-select the vendor's saved theme_id once data loads
     useEffect(() => {
         if (!vendor) return;
-        const saved = (vendor as any).theme_id ?? null;
+        const raw = (vendor as any).theme_id;
+        const saved = raw ? Number(raw) : null;
         if (saved) {
             setActivatedPresetId(saved);
             setSelectedId(saved);

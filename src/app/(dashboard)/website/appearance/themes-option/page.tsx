@@ -127,8 +127,9 @@ export default function ThemesOptionPage() {
       } as VendorColors;
       setFormData(base);
     } else if (colorsData.palette_id) {
-      setSelectedCard(colorsData.palette_id);
-      setActiveCard(colorsData.palette_id);
+      const pid = Number(colorsData.palette_id);
+      setSelectedCard(pid);
+      setActiveCard(pid);
       const base = {
         ...FALLBACK_COLORS,
         ...(colorsData.theme_defaults ?? {}),

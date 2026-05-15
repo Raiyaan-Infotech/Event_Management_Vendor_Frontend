@@ -83,7 +83,7 @@ export default function FooterPage() {
   const [description, setDescription] = useState<string>("");
 
   // ── Contact (maps to same vendor fields as AboutCompanyPage) ──
-  const [contactMode, setContactMode] = useState<"default" | "alternate">(
+  const [contactMode, setContactMode] = useState<"default" | "alternative">(
     "default",
   );
 
@@ -136,7 +136,7 @@ export default function FooterPage() {
     });
 
     // Contact mode — persist which radio was selected
-    setContactMode(((vendor as any).contact_mode as "default" | "alternate") || "default");
+    setContactMode(((vendor as any).contact_mode as "default" | "alternative") || "default");
 
     // Newsletter
     setNewsletterEnabled((vendor as any).newsletter_status === 1);
@@ -191,6 +191,15 @@ export default function FooterPage() {
 
   // ── Save (same mutation + base64 guard as AboutCompanyPage) ──
   const handleSave = async () => {
+    const active = contactMode === "default" ? defaultContact : altContact;
+    if (!active.mobile.trim()) { toast.error("Mobile number is required."); return; }
+    const mobileErr = validateMobile(active.mobile);
+    if (mobileErr) { toast.error(mobileErr); return; }
+    if (!active.email.trim()) { toast.error("Email address is required."); return; }
+    const emailErr = validateEmail(active.email);
+    if (emailErr) { toast.error(emailErr); return; }
+    if (!active.address.trim()) { toast.error("Address is required."); return; }
+
     let logoUrl: string | undefined = logo || undefined;
 
     // Upload if still base64
@@ -260,7 +269,7 @@ export default function FooterPage() {
     if (!vendor) return;
     setLogo(vendor.company_logo || "");
     setCompanyName(vendor.company_name || "");
-    setContactMode(((vendor as any).contact_mode as "default" | "alternate") || "default");
+    setContactMode(((vendor as any).contact_mode as "default" | "alternative") || "default");
     setDefaultContact({
       mobile: vendor.company_contact || "",
       email: vendor.company_email || "",
@@ -666,23 +675,23 @@ export default function FooterPage() {
 
                     {/* Alternative Contact */}
                     <div
-                      onClick={() => setContactMode("alternate")}
+                      onClick={() => setContactMode("alternative")}
                       className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 cursor-pointer transition-all duration-300 ${
-                        contactMode === "alternate"
+                        contactMode === "alternative"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
                           : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-[var(--vendor-border)]"
                       }`}
                     >
                       <div className="flex items-center gap-3 mb-6">
                         <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${contactMode === "alternate" ? "border-primary bg-primary" : "border-gray-300 dark:border-gray-600"}`}
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${contactMode === "alternative" ? "border-primary bg-primary" : "border-gray-300 dark:border-gray-600"}`}
                         >
-                          {contactMode === "alternate" && (
+                          {contactMode === "alternative" && (
                             <div className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
                           )}
                         </div>
                         <span
-                          className={`text-sm font-bold font-poppins transition-colors ${contactMode === "alternate" ? "text-primary" : "text-gray-500"}`}
+                          className={`text-sm font-bold font-poppins transition-colors ${contactMode === "alternative" ? "text-primary" : "text-gray-500"}`}
                         >
                           Alternative Contact Info
                         </span>

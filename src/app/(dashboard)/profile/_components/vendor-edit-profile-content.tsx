@@ -123,7 +123,7 @@ export function VendorEditProfileContent() {
                     <h6 className={sectionHeadingClass}>NAME</h6>
                     <div className="space-y-[18px]">
                       <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                        <label className="text-[14px] text-foreground font-normal md:col-span-1">User Name</label>
+                        <label className="text-[14px] text-foreground font-normal md:col-span-1">User Name <span className="text-red-500">*</span></label>
                         <div className="md:col-span-3">
                           <input
                             name="name"
@@ -136,7 +136,7 @@ export function VendorEditProfileContent() {
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                        <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Name</label>
+                        <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Name <span className="text-red-500">*</span></label>
                         <div className="md:col-span-3">
                           <input
                             name="company_name"
@@ -183,7 +183,7 @@ export function VendorEditProfileContent() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
                         <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">
-                          Email <span className="italic text-[13px]">(required)</span>
+                          Email <span className="text-red-500">*</span>
                         </label>
                         <div className="md:col-span-3">
                           <input

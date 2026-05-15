@@ -104,16 +104,20 @@ export default function ClientsListContent() {
               {item.name}
             </p>
             {(() => {
-              const planColor = plans.find(p => p.name === getClientPlanLabel(item))?.label_color;
+              const isGuest = String((item as VendorClient & { registration_type?: string }).registration_type || "").toLowerCase() === "guest";
+              const planLabel = getClientPlanLabel(item);
+              const planColor = !isGuest ? plans.find(p => p.name === planLabel)?.label_color : null;
               return (
                 <Badge
                   variant="outline"
                   className="h-5 text-[var(--vendor-caption-text)] font-bold uppercase tracking-wide px-2 py-0 rounded-[var(--vendor-radius-pill)]"
-                  style={planColor
-                    ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
-                    : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
+                  style={isGuest
+                    ? { backgroundColor: '#f3f4f6', color: '#6b7280', borderColor: '#d1d5db' }
+                    : planColor
+                      ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
+                      : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
                 >
-                  {getClientPlanLabel(item)}
+                  {planLabel}
                 </Badge>
               );
             })()}
