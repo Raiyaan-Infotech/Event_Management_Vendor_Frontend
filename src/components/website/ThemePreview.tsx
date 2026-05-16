@@ -191,7 +191,13 @@ export const MiniNavbar = ({
 }) => {
   const companyName = vendorData?.vendor?.company_name || "Sample";
   const companyLogo = vendorData?.vendor?.company_logo ? imgUrl(vendorData.vendor.company_logo) : null;
-  const city = (vendorData?.vendor as any)?.city?.name || (vendorData?.vendor as any)?.city || (vendorData?.vendor as any)?.locality?.name || (vendorData?.vendor as any)?.locality || "City";
+  const previewVendor = vendorData?.vendor as any;
+  const city =
+    previewVendor?.locality?.name ||
+    previewVendor?.district?.name ||
+    previewVendor?.city?.name ||
+    previewVendor?.city ||
+    "City";
   const navLabels = previewMenuLabels(vendorData);
   const slug = (vendorData as any)?.slug;
   const registerHref = slug === "preview" ? "/preview?previewPage=register" : (slug ? `/${slug}/register` : "#");
@@ -259,11 +265,11 @@ export const MiniFooter = ({
   colors?: ThemeColors; isFullPage?: boolean; vendorData?: VendorPreviewData;
 } ) => {
   const vendor = vendorData?.vendor as any;
-  const contactMode = vendor?.contact_mode || "company";
+  const contactMode = vendor?.contact_mode || "default";
   const useAlt = contactMode === "alternative";
-  const contactPhone = (useAlt ? vendor?.alternate_contact : vendor?.company_contact) || vendor?.company_contact || "+91 9876543210";
-  const contactEmail = (useAlt ? vendor?.alternate_email : vendor?.company_email) || vendor?.company_email || "hello@company.com";
-  const contactAddress = (useAlt ? vendor?.alternate_address : vendor?.company_address) || vendor?.company_address || "123 Event St, Gala City";
+  const contactPhone = (useAlt ? (vendor?.contact || vendor?.alt_contact) : vendor?.company_contact) || vendor?.company_contact || "+91 9876543210";
+  const contactEmail = (useAlt ? vendor?.alt_email : vendor?.company_email) || vendor?.company_email || "hello@company.com";
+  const contactAddress = (useAlt ? (vendor?.address || vendor?.alt_address) : vendor?.company_address) || vendor?.company_address || "123 Event St, Gala City";
   return (
   <div
     className={cn("border-t border-white/5 flex flex-col transition-all", isFullPage ? "px-16 py-16 gap-16" : "px-10 py-10 gap-10")}

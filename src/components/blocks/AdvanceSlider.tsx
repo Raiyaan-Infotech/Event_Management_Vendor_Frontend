@@ -11,9 +11,27 @@ const alignMap: Record<string, string> = {
   right: "items-end text-right",
 };
 
+const isPublished = (slide: any) => (slide.status || "published") === "published";
+
+const sliderPageHref = (data: any, slide: any) => {
+  const pageId = slide?.page_id ? Number(slide.page_id) : null;
+  if (!pageId) return "#";
+
+  if (data?.slug === "preview") {
+    const base = data?.previewBaseUrl || "/preview";
+    const [path, query = ""] = base.split("?");
+    const params = new URLSearchParams(query);
+    params.set("previewPage", "page");
+    params.set("pageId", String(pageId));
+    return `${path}?${params.toString()}`;
+  }
+
+  return data?.slug ? `/${data.slug}/pages/${pageId}` : "#";
+};
+
 export default function AdvanceSlider({ data, settings }: { data?: any; settings?: Record<string, any> }) {
   const variant = settings?.variant || "variant_1";
-  const slides = (data?.sliders ?? []).filter((s: any) => s.is_active && s.type === "advanced");
+  const slides = (data?.sliders ?? []).filter((s: any) => s.is_active && isPublished(s) && s.type === "advanced");
 
   const [current, setCurrent] = useState(0);
 
@@ -44,7 +62,7 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
   const blur = slide.image_blur ?? 0;
   const brightness = slide.image_brightness ?? 100;
   const imgStyle = { filter: `blur(${blur}px) brightness(${brightness}%)` };
-  const pageHref = slide.page_slug ? `/${data?.slug || ""}/page/${slide.page_slug}` : slide.page_id ? `/${data?.slug || ""}/page/${slide.page_id}` : "#";
+  const pageHref = sliderPageHref(data, slide);
   const buttonClass = "w-fit cursor-pointer rounded-xl px-8 py-3 text-sm font-black uppercase tracking-widest text-white shadow-2xl";
   const backgroundImage = (
     <Image src={img} alt="" fill sizes="100vw" className="object-cover" style={imgStyle} priority unoptimized />

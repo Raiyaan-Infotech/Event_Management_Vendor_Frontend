@@ -143,12 +143,15 @@ export function VendorThemeContent() {
                                 onClick={() => setSelectedId(theme.id)}
                                 className={`group relative bg-white dark:bg-sidebar rounded-[2rem] overflow-hidden transition-all duration-500 border-2 cursor-pointer ${
                                     isActivated
-                                        ? "border-green-500 shadow-[0_20px_50px_-12px_rgba(34,197,94,0.15)]"
+                                        ? "border-green-500 shadow-[0_20px_50px_-12px_rgba(34,197,94,0.35)]"
                                         : isSelected 
                                         ? "border-blue-600 shadow-[0_20px_50px_-12px_rgba(59,130,246,0.15)] scale-[1.02]" 
                                         : "border-transparent shadow-[0_10px_30px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:scale-[1.01]"
                                 }`}
                             >
+                                {isActivated && (
+                                    <div className="pointer-events-none absolute inset-0 z-40 rounded-[2rem] border-4 border-green-500 ring-4 ring-green-500/20" />
+                                )}
                                 {/* Theme Preview Webpage Area */}
                                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-[#0f0f0f]">
                                     {isActivated && (
@@ -210,4 +213,3 @@ export function VendorThemeContent() {
         </div>
     );
 }
-

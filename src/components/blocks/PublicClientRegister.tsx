@@ -7,6 +7,7 @@ import { usePublicClientRegister } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
 import { validateMobile } from "@/lib/validation";
 import { PasswordHint } from "@/components/common/PasswordHint";
+import { toast } from "sonner";
 
 export default function PublicClientRegister({ data }: { data?: any }) {
   const slug = data?.slug || "";
@@ -24,7 +25,8 @@ export default function PublicClientRegister({ data }: { data?: any }) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const update = (key: keyof typeof form, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    const nextValue = key === "email" ? value.toLowerCase() : value;
+    setForm((prev) => ({ ...prev, [key]: nextValue }));
     if (fieldErrors[key]) setFieldErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
@@ -54,7 +56,24 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     else if (!/[^A-Za-z0-9]/.test(pw)) nextErrors.password = "Password must include at least 1 special character.";
     if (!form.confirm_password) nextErrors.confirm_password = "Please confirm your password.";
     else if (pw !== form.confirm_password) nextErrors.confirm_password = "Passwords do not match.";
-    if (Object.keys(nextErrors).length) { setFieldErrors(nextErrors); return; }
+    if (Object.keys(nextErrors).length) {
+      const missingLabels = [
+        ["name", "Full Name"],
+        ["email", "Email"],
+        ["mobile", "Mobile"],
+        ["password", "Password"],
+        ["confirm_password", "Confirm Password"],
+      ]
+        .filter(([field]) => !form[field as keyof typeof form].trim())
+        .map(([, label]) => label);
+
+      if (missingLabels.length) {
+        nextErrors._form = `Please fill all required fields: ${missingLabels.join(", ")}.`;
+      }
+      setFieldErrors(nextErrors);
+      toast.error(missingLabels.length ? "Please fill all required fields." : "Please correct the highlighted fields.");
+      return;
+    }
 
     const { confirm_password, ...payload } = form;
 
@@ -137,6 +156,8 @@ export default function PublicClientRegister({ data }: { data?: any }) {
               <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email <span className="text-red-500">*</span></span>
               <input
                 type="text"
+                inputMode="email"
+                autoCapitalize="none"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
                 placeholder="Enter email address"
@@ -159,19 +180,21 @@ export default function PublicClientRegister({ data }: { data?: any }) {
             </label>
 
             {/* Password */}
-            <label className="space-y-2 relative">
+            <label className="space-y-2">
               <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password <span className="text-red-500">*</span></span>
-              <input
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={(e) => update("password", e.target.value)}
-                placeholder="Enter password"
-                className={`h-12 w-full border px-4 pr-10 text-sm outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
-              />
-              <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-              <PasswordHint password={form.password} />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={(e) => update("password", e.target.value)}
+                  placeholder="Enter password"
+                  className={`h-12 w-full border px-4 pr-10 text-sm outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                />
+                <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <PasswordHint password={form.password} alwaysShow />
               <FieldError field="password" />
             </label>
 
@@ -219,5 +242,3 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     </section>
   );
 }
-
-

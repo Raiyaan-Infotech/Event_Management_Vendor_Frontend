@@ -101,6 +101,30 @@ export default function FooterPage() {
     address: "",
   });
 
+  const validateContactBlock = (
+    label: string,
+    contact: { mobile: string; email: string; address: string },
+  ) => {
+    const mobileErr = validateMobile(contact.mobile);
+    if (mobileErr) {
+      toast.error(`${label}: ${mobileErr}`);
+      return false;
+    }
+
+    const emailErr = validateEmail(contact.email);
+    if (emailErr) {
+      toast.error(`${label}: ${emailErr}`);
+      return false;
+    }
+
+    if (!contact.address.trim()) {
+      toast.error(`${label}: Address is required.`);
+      return false;
+    }
+
+    return true;
+  };
+
   // ── Quick Links ──────────────────────────────────
   const [quickLinksHeading, setQuickLinksHeading] = useState("Quick Links");
   const [selectedLinks, setSelectedLinks] = useState<QuickLinkItem[]>([]);
@@ -131,7 +155,7 @@ export default function FooterPage() {
     // Default contact
     setDefaultContact({
       mobile: vendor.company_contact || "",
-      email: vendor.company_email || "",
+      email: (vendor.company_email || "").toLowerCase(),
       address: vendor.company_address || "",
     });
 
@@ -145,7 +169,7 @@ export default function FooterPage() {
     // Alternative contact
     setAltContact({
       mobile: vendor.contact || "",
-      email: vendor.alt_email || "",
+      email: (vendor.alt_email || "").toLowerCase(),
       address: vendor.address || "",
     });
 
@@ -191,14 +215,8 @@ export default function FooterPage() {
 
   // ── Save (same mutation + base64 guard as AboutCompanyPage) ──
   const handleSave = async () => {
-    const active = contactMode === "default" ? defaultContact : altContact;
-    if (!active.mobile.trim()) { toast.error("Mobile number is required."); return; }
-    const mobileErr = validateMobile(active.mobile);
-    if (mobileErr) { toast.error(mobileErr); return; }
-    if (!active.email.trim()) { toast.error("Email address is required."); return; }
-    const emailErr = validateEmail(active.email);
-    if (emailErr) { toast.error(emailErr); return; }
-    if (!active.address.trim()) { toast.error("Address is required."); return; }
+    if (!validateContactBlock("Default contact", defaultContact)) return;
+    if (!validateContactBlock("Alternative contact", altContact)) return;
 
     let logoUrl: string | undefined = logo || undefined;
 
@@ -227,12 +245,12 @@ export default function FooterPage() {
     await updateMutation.mutateAsync({
       company_name: companyName,
       company_logo: logoUrl,
-      company_contact: defaultContact.mobile,
-      company_email: defaultContact.email,
-      company_address: defaultContact.address,
-      contact: altContact.mobile,
-      alt_email: altContact.email,
-      address: altContact.address,
+      company_contact: defaultContact.mobile.trim(),
+      company_email: defaultContact.email.trim().toLowerCase(),
+      company_address: defaultContact.address.trim(),
+      contact: altContact.mobile.trim(),
+      alt_email: altContact.email.trim().toLowerCase(),
+      address: altContact.address.trim(),
       short_description: description,
       poweredby: poweredBy,
       copywrite: copyright,
@@ -624,7 +642,7 @@ export default function FooterPage() {
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                            <Phone size={10} /> MOBILE
+                            <Phone size={10} /> MOBILE <span className="text-rose-500">*</span>
                           </Label>
                           <Input
                             value={defaultContact.mobile}
@@ -640,14 +658,14 @@ export default function FooterPage() {
                         </div>
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                            <Mail size={10} /> EMAIL
+                            <Mail size={10} /> EMAIL <span className="text-rose-500">*</span>
                           </Label>
                           <Input
                             value={defaultContact.email}
                             onChange={(e) =>
                               setDefaultContact({
                                 ...defaultContact,
-                                email: e.target.value,
+                                email: e.target.value.toLowerCase(),
                               })
                             }
                             placeholder="Enter Email ID..."
@@ -656,7 +674,7 @@ export default function FooterPage() {
                         </div>
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                            <MapPin size={10} /> ADDRESS
+                            <MapPin size={10} /> ADDRESS <span className="text-rose-500">*</span>
                           </Label>
                           <Textarea
                             value={defaultContact.address}
@@ -699,7 +717,7 @@ export default function FooterPage() {
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                            <Phone size={10} /> MOBILE
+                            <Phone size={10} /> MOBILE <span className="text-rose-500">*</span>
                           </Label>
                           <Input
                             value={altContact.mobile}
@@ -715,14 +733,14 @@ export default function FooterPage() {
                         </div>
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                            <Mail size={10} /> EMAIL
+                            <Mail size={10} /> EMAIL <span className="text-rose-500">*</span>
                           </Label>
                           <Input
                             value={altContact.email}
                             onChange={(e) =>
                               setAltContact({
                                 ...altContact,
-                                email: e.target.value,
+                                email: e.target.value.toLowerCase(),
                               })
                             }
                             placeholder="Enter Email ID..."
@@ -731,7 +749,7 @@ export default function FooterPage() {
                         </div>
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
-                            <MapPin size={10} /> ADDRESS
+                            <MapPin size={10} /> ADDRESS <span className="text-rose-500">*</span>
                           </Label>
                           <Textarea
                             value={altContact.address}

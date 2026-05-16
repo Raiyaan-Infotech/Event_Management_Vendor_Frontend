@@ -1257,8 +1257,8 @@ export function AddClientContent({
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   )}
-                  {!isView && <PasswordHint password={formData.password === "••••••••" ? "" : formData.password} />}
                 </FormGroup>
+                {!isView && <PasswordHint password={formData.password === "••••••••" ? "" : formData.password} />}
               </div>
             </CommonCard>
 
@@ -1486,7 +1486,6 @@ export function AddClientContent({
                       </SelectContent>
                     </Select>
                   )}
-                  {!isView && <PasswordHint password={formData.password === "••••••••" ? "" : formData.password} />}
                 </FormGroup>
               ) : null}
 
@@ -1494,10 +1493,10 @@ export function AddClientContent({
               <div className="pt-4 border-t border-[var(--vendor-border)] space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[var(--vendor-form-input-text)] font-bold text-gray-800 dark:text-gray-200">
+                    <span className="text-sm font-bold text-[var(--vendor-text)]">
                       Login Access
                     </span>
-                    <span className="text-[var(--vendor-form-help-text)] text-[var(--vendor-text-muted)]">
+                    <span className="text-xs text-[var(--vendor-text-muted)]">
                       Allow client to log in to the portal
                     </span>
                   </div>
@@ -1515,10 +1514,10 @@ export function AddClientContent({
 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[var(--vendor-form-input-text)] font-bold text-gray-800 dark:text-gray-200">
+                    <span className="text-sm font-bold text-[var(--vendor-text)]">
                       Send Credentials To Email
                     </span>
-                    <span className="text-[var(--vendor-form-help-text)] text-[var(--vendor-text-muted)]">
+                    <span className="text-xs text-[var(--vendor-text-muted)]">
                       Email password automatically
                     </span>
                   </div>

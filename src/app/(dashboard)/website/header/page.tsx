@@ -96,7 +96,7 @@ export default function HeaderPage() {
     toast.info("All settings reset.");
   };
 
-  const city = vendor?.locality?.name ?? "";
+  const city = vendor?.locality?.name || vendor?.district?.name || "";
 
   if (isLoading) return <WebsiteSettingsPageSkeleton />;
 

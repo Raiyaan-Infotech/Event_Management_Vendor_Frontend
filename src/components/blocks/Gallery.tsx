@@ -1,27 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CameraOff, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { resolveMediaUrl } from "@/lib/utils";
 
-const DEMO_IMAGES = [
-  "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1478146059778-26028b07395a?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80",
-];
-
 type GalleryImage = { src: string; title: string; city: string };
 type GalleryEvent = { title: string; city: string; images: GalleryImage[] };
-
-const demoEvent: GalleryEvent = {
-  title: "Event Highlights",
-  city: "Mumbai",
-  images: DEMO_IMAGES.map((src, i) => ({ src, title: `Event ${i + 1}`, city: "Mumbai" })),
-};
 
 function normalizeImageList(value: any): string[] {
   const raw = typeof value === "string"
@@ -57,10 +42,21 @@ export default function Gallery({ data, settings }: { data?: any; settings?: Rec
       };
     })
     .filter((event: GalleryEvent) => event.images.length > 0);
-  const events: GalleryEvent[] = eventGroups.length ? eventGroups : [demoEvent];
+  const events: GalleryEvent[] = eventGroups;
   const images = events.flatMap(event => event.images).slice(0, 12);
   const [selectedEventIndex, setSelectedEventIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  if (!images.length) {
+    return (
+      <div className="w-full bg-white px-8 py-16">
+        <div className="mx-auto max-w-5xl rounded-2xl border-2 border-dashed border-gray-200 px-6 py-16 text-center">
+          <CameraOff className="mx-auto mb-4 h-10 w-10 text-gray-300" />
+          <p className="text-xs font-black uppercase tracking-[0.35em] text-gray-400">No gallery images uploaded yet.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (variant === "variant_2") {
     const featuredEvent = events[selectedEventIndex] || events[0];

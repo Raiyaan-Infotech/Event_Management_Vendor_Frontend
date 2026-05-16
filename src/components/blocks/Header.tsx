@@ -55,6 +55,8 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
 
   const cityName =
     vendor.locality?.name ||
+    vendor.district?.name ||
+    vendor.city?.name ||
     vendor.city ||
     (typeof vendor.company_address === "string" ? vendor.company_address.split(",")[0]?.trim() : "") ||
     "";

@@ -1,7 +1,7 @@
 "use client";
 
-import { use, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { CalendarDays, FileText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,20 +10,19 @@ import { Badge } from "@/components/ui/badge";
 import { useVendorPage } from "@/hooks/use-vendor-pages";
 import { WebsiteDetailsPageSkeleton } from "@/components/boneyard/website-details-page-skeleton";
 
-interface ViewPageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function ViewWebsitePage({ params }: ViewPageProps) {
-  const { id } = use(params);
+export default function ViewWebsitePage() {
+  const params = useParams<{ id?: string | string[] }>();
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  const pageId = Number(id);
+  const validPageId = Number.isFinite(pageId) && pageId > 0 ? pageId : null;
   const router = useRouter();
-  const { data: page, isLoading } = useVendorPage(Number(id));
+  const { data: page, isLoading } = useVendorPage(validPageId);
 
   useEffect(() => {
-    if (!isLoading && !page) {
+    if (!validPageId || (!isLoading && !page)) {
       router.replace("/website/pages");
     }
-  }, [isLoading, page, router]);
+  }, [isLoading, page, router, validPageId]);
 
   if (isLoading) return <WebsiteDetailsPageSkeleton />;
   if (!page) return null;

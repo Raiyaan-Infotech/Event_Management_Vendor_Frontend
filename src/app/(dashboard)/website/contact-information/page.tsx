@@ -26,17 +26,41 @@ export default function ContactInfoPage() {
     mobile: "", alt_mobile: "", email: "", address: "", alt_address: "",
   });
 
+  const validateContactBlock = (
+    label: string,
+    contact: { mobile: string; email: string; address: string },
+  ) => {
+    const mobileErr = validateMobile(contact.mobile);
+    if (mobileErr) {
+      toast.error(`${label}: ${mobileErr}`);
+      return false;
+    }
+
+    const emailErr = validateEmail(contact.email);
+    if (emailErr) {
+      toast.error(`${label}: ${emailErr}`);
+      return false;
+    }
+
+    if (!contact.address.trim()) {
+      toast.error(`${label}: Address is required.`);
+      return false;
+    }
+
+    return true;
+  };
+
   useEffect(() => {
     if (!vendor) return;
     setDefaultContact({
       mobile:  vendor.company_contact || "",
-      email:   vendor.company_email   || "",
+      email:   (vendor.company_email   || "").toLowerCase(),
       address: vendor.company_address || "",
     });
     setAltContact({
       mobile:      vendor.contact      || "",
       alt_mobile:  vendor.alt_contact  || "",
-      email:       vendor.alt_email    || "",
+      email:       (vendor.alt_email    || "").toLowerCase(),
       address:     vendor.address      || "",
       alt_address: vendor.alt_address  || "",
     });
@@ -48,23 +72,17 @@ export default function ContactInfoPage() {
   }, [vendor]);
 
   const handleSave = async () => {
-    const active = contactMode === "default" ? defaultContact : altContact;
-    if (!active.mobile.trim()) { toast.error("Mobile number is required."); return; }
-    const mobileErr = validateMobile(active.mobile);
-    if (mobileErr) { toast.error(mobileErr); return; }
-    if (!active.email.trim()) { toast.error("Email address is required."); return; }
-    const emailErr = validateEmail(active.email);
-    if (emailErr) { toast.error(emailErr); return; }
-    if (!active.address.trim()) { toast.error("Address is required."); return; }
+    if (!validateContactBlock("Default contact", defaultContact)) return;
+    if (!validateContactBlock("Alternative contact", altContact)) return;
 
     await updateMutation.mutateAsync({
-      company_contact: defaultContact.mobile,
-      company_email:   defaultContact.email,
-      company_address: defaultContact.address,
-      contact:         altContact.mobile,
+      company_contact: defaultContact.mobile.trim(),
+      company_email:   defaultContact.email.trim().toLowerCase(),
+      company_address: defaultContact.address.trim(),
+      contact:         altContact.mobile.trim(),
       alt_contact:     altContact.alt_mobile,
-      alt_email:       altContact.email,
-      address:         altContact.address,
+      alt_email:       altContact.email.trim().toLowerCase(),
+      address:         altContact.address.trim(),
       alt_address:     altContact.alt_address,
       contact_mode:    contactMode,
     });
@@ -76,13 +94,13 @@ export default function ContactInfoPage() {
     if (!vendor) return;
     setDefaultContact({
       mobile:  vendor.company_contact || "",
-      email:   vendor.company_email   || "",
+      email:   (vendor.company_email   || "").toLowerCase(),
       address: vendor.company_address || "",
     });
     setAltContact({
       mobile:      vendor.contact      || "",
       alt_mobile:  vendor.alt_contact  || "",
-      email:       vendor.alt_email    || "",
+      email:       (vendor.alt_email    || "").toLowerCase(),
       address:     vendor.address      || "",
       alt_address: vendor.alt_address  || "",
     });
@@ -164,7 +182,7 @@ export default function ContactInfoPage() {
                     </Label>
                     <Input
                       value={defaultContact.email}
-                      onChange={(e) => setDefaultContact({ ...defaultContact, email: e.target.value })}
+                      onChange={(e) => setDefaultContact({ ...defaultContact, email: e.target.value.toLowerCase() })}
                       disabled={!isEditing}
                       placeholder="Enter Email ID..."
                       className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
@@ -229,7 +247,7 @@ export default function ContactInfoPage() {
                     </Label>
                     <Input
                       value={altContact.email}
-                      onChange={(e) => setAltContact({ ...altContact, email: e.target.value })}
+                      onChange={(e) => setAltContact({ ...altContact, email: e.target.value.toLowerCase() })}
                       disabled={!isEditing}
                       placeholder="Enter Email ID..."
                       className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"

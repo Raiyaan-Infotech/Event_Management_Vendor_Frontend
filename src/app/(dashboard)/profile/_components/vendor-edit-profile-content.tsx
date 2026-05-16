@@ -9,6 +9,7 @@ import {
 } from "@/hooks/use-vendors";
 import { VendorSidebarProfileCard } from "./vendor-sidebar-profile-card";
 import { VendorLocationCard } from "./vendor-location-card";
+import { validateEmail, validateMobile } from "@/lib/validation";
 
 const cardClass =
   "bg-card rounded-[5px] border border-border overflow-hidden shadow-sm dark:shadow-none mb-6";
@@ -88,9 +89,14 @@ export function VendorEditProfileContent() {
     e.preventDefault();
     if (!formData.name?.trim())         { toast.error("User name is required"); return; }
     if (!formData.company_name?.trim()) { toast.error("Company name is required"); return; }
+    const mobileErr = validateMobile(formData.company_contact || "");
+    if (mobileErr) { toast.error(mobileErr); return; }
+    const companyEmailErr = validateEmail(formData.company_email || "");
+    if (companyEmailErr) { toast.error(companyEmailErr); return; }
+    if (!formData.company_address?.trim()) { toast.error("Address is required"); return; }
     // Exclude email (readOnly) and social fields not in the DB model
-    const { email, youtube, facebook, instagram, ...rest } = formData as any;
-    void email; void youtube; void facebook; void instagram;
+    const { email, contact, youtube, facebook, instagram, ...rest } = formData as any;
+    void email; void contact; void youtube; void facebook; void instagram;
     updateProfile.mutate(rest);
   };
 
@@ -156,7 +162,7 @@ export function VendorEditProfileContent() {
                     <h6 className={sectionHeadingClass}>CONTACT INFO</h6>
                     <div className="space-y-[18px]">
                       <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                        <label className="text-[14px] text-foreground font-normal md:col-span-1">Mobile Number</label>
+                        <label className="text-[14px] text-foreground font-normal md:col-span-1">Mobile Number <span className="text-red-500">*</span></label>
                         <div className="md:col-span-3">
                           <input
                             name="company_contact"
@@ -169,7 +175,7 @@ export function VendorEditProfileContent() {
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-2 md:gap-4">
-                        <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Email</label>
+                        <label className="text-[14px] text-foreground font-normal md:col-span-1">Company Email <span className="text-red-500">*</span></label>
                         <div className="md:col-span-3">
                           <input
                             name="company_email"
@@ -196,7 +202,7 @@ export function VendorEditProfileContent() {
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-2 md:gap-4">
-                        <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Address</label>
+                        <label className="text-[14px] text-foreground font-normal md:col-span-1 mt-[9px]">Address <span className="text-red-500">*</span></label>
                         <div className="md:col-span-3">
                           <textarea
                             name="company_address"

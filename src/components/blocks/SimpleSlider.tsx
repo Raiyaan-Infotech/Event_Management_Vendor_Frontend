@@ -5,9 +5,40 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { resolveMediaUrl } from "@/lib/utils";
 
+const isPublished = (slide: any) => (slide.status || "published") === "published";
+
+const sliderPageHref = (data: any, slide: any) => {
+  const pageId = slide?.page_id ? Number(slide.page_id) : null;
+  if (!pageId) return "#";
+
+  if (data?.slug === "preview") {
+    const base = data?.previewBaseUrl || "/preview";
+    const [path, query = ""] = base.split("?");
+    const params = new URLSearchParams(query);
+    params.set("previewPage", "page");
+    params.set("pageId", String(pageId));
+    return `${path}?${params.toString()}`;
+  }
+
+  return data?.slug ? `/${data.slug}/pages/${pageId}` : "#";
+};
+
+function SliderButton({ href, label, color, className }: { href: string; label?: string; color: string; className?: string }) {
+  if (!label) return null;
+  return (
+    <a
+      href={href}
+      className={className || "inline-flex items-center px-6 py-3 text-sm font-black uppercase tracking-widest text-white"}
+      style={{ backgroundColor: color }}
+    >
+      {label}
+    </a>
+  );
+}
+
 export default function SimpleSlider({ data, settings }: { data?: any; settings?: Record<string, any> }) {
   const variant = settings?.variant || "variant_1";
-  const slides = (data?.sliders ?? []).filter((s: any) => s.is_active && s.type === "basic");
+  const slides = (data?.sliders ?? []).filter((s: any) => s.is_active && isPublished(s) && s.type === "basic");
 
   const [current, setCurrent] = useState(0);
 
@@ -16,6 +47,10 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
     const t = setInterval(() => setCurrent((p) => (p + 1) % slides.length), 5000);
     return () => clearInterval(t);
   }, [slides.length]);
+
+  useEffect(() => {
+    if (current >= slides.length) setCurrent(0);
+  }, [current, slides.length]);
 
   if (!slides.length) return null;
 
@@ -26,7 +61,8 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
   const primary = colors.primary_color || "#7c3aed";
   const img = resolveMediaUrl(slide.image_path);
   const btnLabel = slide.button_label;
-  const pageHref = slide.page_slug ? `/${data?.slug || ""}/page/${slide.page_slug}` : slide.page_id ? `/${data?.slug || ""}/page/${slide.page_id}` : "#";
+  const btnColor = slide.button_color || primary;
+  const pageHref = sliderPageHref(data, slide);
   const next = () => setCurrent((p) => (p + 1) % slides.length);
   const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
 
@@ -35,11 +71,17 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
       <div className="relative flex min-h-[460px] w-full items-end overflow-hidden pb-10">
         <Image src={img} alt="" fill sizes="100vw" className="object-cover" priority unoptimized />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }} />
-        {vendor.company_name && (
-          <div className="relative z-10 px-10">
-            <span className="text-sm font-black uppercase tracking-[0.4em] text-white/80">{vendor.company_name}</span>
-          </div>
-        )}
+        <div className="relative z-10 px-10 space-y-4">
+          {vendor.company_name && (
+            <span className="block text-sm font-black uppercase tracking-[0.4em] text-white/80">{vendor.company_name}</span>
+          )}
+          <SliderButton
+            href={pageHref}
+            label={btnLabel}
+            color={btnColor}
+            className="inline-flex rounded-xl px-7 py-3 text-xs font-black uppercase tracking-widest text-white shadow-xl"
+          />
+        </div>
       </div>
     );
 
@@ -54,7 +96,7 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
                 {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
               </span>
               <h1 className="mt-4 max-w-3xl text-5xl font-black leading-none text-white">
-                {vendor.company_name || "Event Showcase"}
+                {slide.title || vendor.company_name || "Event Showcase"}
               </h1>
             </div>
           </div>
@@ -65,6 +107,12 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
               )}
               <p className="text-xs font-black uppercase tracking-[0.45em] text-gray-400">Slider Set</p>
               <p className="text-3xl font-black leading-tight text-gray-950">Browse each active hero image as a designed sequence.</p>
+              <SliderButton
+                href={pageHref}
+                label={btnLabel}
+                color={btnColor}
+                className="inline-flex w-fit px-7 py-3 text-xs font-black uppercase tracking-widest text-white"
+              />
             </div>
             <div className="mt-8 space-y-3">
               {slides.map((s: any, i: number) => (
@@ -99,11 +147,17 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
       <div className="relative flex min-h-[440px] w-full items-center justify-center overflow-hidden">
         <Image src={img} alt="" fill sizes="100vw" className="object-cover" priority unoptimized />
         <div className="absolute inset-0 bg-black/20" />
-        {vendor.company_name && (
-          <div className="relative z-10 rounded-2xl border border-white/30 bg-white/10 px-10 py-4 backdrop-blur-sm">
+        <div className="relative z-10 flex flex-col items-center gap-5 rounded-2xl border border-white/30 bg-white/10 px-10 py-5 text-center backdrop-blur-sm">
+          {vendor.company_name && (
             <span className="text-sm font-black uppercase tracking-[0.5em] text-white">{vendor.company_name}</span>
-          </div>
-        )}
+          )}
+          <SliderButton
+            href={pageHref}
+            label={btnLabel}
+            color={btnColor}
+            className="inline-flex rounded-xl px-7 py-3 text-xs font-black uppercase tracking-widest text-white shadow-xl"
+          />
+        </div>
       </div>
     );
   };
@@ -136,4 +190,3 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
     </div>
   );
 }
-

@@ -39,6 +39,12 @@ const getClientPlanLabel = (item: VendorClient) => {
   if (type === "guest") return "Guest";
   return item.plan || "No Plan";
 };
+const PLAN_FALLBACK_COLORS = ["#2563eb", "#ca8a04", "#16a34a", "#9333ea", "#dc2626", "#0891b2", "#db2777", "#4f46e5"];
+const getFallbackPlanColor = (label: string) => {
+  if (!label || label === "No Plan") return "#64748b";
+  const hash = label.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return PLAN_FALLBACK_COLORS[hash % PLAN_FALLBACK_COLORS.length];
+};
 const statusLabels: Record<string, string> = {
   "1": "Active",
   "0": "Inactive",
@@ -48,7 +54,7 @@ const statusLabels: Record<string, string> = {
 export default function ClientsListContent() {
   const router = useRouter();
   const { data: subscriptionData } = useVendorSubscription();
-  const plans = subscriptionData?.plans ?? [];
+  const plans = subscriptionData?.all_plans ?? subscriptionData?.plans ?? [];
   const [searchQuery, setSearchQuery]     = useState("");
   const [sortConfig, setSortConfig]       = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "created_at", order: "desc" });
   const [currentPage, setCurrentPage]     = useState(1);
@@ -106,7 +112,7 @@ export default function ClientsListContent() {
             {(() => {
               const isGuest = String((item as VendorClient & { registration_type?: string }).registration_type || "").toLowerCase() === "guest";
               const planLabel = getClientPlanLabel(item);
-              const planColor = !isGuest ? plans.find(p => p.name === planLabel)?.label_color : null;
+              const planColor = !isGuest ? (plans.find(p => p.name === planLabel)?.label_color || getFallbackPlanColor(planLabel)) : null;
               return (
                 <Badge
                   variant="outline"
@@ -400,4 +406,3 @@ export default function ClientsListContent() {
     </div>
   );
 }
-

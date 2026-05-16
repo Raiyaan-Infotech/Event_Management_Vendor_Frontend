@@ -19,6 +19,7 @@ export interface SubscriptionPlan {
 export interface SubscriptionResponse {
   type: 'custom' | 'common';
   plans: SubscriptionPlan[];
+  all_plans?: SubscriptionPlan[];
 }
 
 export const useVendorSubscription = () =>

@@ -297,12 +297,15 @@ export default function ThemesOptionPage() {
                       onClick={() => handleSelectCard(palette.id)}
                       className={`relative cursor-pointer transition-all duration-500 rounded-[var(--vendor-radius-panel)] overflow-hidden border-2 group flex flex-col h-full ${
                         isActive
-                          ? "border-green-500 bg-white shadow-xl shadow-green-500/10 scale-[1.02]"
+                          ? "border-green-500 bg-white shadow-xl shadow-green-500/30 scale-[1.02]"
                           : isSelected
                             ? "border-primary bg-white shadow-xl shadow-primary/5 scale-[1.02]"
                             : "border-transparent bg-white hover:border-[var(--vendor-border)] hover:shadow-lg dark:bg-sidebar dark:border-white/5"
                       }`}
                     >
+                      {isActive && (
+                        <div className="pointer-events-none absolute inset-0 z-40 rounded-[var(--vendor-radius-panel)] border-4 border-green-500 ring-4 ring-green-500/20" />
+                      )}
                       <CardContent className="p-5 flex flex-col h-full">
                         {/* Card top row */}
                         <div className="flex items-start justify-between mb-4">
@@ -377,7 +380,7 @@ export default function ThemesOptionPage() {
                       onClick={() => handleSelectCard("custom")}
                       className={`relative cursor-pointer transition-all duration-500 rounded-[var(--vendor-radius-panel)] overflow-hidden border-2 group flex flex-col h-full ${
                         isActive
-                          ? "border-green-500 bg-white shadow-xl shadow-green-500/10 scale-[1.02]"
+                          ? "border-green-500 bg-white shadow-xl shadow-green-500/30 scale-[1.02]"
                           : isSelected
                             ? "border-primary bg-white shadow-xl shadow-primary/5 scale-[1.02]"
                             : hasCustom
@@ -385,6 +388,9 @@ export default function ThemesOptionPage() {
                               : "border-dashed border-[var(--vendor-border)] bg-white hover:border-gray-400/50 hover:shadow-lg dark:bg-sidebar dark:border-white/5"
                       }`}
                     >
+                      {isActive && (
+                        <div className="pointer-events-none absolute inset-0 z-40 rounded-[var(--vendor-radius-panel)] border-4 border-green-500 ring-4 ring-green-500/20" />
+                      )}
                       <CardContent className="p-5 flex flex-col h-full">
                         {/* Card top row */}
                         <div className="flex items-start justify-between mb-4">

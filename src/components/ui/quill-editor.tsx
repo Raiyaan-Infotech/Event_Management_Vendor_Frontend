@@ -80,6 +80,7 @@ const QuillEditor = ({
       if (latestValueRef.current) {
         quill.clipboard.dangerouslyPasteHTML(latestValueRef.current);
       }
+      quill.root.classList.toggle("ql-blank", !quill.getText().trim());
 
       const editor = quill;
 
@@ -135,8 +136,9 @@ const QuillEditor = ({
       // Save cursor position to prevent jumping
       const selection = quillRef.current.getSelection();
       
-      // Update content
-      quillRef.current.root.innerHTML = value || "";
+      // Update content through Quill so placeholder state stays in sync.
+      quillRef.current.clipboard.dangerouslyPasteHTML(value || "");
+      quillRef.current.root.classList.toggle("ql-blank", !quillRef.current.getText().trim());
       
       // Restore cursor position if it was active
       if (selection) {

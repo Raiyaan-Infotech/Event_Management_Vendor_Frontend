@@ -5,6 +5,8 @@ import Link from "next/link";
 import { CheckCircle2, Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import { usePublicClientLogin } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
+import { validateEmail } from "@/lib/validation";
+import { toast } from "sonner";
 
 export default function PublicClientLogin({ data }: { data?: any }) {
   const slug = data?.slug || "";
@@ -18,17 +20,39 @@ export default function PublicClientLogin({ data }: { data?: any }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const updateEmail = (value: string) => {
+    setEmail(value.toLowerCase());
+    if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: "" }));
+  };
+
+  const updatePassword = (value: string) => {
+    setPassword(value);
+    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: "" }));
+  };
+
+  const FieldError = ({ field }: { field: string }) =>
+    fieldErrors[field] ? (
+      <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors[field]}</p>
+    ) : null;
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage("");
-    setError("");
+    setFieldErrors({});
 
     const emailValue = email.trim().toLowerCase();
-    if (!emailValue) { setError("Email is required."); return; }
-    if (!/^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/.test(emailValue)) { setError("Enter a valid email address."); return; }
-    if (!password) { setError("Password is required."); return; }
+    const nextErrors: Record<string, string> = {};
+    const emailErr = validateEmail(emailValue);
+    if (emailErr) nextErrors.email = emailErr;
+    if (!password) nextErrors.password = "Password is required.";
+
+    if (Object.keys(nextErrors).length) {
+      setFieldErrors(nextErrors);
+      toast.error("Please fill all required fields correctly.");
+      return;
+    }
 
     try {
       const payload = await loginMutation.mutateAsync({ email: emailValue, password });
@@ -38,7 +62,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
       }
       setMessage("Login successful. Your client profile is available with this vendor.");
     } catch (err: any) {
-      setError(err?.message || "Login failed. Please try again.");
+      setFieldErrors({ _form: err?.message || "Login failed. Please try again." });
     }
   };
 
@@ -58,17 +82,33 @@ export default function PublicClientLogin({ data }: { data?: any }) {
 
           <div className="space-y-4">
             <label className="block space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email</span>
-              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 w-full border border-gray-200 px-4 text-sm outline-none focus:border-gray-950" />
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email <span className="text-red-500">*</span></span>
+              <input
+                type="text"
+                inputMode="email"
+                autoCapitalize="none"
+                value={email}
+                onChange={(e) => updateEmail(e.target.value)}
+                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                placeholder="Enter email address"
+              />
+              <FieldError field="email" />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password</span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password <span className="text-red-500">*</span></span>
               <div className="relative">
-                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 w-full border border-gray-200 px-4 pr-11 text-sm outline-none focus:border-gray-950" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => updatePassword(e.target.value)}
+                  className={`h-12 w-full border px-4 pr-11 text-sm outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                  placeholder="Enter password"
+                />
                 <button type="button" tabIndex={-1} onClick={() => setShowPassword((p) => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <FieldError field="password" />
             </label>
           </div>
 
@@ -77,7 +117,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
               <CheckCircle2 className="h-4 w-4" /> {message}
             </div>
           )}
-          {error && <p className="mt-5 bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{error}</p>}
+          {fieldErrors._form && <p className="mt-5 bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{fieldErrors._form}</p>}
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
             <button disabled={loginMutation.isPending} className="inline-flex h-12 items-center justify-center px-7 text-sm font-black uppercase tracking-widest text-white disabled:opacity-60" style={{ backgroundColor: primary }}>
@@ -107,5 +147,4 @@ export default function PublicClientLogin({ data }: { data?: any }) {
     </section>
   );
 }
-
 

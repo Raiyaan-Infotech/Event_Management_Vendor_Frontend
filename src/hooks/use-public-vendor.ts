@@ -13,9 +13,17 @@ export interface PublicVendorData {
     company_contact: string | null;
     company_email: string | null;
     company_address: string | null;
+    contact_mode?: 'default' | 'alternative' | null;
+    contact?: string | null;
+    alt_contact?: string | null;
+    alt_email?: string | null;
+    address?: string | null;
+    alt_address?: string | null;
     locality?: { id: number; name: string } | null;
     district?: { id: number; name: string } | null;
-    city?: string | null;
+    city?: string | { id: number; name: string } | null;
+    city_id?: number | null;
+    pincode_id?: number | null;
     website: string | null;
     nav_menu: any;
     footer_links: any;
