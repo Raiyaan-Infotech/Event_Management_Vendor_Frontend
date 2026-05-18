@@ -320,20 +320,31 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
             className={`flex flex-col transition-all duration-300 justify-center items-center
               ${!isCollapsed ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10 absolute pointer-events-none"}`}
           >
-            {vendor?.company_logo ? (
-              <>
-                <div className="relative h-8 w-28">
-                  <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain object-center" />
-                </div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground dark:text-gray-400 truncate max-w-[140px] mt-0.5 text-center w-full">
-                  {vendor.company_name}
-                </p>
-              </>
-            ) : (
-              <span className="text-[19px] font-extrabold tracking-tight text-sidebar-foreground dark:text-gray-100 leading-none">
-                {vendor?.company_name ?? "Vendor Portal"}
-              </span>
-            )}
+            {(() => {
+              const v: any = vendor;
+              const city =
+                (typeof v?.city === "string" ? v.city : "") ||
+                v?.locality?.name ||
+                v?.district?.name ||
+                "";
+              return (
+                <>
+                  {vendor?.company_logo && (
+                    <div className="relative h-8 w-28">
+                      <Image src={resolveMediaUrl(vendor.company_logo)} alt="Company Logo" fill priority className="object-contain object-center" />
+                    </div>
+                  )}
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-sidebar-foreground dark:text-gray-200 truncate max-w-[140px] mt-0.5 text-center w-full">
+                    {vendor?.company_name ?? "Vendor Portal"}
+                  </p>
+                  {city && (
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-gray-500 truncate max-w-[140px] text-center w-full">
+                      {city}
+                    </p>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </Link>
       </SidebarHeader>

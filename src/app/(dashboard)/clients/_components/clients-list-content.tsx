@@ -39,12 +39,6 @@ const getClientPlanLabel = (item: VendorClient) => {
   if (type === "guest") return "Guest";
   return item.plan || "No Plan";
 };
-const PLAN_FALLBACK_COLORS = ["#2563eb", "#ca8a04", "#16a34a", "#9333ea", "#dc2626", "#0891b2", "#db2777", "#4f46e5"];
-const getFallbackPlanColor = (label: string) => {
-  if (!label || label === "No Plan") return "#64748b";
-  const hash = label.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return PLAN_FALLBACK_COLORS[hash % PLAN_FALLBACK_COLORS.length];
-};
 const statusLabels: Record<string, string> = {
   "1": "Active",
   "0": "Inactive",
@@ -112,16 +106,13 @@ export default function ClientsListContent() {
             {(() => {
               const isGuest = String((item as VendorClient & { registration_type?: string }).registration_type || "").toLowerCase() === "guest";
               const planLabel = getClientPlanLabel(item);
-              const planColor = !isGuest ? (plans.find(p => p.name === planLabel)?.label_color || getFallbackPlanColor(planLabel)) : null;
               return (
                 <Badge
                   variant="outline"
                   className="h-5 text-[var(--vendor-caption-text)] font-bold uppercase tracking-wide px-2 py-0 rounded-[var(--vendor-radius-pill)]"
                   style={isGuest
                     ? { backgroundColor: '#f3f4f6', color: '#6b7280', borderColor: '#d1d5db' }
-                    : planColor
-                      ? { backgroundColor: planColor + '22', color: planColor, borderColor: planColor + '44' }
-                      : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
+                    : { backgroundColor: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe' }}
                 >
                   {planLabel}
                 </Badge>
