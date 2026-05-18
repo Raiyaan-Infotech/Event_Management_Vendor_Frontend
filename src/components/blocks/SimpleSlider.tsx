@@ -170,10 +170,10 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
 
       {variant !== "variant_2" && slides.length > 1 && (
         <>
-          <button onClick={prev} className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 transition-all hover:bg-black/50 group-hover:opacity-100">
+          <button onClick={prev} className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 pointer-events-none transition-all hover:bg-black/50 group-hover:opacity-100 group-hover:pointer-events-auto">
             <ChevronLeft className="h-6 w-6" />
           </button>
-          <button onClick={next} className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 transition-all hover:bg-black/50 group-hover:opacity-100">
+          <button onClick={next} className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white opacity-0 pointer-events-none transition-all hover:bg-black/50 group-hover:opacity-100 group-hover:pointer-events-auto">
             <ChevronRight className="h-6 w-6" />
           </button>
           <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
