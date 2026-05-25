@@ -24,6 +24,7 @@ export default function EmailCategoryForm({ mode, id }: EmailCategoryFormProps) 
     name: "",
     description: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: category, isLoading } = useEmailCategory(mode === "edit" ? id ?? null : null);
   const createMutation = useCreateEmailCategory();
@@ -39,10 +40,15 @@ export default function EmailCategoryForm({ mode, id }: EmailCategoryFormProps) 
   }, [category, mode]);
 
   const handleSave = async () => {
-    if (!formData.name.trim()) {
-      toast.error("Please fill in the Category Name");
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim())        newErrors.name        = "Category name is required";
+    if (!formData.description.trim()) newErrors.description = "Description is required";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fill all mandatory fields.");
       return;
     }
+    setErrors({});
 
     if (mode === "edit" && id) {
       await updateMutation.mutateAsync({ id: Number(id), name: formData.name, description: formData.description });
@@ -78,23 +84,36 @@ export default function EmailCategoryForm({ mode, id }: EmailCategoryFormProps) 
                 </div>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, name: e.target.value }));
+                    if (errors.name) setErrors((p) => ({ ...p, name: "" }));
+                  }}
                   placeholder="e.g. Welcome, Transactional, Notification"
-                  className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20"
+                  className={`h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all ${errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)] focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20"}`}
                 />
+                {errors.name && (
+                  <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.name}</p>
+                )}
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-center gap-1 ml-1">
                   <Label className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide">Description</Label>
+                  <span className="text-rose-500 font-bold">*</span>
                 </div>
                 <Textarea
                   value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, description: e.target.value }));
+                    if (errors.description) setErrors((p) => ({ ...p, description: "" }));
+                  }}
                   placeholder="Short description for this category..."
                   rows={4}
-                  className="bg-gray-50 focus:bg-white dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20"
+                  className={`bg-gray-50 focus:bg-white dark:bg-[#181d23] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all ${errors.description ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)] focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20"}`}
                 />
+                {errors.description && (
+                  <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.description}</p>
+                )}
               </div>
             </div>
           </div>

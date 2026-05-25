@@ -5,8 +5,8 @@ import {
   Edit2,
   Trash2,
   Eye,
-  Download,
-  Upload,
+  FileDown,
+  FileUp,
   Briefcase,
   Calendar,
   Layout,
@@ -242,10 +242,10 @@ export default function StaffListContent() {
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Upload size={13} strokeWidth={2.5} /> Import
+              <FileUp size={13} strokeWidth={2.5} /> Import
             </Button>
             <Button variant="outline" onClick={handleExport} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Download size={13} strokeWidth={2.5} /> Export
+              <FileDown size={13} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/staff/add">
               <ActionButton label="ADD STAFF" variant_type="Staff" />

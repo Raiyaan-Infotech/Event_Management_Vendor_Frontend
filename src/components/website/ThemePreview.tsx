@@ -31,8 +31,19 @@ const parsePreviewNavMenu = (value: any): any[] => {
 
 const previewMenuLabels = (vendorData?: VendorPreviewData) => {
   const savedMenu = parsePreviewNavMenu((vendorData?.vendor as any)?.nav_menu);
+  const visiblePageIds = new Set((vendorData?.pages || []).filter((p: any) => p.is_active !== 0).map((p: any) => Number(p.id)));
   const pageGroups = savedMenu
     .filter((item) => !["home", "about", "contact"].includes(item.type || ""))
+    .map((item) => {
+      const pageIds = Array.isArray(item.page_ids)
+        ? item.page_ids.map(Number).filter((id: number) => visiblePageIds.has(id))
+        : [];
+      const children = Array.isArray(item.children)
+        ? item.children.filter((child: any) => visiblePageIds.has(Number(child.page_id)))
+        : [];
+      return { ...item, page_ids: pageIds, children };
+    })
+    .filter((item) => item.page_ids.length > 0 || item.children.length > 0)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   if (!pageGroups.length && vendorData?.pages?.length) {
@@ -603,14 +614,22 @@ const Theme2Preview = ({
 
       {/* Events — stat counters */}
       {(() => {
-        const events = vendorData?.portfolio?.events ?? [];
+        const rawEvents = vendorData?.portfolio?.events ?? [];
+        const isMetaEvent = (event: any, label: string) =>
+          String(event?.label || "").trim().toLowerCase() === label.toLowerCase();
+        const events = rawEvents
+          .filter((event: any) => !isMetaEvent(event, "Header") && !isMetaEvent(event, "Detail"))
+          .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+          .slice(0, 4);
+        const heading = rawEvents.find((event: any) => isMetaEvent(event, "Header"))?.value || "Events";
+        const subheading = rawEvents.find((event: any) => isMetaEvent(event, "Detail"))?.value || "MEMORABLE MOMENTS";
         return (
           <div className={cn("transition-all", isFullPage ? "space-y-8" : "space-y-5")}>
             <div className="border-b-2 border-gray-100 pb-6 space-y-1">
-              <h3 className={cn("font-black text-gray-900 tracking-tighter uppercase leading-none transition-all", isFullPage ? "text-[40px]" : "text-[20px]")}>Events</h3>
+              <h3 className={cn("font-black text-gray-900 tracking-tighter uppercase leading-none transition-all", isFullPage ? "text-[40px]" : "text-[20px]")}>{heading}</h3>
               <span className={cn("font-black uppercase transition-all", isFullPage ? "text-[13px] tracking-[0.5em]" : "text-[9px] tracking-[0.3em]", !colors?.primary && "text-purple-600")}
                 style={{ color: colors?.primary || undefined }}>
-                MEMORABLE MOMENTS
+                {subheading}
               </span>
             </div>
             {events.length > 0 ? (
@@ -618,8 +637,7 @@ const Theme2Preview = ({
                 className={cn("grid border border-gray-100 rounded-[2rem] overflow-hidden divide-x divide-gray-100 bg-white shadow-xl shadow-gray-200/50 transition-all", isFullPage ? "h-40" : "h-24")}
                 style={{ gridTemplateColumns: `repeat(${events.length}, 1fr)` }}
               >
-                {[...events]
-                  .sort((a: any, b: any) => a.sort_order - b.sort_order)
+                {events
                   .map((ev: any) => (
                     <div key={ev.id} className="flex flex-col items-center justify-center text-center space-y-2 hover:bg-gray-50/50 transition-colors px-2">
                       <span className={cn("font-black tracking-tighter transition-all", isFullPage ? "text-[42px]" : "text-xl")}

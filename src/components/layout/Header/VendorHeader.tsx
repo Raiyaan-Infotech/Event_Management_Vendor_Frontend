@@ -48,6 +48,10 @@ export default function VendorHeader() {
   const markRead = useMarkVendorNotificationsRead();
   const unreadCount = notifData?.unread_count ?? 0;
   const notifications = notifData?.notifications ?? [];
+  const vendorInitialSource =
+    [vendor?.name, vendor?.company_name, vendor?.email].find((value) => String(value || "").trim()) || "V";
+  const vendorInitial = String(vendorInitialSource).trim().charAt(0).toUpperCase();
+  const vendorProfileSrc = resolveMediaUrl(vendor?.profile || vendor?.company_logo || undefined) || undefined;
 
   React.useEffect(() => {
     setMounted(true);
@@ -211,10 +215,10 @@ export default function VendorHeader() {
             <div className="flex items-center gap-2 cursor-pointer group outline-none ml-1">
               <Avatar className="size-9 border border-border rounded-full group-hover:border-primary/30 transition-colors">
                 <AvatarImage
-                  src={resolveMediaUrl(vendor?.profile) || undefined}
+                  src={vendorProfileSrc}
                 />
                 <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
-                  {vendor?.name?.charAt(0).toUpperCase() ?? "V"}
+                  {vendorInitial}
                 </AvatarFallback>
               </Avatar>
             </div>
@@ -225,6 +229,12 @@ export default function VendorHeader() {
           >
             {/* VALEX BLUE HEADER */}
             <div className="bg-primary p-5 text-center">
+              <Avatar className="mx-auto mb-3 size-14 border-2 border-white/30 bg-white/10">
+                <AvatarImage src={vendorProfileSrc} className="object-cover" />
+                <AvatarFallback className="bg-white/20 text-white font-black">
+                  {vendorInitial}
+                </AvatarFallback>
+              </Avatar>
               <h6 className="font-bold text-[15px] text-white leading-tight uppercase tracking-wide">
                 {vendor?.name || "Petey Cruiser"}
               </h6>

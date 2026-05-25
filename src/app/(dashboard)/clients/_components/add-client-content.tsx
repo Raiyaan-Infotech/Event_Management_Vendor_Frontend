@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   User,
   Mail,
@@ -886,6 +886,17 @@ import { PasswordHint } from "@/components/common/PasswordHint";
 
 // ... existing code ...
 
+const hasMeaningfulText = (value: string) => /[A-Za-z0-9]/.test(value);
+const isOnlySymbolsOrUnderscore = (value: string) => {
+  const trimmed = value.trim();
+  return !!trimmed && !hasMeaningfulText(trimmed) && /^[\W_]+$/.test(trimmed);
+};
+
+const validateMeaningfulField = (value: string, label: string) => {
+  if (isOnlySymbolsOrUnderscore(value)) return `${label} cannot contain only special characters or underscores`;
+  return "";
+};
+
 export function AddClientContent({
   initialData,
   isEdit = false,
@@ -968,35 +979,6 @@ export function AddClientContent({
     }
   }, [initialData]);
 
-  // Dynamic Options derived from Hierarchy
-  const countryOptions = useMemo(() => Object.keys(LOCATION_DATA), []);
-
-  const stateOptions = useMemo(() => {
-    if (!formData.country || !LOCATION_DATA[formData.country]) return [];
-    return Object.keys(LOCATION_DATA[formData.country]);
-  }, [formData.country]);
-
-  const districtOptions = useMemo(() => {
-    if (
-      !formData.country ||
-      !formData.state ||
-      !LOCATION_DATA[formData.country]?.[formData.state]
-    )
-      return [];
-    return Object.keys(LOCATION_DATA[formData.country][formData.state]);
-  }, [formData.country, formData.state]);
-
-  const cityOptions = useMemo(() => {
-    if (
-      !formData.country ||
-      !formData.state ||
-      !formData.district ||
-      !LOCATION_DATA[formData.country]?.[formData.state]?.[formData.district]
-    )
-      return [];
-    return LOCATION_DATA[formData.country][formData.state][formData.district];
-  }, [formData.country, formData.state, formData.district]);
-
   const handleSave = async () => {
     if (isView) return;
     setErrors({});
@@ -1018,6 +1000,21 @@ export function AddClientContent({
       }
     });
 
+    for (const field of [
+      { key: "name", label: "Full Name" },
+      { key: "address", label: "Street Address" },
+      { key: "locality", label: "Locality" },
+      { key: "pincode", label: "Pincode" },
+    ]) {
+      if (!newErrors[field.key]) {
+        const fieldError = validateMeaningfulField(
+          formData[field.key as keyof typeof formData],
+          field.label,
+        );
+        if (fieldError) newErrors[field.key] = fieldError;
+      }
+    }
+
     // Mobile format
     if (!newErrors.mobile) {
       const mobileErr = validateMobile(formData.mobile);
@@ -1028,7 +1025,7 @@ export function AddClientContent({
     if (!formData.country)  newErrors.country  = "Country is required";
     if (!formData.state)    newErrors.state    = "State is required";
     if (!formData.district) newErrors.district = "District is required";
-    if (cityOptions.length > 0 && !formData.city) newErrors.city = "City is required";
+    if (!formData.city)     newErrors.city     = "City is required";
 
     // Email format
     if (!newErrors.email && formData.email.trim()) {

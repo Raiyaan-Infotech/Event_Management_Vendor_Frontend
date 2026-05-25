@@ -23,6 +23,7 @@ export default function HeaderPage() {
 
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
+  const [companyNameError, setCompanyNameError] = useState("");
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string>("");
 
@@ -64,6 +65,12 @@ export default function HeaderPage() {
   };
 
   const handleSave = async () => {
+    if (!companyName.trim()) {
+      setCompanyNameError("Company name is required");
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
+    setCompanyNameError("");
     let logoUrl: string | undefined = logoImage ?? undefined;
     if (logoUrl?.startsWith("data:")) {
       try {
@@ -150,13 +157,27 @@ export default function HeaderPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-[var(--vendor-text)]">Company Name</Label>
+                <Label className="text-sm font-bold text-[var(--vendor-text)]">
+                  Company Name <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <Input
                   value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
+                  onChange={(e) => {
+                    setCompanyName(e.target.value);
+                    if (companyNameError) setCompanyNameError("");
+                  }}
                   disabled={!isEditing}
-                  className="h-12 bg-gray-50/50 focus:bg-white dark:bg-[#1e1e1e] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] transition-all disabled:opacity-80"
+                  className={`h-12 bg-gray-50/50 focus:bg-white dark:bg-[#1e1e1e] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] transition-all disabled:opacity-80 ${
+                    companyNameError
+                      ? "border-rose-500 ring-4 ring-rose-500/5"
+                      : "border-[var(--vendor-border)]"
+                  }`}
                 />
+                {companyNameError && (
+                  <p className="text-[11px] font-semibold text-rose-500 mt-1.5">
+                    {companyNameError}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-bold text-[var(--vendor-text)]">City</Label>
@@ -191,7 +212,7 @@ export default function HeaderPage() {
               onSave={handleSave}
               onPreview={() => window.open("/preview", "_blank")}
               onReset={handleReset}
-              onCancel={() => router.push("/website/management")}
+              onCancel={() => router.push("/website/home")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
               isSubmitting={updateMutation.isPending}
             />

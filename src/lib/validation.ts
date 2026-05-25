@@ -9,7 +9,7 @@ export function validateMobile(value: string): string {
   const digits = trimmed.replace(/\D/g, "");
   if (digits.length < 7)  return "Mobile number must have at least 7 digits";
   if (digits.length > 15) return "Mobile number must not exceed 15 digits";
-  if (!/^\+?[\d\s\-(). ]{7,20}$/.test(trimmed)) return "Enter a valid mobile number";
+  if (!/^\+?[0-9 ]{7,20}$/.test(trimmed)) return "Enter a valid mobile number";
   return "";
 }
 

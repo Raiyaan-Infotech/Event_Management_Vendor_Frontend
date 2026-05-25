@@ -104,6 +104,7 @@ export default function ContactInfoPage() {
       address:     vendor.address      || "",
       alt_address: vendor.alt_address  || "",
     });
+    setContactMode(vendor.contact_mode === "alternative" ? "alternative" : "default");
     toast.info("Contact info reset.");
   };
 
@@ -291,7 +292,7 @@ export default function ContactInfoPage() {
               onSave={handleSave}
               onPreview={() => window.open("/preview?previewPage=contact", "_blank")}
               onReset={handleReset}
-              onCancel={() => router.push("/website/management")}
+              onCancel={() => router.push("/website/home")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
               isSubmitting={updateMutation.isPending}
             />

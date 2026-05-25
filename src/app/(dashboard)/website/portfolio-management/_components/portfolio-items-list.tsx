@@ -45,8 +45,11 @@ export default function PortfolioItemsList({ type }: Props) {
   const toggleStatus = useTogglePortfolioItemStatus(type);
   const deleteMutation = useDeletePortfolioItem(type);
 
-  // client-side search + pagination (simple list, no server pagination needed)
-  const filtered = allItems.filter((_, i) => true); // no text search since there's no name
+  // client-side search by ID (only searchable column for logos)
+  const q = searchQuery.trim().toLowerCase();
+  const filtered = q
+    ? allItems.filter((item) => String(item.id).padStart(3, "0").includes(q) || String(item.id).includes(q))
+    : allItems;
   const total = filtered.length;
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -128,7 +131,7 @@ export default function PortfolioItemsList({ type }: Props) {
       <DataTableSearch
         searchQuery={searchQuery}
         onSearchChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
-        placeholder={`Search ${label.toLowerCase()}s...`}
+        placeholder={`Search ${label.toLowerCase()}s by ID...`}
         isFiltered={false}
         columnContent={
           <ColumnToggle

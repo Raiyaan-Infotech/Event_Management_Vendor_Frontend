@@ -47,17 +47,11 @@ export const useVendorTheme = (planId?: number) => {
     queryKey: ['vendor-themes', planId],
     queryFn: async () => {
       if (!planId) return null;
-      const res = await apiClient.get(`/vendors/subscription/themes/${planId}`, {
-        params: { _t: Date.now() },
-        headers: {
-          'Cache-Control': 'no-cache',
-          Pragma: 'no-cache',
-        },
-      });
+      const res = await apiClient.get(`/vendors/subscription/themes/${planId}`);
       return res.data.data?.themes as Theme[] || [];
     },
     enabled: !!planId,
-    staleTime: 0,
-    refetchOnMount: 'always',
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };

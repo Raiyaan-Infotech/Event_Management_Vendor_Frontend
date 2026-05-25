@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Plus, X } from "lucide-react";
+import { Calendar, Edit, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,14 +15,12 @@ import {
 import { PageHeader } from "@/components/common/PageHeader";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import {
   useEventHighlights,
   useUpdateEventHighlights,
 } from "@/hooks/use-vendor-portfolio";
 
-const MIN_ROWS = 3;
-const MAX_ROWS = 5;
+const REQUIRED_ROWS = 4;
 
 interface Row {
   label: string;
@@ -40,7 +38,7 @@ export default function EventsHighlightsForm() {
   const [header, setHeader] = useState("");
   const [detail, setDetail] = useState("");
   const [rows, setRows] = useState<Row[]>(() =>
-    Array.from({ length: MIN_ROWS }, emptyRow)
+    Array.from({ length: REQUIRED_ROWS }, emptyRow)
   );
 
   useEffect(() => {
@@ -56,8 +54,8 @@ export default function EventsHighlightsForm() {
         (e) => e.label !== "Header" && e.label !== "Detail"
       );
       const loaded = highlights.map((e) => ({ label: e.label, value: e.value }));
-      while (loaded.length < MIN_ROWS) loaded.push(emptyRow());
-      setRows(loaded.slice(0, MAX_ROWS));
+      while (loaded.length < REQUIRED_ROWS) loaded.push(emptyRow());
+      setRows(loaded.slice(0, REQUIRED_ROWS));
     }
   }, [existing]);
 
@@ -67,29 +65,41 @@ export default function EventsHighlightsForm() {
     );
   };
 
-  const addRow = () => {
-    if (rows.length >= MAX_ROWS) return;
-    setRows((prev) => [...prev, emptyRow()]);
-  };
-
-  const removeRow = (index: number) => {
-    if (rows.length <= MIN_ROWS) return;
-    setRows((prev) => prev.filter((_, i) => i !== index));
+  const handleReset = () => {
+    if (!existing || existing.length === 0) {
+      setHeader("");
+      setDetail("");
+      setRows(Array.from({ length: REQUIRED_ROWS }, emptyRow));
+    } else {
+      const h = existing.find((e) => e.label === "Header")?.value || "";
+      const d = existing.find((e) => e.label === "Detail")?.value || "";
+      setHeader(h);
+      setDetail(d);
+      const highlights = existing.filter((e) => e.label !== "Header" && e.label !== "Detail");
+      const loaded = highlights.map((e) => ({ label: e.label, value: e.value }));
+      while (loaded.length < REQUIRED_ROWS) loaded.push(emptyRow());
+      setRows(loaded.slice(0, REQUIRED_ROWS));
+    }
+    toast.info("Reset to last saved values.");
   };
 
   const handleSave = async () => {
-    const cleanedRows = rows.filter((r) => r.label.trim() && r.value.trim());
+    const incomplete =
+      !header.trim() ||
+      !detail.trim() ||
+      rows.some((r) => !r.label.trim() || !r.value.trim());
+    if (incomplete) {
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
 
     // Prepare all items including Header and Detail
     const allItems = [
-      { label: "Header", value: header },
-      { label: "Detail", value: detail },
-      ...cleanedRows,
+      { label: "Header", value: header.trim() },
+      { label: "Detail", value: detail.trim() },
+      ...rows.map((row) => ({ label: row.label.trim(), value: row.value.trim() })),
     ];
 
-    if (cleanedRows.length < MIN_ROWS) {
-      return toast.error(`Please fill at least ${MIN_ROWS} highlight rows.`);
-    }
     await updateEvents.mutateAsync(allItems);
   };
 
@@ -97,8 +107,18 @@ export default function EventsHighlightsForm() {
     <div className="h-[calc(100vh-86px)] overflow-y-auto custom-scrollbar bg-[#F8FAFC] dark:bg-black/40">
       <div className="max-w-[1700px] mx-auto px-6 py-8">
         <PageHeader
-          title="Events Highlights"
+          title="Edit Events Highlights"
           subtitle="Configure performance statistics shown on your website."
+          rightContent={
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.open("/preview?block=portfolio_events", "_blank")}
+              className="h-10 rounded-[var(--vendor-radius-control)] gap-2 font-black text-[12px] uppercase tracking-wide"
+            >
+              <ExternalLink size={15} /> Preview
+            </Button>
+          }
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10 items-start pb-20">
@@ -114,7 +134,7 @@ export default function EventsHighlightsForm() {
                       Events Highlights
                     </CardTitle>
                     <CardDescription className="text-xs font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide mt-1">
-                      Header, Detail, and {MIN_ROWS} required highlights (Label
+                      Header, Detail, and {REQUIRED_ROWS} required highlights (Label
                       + Value).
                     </CardDescription>
                   </div>
@@ -126,7 +146,7 @@ export default function EventsHighlightsForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8 border-b border-[var(--vendor-border)] dark:border-white/5 mb-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] ml-1">
-                      Header
+                      Header <span className="text-rose-500">*</span>
                     </label>
                     <Input
                       value={header}
@@ -137,7 +157,7 @@ export default function EventsHighlightsForm() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] ml-1">
-                       Detail
+                       Detail <span className="text-rose-500">*</span>
                     </label>
                     <Input
                       value={detail}
@@ -155,70 +175,47 @@ export default function EventsHighlightsForm() {
                   <div className="h-[1px] flex-1 bg-blue-50 dark:bg-blue-900/20" />
                 </div>
 
-                {rows.map((row, index) => {
-                  const canRemove = index >= MIN_ROWS;
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300"
-                    >
-                      {/* Label input — takes remaining space */}
-                      <div className="flex-1">
-                        <Input
-                          value={row.label}
-                          onChange={(e) =>
-                            updateRow(index, "label", e.target.value)
-                          }
-                          placeholder="Label (e.g. Past Events)"
-                          className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
-                        />
+                {rows.map((row, index) => (
+                    <div key={index} className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex items-center gap-3 px-1">
+                        <label className="flex-1 text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em]">
+                          Highlight {index + 1} Label <span className="text-rose-500 ml-1">*</span>
+                        </label>
+                        <label className="w-48 sm:w-56 text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em]">
+                          Value <span className="text-rose-500 ml-1">*</span>
+                        </label>
+                        <div className="w-12 shrink-0" />
                       </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <Input
+                            value={row.label}
+                            onChange={(e) => updateRow(index, "label", e.target.value)}
+                            placeholder="Label (e.g. Past Events)"
+                            aria-label={`Highlight ${index + 1} label`}
+                            className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                          />
+                        </div>
 
-                      {/* Value input — fixed width */}
-                      <div className="w-48 sm:w-56">
-                        <Input
-                          value={row.value}
-                          onChange={(e) =>
-                            updateRow(index, "value", e.target.value)
-                          }
-                          placeholder="Value"
-                          className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold text-center"
-                        />
-                      </div>
+                        <div className="w-48 sm:w-56">
+                          <Input
+                            value={row.value}
+                            onChange={(e) => updateRow(index, "value", e.target.value)}
+                            placeholder="Value"
+                            aria-label={`Highlight ${index + 1} value`}
+                            className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold text-center"
+                          />
+                        </div>
 
-                      {/* Action slot — fixed width, always present */}
-                      <div className="w-12 h-14 flex items-center justify-center shrink-0">
-                        {canRemove && (
-                          <button
-                            type="button"
-                            onClick={() => removeRow(index)}
-                            className="w-12 h-12 rounded-[var(--vendor-radius-panel)] border border-rose-100 dark:border-rose-500/20 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center justify-center transition-all"
-                            title="Remove row"
-                          >
-                            <X size={18} />
-                          </button>
-                        )}
+                        <div className="w-12 h-14 shrink-0" />
                       </div>
                     </div>
-                  );
-                })}
+                ))}
 
-                {/* ADD button lives below the rows, not inside them */}
                 <div className="flex items-center justify-between pt-2">
                   <p className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
-                    {rows.length} / {MAX_ROWS} rows • Min {MIN_ROWS} required
+                    {REQUIRED_ROWS} / {REQUIRED_ROWS} required highlights
                   </p>
-                  <Button
-                    type="button"
-                    onClick={addRow}
-                    disabled={rows.length >= MAX_ROWS}
-                    className={cn(
-                      "h-11 px-5 rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] transition-all disabled:opacity-40 disabled:shadow-none",
-                      "bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white"
-                    )}
-                  >
-                    <Plus size={14} className="mr-1" /> Add Row
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -228,9 +225,11 @@ export default function EventsHighlightsForm() {
             <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <PersistenceActions
                 onSave={handleSave}
+                onReset={handleReset}
                 onCancel={() => router.back()}
-                onPreview={() => toast.info("Preview coming soon!")}
-                saveLabel={updateEvents.isPending ? "Saving…" : "Save"}
+                onPreview={() => window.open("/preview?block=portfolio_events", "_blank")}
+                saveLabel={updateEvents.isPending ? "Saving..." : "Update Events"}
+                saveIcon={Edit}
               />
             </div>
           </div>

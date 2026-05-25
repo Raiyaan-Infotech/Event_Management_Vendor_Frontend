@@ -9,6 +9,8 @@ const DEMO_STATS = [
 
 const DEMO_HEADER = "Our Event Highlights";
 const DEMO_DETAIL = "Statistics from our best events across the country.";
+const isMetaRow = (item: any, label: string) =>
+  String(item?.label || "").trim().toLowerCase() === label.toLowerCase();
 
 export default function PortfolioEvents({ data, settings }: { data?: any; settings?: Record<string, any> }) {
   const variant = settings?.variant || "variant_1";
@@ -17,13 +19,14 @@ export default function PortfolioEvents({ data, settings }: { data?: any; settin
 
   // Events items store label + value stats rows — max 4
   const rawEvents = data?.portfolio?.events || [];
-  const stats = (rawEvents.length ? rawEvents : DEMO_STATS)
+  const highlightRows = rawEvents.filter((event: any) => !isMetaRow(event, "Header") && !isMetaRow(event, "Detail"));
+  const stats = (highlightRows.length ? highlightRows : DEMO_STATS)
     .slice(0, 4)
     .map((e: any) => ({ label: e.label || "", value: e.value || "" }));
 
   // Header/Detail may be stored as items with specific labels, or fall back to demo
-  const header = DEMO_HEADER;
-  const detail = DEMO_DETAIL;
+  const header = rawEvents.find((event: any) => isMetaRow(event, "Header"))?.value || DEMO_HEADER;
+  const detail = rawEvents.find((event: any) => isMetaRow(event, "Detail"))?.value || DEMO_DETAIL;
 
   if (variant === "variant_2") {
     return (
@@ -67,10 +70,15 @@ export default function PortfolioEvents({ data, settings }: { data?: any; settin
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {stats.map((s: any, i: number) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-8 text-center space-y-3 hover:bg-white/10 transition-colors">
-                <span className="text-4xl md:text-5xl font-black block" style={{ color: colors.text_color || "#ffffff" }}>{s.value}</span>
+              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 text-center space-y-3 hover:bg-white/10 transition-colors min-w-0 overflow-hidden">
+                <span
+                  className="text-2xl sm:text-3xl md:text-4xl font-black block break-words leading-tight max-w-full"
+                  style={{ color: colors.text_color || "#ffffff", overflowWrap: "anywhere", wordBreak: "break-word" }}
+                >
+                  {s.value}
+                </span>
                 <div className="w-8 h-0.5 mx-auto rounded-full" style={{ backgroundColor: primary }} />
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 leading-tight break-words" style={{ color: colors.text_color || "#ffffff" }}>{s.label}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 leading-tight break-words" style={{ color: colors.text_color || "#ffffff", overflowWrap: "anywhere" }}>{s.label}</p>
               </div>
             ))}
           </div>
@@ -91,9 +99,14 @@ export default function PortfolioEvents({ data, settings }: { data?: any; settin
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
           {stats.map((s: any, i: number) => (
-            <div key={i} className="bg-white rounded-3xl p-8 text-center space-y-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <span className="text-4xl md:text-5xl font-black block" style={{ color: primary }}>{s.value}</span>
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-tight break-words">{s.label}</p>
+            <div key={i} className="bg-white rounded-3xl p-6 md:p-8 text-center space-y-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow min-w-0 overflow-hidden">
+              <span
+                className="text-2xl sm:text-3xl md:text-4xl font-black block break-words leading-tight max-w-full"
+                style={{ color: primary, overflowWrap: "anywhere", wordBreak: "break-word" }}
+              >
+                {s.value}
+              </span>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-tight break-words" style={{ overflowWrap: "anywhere" }}>{s.label}</p>
             </div>
           ))}
         </div>

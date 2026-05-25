@@ -28,17 +28,19 @@ import {
   Link as LinkIcon,
   FileText,
   GripVertical,
+  Edit,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Icon } from "@iconify/react";
 import * as LucideIcons from "lucide-react";
 import { toast } from "sonner";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
-import { useVendorPages } from "@/hooks/use-vendor-pages";
+import { useVendorPages, useVendorTerms, useVendorPrivacy } from "@/hooks/use-vendor-pages";
 import { useVendorSocialLinks, useToggleSocialLink } from "@/hooks/use-vendor-social-links";
 import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import apiClient from "@/lib/api-client";
 import { validateEmail, validateMobile } from "@/lib/validation";
+import { ImageCropper } from "@/components/common/ImageCropper";
 
 // ─── Social icon renderer ─────────────────────────────────────────────────────
 const lucideIconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = Object.fromEntries(
@@ -66,6 +68,7 @@ interface QuickLinkItem {
 
 export default function FooterPage() {
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
 
   // ── API hooks (same pattern as AboutCompanyPage) ──
   const { data: vendor, isLoading } = useVendorAbout();
@@ -142,6 +145,35 @@ export default function FooterPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ── Footer logo cropper (parity with Header page) ──
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>("");
+
+  // ── Inline errors for mandatory fields ──
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // ── Terms / Privacy content (must be set to save footer) ──
+  const { data: termsData } = useVendorTerms();
+  const { data: privacyData } = useVendorPrivacy();
+  const stripHtml = (html: string) => {
+    if (typeof document === "undefined") return (html || "").replace(/<[^>]*>/g, "").trim();
+    const div = document.createElement("div");
+    div.innerHTML = html || "";
+    return (div.textContent || div.innerText || "").trim();
+  };
+
+  const getSavedFooterLinks = (rawLinks: any[] | null | undefined) => {
+    if (!rawLinks?.length) return [];
+
+    const allPageIds: number[] = rawLinks.flatMap((col: any) => col.page_ids ?? []);
+    return allPageIds
+      .map((pid) => {
+        const page = vendorPages.find((p) => p.id === pid);
+        return page ? { page_id: page.id, pageName: page.name } : null;
+      })
+      .filter(Boolean) as QuickLinkItem[];
+  };
+
   // ── Populate from API (same field mapping as AboutCompanyPage) ──
   useEffect(() => {
     if (!vendor) return;
@@ -183,25 +215,30 @@ export default function FooterPage() {
     const raw = vendor.footer_links;
     if (raw?.length) {
       setQuickLinksHeading(raw[0]?.heading || "Quick Links");
-      // Flatten all page_ids from all columns into a single list
-      const allPageIds: number[] = raw.flatMap((col: any) => col.page_ids ?? []);
-      const links: QuickLinkItem[] = allPageIds
-        .map((pid) => {
-          const page = vendorPages.find((p) => p.id === pid);
-          return page ? { page_id: page.id, pageName: page.name } : null;
-        })
-        .filter(Boolean) as QuickLinkItem[];
-      setSelectedLinks(links);
+      setSelectedLinks(getSavedFooterLinks(raw));
     }
   }, [vendor, vendorPages, footerLinksLoaded]);
 
-  // ── Logo upload (same pattern as AboutCompanyPage) ──
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ── Logo upload — open cropper first (same UX as Header page) ──
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+      e.target.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = async (croppedBase64: string) => {
+    setCropperOpen(false);
+    setImageToCrop("");
     try {
+      const blob = await fetch(croppedBase64).then((r) => r.blob());
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", new File([blob], "logo.jpg", { type: "image/jpeg" }));
       fd.append("folder", "vendors");
       const res = await apiClient.post("/vendors/auth/upload", fd, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -215,6 +252,24 @@ export default function FooterPage() {
 
   // ── Save (same mutation + base64 guard as AboutCompanyPage) ──
   const handleSave = async () => {
+    // Mandatory text field checks
+    const fe: Record<string, string> = {};
+    if (!companyName.trim())           fe.companyName       = "Company name is required";
+    if (!description.trim())           fe.description       = "Short description is required";
+    if (!quickLinksHeading.trim())     fe.quickLinksHeading = "Quick Links heading is required";
+    if (selectedLinks.length === 0)    fe.quickLinks        = "Select at least one page for Quick Links";
+    if (!copyright.trim())             fe.copyright         = "Copyright text is required";
+    if (!poweredBy.trim())             fe.poweredBy         = "Powered By text is required";
+    if (!stripHtml(termsData?.content || "")) fe.terms      = "Terms & Conditions content is required";
+    if (!stripHtml(privacyData?.content || "")) fe.privacy  = "Privacy Policy content is required";
+
+    if (Object.keys(fe).length > 0) {
+      setFieldErrors(fe);
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
+    setFieldErrors({});
+
     if (!validateContactBlock("Default contact", defaultContact)) return;
     if (!validateContactBlock("Alternative contact", altContact)) return;
 
@@ -258,6 +313,7 @@ export default function FooterPage() {
       footer_links,
       newsletter_status: newsletterEnabled ? 1 : 0,
     } as never);
+    setIsEditing(false);
   };
 
   // ── Quick link helpers ────────────────────────────
@@ -302,7 +358,7 @@ export default function FooterPage() {
     setPoweredBy(vendor.poweredby || "");
     setDescription(vendor.short_description || "");
     setQuickLinksHeading(vendor.footer_links?.[0]?.heading || "Quick Links");
-    setSelectedLinks([]);
+    setSelectedLinks(getSavedFooterLinks(vendor.footer_links));
     setNewsletterEnabled((vendor as any).newsletter_status === 1);
     setNewsletterEmailPreview("");
     toast.info("All settings reset.");
@@ -347,25 +403,37 @@ export default function FooterPage() {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <Label className="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                      COMPANY NAME
+                      COMPANY NAME <span className="text-rose-500 ml-1">*</span>
                     </Label>
                     <Input
                       value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
+                      onChange={(e) => {
+                        setCompanyName(e.target.value);
+                        if (fieldErrors.companyName) setFieldErrors((p) => ({ ...p, companyName: "" }));
+                      }}
                       placeholder="Enter company name..."
-                      className="h-12 border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)]"
+                      className={`h-12 dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] ${fieldErrors.companyName ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                     />
+                    {fieldErrors.companyName && (
+                      <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.companyName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                      SHORT DESCRIPTION
+                      SHORT DESCRIPTION <span className="text-rose-500 ml-1">*</span>
                     </Label>
                     <Textarea
                       value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                        if (fieldErrors.description) setFieldErrors((p) => ({ ...p, description: "" }));
+                      }}
                       placeholder="Write short company description here..."
-                      className="min-h-[150px] border-[var(--vendor-border)] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none focus:bg-white bg-gray-50/30 transition-all font-medium leading-relaxed"
+                      className={`min-h-[150px] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none focus:bg-white bg-gray-50/30 transition-all font-medium leading-relaxed ${fieldErrors.description ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                     />
+                    {fieldErrors.description && (
+                      <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.description}</p>
+                    )}
                   </div>
                 </div>
 
@@ -503,14 +571,23 @@ export default function FooterPage() {
               <div className="space-y-8">
                 <div className="space-y-2">
                   <Label className="text-[var(--vendor-control-text)] font-semibold text-[var(--vendor-text-muted)] uppercase tracking-wide px-1">
-                    Footer Top List Heading
+                    Footer Top List Heading <span className="text-rose-500 ml-1">*</span>
                   </Label>
                   <Input
                     value={quickLinksHeading}
-                    onChange={(e) => setQuickLinksHeading(e.target.value)}
+                    onChange={(e) => {
+                      setQuickLinksHeading(e.target.value);
+                      if (fieldErrors.quickLinksHeading) setFieldErrors((p) => ({ ...p, quickLinksHeading: "" }));
+                    }}
                     placeholder="Type Heading Here..."
-                    className="font-bold text-base h-10 bg-white dark:bg-sidebar border-[var(--vendor-border)] dark:border-[var(--vendor-border)]"
+                    className={`font-bold text-base h-10 bg-white dark:bg-sidebar dark:border-[var(--vendor-border)] ${fieldErrors.quickLinksHeading ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                   />
+                  {fieldErrors.quickLinksHeading && (
+                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.quickLinksHeading}</p>
+                  )}
+                  {fieldErrors.quickLinks && (
+                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.quickLinks}</p>
+                  )}
                 </div>
 
                 {/* Selected pages list */}
@@ -784,36 +861,91 @@ export default function FooterPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold">
-                    Copyright Text
+                    Copyright Text <span className="text-rose-500 ml-1">*</span>
                   </Label>
                   <Input
                     value={copyright}
-                    onChange={(e) => setCopyright(e.target.value)}
+                    onChange={(e) => {
+                      setCopyright(e.target.value);
+                      if (fieldErrors.copyright) setFieldErrors((p) => ({ ...p, copyright: "" }));
+                    }}
                     placeholder="Type Copyright Text..."
-                    className="h-11 border-[var(--vendor-border)] dark:border-[var(--vendor-border)]"
+                    className={`h-11 dark:border-[var(--vendor-border)] ${fieldErrors.copyright ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                   />
+                  {fieldErrors.copyright && (
+                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.copyright}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold">Powered By</Label>
+                  <Label className="text-sm font-semibold">
+                    Powered By <span className="text-rose-500 ml-1">*</span>
+                  </Label>
                   <Input
                     value={poweredBy}
-                    onChange={(e) => setPoweredBy(e.target.value)}
+                    onChange={(e) => {
+                      setPoweredBy(e.target.value);
+                      if (fieldErrors.poweredBy) setFieldErrors((p) => ({ ...p, poweredBy: "" }));
+                    }}
                     placeholder="Type Powered By text..."
-                    className="h-11 border-[var(--vendor-border)] dark:border-[var(--vendor-border)]"
+                    className={`h-11 dark:border-[var(--vendor-border)] ${fieldErrors.poweredBy ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                   />
+                  {fieldErrors.poweredBy && (
+                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.poweredBy}</p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
+          {/* ── Terms & Privacy mandatory alerts ─────────────── */}
+          {(fieldErrors.terms || fieldErrors.privacy) && (
+            <div className="lg:col-span-9 -mt-2 space-y-2">
+              {fieldErrors.terms && (
+                <div className="px-4 py-3 rounded-[var(--vendor-radius-control)] border border-rose-300 bg-rose-50 text-rose-700 text-xs font-semibold flex items-center justify-between">
+                  <span>Terms & Conditions content is required.</span>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/website/terms-conditions")}
+                    className="underline font-bold"
+                  >
+                    Fill now
+                  </button>
+                </div>
+              )}
+              {fieldErrors.privacy && (
+                <div className="px-4 py-3 rounded-[var(--vendor-radius-control)] border border-rose-300 bg-rose-50 text-rose-700 text-xs font-semibold flex items-center justify-between">
+                  <span>Privacy Policy content is required.</span>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/website/privacy-policy")}
+                    className="underline font-bold"
+                  >
+                    Fill now
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ── Right Column: Sticky Actions ─────────────────── */}
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8">
             <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[var(--vendor-radius-panel)] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+            <Button
+              onClick={() => setIsEditing(!isEditing)}
+              className={`w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 ${
+                isEditing
+                  ? "bg-amber-500 text-white border-none hover:bg-amber-600 shadow-amber-500/20"
+                  : "bg-white dark:bg-[#1e293b] text-[var(--vendor-text)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] hover:bg-gray-50 dark:hover:bg-gray-800/50"
+              }`}
+            >
+              <Edit className="size-4" />
+              EDIT
+            </Button>
             <PersistenceActions 
               onSave={handleSave}
               onPreview={() => window.open("/preview", "_blank")}
               onReset={handleReset}
-              onCancel={() => router.push("/website/management")}
+              onCancel={() => router.push("/website/home")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
               isSubmitting={updateMutation.isPending}
             />
@@ -894,6 +1026,17 @@ export default function FooterPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── Logo cropper (parity with Header page) ── */}
+      <ImageCropper
+        open={cropperOpen}
+        imageSrc={imageToCrop}
+        onClose={() => setCropperOpen(false)}
+        onCropComplete={handleCropComplete}
+        aspectRatio={3}
+        outputWidth={900}
+        outputHeight={300}
+      />
     </div>
   );
 }

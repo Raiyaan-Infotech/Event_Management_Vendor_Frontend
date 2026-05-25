@@ -48,6 +48,7 @@ export default function SimpleSliderContent() {
   const [imageUploading, setImageUploading] = useState(false);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: existingSlider } = useVendorSlider(editId);
   const { data: pagesData } = useVendorPages({ limit: 100 });
@@ -102,10 +103,17 @@ export default function SimpleSliderContent() {
   const resetForm = () => setFormData(getDefaultForm());
 
   const handleSave = () => {
-    if (!formData.title.trim())        return toast.error("Title is required.");
-    if (!formData.button_label.trim()) return toast.error("Button Label is required.");
-    if (!formData.page_id) return toast.error("Linked Page is required.");
-    if (!formData.image_path)          return toast.error("Slider image is required.");
+    const newErrors: Record<string, string> = {};
+    if (!formData.title.trim())        newErrors.title        = "Title is required";
+    if (!formData.button_label.trim()) newErrors.button_label = "Button label is required";
+    if (!formData.page_id)             newErrors.page_id      = "Linked page is required";
+    if (!formData.image_path)          newErrors.image_path   = "Slider image is required";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
+    setErrors({});
 
     const payload = {
       type: "basic" as const,
@@ -162,27 +170,38 @@ export default function SimpleSliderContent() {
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Title <span className="text-rose-500">*</span></Label>
                   <Input
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="h-11 rounded-sm border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
+                    onChange={(e) => {
+                      setFormData({ ...formData, title: e.target.value });
+                      if (errors.title) setErrors((p) => ({ ...p, title: "" }));
+                    }}
+                    className={`h-11 rounded-sm bg-slate-50/50 dark:bg-slate-950/50 ${errors.title ? "border-rose-500 ring-4 ring-rose-500/5" : "border-slate-200 dark:border-slate-800"}`}
                   />
+                  {errors.title && <p className="text-[11px] font-semibold text-rose-500">{errors.title}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Button Label <span className="text-rose-500">*</span></Label>
                   <Input
                     value={formData.button_label}
-                    onChange={(e) => setFormData({ ...formData, button_label: e.target.value })}
-                    className="h-11 rounded-sm border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
+                    onChange={(e) => {
+                      setFormData({ ...formData, button_label: e.target.value });
+                      if (errors.button_label) setErrors((p) => ({ ...p, button_label: "" }));
+                    }}
+                    className={`h-11 rounded-sm bg-slate-50/50 dark:bg-slate-950/50 ${errors.button_label ? "border-rose-500 ring-4 ring-rose-500/5" : "border-slate-200 dark:border-slate-800"}`}
                   />
+                  {errors.button_label && <p className="text-[11px] font-semibold text-rose-500">{errors.button_label}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Linked Page <span className="text-rose-500">*</span></Label>
                   <Select
                     value={formData.page_id ? String(formData.page_id) : "none"}
-                    onValueChange={(v) => setFormData({ ...formData, page_id: v === "none" ? null : Number(v) })}
+                    onValueChange={(v) => {
+                      setFormData({ ...formData, page_id: v === "none" ? null : Number(v) });
+                      if (errors.page_id) setErrors((p) => ({ ...p, page_id: "" }));
+                    }}
                   >
-                    <SelectTrigger className="h-11 rounded-sm border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 font-medium">
+                    <SelectTrigger className={`h-11 rounded-sm bg-slate-50/50 dark:bg-slate-950/50 font-medium ${errors.page_id ? "border-rose-500 ring-4 ring-rose-500/5" : "border-slate-200 dark:border-slate-800"}`}>
                       <SelectValue placeholder="Select a page" />
                     </SelectTrigger>
                     <SelectContent className="rounded-sm border-slate-100">
@@ -194,6 +213,7 @@ export default function SimpleSliderContent() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.page_id && <p className="text-[11px] font-semibold text-rose-500">{errors.page_id}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -218,6 +238,9 @@ export default function SimpleSliderContent() {
               {/* Right column - image */}
               <div className="space-y-4">
                 <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Slider Image <span className="text-rose-500">*</span></Label>
+                {errors.image_path && (
+                  <p className="text-[11px] font-semibold text-rose-500 -mt-1">{errors.image_path}</p>
+                )}
                 <div
                   onClick={() => !previewImage && !imageUploading && fileInputRef.current?.click()}
                   className={cn(

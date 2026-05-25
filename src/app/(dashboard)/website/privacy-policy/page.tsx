@@ -20,6 +20,18 @@ export default function PrivacyPolicyPage() {
   }, [data]);
 
   const handleSave = async () => {
+    const text = (typeof document === "undefined"
+      ? (content || "").replace(/<[^>]*>/g, "")
+      : (() => {
+          const d = document.createElement("div");
+          d.innerHTML = content || "";
+          return d.textContent || d.innerText || "";
+        })()
+    ).trim();
+    if (!text) {
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
     await updateMutation.mutateAsync({ content });
     setIsEditing(false);
   };

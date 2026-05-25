@@ -5,8 +5,8 @@ import {
   Edit2,
   Trash2,
   Eye,
-  Download,
-  Upload,
+  FileDown,
+  FileUp,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -159,7 +159,7 @@ export default function ClientsListContent() {
       ),
     },
     {
-      key: "status",
+      key: "is_active",
       label: "Status",
       sortable: true,
       render: (item) => (
@@ -189,7 +189,7 @@ export default function ClientsListContent() {
     page:       currentPage,
     limit:      itemsPerPage,
     search:     searchQuery,
-    status:     filterStatus === "All" ? undefined : Number(filterStatus),
+    is_active:  filterStatus === "All" ? undefined : Number(filterStatus),
     plan:       filterPlan === "All" ? undefined : filterPlan,
     sort_by:    sortConfig.key || "created_at",
     sort_order: (sortConfig.order?.toUpperCase() as "ASC" | "DESC") || "DESC",
@@ -255,10 +255,10 @@ export default function ClientsListContent() {
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Upload size={13} strokeWidth={2.5} /> Import
+              <FileUp size={13} strokeWidth={2.5} /> Import
             </Button>
             <Button variant="outline" onClick={handleExport} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Download size={13} strokeWidth={2.5} /> Export
+              <FileDown size={13} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/clients/add">
               <ActionButton label="ADD CLIENT" variant_type="Client" />
@@ -270,7 +270,7 @@ export default function ClientsListContent() {
       <DataTableSearch
         searchQuery={searchQuery}
         onSearchChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
-        placeholder="Search clients by name, ID, email or city..."
+        placeholder="Search clients by name, ID, mobile number, email or city..."
         isFiltered={filterPlan !== "All" || filterStatus !== "All"}
         filterContent={
           <div className="space-y-4">
@@ -282,6 +282,7 @@ export default function ClientsListContent() {
                 </SelectTrigger>
                 <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)]">
                   <SelectItem value="All" className="text-[var(--vendor-control-text)] font-semibold">All Plans</SelectItem>
+                  <SelectItem value="Guest" className="text-[var(--vendor-control-text)] font-semibold">Guest</SelectItem>
                   {plans.map(p => (
                     <SelectItem key={p.id} value={p.name} className="text-[var(--vendor-control-text)] font-semibold">{p.name}</SelectItem>
                   ))}

@@ -39,6 +39,7 @@ export default function AddTestimonialContent() {
   const [uploading,    setUploading]    = useState(false);
   const [cropperOpen,  setCropperOpen]  = useState(false);
   const [imageToCrop,  setImageToCrop]  = useState<string>("");
+  const [errors,       setErrors]       = useState<Record<string, string>>({});
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -75,8 +76,17 @@ export default function AddTestimonialContent() {
   };
 
   const handleSave = async () => {
-    if (!formData.customer_name) return toast.error("Customer name is required.");
-    if (!formData.client_feedback) return toast.error("Client feedback is required.");
+    const newErrors: Record<string, string> = {};
+    if (!formData.customer_name.trim()) newErrors.customer_name = "Customer name is required";
+    const feedbackText = (formData.client_feedback || "").replace(/<[^>]*>/g, "").trim();
+    if (!feedbackText) newErrors.client_feedback = "Client feedback is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
+    setErrors({});
 
     try {
       let portraitUrl = "";
@@ -136,11 +146,17 @@ export default function AddTestimonialContent() {
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[var(--vendor-primary-btn)] transition-colors" size={20} />
                     <Input
                       value={formData.customer_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, customer_name: e.target.value }));
+                        if (errors.customer_name) setErrors((p) => ({ ...p, customer_name: "" }));
+                      }}
                       placeholder="e.g. John Doe"
-                      className="h-14 pl-12 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] bg-gray-50/10 focus:bg-white transition-all font-bold"
+                      className={`h-14 pl-12 rounded-[var(--vendor-radius-panel)] bg-gray-50/10 focus:bg-white transition-all font-bold ${errors.customer_name ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                     />
                   </div>
+                  {errors.customer_name && (
+                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{errors.customer_name}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -195,12 +211,20 @@ export default function AddTestimonialContent() {
 
             <div className="space-y-4">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Client Feedback <span className="text-rose-500">*</span></Label>
-              <QuillEditor
-                value={formData.client_feedback}
-                onChange={({ html }) => setFormData(prev => ({ ...prev, client_feedback: html }))}
-                placeholder="Share what the client said about your service..."
-                height="280px"
-              />
+              <div className={errors.client_feedback ? "rounded-[var(--vendor-radius-control)] ring-4 ring-rose-500/10 border border-rose-500" : ""}>
+                <QuillEditor
+                  value={formData.client_feedback}
+                  onChange={({ html }) => {
+                    setFormData(prev => ({ ...prev, client_feedback: html }));
+                    if (errors.client_feedback) setErrors((p) => ({ ...p, client_feedback: "" }));
+                  }}
+                  placeholder="Share what the client said about your service..."
+                  height="280px"
+                />
+              </div>
+              {errors.client_feedback && (
+                <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{errors.client_feedback}</p>
+              )}
             </div>
           </div>
         </div>

@@ -89,9 +89,9 @@ export default function PortfolioSponsors({ data, settings }: { data?: any; sett
           <h2 className="text-4xl font-black text-gray-900">Our Sponsors</h2>
           <div className="w-12 h-1 rounded-full" style={{ backgroundColor: primary }} />
         </div>
-        <div className="grid grid-cols-6 gap-5">
+        <div className={sponsors.length === 1 ? "grid grid-cols-1 place-items-center gap-5" : "grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6"}>
           {sponsors.map((s: any, i: number) => (
-            <div key={i} className="aspect-[3/2] bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center p-4 hover:shadow-md transition-shadow">
+            <div key={i} className={`${sponsors.length === 1 ? "w-40" : "w-full"} aspect-[3/2] bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center p-4 hover:shadow-md transition-shadow`}>
               {s.image
                 ? <Image src={s.image} alt={s.name} width={128} height={86} className="max-h-full max-w-full object-contain" unoptimized />
                 : <span className="font-black text-gray-400 text-[10px] uppercase tracking-wider text-center">{s.name}</span>}

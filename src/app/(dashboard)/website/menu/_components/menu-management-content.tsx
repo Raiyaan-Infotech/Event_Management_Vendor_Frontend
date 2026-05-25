@@ -73,26 +73,40 @@ export default function MenuManagementContent() {
   const [menuItems, setMenuItems] = useState<MenuNavItem[]>([]);
   const [menuLoaded, setMenuLoaded] = useState(false);
 
+  const cleanMenuItem = (item: NavMenuItem, index: number, validPageIds: Set<number>): MenuNavItem | null => {
+    const cleanedPageIds = (item.page_ids || []).map(Number).filter((id) => validPageIds.has(id));
+    const cleanedChildren = (item.children || [])
+      .filter((c: any) => validPageIds.has(Number(c.page_id)))
+      .map((child: NavChild, order: number) => ({ ...child, page_id: Number(child.page_id), order }));
+
+    if (cleanedPageIds.length === 0 && cleanedChildren.length === 0) return null;
+
+    return {
+      id: (item as Partial<MenuNavItem>).id || `m${index}-loaded`,
+      label: item.label,
+      type: item.type === "pages" ? "pages" : inferMenuType(item.label),
+      page_ids: cleanedPageIds,
+      order: item.order,
+      children: cleanedChildren,
+      isOpen: false,
+    };
+  };
+
   // ── Load nav_menu from vendor on mount (skip fixed Home/Contact items) ───
   useEffect(() => {
-    if (menuLoaded || !vendor) return;
+    if (menuLoaded || !vendor || !pagesData) return;
     setMenuLoaded(true);
+    const validPageIds = new Set((pagesData?.data ?? []).map((p) => p.id));
     const raw = parseNavMenu(vendor.nav_menu);
     if (raw.length) {
       const editable = raw.filter(item => !FIXED_MENU_TYPES.has(item.type || ""));
       setMenuItems(
-        editable.map((item, i) => ({
-          id: `m${i}-loaded`,
-          label: item.label,
-          type: item.type === "pages" ? "pages" : inferMenuType(item.label),
-          page_ids: item.page_ids || [],
-          order: item.order,
-          children: item.children || [],
-          isOpen: false,
-        }))
+        editable
+          .map((item, i) => cleanMenuItem(item, i, validPageIds))
+          .filter(Boolean) as MenuNavItem[]
       );
     }
-  }, [vendor, menuLoaded]);
+  }, [vendor, menuLoaded, pagesData]);
 
   // ── Form state ────────────────────────────────────────────────────────────
   const [parentLabel, setParentLabel] = useState("");
@@ -206,13 +220,24 @@ export default function MenuManagementContent() {
 
   // Fixed Home/About/Contact wrap the draggable page groups in the saved order.
   const handleSave = async () => {
-    const pageGroups: NavMenuItem[] = menuItems.map((item, index) => ({
-      label: item.label,
-      type: item.type || inferMenuType(item.label),
-      page_ids: item.page_ids,
-      children: item.children.map((child, childIndex) => ({ ...child, order: childIndex })),
-      order: index + 2,
-    }));
+    const validPageIds = new Set(vendorPages.map((p) => p.id));
+    const pageGroups: NavMenuItem[] = menuItems
+      .map((item) => {
+        const page_ids = item.page_ids.filter((id) => validPageIds.has(Number(id)));
+        const children = item.children
+          .filter((child) => validPageIds.has(Number(child.page_id)))
+          .map((child, childIndex) => ({ ...child, order: childIndex }));
+
+        return {
+          label: item.label,
+          type: item.type || inferMenuType(item.label),
+          page_ids,
+          children,
+          order: 0,
+        };
+      })
+      .filter((item) => item.page_ids.length > 0 || item.children.length > 0)
+      .map((item, index) => ({ ...item, order: index + 2 }));
 
     const nav_menu: NavMenuItem[] = [
       { label: "Home",       type: "home",    page_ids: [], children: [], order: 0 },
@@ -231,18 +256,16 @@ export default function MenuManagementContent() {
 
   const handleReset = () => {
     const raw = parseNavMenu(vendor?.nav_menu);
+    const validPageIds = new Set(vendorPages.map((p) => p.id));
     if (raw.length) {
       const editable = raw.filter(item => !FIXED_MENU_TYPES.has(item.type || ""));
       setMenuItems(
-        editable.map((item, i) => ({
-          id: `m${i}-reset`,
-          label: item.label,
-          type: item.type === "pages" ? "pages" : inferMenuType(item.label),
-          page_ids: item.page_ids || [],
-          order: item.order,
-          children: item.children || [],
-          isOpen: false,
-        }))
+        editable
+          .map((item, i) => {
+            const cleaned = cleanMenuItem(item, i, validPageIds);
+            return cleaned ? { ...cleaned, id: `m${i}-reset` } : null;
+          })
+          .filter(Boolean) as MenuNavItem[]
       );
     } else {
       setMenuItems([]);
@@ -355,7 +378,7 @@ export default function MenuManagementContent() {
             className="flex-1 h-12 bg-white hover:bg-rose-600 border-2 border-red-500 text-red-500 hover:text-white transition-all duration-300 rounded-[var(--vendor-radius-control)] text-[13px] font-bold gap-2 active:scale-[0.98] flex items-center justify-center"
           >
             <X className="size-4" strokeWidth={2.5} />
-            {editingId ? "CANCEL" : "CLEAR"}
+            {editingId ? "CANCEL" : "RESET"}
           </Button>
         </div>
       </div>

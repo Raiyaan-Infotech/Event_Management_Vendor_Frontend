@@ -109,6 +109,8 @@ export const useDeleteVendorPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: VENDOR_PAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: ['vendor-me'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success('Page deleted successfully');
     },
     onError: (error: unknown) => {

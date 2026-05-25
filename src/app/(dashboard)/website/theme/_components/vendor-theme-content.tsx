@@ -58,7 +58,6 @@ export function VendorThemeContent() {
     const {
         data: themesRaw,
         isLoading: themeLoading,
-        refetch: refetchThemes,
     } = useVendorTheme(planId);
     const themes = themesRaw ?? [];
 
@@ -77,24 +76,6 @@ export function VendorThemeContent() {
             setSelectedId(themes[0].id);
         }
     }, [vendor, themes]);
-
-    useEffect(() => {
-        if (!planId) return;
-
-        const refreshThemes = () => {
-            if (document.visibilityState === "visible") {
-                refetchThemes();
-            }
-        };
-
-        window.addEventListener("focus", refreshThemes);
-        document.addEventListener("visibilitychange", refreshThemes);
-
-        return () => {
-            window.removeEventListener("focus", refreshThemes);
-            document.removeEventListener("visibilitychange", refreshThemes);
-        };
-    }, [planId, refetchThemes]);
 
     const handleActivate = (id: number) => {
         setActivatedPresetId(id);

@@ -44,7 +44,7 @@ export const useVendorClients = (params?: {
   page?: number;
   limit?: number;
   search?: string;
-  status?: number;
+  is_active?: number;
   plan?: string;
   sort_by?: string;
   sort_order?: 'ASC' | 'DESC';
@@ -143,7 +143,7 @@ export const useUpdateVendorClientStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, is_active }: { id: number | string; is_active: number }) => {
-      const res = await apiClient.patch(`/vendors/clients/${id}`, { is_active });
+      const res = await apiClient.patch(`/vendors/clients/${id}/status`, { is_active });
       return res.data.data;
     },
     onSuccess: (_, variables) => {

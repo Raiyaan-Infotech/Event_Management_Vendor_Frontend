@@ -145,7 +145,7 @@ function PreviewContent() {
         );
 
       return (
-        <div className="min-h-screen bg-white p-0 m-0 flex flex-col">
+        <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white p-0 m-0 flex flex-col">
           {headerBlock && (
             <BlockRenderer
               block_type="header"
@@ -173,7 +173,7 @@ function PreviewContent() {
       (b) => b.block_type !== "header" && b.block_type !== "footer",
     );
     return (
-      <div className="min-h-screen bg-white p-0 m-0 flex flex-col scroll-smooth">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white p-0 m-0 flex flex-col scroll-smooth">
         {headerBlock && (
           <BlockRenderer
             block_type="header"
@@ -229,7 +229,7 @@ function PreviewContent() {
       );
 
     return (
-      <div className="min-h-screen bg-white p-0 m-0 flex flex-col">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white p-0 m-0 flex flex-col">
         <BlockRenderer
           block_type="header"
           visible={true}
@@ -254,7 +254,7 @@ function PreviewContent() {
   const variant   = searchParams.get("variant");
   if (blockType) {
     return (
-      <div className="min-h-screen bg-white overflow-hidden p-0 m-0">
+      <div className="min-h-screen w-full max-w-full overflow-hidden overflow-x-hidden bg-white p-0 m-0">
         <BlockRenderer
           block_type={blockType}
           visible={true}
@@ -287,7 +287,7 @@ function PreviewContent() {
       (b: any) => b.block_type !== "header" && b.block_type !== "footer",
     );
     return (
-      <div className="min-h-screen bg-white p-0 m-0 flex flex-col scroll-smooth">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white p-0 m-0 flex flex-col scroll-smooth">
         {headerBlock && (
           <BlockRenderer
             block_type="header"

@@ -28,7 +28,7 @@ const navLabels: Record<string, string> = {
   // Website management
   website:                   "Website",
   header:                    "Header",
-  footer:                    "Footer",
+  footer:                    "Footer Settings",
   menu:                      "Menu",
   "about-us":                "About Us",
   "contact-us":              "Contact Us",
@@ -49,7 +49,15 @@ const navLabels: Record<string, string> = {
   theme:                     "Theme",
   themes:                    "Themes",
   "themes-option":           "Theme Options",
+  "email-marketing":         "Email Marketing",
+  "email-templates":         "Email Templates",
+  templates:                 "Templates",
+  category:                  "Category",
   newsletter:                "Newsletter",
+  send:                      "Send",
+  subscribers:               "Subscribers",
+  unsubscribers:             "Unsubscribers",
+  "mail-status":             "Mail Status",
   subscription:              "Subscription",
   "subscription-management": "Subscription",
   "events-management":       "Events",
@@ -61,7 +69,9 @@ const navLabels: Record<string, string> = {
   // Roles & departments
   roles:                     "Roles",
   departments:               "Departments",
+  department:                "Department",
   permissions:               "Permissions",
+  modules:                   "Modules",
   // CRUD actions
   create:                    "Create",
   edit:                      "Edit",
@@ -70,14 +80,26 @@ const navLabels: Record<string, string> = {
 };
 
 // Segments that are group labels with no real page — rendered as plain text
-const NON_LINKABLE = new Set(["website", "communication"]);
+const NON_LINKABLE = new Set([
+  "website",
+  "communication",
+  "settings",
+  "appearance",
+  "home-slider",
+  "portfolio-management",
+  "portfolio",
+  "email-template",
+  "email-marketing",
+  "email-templates",
+  "events",
+]);
 
 // Segments treated as the "main module" for sub-action label construction
 const MAIN_MODULES = new Set([
   "staff", "clients", "events", "payments", "payment-management",
   "advance-slider", "simple-slider", "gallery", "testimonial",
   "portfolio", "pages", "social-links", "newsletter", "roles",
-  "departments",
+  "departments", "department", "templates", "category",
 ]);
 
 const SUB_ACTIONS = new Set(["add", "edit", "view", "create"]);
@@ -86,14 +108,46 @@ export default function VendorBreadcrumb() {
   const pathname = usePathname();
 
   const items = useMemo(() => {
-    const segments = pathname.split("/").filter(Boolean);
+    let segments = pathname.split("/").filter(Boolean);
+
+    // ── Virtual segment injections / expansions ─────────────────────────────
+    // /newsletter/* → prepend "email-marketing"
+    if (segments[0] === "newsletter") {
+      segments = ["email-marketing", ...segments];
+    }
+
+    // Replace "email-template" with "email-templates" and append "templates"
+    // when the path is /newsletter/email-template[/add|/edit|/view|/:id]
+    // (i.e. NOT followed by /category). For /category, just rename to "email-templates".
+    const tplIdx = segments.indexOf("email-template");
+    if (tplIdx >= 0) {
+      const next = segments[tplIdx + 1];
+      const isCategoryBranch = next === "category";
+      if (isCategoryBranch) {
+        segments = [
+          ...segments.slice(0, tplIdx),
+          "email-templates",
+          ...segments.slice(tplIdx + 1),
+        ];
+      } else {
+        segments = [
+          ...segments.slice(0, tplIdx),
+          "email-templates",
+          "templates",
+          ...segments.slice(tplIdx + 1),
+        ];
+      }
+    }
+
     const result: { label: string; url: string; isLast: boolean; isLink: boolean }[] = [];
 
     let accPath = "";
     let moduleLabel = "";
+    const realSegSet = new Set<string>(pathname.split("/").filter(Boolean));
 
     segments.forEach((seg) => {
-      accPath += `/${seg}`;
+      // Only accumulate URL when the segment actually exists in the real path
+      if (realSegSet.has(seg)) accPath += `/${seg}`;
       if (!isNaN(Number(seg))) return; // skip numeric IDs but keep them in accPath
 
       let label = navLabels[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " ");
@@ -108,7 +162,7 @@ export default function VendorBreadcrumb() {
         label,
         url: accPath,
         isLast: false,
-        isLink: !NON_LINKABLE.has(seg),
+        isLink: !NON_LINKABLE.has(seg) && !!accPath,
       });
     });
 

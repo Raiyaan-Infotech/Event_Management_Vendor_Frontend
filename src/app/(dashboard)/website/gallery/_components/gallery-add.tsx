@@ -48,6 +48,7 @@ export default function GalleryAdd({ onSave, loading = false }: GalleryAddProps)
   const [imageToCrop, setImageToCrop] = useState<string>("");
   const [cropQueue,   setCropQueue]   = useState<string[]>([]);
   const [uploading,   setUploading]   = useState(false);
+  const [errors,      setErrors]      = useState<Record<string, string>>({});
 
   const canAddMore = images.length < MAX_PER_VIEW;
 
@@ -111,8 +112,17 @@ export default function GalleryAdd({ onSave, loading = false }: GalleryAddProps)
   };
 
   const handleSave = async () => {
-    if (!formData.eventName || !formData.city) return toast.error("Please fill all fields.");
-    if (images.length === 0) return toast.error("Please upload at least one image.");
+    const newErrors: Record<string, string> = {};
+    if (!formData.eventName.trim()) newErrors.eventName = "Event name is required";
+    if (!formData.city.trim())      newErrors.city      = "City is required";
+    if (images.length === 0)        newErrors.images    = "At least one image is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
+    setErrors({});
 
     try {
       setUploading(true);
@@ -159,25 +169,41 @@ export default function GalleryAdd({ onSave, loading = false }: GalleryAddProps)
                 {/* Event Name + City */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">Event Name</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">
+                      Event Name <span className="text-rose-500 ml-1">*</span>
+                    </Label>
                     <Input
                       value={formData.eventName}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, eventName: e.target.value }))}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, eventName: e.target.value }));
+                        if (errors.eventName) setErrors((p) => ({ ...p, eventName: "" }));
+                      }}
                       placeholder="Enter event name..."
-                      className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] bg-gray-50/30 focus:bg-white transition-all font-bold"
+                      className={`h-14 rounded-[var(--vendor-radius-panel)] bg-gray-50/30 focus:bg-white transition-all font-bold ${errors.eventName ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                     />
+                    {errors.eventName && (
+                      <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{errors.eventName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">City</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)] px-1">
+                      City <span className="text-rose-500 ml-1">*</span>
+                    </Label>
                     <div className="relative">
                       <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-[var(--vendor-text-muted)]" />
                       <Input
                         value={formData.city}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, city: e.target.value }))}
+                        onChange={(e) => {
+                          setFormData((prev) => ({ ...prev, city: e.target.value }));
+                          if (errors.city) setErrors((p) => ({ ...p, city: "" }));
+                        }}
                         placeholder="Location of event..."
-                        className="h-14 pl-12 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] bg-gray-50/30 focus:bg-white transition-all font-bold"
+                        className={`h-14 pl-12 rounded-[var(--vendor-radius-panel)] bg-gray-50/30 focus:bg-white transition-all font-bold ${errors.city ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                       />
                     </div>
+                    {errors.city && (
+                      <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{errors.city}</p>
+                    )}
                   </div>
                 </div>
 
@@ -185,12 +211,15 @@ export default function GalleryAdd({ onSave, loading = false }: GalleryAddProps)
                 <div className="space-y-3">
                   <div className="flex items-center justify-between px-1">
                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--vendor-text-muted)]">
-                      Event Images
+                      Event Images <span className="text-rose-500 ml-1">*</span>
                     </Label>
                     <span className="text-[10px] font-bold text-[var(--vendor-text-muted)] uppercase tracking-wide">
                       {images.length}/{MAX_PER_VIEW} Photos
                     </span>
                   </div>
+                  {errors.images && (
+                    <p className="text-[11px] font-semibold text-rose-500 px-1">{errors.images}</p>
+                  )}
 
                   <input
                     type="file"

@@ -33,6 +33,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
     category_id: "",
     description: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: template, isLoading } = useVendorEmailTemplate(mode !== "add" ? id ?? null : null);
   const { data: categoriesRes } = useEmailCategories({ limit: 100 });
@@ -54,14 +55,22 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
   const updateForm = (field: keyof typeof formData, value: string) => {
     if (mode === "view") return;
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
   };
 
   const handleSave = async () => {
     if (mode === "view") return;
-    if (!formData.name.trim() || !formData.category_id) {
-      toast.error("Please fill in Template Name and Category");
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = "Template name is required";
+    if (!formData.category_id) newErrors.category_id = "Category is required";
+    const descText = (formData.description || "").replace(/<[^>]*>/g, "").trim();
+    if (!descText) newErrors.description = "Description is required";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fill all mandatory fields.");
       return;
     }
+    setErrors({});
 
     const payload = {
       name: formData.name,
@@ -112,8 +121,11 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                   onChange={(e) => updateForm("name", e.target.value)}
                   placeholder="Enter Template name.."
                   readOnly={mode === "view"}
-                  className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20 disabled:opacity-80"
+                  className={`h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all disabled:opacity-80 ${errors.name ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)] focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20"}`}
                 />
+                {errors.name && (
+                  <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.name}</p>
+                )}
               </div>
 
               {/* Category Dropdown */}
@@ -130,7 +142,7 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                   />
                 ) : (
                   <Select value={formData.category_id} onValueChange={(val) => updateForm("category_id", val)}>
-                    <SelectTrigger className="h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20">
+                    <SelectTrigger className={`h-11 bg-gray-50 focus:bg-white dark:bg-[#181d23] rounded-[var(--vendor-radius-control)] text-sm font-bold shadow-sm transition-all ${errors.category_id ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)] focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10 focus:border-[var(--vendor-primary-btn)]/20"}`}>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent className="rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] font-bold">
@@ -142,6 +154,9 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                     </SelectContent>
                   </Select>
                 )}
+                {errors.category_id && (
+                  <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.category_id}</p>
+                )}
               </div>
             </div>
           </div>
@@ -151,8 +166,9 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
             <div className="space-y-3">
                <div className="flex items-center gap-1 ml-1">
                  <Label className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide">Description</Label>
+                 {mode !== "view" && <span className="text-rose-500 font-bold">*</span>}
                </div>
-               <div className="rounded-[var(--vendor-radius-control)] border border-[var(--vendor-border)] bg-gray-50/50 dark:bg-[#181d23]/50 overflow-hidden shadow-sm">
+               <div className={`rounded-[var(--vendor-radius-control)] border bg-gray-50/50 dark:bg-[#181d23]/50 overflow-hidden shadow-sm ${errors.description ? "border-rose-500 ring-4 ring-rose-500/10" : "border-[var(--vendor-border)]"}`}>
                   <RichTextEditor
                     value={formData.description}
                     onChange={(val) => updateForm("description", val)}
@@ -161,6 +177,9 @@ export default function EmailTemplateForm({ mode, id }: EmailTemplateFormProps) 
                     placeholder={mode === "view" ? "No content." : "Design your professional email template here using our HTML editor..."}
                   />
                </div>
+               {errors.description && (
+                 <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.description}</p>
+               )}
             </div>
           </div>
         </div>

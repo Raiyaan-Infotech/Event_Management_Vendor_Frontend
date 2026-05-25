@@ -16,6 +16,7 @@ import {
   Plus,
   Globe,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
@@ -100,6 +101,14 @@ export default function ViewClientContent() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1"></div>
           <div className="flex items-center gap-3">
+            <Link href="/clients">
+              <Button
+                variant="outline"
+                className="h-10 px-6 rounded-[var(--vendor-radius-control)] border-[var(--vendor-border)] hover:bg-gray-50 hover:text-[var(--vendor-primary-btn)] hover:border-blue-100 transition-all font-bold text-[12px] uppercase tracking-wider flex items-center gap-2 shadow-sm"
+              >
+                <ArrowLeft size={16} /> Back to List
+              </Button>
+            </Link>
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(true)}

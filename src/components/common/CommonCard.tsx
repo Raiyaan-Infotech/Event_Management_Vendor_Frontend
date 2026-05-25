@@ -6,7 +6,7 @@ import { LucideIcon } from "lucide-react";
 import { vendorUi } from "@/lib/vendor-ui";
 
 interface CommonCardProps {
-  title?: string;
+  title?: React.ReactNode;
   subtitle?: string;
   icon?: LucideIcon;
   iconColorClass?: string;

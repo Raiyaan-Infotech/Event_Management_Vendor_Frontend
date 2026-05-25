@@ -1018,11 +1018,18 @@ export default function AddStaffContent({
     const newErrors: Record<string, string> = {};
     if (!formData.name) newErrors.name = "Full name is required";
     if (!formData.role_id) newErrors.designation = "Designation is required";
+    if (!formData.department_id) newErrors.department_id = "Department is required";
     const mobileErr = validateMobile(formData.mobile || "");
     if (mobileErr) newErrors.mobile = mobileErr;
     if (!formData.email) newErrors.email = "Email address is required";
     if (!id && !formData.password) newErrors.password = "Password is required";
+    if (!formData.address) newErrors.address = "Street address is required";
+    if (!formData.country) newErrors.country = "Country is required";
+    if (!formData.state) newErrors.state = "State is required";
+    if (!formData.district) newErrors.district = "District is required";
     if (!formData.city) newErrors.city = "City is required";
+    if (!formData.locality) newErrors.locality = "Locality is required";
+    if (!formData.pincode) newErrors.pincode = "Pincode is required";
     if (!formData.doj) newErrors.doj = "Joining date is required";
     if (!formData.dob) newErrors.dob = "Date of birth is required";
     if (!profilePic) newErrors.profilePic = "Profile picture is required";
@@ -1034,7 +1041,7 @@ export default function AddStaffContent({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
-      toast.error("Please fill all required fields correctly.");
+      toast.error("Please fill all mandatory fields.");
       return;
     }
 
@@ -1262,7 +1269,7 @@ export default function AddStaffContent({
                       }}
                     >
                       <SelectTrigger
-                        className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
+                        className={`h-12 w-full pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                       >
                         <SelectValue placeholder="Select designation" />
                       </SelectTrigger>
@@ -1278,7 +1285,13 @@ export default function AddStaffContent({
                 </FormGroup>
 
                 {/* Department */}
-                <FormGroup label="Department" icon={Building} isView={isView}>
+                <FormGroup
+                  label="Department"
+                  icon={Building}
+                  required
+                  error={errors.department_id}
+                  isView={isView}
+                >
                   {isView ? (
                     <Input
                       value={(departmentsData?.data ?? []).find((d) => String(d.id) === String(formData.department_id))?.name || "—"}
@@ -1287,14 +1300,19 @@ export default function AddStaffContent({
                     />
                   ) : (
                     <Select
-                      value={formData.department_id ? String(formData.department_id) : "none"}
-                      onValueChange={(val) => setFormData({ ...formData, department_id: val === "none" ? "" : val })}
+                      value={formData.department_id ? String(formData.department_id) : ""}
+                      onValueChange={(val) => {
+                        setFormData({ ...formData, department_id: val });
+                        if (errors.department_id)
+                          setErrors((prev) => ({ ...prev, department_id: "" }));
+                      }}
                     >
-                      <SelectTrigger className="h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10">
+                      <SelectTrigger
+                        className={`h-12 w-full pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.department_id ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
+                      >
                         <SelectValue placeholder="Select department" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">No Department</SelectItem>
                         {(departmentsData?.data ?? []).filter((d) => d.is_active === 1).map((dept) => (
                           <SelectItem key={dept.id} value={String(dept.id)}>{dept.name}</SelectItem>
                         ))}
@@ -1467,7 +1485,7 @@ export default function AddStaffContent({
                     />
                   </FormGroup>
 
-                  {/* City */}
+                  {/* City — required text only, no red border */}
                   <FormGroup
                     label="City"
                     required
@@ -1489,7 +1507,6 @@ export default function AddStaffContent({
                       }
                       icon={Building}
                       disabled={isView || cityOptions.length === 0}
-                      error={errors.city}
                     />
                   </FormGroup>
 

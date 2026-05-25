@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trash2, Edit, Image as ImageIcon, Layout } from "lucide-react";
+import { Trash2, Edit, Eye, Image as ImageIcon, Layout } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Link from "next/link";
@@ -198,6 +198,13 @@ export default function SimpleSliderList() {
           noCard={true}
           actionContent={(item) => (
             <>
+              <DropdownMenuItem
+                onClick={() => window.open("/preview?block=simple_slider", "_blank")}
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600"
+              >
+                <Eye size={15} className="text-blue-500" />
+                <span className="text-[13px] font-semibold">Preview</span>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => router.push(`/website/home-slider/simple-slider/add?edit=${item.id}`)}
                 className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600"

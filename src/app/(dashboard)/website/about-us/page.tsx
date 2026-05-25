@@ -84,7 +84,7 @@ export default function AboutUsPage() {
               onSave={handleSave}
               onPreview={() => window.open("/preview#about-us", "_blank")}
               onReset={handleReset}
-              onCancel={() => router.push("/website/management")}
+              onCancel={() => router.push("/website/home")}
               saveLabel={updateMutation.isPending ? "SAVING..." : "UPDATE"}
               isSubmitting={updateMutation.isPending}
             />

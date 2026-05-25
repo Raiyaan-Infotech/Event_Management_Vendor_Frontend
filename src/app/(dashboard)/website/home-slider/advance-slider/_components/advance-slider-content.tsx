@@ -60,6 +60,7 @@ export default function AdvanceSliderContent() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: existingSlider } = useVendorSlider(editId);
   const { data: pagesData } = useVendorPages({ limit: 100 });
@@ -120,10 +121,17 @@ export default function AdvanceSliderContent() {
   const resetForm = () => setFormData(getDefaultForm());
 
   const handleSave = () => {
-    if (!formData.title.trim())        return toast.error("Title is required.");
-    if (!formData.button_label.trim()) return toast.error("Button Label is required.");
-    if (!formData.page_id)             return toast.error("Button URL (page) is required.");
-    if (!formData.image_path)          return toast.error("Slider image is required.");
+    const newErrors: Record<string, string> = {};
+    if (!formData.title.trim())        newErrors.title        = "Title is required";
+    if (!formData.button_label.trim()) newErrors.button_label = "Button label is required";
+    if (!formData.page_id)             newErrors.page_id      = "Button URL (page) is required";
+    if (!formData.image_path)          newErrors.image_path   = "Slider image is required";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fill all mandatory fields.");
+      return;
+    }
+    setErrors({});
 
     const payload = {
       type: "advanced" as const,
@@ -157,7 +165,7 @@ export default function AdvanceSliderContent() {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-black p-6 space-y-6 flex flex-col animate-in fade-in duration-700">
       <div className="px-4 pb-2 flex items-center justify-between">
         <h1 className="text-[var(--vendor-title-text)] font-bold text-slate-800 dark:text-white uppercase tracking-tighter">
-          {isEditing ? "Edit Advance Slider" : "Advance Slider Workspace"}
+          {isEditing ? "Edit Advance Slider" : "Add Advance Slider"}
         </h1>
         <Button variant="ghost" onClick={() => router.push("/website/home-slider/advance-slider")} className="text-[var(--vendor-control-text)] font-semibold text-slate-500 hover:text-indigo-600 gap-2">
           <RotateCcw size={14} className="rotate-90" /> BACK TO LIST
@@ -185,7 +193,15 @@ export default function AdvanceSliderContent() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Title <span className="text-rose-500">*</span></Label>
-                  <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="h-11 rounded-sm border-slate-200 bg-white" />
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => {
+                      setFormData({ ...formData, title: e.target.value });
+                      if (errors.title) setErrors((p) => ({ ...p, title: "" }));
+                    }}
+                    className={`h-11 rounded-sm bg-white ${errors.title ? "border-rose-500 ring-4 ring-rose-500/5" : "border-slate-200"}`}
+                  />
+                  {errors.title && <p className="text-[11px] font-semibold text-rose-500">{errors.title}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -205,16 +221,27 @@ export default function AdvanceSliderContent() {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Button Label <span className="text-rose-500">*</span></Label>
-                  <Input value={formData.button_label} onChange={(e) => setFormData({ ...formData, button_label: e.target.value })} className="h-11 rounded-sm border-slate-200" />
+                  <Input
+                    value={formData.button_label}
+                    onChange={(e) => {
+                      setFormData({ ...formData, button_label: e.target.value });
+                      if (errors.button_label) setErrors((p) => ({ ...p, button_label: "" }));
+                    }}
+                    className={`h-11 rounded-sm ${errors.button_label ? "border-rose-500 ring-4 ring-rose-500/5" : "border-slate-200"}`}
+                  />
+                  {errors.button_label && <p className="text-[11px] font-semibold text-rose-500">{errors.button_label}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Button URL <span className="text-rose-500">*</span></Label>
                   <Select
                     value={formData.page_id ? String(formData.page_id) : "none"}
-                    onValueChange={(v) => setFormData({ ...formData, page_id: v === "none" ? null : Number(v) })}
+                    onValueChange={(v) => {
+                      setFormData({ ...formData, page_id: v === "none" ? null : Number(v) });
+                      if (errors.page_id) setErrors((p) => ({ ...p, page_id: "" }));
+                    }}
                   >
-                    <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white font-medium">
+                    <SelectTrigger className={`h-11 rounded-sm bg-white font-medium ${errors.page_id ? "border-rose-500 ring-4 ring-rose-500/5" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select a page" />
                     </SelectTrigger>
                     <SelectContent>
@@ -226,6 +253,7 @@ export default function AdvanceSliderContent() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.page_id && <p className="text-[11px] font-semibold text-rose-500">{errors.page_id}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -270,6 +298,9 @@ export default function AdvanceSliderContent() {
 
                 <div className="space-y-3">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Slider Image <span className="text-rose-500">*</span></Label>
+                  {errors.image_path && (
+                    <p className="text-[11px] font-semibold text-rose-500 -mt-1">{errors.image_path}</p>
+                  )}
                   <div
                     onClick={() => !previewImage && !imageUploading && fileInputRef.current?.click()}
                     className={cn(

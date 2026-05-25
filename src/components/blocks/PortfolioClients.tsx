@@ -91,9 +91,9 @@ export default function PortfolioClients({ data, settings }: { data?: any; setti
           <h2 className="text-4xl font-black text-gray-900">Trusted By Leaders</h2>
           <div className="w-12 h-1 rounded-full" style={{ backgroundColor: primary }} />
         </div>
-        <div className="grid grid-cols-6 gap-5">
+        <div className={clients.length === 1 ? "grid grid-cols-1 place-items-center gap-5" : "grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6"}>
           {clients.map((c: any, i: number) => (
-            <div key={i} className="aspect-square bg-white rounded-2xl border border-gray-100 shadow-sm flex items-center justify-center p-4 hover:shadow-md transition-shadow">
+            <div key={i} className={`${clients.length === 1 ? "w-36" : "w-full"} aspect-square bg-white rounded-2xl border border-gray-100 shadow-sm flex items-center justify-center p-4 hover:shadow-md transition-shadow`}>
               {c.image
                 ? <Image src={c.image} alt={c.name} width={128} height={128} className="max-h-full max-w-full object-contain" unoptimized />
                 : <LogoPlaceholder name={c.name} />}

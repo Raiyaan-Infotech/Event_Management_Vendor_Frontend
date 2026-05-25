@@ -121,10 +121,26 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
     : null;
 
   const visiblePages = pages.filter(p => p.is_active !== 0);
+  const visiblePageById = new Map(visiblePages.map((page) => [Number(page.id), page]));
   const savedMenu = parseNavMenu(vendor.nav_menu);
   const pageGroups = savedMenu
     .map((item) => ({ ...item, type: normalizeMenuType(item) }))
     .filter((item) => !FIXED_MENU_TYPES.has(item.type || ""))
+    .map((item) => {
+      const page_ids = Array.isArray(item.page_ids)
+        ? item.page_ids.map(Number).filter((id) => visiblePageById.has(id))
+        : [];
+      const children = Array.isArray(item.children)
+        ? item.children
+            .filter((child) => visiblePageById.has(Number(child.page_id)))
+            .map((child, order) => {
+              const page = visiblePageById.get(Number(child.page_id));
+              return { page_id: Number(child.page_id), label: page?.name || child.label, order };
+            })
+        : [];
+      return { ...item, page_ids, children };
+    })
+    .filter((item) => item.page_ids.length > 0 || item.children.length > 0)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const fallbackPageGroups: NavItem[] = visiblePages.length
     ? [{ label: "Pages", type: "pages", page_ids: visiblePages.map(p => p.id), children: [], order: 2 }]
@@ -148,7 +164,13 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
   const getChildren = (item: NavItem): { page_id: number; label: string; order: number }[] => {
     const children = Array.isArray(item.children) ? item.children : [];
     if (children.length > 0) {
-      return children.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      return children
+        .filter((child) => visiblePageById.has(Number(child.page_id)))
+        .map((child, order) => {
+          const page = visiblePageById.get(Number(child.page_id));
+          return { page_id: Number(child.page_id), label: page?.name || child.label, order };
+        })
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }
     if (item.type === "pages") {
       const selectedIds = Array.isArray(item.page_ids) ? item.page_ids : [];

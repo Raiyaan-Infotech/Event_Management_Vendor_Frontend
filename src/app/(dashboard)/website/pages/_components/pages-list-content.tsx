@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import { Plus, Edit2, Trash2, Eye, Upload, Download, FileText, Search, Layout } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, FileUp, FileDown, FileText, Search, Layout } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -39,7 +40,15 @@ export default function PagesListContent() {
     sort_order: sortConfig.order || undefined,
   });
 
-  const { mutate: deletePage } = useDeleteVendorPage();
+  const { mutate: deletePage, isPending: isDeleting } = useDeleteVendorPage();
+  const [pageToDelete, setPageToDelete] = useState<PageRow | null>(null);
+
+  const confirmDelete = () => {
+    if (!pageToDelete) return;
+    deletePage(pageToDelete.id, {
+      onSuccess: () => setPageToDelete(null),
+    });
+  };
 
   const pages: PageRow[] = useMemo(() => {
     return (pagesData?.data ?? []).map((p: VendorPage) => ({
@@ -106,10 +115,10 @@ export default function PagesListContent() {
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
-              <Upload size={15} strokeWidth={2.5} /> Import
+              <FileUp size={15} strokeWidth={2.5} /> Import
             </Button>
             <Button variant="outline" onClick={handleExport} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
-              <Download size={15} strokeWidth={2.5} /> Export
+              <FileDown size={15} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/website/pages/create">
               <ActionButton label="CREATE" variant_type="Client" icon={Plus} />
@@ -162,7 +171,7 @@ export default function PagesListContent() {
                 <Edit2 size={15} className="text-[var(--vendor-primary-btn)]" /> <span className="text-[13px] font-semibold text-gray-600">Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => deletePage(item.id)}
+                onClick={() => setPageToDelete(item)}
                 className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50"
               >
                 <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>
@@ -187,6 +196,38 @@ export default function PagesListContent() {
           onItemsPerPageChange={(val) => { setItemsPerPage(val); setCurrentPage(1); }}
         />
       </div>
+
+      <Dialog open={!!pageToDelete} onOpenChange={(open) => !open && setPageToDelete(null)}>
+        <DialogContent className="sm:max-w-[420px] rounded-[var(--vendor-radius-panel)] p-0 overflow-hidden border-none shadow-2xl shadow-rose-900/10">
+          <div className="bg-gradient-to-b from-rose-50 to-white dark:from-rose-500/10 dark:to-[#111827] p-10 flex flex-col items-center text-center">
+            <div className="w-20 h-20 rounded-[var(--vendor-radius-panel)] bg-[var(--vendor-panel-bg)] flex items-center justify-center text-rose-500 shadow-[0_15px_30px_-10px_rgba(225,29,72,0.3)] mb-8">
+              <Trash2 size={40} strokeWidth={2.5} />
+            </div>
+            <DialogTitle className="text-[var(--vendor-title-text)] font-bold text-[var(--vendor-text)] uppercase tracking-tighter">Delete Page?</DialogTitle>
+            <DialogDescription className="mt-4 text-[var(--vendor-text-muted)] font-bold text-sm leading-relaxed max-w-[280px]">
+              You are about to permanently delete{" "}
+              <span className="text-rose-600 underline underline-offset-4 decoration-rose-200">{pageToDelete?.name}</span>.
+              This will also remove it from any menus that reference it.
+            </DialogDescription>
+          </div>
+          <DialogFooter className="p-8 bg-gray-50/50 dark:bg-gray-900 flex flex-row gap-4 border-t border-[var(--vendor-border)]">
+            <Button
+              variant="ghost"
+              onClick={() => setPageToDelete(null)}
+              className="flex-1 h-12 rounded-[var(--vendor-radius-panel)] font-bold text-[12px] uppercase tracking-wide text-[var(--vendor-text-muted)] hover:text-gray-600 hover:bg-gray-100 transition-all"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="flex-1 h-12 bg-rose-600 hover:bg-rose-700 text-white rounded-[var(--vendor-radius-panel)] font-black text-[12px] uppercase tracking-wide shadow-[0_10px_20px_-5px_rgba(225,29,72,0.4)] hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70"
+            >
+              {isDeleting ? "Removing..." : "Confirm Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

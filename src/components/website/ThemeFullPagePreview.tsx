@@ -36,7 +36,7 @@ export const ThemeFullPagePreview = ({
   const router = useRouter();
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50/30 dark:bg-[#0f172a] animate-in fade-in duration-500 overflow-hidden">
+    <div className="h-screen w-full max-w-full flex flex-col bg-gray-50/30 dark:bg-[#0f172a] animate-in fade-in duration-500 overflow-hidden overflow-x-hidden">
       {/* Top Header Bar */}
       <div className="sticky top-0 z-50 px-8 py-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md">
         <div className="space-y-1">
@@ -54,9 +54,9 @@ export const ThemeFullPagePreview = ({
       </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 lg:p-12 bg-gray-100/20">
-         <div className="mx-auto transition-all duration-700" style={{ maxWidth }}>
-            <div className="w-full bg-white dark:bg-[#0a0a0a] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.2)] overflow-hidden border border-gray-100 dark:border-white/5 flex flex-col min-h-[1200px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-6 md:p-10 lg:p-12 bg-gray-100/20">
+         <div className="mx-auto w-full max-w-full transition-all duration-700" style={{ maxWidth }}>
+            <div className="w-full max-w-full bg-white dark:bg-[#0a0a0a] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.2)] overflow-hidden border border-gray-100 dark:border-white/5 flex flex-col min-h-[1200px]">
                {/* Simulation Toolbar */}
                <div className="h-10 bg-gray-100 dark:bg-white/5 border-b border-gray-200 dark:border-white/5 flex items-center px-6 gap-3">
                   <div className="flex gap-2">
@@ -70,7 +70,7 @@ export const ThemeFullPagePreview = ({
                </div>
 
                {/* The Actual Website Content */}
-               <div className="flex-1">
+               <div className="flex-1 w-full max-w-full overflow-x-hidden">
                   <ThemePreview themeId={themeId} colors={colors} vendorData={vendorData} />
                </div>
             </div>
