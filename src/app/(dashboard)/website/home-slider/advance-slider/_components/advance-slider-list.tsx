@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trash2, Edit, Image as ImageIcon, Layout } from "lucide-react";
+import { Trash2, Edit, Image as ImageIcon, Layout, ExternalLink } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,6 +48,7 @@ export default function AdvanceSliderList() {
   });
 
   const deleteMutation = useDeleteVendorSlider();
+  const toggleStatusMutation = useUpdateVendorSliderStatus();
   const [sliderToDelete, setSliderToDelete] = useState<VendorSlider | null>(null);
 
   const handleDelete = async () => {
@@ -135,12 +137,11 @@ export default function AdvanceSliderList() {
       key: "is_active",
       label: "Active",
       render: (item) => (
-        <Badge className={cn(
-          "text-[10px] font-bold px-3 py-0.5 rounded-full border-none shadow-sm",
-          item.is_active ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-500"
-        )}>
-          {item.is_active ? "YES" : "NO"}
-        </Badge>
+        <Switch
+          checked={!!item.is_active}
+          disabled={toggleStatusMutation.isPending}
+          onCheckedChange={() => toggleStatusMutation.mutate(item.id)}
+        />
       ),
     },
   ];
@@ -238,6 +239,13 @@ export default function AdvanceSliderList() {
               >
                 <Edit size={15} className="text-emerald-500" />
                 <span className="text-[13px] font-semibold">Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => window.open(`/preview?vendorId=${item.vendor_id}`, "_blank", "noopener,noreferrer")}
+                className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600"
+              >
+                <ExternalLink size={15} className="text-indigo-500" />
+                <span className="text-[13px] font-semibold">Preview</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSliderToDelete(item)}

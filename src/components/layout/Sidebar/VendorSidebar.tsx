@@ -326,7 +326,13 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                 (typeof v?.city === "string" ? v.city : "") ||
                 v?.locality?.name ||
                 v?.district?.name ||
-                "";
+                (typeof v?.company_address === "string"
+                  ? v.company_address.split(",")[0]?.trim()
+                  : "") ||
+                (typeof v?.address === "string"
+                  ? v.address.split(",")[0]?.trim()
+                  : "") ||
+                "—";
               return (
                 <>
                   {vendor?.company_logo && (
@@ -337,11 +343,9 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                   <p className="text-[11px] font-bold uppercase tracking-widest text-sidebar-foreground dark:text-gray-200 truncate max-w-[140px] mt-0.5 text-center w-full">
                     {vendor?.company_name ?? "Vendor Portal"}
                   </p>
-                  {city && (
-                    <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-gray-500 truncate max-w-[140px] text-center w-full">
-                      {city}
-                    </p>
-                  )}
+                  <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground dark:text-gray-500 truncate max-w-[140px] text-center w-full">
+                    {city}
+                  </p>
                 </>
               );
             })()}

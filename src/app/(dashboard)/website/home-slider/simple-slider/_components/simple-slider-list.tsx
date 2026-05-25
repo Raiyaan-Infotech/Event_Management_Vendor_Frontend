@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Trash2, Edit, Image as ImageIcon, Layout } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,7 @@ import { ColumnToggle } from "@/components/common/ColumnToggle";
 import {
   useVendorSliders,
   useDeleteVendorSlider,
+  useUpdateVendorSliderStatus,
   VendorSlider,
 } from "@/hooks/use-vendor-sliders";
 
@@ -45,6 +47,7 @@ export default function SimpleSliderList() {
   });
 
   const deleteMutation = useDeleteVendorSlider();
+  const toggleStatusMutation = useUpdateVendorSliderStatus();
   const [sliderToDelete, setSliderToDelete] = useState<VendorSlider | null>(null);
 
   const handleDelete = async () => {
@@ -118,12 +121,11 @@ export default function SimpleSliderList() {
       key: "is_active",
       label: "Active",
       render: (item) => (
-        <Badge className={cn(
-          "text-[10px] font-bold px-3 py-0.5 rounded-full border-none shadow-sm",
-          item.is_active ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-500"
-        )}>
-          {item.is_active ? "YES" : "NO"}
-        </Badge>
+        <Switch
+          checked={!!item.is_active}
+          disabled={toggleStatusMutation.isPending}
+          onCheckedChange={() => toggleStatusMutation.mutate(item.id)}
+        />
       ),
     },
   ];
