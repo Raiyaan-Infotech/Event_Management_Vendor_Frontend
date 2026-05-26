@@ -216,19 +216,26 @@ export function LocationSelects({
           <div className="relative">
             <Building
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-300 pointer-events-none"
+              className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none ${
+                errors.city ? "text-rose-400" : "text-gray-300"
+              }`}
             />
             <input
               value={values.city}
               onChange={(e) => handleCity(e.target.value)}
               placeholder="Enter city"
-              className="h-10 w-full pl-9 pr-3 border border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] text-[13px] shadow-sm outline-none transition-all focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"
+              className={`h-10 w-full pl-9 pr-3 border bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] text-[13px] shadow-sm outline-none transition-all ${
+                errors.city
+                  ? "border-rose-500 ring-4 ring-rose-500/5"
+                  : "border-[var(--vendor-border)] focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"
+              }`}
             />
           </div>
         ) : (
           <LocationSelect value={values.city} onValueChange={handleCity}
             options={cities} placeholder={values.district ? "Select City" : "Select District First"}
-            icon={Building} disabled={!districtId} isLoading={loadingCities} isView={isView} />
+            icon={Building} disabled={!districtId} isLoading={loadingCities} isView={isView}
+            hasError={!!errors.city} />
         )}
       </FormGroup>
     </div>

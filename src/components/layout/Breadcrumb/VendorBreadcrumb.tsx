@@ -2,7 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Fragment, useMemo } from "react";
 
 const navLabels: Record<string, string> = {
@@ -104,8 +104,16 @@ const MAIN_MODULES = new Set([
 
 const SUB_ACTIONS = new Set(["add", "edit", "view", "create"]);
 
+// Routes that conceptually live under Settings but aren't physically nested.
+// We inject a virtual non-linkable "settings" parent in the breadcrumb.
+const SETTINGS_ROOTS = new Set(["roles", "modules", "activity-log", "departments", "permissions"]);
+
 export default function VendorBreadcrumb() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  // When the URL has ?edit=... the route is conceptually "Edit X" even if the
+  // path segment is still /add — relabel the SUB_ACTION accordingly.
+  const isEditQuery = !!searchParams?.get("edit");
 
   const items = useMemo(() => {
     let segments = pathname.split("/").filter(Boolean);
@@ -114,6 +122,12 @@ export default function VendorBreadcrumb() {
     // /newsletter/* → prepend "email-marketing"
     if (segments[0] === "newsletter") {
       segments = ["email-marketing", ...segments];
+    }
+
+    // /roles, /modules, /activity-log, /departments, /permissions
+    // → prepend virtual "settings" parent
+    if (segments[0] && SETTINGS_ROOTS.has(segments[0])) {
+      segments = ["settings", ...segments];
     }
 
     // Replace "email-template" with "email-templates" and append "templates"
@@ -150,11 +164,15 @@ export default function VendorBreadcrumb() {
       if (realSegSet.has(seg)) accPath += `/${seg}`;
       if (!isNaN(Number(seg))) return; // skip numeric IDs but keep them in accPath
 
-      let label = navLabels[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " ");
+      // Override SUB_ACTION label when ?edit= query is present (e.g. /add?edit=12)
+      const effectiveSeg = isEditQuery && seg === "add" ? "edit" : seg;
+      let label =
+        navLabels[effectiveSeg] ??
+        effectiveSeg.charAt(0).toUpperCase() + effectiveSeg.slice(1).replace(/-/g, " ");
 
       if (MAIN_MODULES.has(seg)) moduleLabel = label;
 
-      if (SUB_ACTIONS.has(seg) && moduleLabel) {
+      if (SUB_ACTIONS.has(effectiveSeg) && moduleLabel) {
         label = `${label} ${moduleLabel}`;
       }
 
@@ -168,7 +186,7 @@ export default function VendorBreadcrumb() {
 
     if (result.length > 0) result[result.length - 1].isLast = true;
     return result;
-  }, [pathname]);
+  }, [pathname, isEditQuery]);
 
   if (pathname === "/dashboard") return null;
 

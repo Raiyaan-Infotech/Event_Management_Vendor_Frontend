@@ -4,6 +4,7 @@ import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
 
 const VENDOR_ME_KEY = ['vendor-me'] as const;
+const VENDOR_ABOUT_KEY = ['vendor-about'] as const;
 
 export interface Vendor {
   id: number;
@@ -104,7 +105,12 @@ export const useUpdateVendorProfile = () => {
       return res.data;
     },
     onSuccess: () => {
+      // The vendor object surfaces in multiple queries: sidebar (vendor-me),
+      // about/website pages (vendor-about), and the live preview. Invalidate
+      // all of them so a profile/logo update reflects everywhere immediately.
       queryClient.invalidateQueries({ queryKey: VENDOR_ME_KEY });
+      queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success('Profile updated successfully');
     },
     onError: (error: unknown) => {
@@ -154,8 +160,6 @@ export interface VendorAbout extends Vendor {
   nav_menu?: NavMenuItem[] | null;
   contact_mode?: 'default' | 'alternative' | null;
 }
-
-const VENDOR_ABOUT_KEY = ['vendor-about'] as const;
 
 export const useVendorAbout = () => {
   return useQuery({

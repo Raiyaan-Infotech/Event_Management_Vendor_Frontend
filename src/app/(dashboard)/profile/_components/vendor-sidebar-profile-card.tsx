@@ -69,7 +69,13 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
                 <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full" />
              </div>
           )}
-          <AvatarImage key={vendor?.profile} src={resolveMediaUrl(vendor?.profile || '')} className="object-cover rounded-full" />
+          {vendor?.profile ? (
+            <AvatarImage
+              key={vendor.profile}
+              src={resolveMediaUrl(vendor.profile)}
+              className="object-cover rounded-full"
+            />
+          ) : null}
           <AvatarFallback className="bg-gradient-to-br from-[#0162e8] to-[#0156cc] text-white font-bold text-4xl rounded-full">
             {initials}
           </AvatarFallback>

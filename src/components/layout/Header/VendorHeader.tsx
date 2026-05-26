@@ -214,9 +214,9 @@ export default function VendorHeader() {
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-2 cursor-pointer group outline-none ml-1">
               <Avatar className="size-9 border border-border rounded-full group-hover:border-primary/30 transition-colors">
-                <AvatarImage
-                  src={vendorProfileSrc}
-                />
+                {vendorProfileSrc ? (
+                  <AvatarImage key={vendorProfileSrc} src={vendorProfileSrc} />
+                ) : null}
                 <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
                   {vendorInitial}
                 </AvatarFallback>
@@ -230,7 +230,9 @@ export default function VendorHeader() {
             {/* VALEX BLUE HEADER */}
             <div className="bg-primary p-5 text-center">
               <Avatar className="mx-auto mb-3 size-14 border-2 border-white/30 bg-white/10">
-                <AvatarImage src={vendorProfileSrc} className="object-cover" />
+                {vendorProfileSrc ? (
+                  <AvatarImage key={vendorProfileSrc} src={vendorProfileSrc} className="object-cover" />
+                ) : null}
                 <AvatarFallback className="bg-white/20 text-white font-black">
                   {vendorInitial}
                 </AvatarFallback>

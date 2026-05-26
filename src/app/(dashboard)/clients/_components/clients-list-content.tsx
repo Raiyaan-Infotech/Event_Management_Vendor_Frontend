@@ -5,8 +5,9 @@ import {
   Edit2,
   Trash2,
   Eye,
-  FileDown,
-  FileUp,
+  Ban,
+  Upload,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -255,10 +256,10 @@ export default function ClientsListContent() {
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <FileUp size={13} strokeWidth={2.5} /> Import
+              <Upload size={13} strokeWidth={2.5} /> Import
             </Button>
             <Button variant="outline" onClick={handleExport} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <FileDown size={13} strokeWidth={2.5} /> Export
+              <Download size={13} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/clients/add">
               <ActionButton label="ADD CLIENT" variant_type="Client" />
@@ -341,6 +342,13 @@ export default function ClientsListContent() {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push(`/clients/edit/${item.id}`)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-gray-600">
               <Edit2 size={15} className="text-emerald-500" /> <span className="text-[13px] font-semibold">Edit</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => updateStatusMutation.mutate({ id: item.id, is_active: item.is_active === 2 ? 1 : 2 })}
+              className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-amber-600"
+            >
+              <Ban size={15} />
+              <span className="text-[13px] font-semibold">{item.is_active === 2 ? "Unblock" : "Block"}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setClientToDelete(item)} className="gap-2.5 rounded-[var(--vendor-radius-control)] py-2 cursor-pointer text-rose-500 focus:bg-rose-50">
               <Trash2 size={15} /> <span className="text-[13px] font-semibold">Delete</span>

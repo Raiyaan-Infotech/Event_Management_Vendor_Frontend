@@ -881,7 +881,7 @@ import {
 } from "@/hooks/use-vendor-clients";
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { LocationSelects, type LocationValues } from "@/components/common/LocationSelects";
-import { validateMobile, validateEmail } from "@/lib/validation";
+import { validateMobile, validateEmail, digitsOnly } from "@/lib/validation";
 import { PasswordHint } from "@/components/common/PasswordHint";
 
 // ... existing code ...
@@ -1345,12 +1345,21 @@ export function AddClientContent({
                     <Input
                       value={formData.pincode}
                       onChange={(e) => {
-                        !isView &&
-                          setFormData({ ...formData, pincode: e.target.value });
+                        if (isView) return;
+                        setFormData({ ...formData, pincode: digitsOnly(e.target.value, 10) });
                         if (errors.pincode)
                           setErrors((prev) => ({ ...prev, pincode: "" }));
                       }}
+                      onKeyDown={(e) => {
+                        // Block letters/symbols at the keystroke level too
+                        if (
+                          e.key.length === 1 &&
+                          !/[0-9]/.test(e.key) &&
+                          !e.ctrlKey && !e.metaKey
+                        ) e.preventDefault();
+                      }}
                       readOnly={isView}
+                      inputMode="numeric"
                       placeholder="Enter pincode"
                       className={`h-10 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[var(--vendor-form-input-text)] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-semibold text-gray-800" : errors.pincode ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                     />

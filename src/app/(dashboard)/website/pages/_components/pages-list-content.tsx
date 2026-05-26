@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import { Plus, Edit2, Trash2, Eye, FileUp, FileDown, FileText, Search, Layout } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, Upload, Download, FileText, Search, Layout } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -115,10 +115,10 @@ export default function PagesListContent() {
           <div className="flex items-center gap-2">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
-              <FileUp size={15} strokeWidth={2.5} /> Import
+              <Upload size={15} strokeWidth={2.5} /> Import
             </Button>
             <Button variant="outline" onClick={handleExport} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
-              <FileDown size={15} strokeWidth={2.5} /> Export
+              <Download size={15} strokeWidth={2.5} /> Export
             </Button>
             <Link href="/website/pages/create">
               <ActionButton label="CREATE" variant_type="Client" icon={Plus} />

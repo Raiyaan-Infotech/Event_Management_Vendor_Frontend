@@ -72,6 +72,7 @@ export default function MenuManagementContent() {
 
   const [menuItems, setMenuItems] = useState<MenuNavItem[]>([]);
   const [menuLoaded, setMenuLoaded] = useState(false);
+  const [hasPendingChanges, setHasPendingChanges] = useState(false);
 
   const cleanMenuItem = (item: NavMenuItem, index: number, validPageIds: Set<number>): MenuNavItem | null => {
     const cleanedPageIds = (item.page_ids || []).map(Number).filter((id) => validPageIds.has(id));
@@ -107,6 +108,35 @@ export default function MenuManagementContent() {
       );
     }
   }, [vendor, menuLoaded, pagesData]);
+
+  // ── Defensive re-filter: drop any menu item / child whose page_id no longer
+  //    exists in the current pages list. Fires whenever pagesData refreshes
+  //    (e.g. user deleted a page on the Pages tab, then came back here).
+  useEffect(() => {
+    if (!menuLoaded || !pagesData) return;
+    const validPageIds = new Set((pagesData?.data ?? []).map((p) => p.id));
+    setMenuItems((prev) => {
+      let mutated = false;
+      const next = prev
+        .map((item) => {
+          const cleanedPageIds = item.page_ids.filter((id) => validPageIds.has(id));
+          const cleanedChildren = item.children.filter((c) => validPageIds.has(Number(c.page_id)));
+          if (
+            cleanedPageIds.length !== item.page_ids.length ||
+            cleanedChildren.length !== item.children.length
+          ) {
+            mutated = true;
+          }
+          if (cleanedPageIds.length === 0 && cleanedChildren.length === 0) {
+            mutated = true;
+            return null;
+          }
+          return { ...item, page_ids: cleanedPageIds, children: cleanedChildren };
+        })
+        .filter(Boolean) as MenuNavItem[];
+      return mutated ? next : prev;
+    });
+  }, [pagesData, menuLoaded]);
 
   // ── Form state ────────────────────────────────────────────────────────────
   const [parentLabel, setParentLabel] = useState("");
@@ -161,7 +191,8 @@ export default function MenuManagementContent() {
     };
 
     setMenuItems((prev) => [...prev, newItem]);
-    toast.success(`Menu item "${parentLabel}" created`);
+    setHasPendingChanges(true);
+    toast.success(`Menu item "${parentLabel}" added. Click "Save Menu" to publish.`);
     clearForm();
   };
 
@@ -180,12 +211,15 @@ export default function MenuManagementContent() {
         return { ...item, label: parentLabel.trim(), type: inferMenuType(parentLabel), page_ids: selectedIds, children };
       })
     );
-    toast.success(`Menu item "${parentLabel}" updated`);
+    setHasPendingChanges(true);
+    toast.success(`Menu item "${parentLabel}" updated. Click "Save Menu" to publish.`);
     clearForm();
   };
 
-  const handleDelete = (id: string) =>
+  const handleDelete = (id: string) => {
     setMenuItems((prev) => prev.filter((item) => item.id !== id));
+    setHasPendingChanges(true);
+  };
 
   const toggleOpen = (id: string) =>
     setMenuItems((prev) =>
@@ -202,6 +236,7 @@ export default function MenuManagementContent() {
     updated.splice(index, 0, moved);
     setMenuItems(updated.map((item, i) => ({ ...item, order: i })));
     setDraggedIndex(null);
+    setHasPendingChanges(true);
   };
 
   // ── Child reorder ─────────────────────────────────────────────────────────
@@ -216,6 +251,7 @@ export default function MenuManagementContent() {
         return { ...item, children: children.map((c, i) => ({ ...c, order: i })) };
       })
     );
+    setHasPendingChanges(true);
   };
 
   // Fixed Home/About/Contact wrap the draggable page groups in the saved order.
@@ -248,6 +284,7 @@ export default function MenuManagementContent() {
 
     try {
       await updateMutation.mutateAsync({ nav_menu } as never);
+      setHasPendingChanges(false);
       toast.success("Menu saved successfully");
     } catch {
       toast.error("Failed to save menu");
@@ -518,15 +555,30 @@ export default function MenuManagementContent() {
           </CardContent>
         </Card>
 
+        {/* Unsaved-changes hint */}
+        {hasPendingChanges && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-[var(--vendor-radius-control)] border border-amber-300 bg-amber-50 dark:bg-amber-500/10 dark:border-amber-500/30 animate-in fade-in slide-in-from-top-1 duration-300">
+            <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+            <p className="text-xs font-bold text-amber-700 dark:text-amber-300">
+              You have unsaved changes — click <span className="underline">Save Menu</span> to publish.
+            </p>
+          </div>
+        )}
+
         {/* Action row */}
         <div className="flex gap-3">
           <Button
             onClick={handleSave}
             disabled={updateMutation.isPending}
-            className="flex-[2] h-12 bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-lg shadow-blue-500/25 border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+            className={cn(
+              "flex-[2] h-12 text-white font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] border-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-2",
+              hasPendingChanges
+                ? "bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/30 ring-2 ring-amber-300/60"
+                : "bg-[var(--vendor-primary-btn)] hover:bg-[var(--vendor-primary-btn-hover)] shadow-lg shadow-blue-500/25"
+            )}
           >
             <Save className="size-4" />
-            {updateMutation.isPending ? "SAVING..." : "SAVE MENU"}
+            {updateMutation.isPending ? "SAVING..." : hasPendingChanges ? "SAVE MENU *" : "SAVE MENU"}
           </Button>
           <Button
             variant="outline"

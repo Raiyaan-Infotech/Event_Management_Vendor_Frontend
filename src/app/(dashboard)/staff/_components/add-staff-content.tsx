@@ -879,7 +879,7 @@ import {
 import { useVendorRoles } from "@/hooks/use-vendor-roles";
 import { useVendorDepartments } from "@/hooks/use-vendor-departments";
 import { ImageCropper } from "@/components/common/ImageCropper";
-import { validateMobile } from "@/lib/validation";
+import { validateMobile, digitsOnly } from "@/lib/validation";
 
 interface AddStaffContentProps {
   initialData?: any;
@@ -1485,7 +1485,7 @@ export default function AddStaffContent({
                     />
                   </FormGroup>
 
-                  {/* City — required text only, no red border */}
+                  {/* City */}
                   <FormGroup
                     label="City"
                     required
@@ -1507,6 +1507,7 @@ export default function AddStaffContent({
                       }
                       icon={Building}
                       disabled={isView || cityOptions.length === 0}
+                      error={errors.city}
                     />
                   </FormGroup>
 
@@ -1546,12 +1547,20 @@ export default function AddStaffContent({
                     <Input
                       value={formData.pincode}
                       onChange={(e) => {
-                        !isView &&
-                          setFormData({ ...formData, pincode: e.target.value });
+                        if (isView) return;
+                        setFormData({ ...formData, pincode: digitsOnly(e.target.value, 10) });
                         if (errors.pincode)
                           setErrors((prev) => ({ ...prev, pincode: "" }));
                       }}
+                      onKeyDown={(e) => {
+                        if (
+                          e.key.length === 1 &&
+                          !/[0-9]/.test(e.key) &&
+                          !e.ctrlKey && !e.metaKey
+                        ) e.preventDefault();
+                      }}
                       readOnly={isView}
+                      inputMode="numeric"
                       placeholder="Enter pincode"
                       className={`h-10 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-control)] transition-all text-[13px] shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.pincode ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                     />

@@ -30,12 +30,22 @@ export default function PortfolioEvents({ data, settings }: { data?: any; settin
 
   if (variant === "variant_2") {
     return (
-      <div className="w-full bg-white px-6 py-20 md:px-10">
+      <div className="w-full bg-white px-6 py-20 md:px-10 overflow-hidden">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-5">
+          <div className="space-y-5 min-w-0">
             <span className="text-xs font-black uppercase tracking-[0.5em]" style={{ color: primary }}>Event Metrics</span>
-            <h2 className="text-5xl font-black leading-none text-gray-950">{header}</h2>
-            <p className="max-w-sm text-sm font-medium leading-relaxed text-gray-500">{detail}</p>
+            <h2
+              className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight text-gray-950 break-words max-w-full"
+              style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+            >
+              {header}
+            </h2>
+            <p
+              className="max-w-sm text-sm font-medium leading-relaxed text-gray-500 break-words"
+              style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+            >
+              {detail}
+            </p>
           </div>
 
           <div className="relative">
@@ -61,12 +71,22 @@ export default function PortfolioEvents({ data, settings }: { data?: any; settin
 
   if (variant === "variant_3") {
     return (
-      <div className="w-full py-16 px-8" style={{ backgroundColor: colors.footer_color || "#111827" }}>
+      <div className="w-full py-16 px-8 overflow-hidden" style={{ backgroundColor: colors.footer_color || "#111827" }}>
         <div className="max-w-5xl mx-auto space-y-10">
-          <div className="text-center space-y-3">
+          <div className="text-center space-y-3 min-w-0">
             <span className="text-xs font-black uppercase tracking-[0.5em]" style={{ color: primary }}>Events</span>
-            <h2 className="text-4xl font-black" style={{ color: colors.text_color || "#ffffff" }}>{header}</h2>
-            <p className="text-sm font-medium opacity-40" style={{ color: colors.text_color || "#ffffff" }}>{detail}</p>
+            <h2
+              className="text-2xl sm:text-3xl md:text-4xl font-black break-words max-w-full"
+              style={{ color: colors.text_color || "#ffffff", overflowWrap: "anywhere", wordBreak: "break-word" }}
+            >
+              {header}
+            </h2>
+            <p
+              className="text-sm font-medium opacity-40 break-words max-w-2xl mx-auto"
+              style={{ color: colors.text_color || "#ffffff", overflowWrap: "anywhere", wordBreak: "break-word" }}
+            >
+              {detail}
+            </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {stats.map((s: any, i: number) => (
@@ -89,12 +109,22 @@ export default function PortfolioEvents({ data, settings }: { data?: any; settin
 
   // variant_1 — Default with colored background
   return (
-    <div className="w-full py-16 px-8" style={{ background: `linear-gradient(135deg, ${primary}15 0%, ${primary}05 100%)` }}>
+    <div className="w-full py-16 px-8 overflow-hidden" style={{ background: `linear-gradient(135deg, ${primary}15 0%, ${primary}05 100%)` }}>
       <div className="max-w-5xl mx-auto space-y-10">
-        <div className="flex flex-col items-center text-center gap-3">
+        <div className="flex flex-col items-center text-center gap-3 min-w-0 w-full">
           <span className="text-xs font-black uppercase tracking-[0.5em]" style={{ color: primary }}>Events</span>
-          <h2 className="text-4xl font-black text-gray-900">{header}</h2>
-          <p className="text-gray-500 text-sm font-medium max-w-md">{detail}</p>
+          <h2
+            className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 break-words max-w-full"
+            style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+          >
+            {header}
+          </h2>
+          <p
+            className="text-gray-500 text-sm font-medium max-w-md break-words"
+            style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+          >
+            {detail}
+          </p>
           <div className="w-12 h-1 rounded-full" style={{ backgroundColor: primary }} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">

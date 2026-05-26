@@ -18,7 +18,7 @@ export default function HeaderPage() {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: vendor, isLoading } = useVendorAbout();
+  const { data: vendor, isLoading, refetch } = useVendorAbout();
   const updateMutation = useUpdateVendorAbout();
 
   const [logoImage, setLogoImage] = useState<string | null>(null);
@@ -96,10 +96,16 @@ export default function HeaderPage() {
     setIsEditing(false);
   };
 
-  const handleReset = () => {
-    if (!vendor) return;
-    setLogoImage(vendor.company_logo || null);
-    setCompanyName(vendor.company_name || "");
+  const handleReset = async () => {
+    // Force-pull latest server state, then re-populate every field + clear errors
+    const { data: fresh } = await refetch();
+    const src = fresh || vendor;
+    if (!src) return;
+    setLogoImage(src.company_logo || null);
+    setCompanyName(src.company_name || "");
+    setCompanyNameError("");
+    setCropperOpen(false);
+    setImageToCrop("");
     toast.info("All settings reset.");
   };
 

@@ -38,3 +38,25 @@ export function validateName(value: string, label = "Name"): string {
   if (trimmed.length < 2) return `${label} must be at least 2 characters`;
   return "";
 }
+
+/**
+ * Strip any non-digit characters from a string. Use to sanitize <input>
+ * onChange for pincode, OTP, numeric ID, and any digits-only field.
+ *
+ *   onChange={(e) => setForm({ ...form, pincode: digitsOnly(e.target.value) })}
+ *
+ * Keeps the value as a string so React stays controlled and there are no
+ * +/-/scientific-notation surprises from <input type="number">.
+ */
+export function digitsOnly(value: string, maxLength?: number): string {
+  const cleaned = (value ?? "").replace(/\D/g, "");
+  return typeof maxLength === "number" ? cleaned.slice(0, maxLength) : cleaned;
+}
+
+export function validatePincode(value: string): string {
+  const cleaned = (value ?? "").trim();
+  if (!cleaned) return "Pincode is required";
+  if (!/^\d+$/.test(cleaned)) return "Pincode must contain only digits";
+  if (cleaned.length < 4 || cleaned.length > 10) return "Pincode must be 4–10 digits";
+  return "";
+}

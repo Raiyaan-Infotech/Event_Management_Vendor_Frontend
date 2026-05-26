@@ -1,10 +1,11 @@
 ﻿"use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar, Edit, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -40,6 +41,15 @@ export default function EventsHighlightsForm() {
   const [rows, setRows] = useState<Row[]>(() =>
     Array.from({ length: REQUIRED_ROWS }, emptyRow)
   );
+  const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState<{
+    header?: string;
+    detail?: string;
+    rows?: Array<{ label?: string; value?: string }>;
+  }>({});
+
+  // Quick lookup for inline red borders
+  const rowErr = (i: number, key: "label" | "value") => errors.rows?.[i]?.[key];
 
   useEffect(() => {
     if (existing && existing.length > 0) {
@@ -63,6 +73,17 @@ export default function EventsHighlightsForm() {
     setRows((prev) =>
       prev.map((r, i) => (i === index ? { ...r, [key]: val } : r))
     );
+    if (errors.rows?.[index]?.[key]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        if (next.rows) {
+          next.rows = next.rows.map((row, i) =>
+            i === index ? { ...row, [key]: "" } : row
+          );
+        }
+        return next;
+      });
+    }
   };
 
   const handleReset = () => {
@@ -84,16 +105,23 @@ export default function EventsHighlightsForm() {
   };
 
   const handleSave = async () => {
-    const incomplete =
-      !header.trim() ||
-      !detail.trim() ||
-      rows.some((r) => !r.label.trim() || !r.value.trim());
-    if (incomplete) {
+    const newErrors: typeof errors = { rows: [] };
+    if (!header.trim()) newErrors.header = "Header is required";
+    if (!detail.trim()) newErrors.detail = "Detail is required";
+    const rowErrs = rows.map((r) => ({
+      label: r.label.trim() ? "" : "Required",
+      value: r.value.trim() ? "" : "Required",
+    }));
+    newErrors.rows = rowErrs;
+    const hasAnyRowErr = rowErrs.some((e) => e.label || e.value);
+
+    if (newErrors.header || newErrors.detail || hasAnyRowErr) {
+      setErrors(newErrors);
       toast.error("Please fill all mandatory fields.");
       return;
     }
+    setErrors({});
 
-    // Prepare all items including Header and Detail
     const allItems = [
       { label: "Header", value: header.trim() },
       { label: "Detail", value: detail.trim() },
@@ -101,6 +129,7 @@ export default function EventsHighlightsForm() {
     ];
 
     await updateEvents.mutateAsync(allItems);
+    setIsEditing(false);
   };
 
   return (
@@ -150,10 +179,22 @@ export default function EventsHighlightsForm() {
                     </label>
                     <Input
                       value={header}
-                      onChange={(e) => setHeader(e.target.value)}
+                      disabled={!isEditing}
+                      onChange={(e) => {
+                        setHeader(e.target.value);
+                        if (errors.header) setErrors((p) => ({ ...p, header: "" }));
+                      }}
                       placeholder="e.g. Our Success Stories"
-                      className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                      className={cn(
+                        "h-14 rounded-[var(--vendor-radius-panel)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold disabled:opacity-70",
+                        errors.header
+                          ? "border-rose-500 ring-4 ring-rose-500/5"
+                          : "border-[var(--vendor-border)]"
+                      )}
                     />
+                    {errors.header && (
+                      <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.header}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-[var(--vendor-text-muted)] uppercase tracking-[0.2em] ml-1">
@@ -161,10 +202,22 @@ export default function EventsHighlightsForm() {
                     </label>
                     <Input
                       value={detail}
-                      onChange={(e) => setDetail(e.target.value)}
+                      disabled={!isEditing}
+                      onChange={(e) => {
+                        setDetail(e.target.value);
+                        if (errors.detail) setErrors((p) => ({ ...p, detail: "" }));
+                      }}
                       placeholder="e.g. Statistics of our best events"
-                      className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                      className={cn(
+                        "h-14 rounded-[var(--vendor-radius-panel)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold disabled:opacity-70",
+                        errors.detail
+                          ? "border-rose-500 ring-4 ring-rose-500/5"
+                          : "border-[var(--vendor-border)]"
+                      )}
                     />
+                    {errors.detail && (
+                      <p className="text-[11px] font-semibold text-rose-500 ml-1">{errors.detail}</p>
+                    )}
                   </div>
                 </div>
 
@@ -186,25 +239,43 @@ export default function EventsHighlightsForm() {
                         </label>
                         <div className="w-12 shrink-0" />
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-start gap-3">
                         <div className="flex-1">
                           <Input
                             value={row.label}
+                            disabled={!isEditing}
                             onChange={(e) => updateRow(index, "label", e.target.value)}
                             placeholder="Label (e.g. Past Events)"
                             aria-label={`Highlight ${index + 1} label`}
-                            className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold"
+                            className={cn(
+                              "h-14 rounded-[var(--vendor-radius-panel)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold disabled:opacity-70",
+                              rowErr(index, "label")
+                                ? "border-rose-500 ring-4 ring-rose-500/5"
+                                : "border-[var(--vendor-border)]"
+                            )}
                           />
+                          {rowErr(index, "label") && (
+                            <p className="text-[11px] font-semibold text-rose-500 mt-1 ml-1">{rowErr(index, "label")}</p>
+                          )}
                         </div>
 
                         <div className="w-48 sm:w-56">
                           <Input
                             value={row.value}
+                            disabled={!isEditing}
                             onChange={(e) => updateRow(index, "value", e.target.value)}
                             placeholder="Value"
                             aria-label={`Highlight ${index + 1} value`}
-                            className="h-14 rounded-[var(--vendor-radius-panel)] border-[var(--vendor-border)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold text-center"
+                            className={cn(
+                              "h-14 rounded-[var(--vendor-radius-panel)] dark:border-white/5 bg-gray-50/30 focus:bg-white dark:bg-black/20 transition-all font-bold text-center disabled:opacity-70",
+                              rowErr(index, "value")
+                                ? "border-rose-500 ring-4 ring-rose-500/5"
+                                : "border-[var(--vendor-border)]"
+                            )}
                           />
+                          {rowErr(index, "value") && (
+                            <p className="text-[11px] font-semibold text-rose-500 mt-1 ml-1">{rowErr(index, "value")}</p>
+                          )}
                         </div>
 
                         <div className="w-12 h-14 shrink-0" />
@@ -222,7 +293,20 @@ export default function EventsHighlightsForm() {
           </div>
 
           <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-8 animate-in fade-in slide-in-from-right duration-1000">
-            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="bg-[var(--vendor-panel-bg)] backdrop-blur-md p-6 rounded-[2.5rem] border border-[var(--vendor-border)] dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-3">
+              <Button
+                type="button"
+                onClick={() => setIsEditing(!isEditing)}
+                className={cn(
+                  "w-full h-12 font-bold text-[13px] tracking-[0.1em] uppercase rounded-[var(--vendor-radius-panel)] shadow-sm transition-all duration-300 active:scale-95 flex items-center justify-center gap-3",
+                  isEditing
+                    ? "bg-amber-500 text-white border-none hover:bg-amber-600 shadow-amber-500/20"
+                    : "bg-white dark:bg-[#1e293b] text-[var(--vendor-text)] border border-[var(--vendor-border)] dark:border-[var(--vendor-border)] hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                )}
+              >
+                <Edit className="size-4" />
+                EDIT
+              </Button>
               <PersistenceActions
                 onSave={handleSave}
                 onReset={handleReset}

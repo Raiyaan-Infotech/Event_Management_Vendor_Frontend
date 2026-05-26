@@ -18,7 +18,7 @@ export default function ContactInfoPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [contactMode, setContactMode] = useState<"default" | "alternative">("default");
 
-  const { data: vendor, isLoading } = useVendorAbout();
+  const { data: vendor, isLoading, refetch } = useVendorAbout();
   const updateMutation = useUpdateVendorAbout();
 
   const [defaultContact, setDefaultContact] = useState({ mobile: "", email: "", address: "" });
@@ -90,21 +90,24 @@ export default function ContactInfoPage() {
     toast.success("Contact info updated.");
   };
 
-  const handleReset = () => {
-    if (!vendor) return;
+  const handleReset = async () => {
+    // Force-pull latest server state, then re-populate every field
+    const { data: fresh } = await refetch();
+    const src = fresh || vendor;
+    if (!src) return;
     setDefaultContact({
-      mobile:  vendor.company_contact || "",
-      email:   (vendor.company_email   || "").toLowerCase(),
-      address: vendor.company_address || "",
+      mobile:  src.company_contact || "",
+      email:   (src.company_email   || "").toLowerCase(),
+      address: src.company_address || "",
     });
     setAltContact({
-      mobile:      vendor.contact      || "",
-      alt_mobile:  vendor.alt_contact  || "",
-      email:       (vendor.alt_email    || "").toLowerCase(),
-      address:     vendor.address      || "",
-      alt_address: vendor.alt_address  || "",
+      mobile:      src.contact      || "",
+      alt_mobile:  src.alt_contact  || "",
+      email:       (src.alt_email    || "").toLowerCase(),
+      address:     src.address      || "",
+      alt_address: src.alt_address  || "",
     });
-    setContactMode(vendor.contact_mode === "alternative" ? "alternative" : "default");
+    setContactMode(src.contact_mode === "alternative" ? "alternative" : "default");
     toast.info("Contact info reset.");
   };
 

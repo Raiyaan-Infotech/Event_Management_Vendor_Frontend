@@ -14,7 +14,7 @@ export default function AboutUsPage() {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: vendor, isLoading } = useVendorAbout();
+  const { data: vendor, isLoading, refetch } = useVendorAbout();
   const updateMutation = useUpdateVendorAbout();
 
   const [aboutUsContent, setAboutUsContent] = useState("");
@@ -32,9 +32,12 @@ export default function AboutUsPage() {
     setIsEditing(false);
   };
 
-  const handleReset = () => {
-    if (!vendor) return;
-    setAboutUsContent(vendor.about_us || "");
+  const handleReset = async () => {
+    // Force-pull latest server state, then reset all fields
+    const { data: fresh } = await refetch();
+    const src = fresh || vendor;
+    if (!src) return;
+    setAboutUsContent(src.about_us || "");
     toast.info("All settings reset.");
   };
 

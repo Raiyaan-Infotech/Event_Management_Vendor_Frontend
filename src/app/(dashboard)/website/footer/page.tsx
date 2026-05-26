@@ -71,7 +71,7 @@ export default function FooterPage() {
   const [isEditing, setIsEditing] = useState(false);
 
   // ── API hooks (same pattern as AboutCompanyPage) ──
-  const { data: vendor, isLoading } = useVendorAbout();
+  const { data: vendor, isLoading, refetch } = useVendorAbout();
   const updateMutation = useUpdateVendorAbout('Footer saved successfully');
   const { data: pagesData } = useVendorPages({ limit: 100 });
   const vendorPages = pagesData?.data ?? [];
@@ -339,28 +339,35 @@ export default function FooterPage() {
   };
 
   // ── Reset ─────────────────────────────────────────
-  const handleReset = () => {
-    if (!vendor) return;
-    setLogo(vendor.company_logo || "");
-    setCompanyName(vendor.company_name || "");
-    setContactMode(((vendor as any).contact_mode as "default" | "alternative") || "default");
+  const handleReset = async () => {
+    // Force-pull latest server state, then re-populate every field + clear errors
+    const { data: fresh } = await refetch();
+    const src = fresh || vendor;
+    if (!src) return;
+    setLogo(src.company_logo || "");
+    setCompanyName(src.company_name || "");
+    setContactMode(((src as any).contact_mode as "default" | "alternative") || "default");
     setDefaultContact({
-      mobile: vendor.company_contact || "",
-      email: vendor.company_email || "",
-      address: vendor.company_address || "",
+      mobile: src.company_contact || "",
+      email: src.company_email || "",
+      address: src.company_address || "",
     });
     setAltContact({
-      mobile: vendor.contact || "",
-      email: vendor.alt_email || "",
-      address: vendor.address || "",
+      mobile: src.contact || "",
+      email: src.alt_email || "",
+      address: src.address || "",
     });
-    setCopyright(vendor.copywrite || "");
-    setPoweredBy(vendor.poweredby || "");
-    setDescription(vendor.short_description || "");
-    setQuickLinksHeading(vendor.footer_links?.[0]?.heading || "Quick Links");
-    setSelectedLinks(getSavedFooterLinks(vendor.footer_links));
-    setNewsletterEnabled((vendor as any).newsletter_status === 1);
+    setCopyright(src.copywrite || "");
+    setPoweredBy(src.poweredby || "");
+    setDescription(src.short_description || "");
+    setQuickLinksHeading(src.footer_links?.[0]?.heading || "Quick Links");
+    setSelectedLinks(getSavedFooterLinks(src.footer_links));
+    setNewsletterEnabled((src as any).newsletter_status === 1);
     setNewsletterEmailPreview("");
+    setFieldErrors({});
+    setFooterLinksLoaded(false);  // allow quick-links useEffect to re-populate from fresh
+    setCropperOpen(false);
+    setImageToCrop("");
     toast.info("All settings reset.");
   };
 
@@ -407,12 +414,14 @@ export default function FooterPage() {
                     </Label>
                     <Input
                       value={companyName}
+                      disabled={!isEditing}
                       onChange={(e) => {
+                        if (!isEditing) return;
                         setCompanyName(e.target.value);
                         if (fieldErrors.companyName) setFieldErrors((p) => ({ ...p, companyName: "" }));
                       }}
                       placeholder="Enter company name..."
-                      className={`h-12 dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] ${fieldErrors.companyName ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                      className={`h-12 dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.companyName ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                     />
                     {fieldErrors.companyName && (
                       <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.companyName}</p>
@@ -424,12 +433,14 @@ export default function FooterPage() {
                     </Label>
                     <Textarea
                       value={description}
+                      disabled={!isEditing}
                       onChange={(e) => {
+                        if (!isEditing) return;
                         setDescription(e.target.value);
                         if (fieldErrors.description) setFieldErrors((p) => ({ ...p, description: "" }));
                       }}
                       placeholder="Write short company description here..."
-                      className={`min-h-[150px] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none focus:bg-white bg-gray-50/30 transition-all font-medium leading-relaxed ${fieldErrors.description ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                      className={`min-h-[150px] dark:border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none focus:bg-white bg-gray-50/30 transition-all font-medium leading-relaxed disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.description ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                     />
                     {fieldErrors.description && (
                       <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.description}</p>
@@ -440,8 +451,10 @@ export default function FooterPage() {
                 {/* Logo Upload */}
                 <div className="space-y-2">
                   <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-full min-h-[250px] rounded-[var(--vendor-radius-panel)] border-2 border-dashed border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/50 dark:bg-white/5 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-all p-8 relative group"
+                    onClick={() => { if (isEditing) fileInputRef.current?.click(); }}
+                    className={`h-full min-h-[250px] rounded-[var(--vendor-radius-panel)] border-2 border-dashed border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/50 dark:bg-white/5 flex flex-col items-center justify-center transition-all p-8 relative group ${
+                      isEditing ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10" : "cursor-not-allowed opacity-70"
+                    }`}
                   >
                     {logo ? (
                       <div className="relative h-32 w-full">
@@ -561,8 +574,9 @@ export default function FooterPage() {
                   </div>
                 </div>
                 <Button
-                  onClick={() => { setModalSearch(""); setPageModalOpen(true); }}
-                  className="bg-green-600 hover:bg-green-700 text-white h-9 text-xs font-bold px-4 gap-2 shadow-sm shadow-green-500/10 active:scale-95 transition-all"
+                  disabled={!isEditing}
+                  onClick={() => { if (!isEditing) return; setModalSearch(""); setPageModalOpen(true); }}
+                  className="bg-green-600 hover:bg-green-700 text-white h-9 text-xs font-bold px-4 gap-2 shadow-sm shadow-green-500/10 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-green-600"
                 >
                   <Plus size={14} /> Add Pages
                 </Button>
@@ -575,12 +589,14 @@ export default function FooterPage() {
                   </Label>
                   <Input
                     value={quickLinksHeading}
+                    disabled={!isEditing}
                     onChange={(e) => {
+                      if (!isEditing) return;
                       setQuickLinksHeading(e.target.value);
                       if (fieldErrors.quickLinksHeading) setFieldErrors((p) => ({ ...p, quickLinksHeading: "" }));
                     }}
                     placeholder="Type Heading Here..."
-                    className={`font-bold text-base h-10 bg-white dark:bg-sidebar dark:border-[var(--vendor-border)] ${fieldErrors.quickLinksHeading ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                    className={`font-bold text-base h-10 bg-white dark:bg-sidebar dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.quickLinksHeading ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                   />
                   {fieldErrors.quickLinksHeading && (
                     <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.quickLinksHeading}</p>
@@ -623,8 +639,9 @@ export default function FooterPage() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => removeLink(link.page_id)}
-                          className="text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                          disabled={!isEditing}
+                          onClick={() => { if (isEditing) removeLink(link.page_id); }}
+                          className="text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 disabled:cursor-not-allowed disabled:hover:text-gray-300"
                         >
                           <X size={14} />
                         </button>
@@ -632,9 +649,17 @@ export default function FooterPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-10 text-center border-2 border-dashed border-[var(--vendor-border)]/50 rounded-[var(--vendor-radius-panel)]">
-                    <LinkIcon size={24} className="mx-auto text-gray-300 mb-2" />
-                    <p className="text-sm text-[var(--vendor-text-muted)]">No quick links yet.</p>
+                  <div
+                    className={`py-10 text-center border-2 border-dashed rounded-[var(--vendor-radius-panel)] ${
+                      fieldErrors.quickLinks
+                        ? "border-rose-500 bg-rose-50/40 ring-4 ring-rose-500/5"
+                        : "border-[var(--vendor-border)]/50"
+                    }`}
+                  >
+                    <LinkIcon size={24} className={`mx-auto mb-2 ${fieldErrors.quickLinks ? "text-rose-400" : "text-gray-300"}`} />
+                    <p className={`text-sm ${fieldErrors.quickLinks ? "text-rose-600 font-semibold" : "text-[var(--vendor-text-muted)]"}`}>
+                      {fieldErrors.quickLinks || "No quick links yet."}
+                    </p>
                     <p className="text-xs text-gray-300 mt-1">Click &quot;Add Pages&quot; to choose pages for the footer.</p>
                   </div>
                 )}
@@ -653,8 +678,9 @@ export default function FooterPage() {
                         type="checkbox"
                         id="newsletter-checkbox"
                         checked={newsletterEnabled}
-                        onChange={(e) => setNewsletterEnabled(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer transition-all"
+                        disabled={!isEditing}
+                        onChange={(e) => { if (isEditing) setNewsletterEnabled(e.target.checked); }}
+                        className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary transition-all disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                       />
                       <Label 
                         htmlFor="newsletter-checkbox" 
@@ -674,14 +700,16 @@ export default function FooterPage() {
                         <div className="flex flex-col sm:flex-row gap-3">
                           <Input
                             value={newsletterEmailPreview}
-                            onChange={(e) => setNewsletterEmailPreview(e.target.value)}
+                            readOnly
+                            disabled
                             placeholder="Enter Email Address..."
-                            className="h-11 text-xs bg-gray-50/50 dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium focus:ring-2 focus:ring-primary/10 transition-all flex-1"
+                            className="h-11 text-xs bg-gray-100 dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium flex-1 cursor-not-allowed opacity-70"
                           />
-                          <Button className="h-11 px-8 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-[var(--vendor-radius-control)] shadow-md shadow-primary/20 active:scale-95 transition-all">
+                          <Button type="button" disabled className="h-11 px-8 bg-primary text-white text-xs font-bold rounded-[var(--vendor-radius-control)] shadow-md shadow-primary/20 cursor-not-allowed opacity-70">
                             Subscribe
                           </Button>
                         </div>
+                        <p className="text-[10px] italic text-[var(--vendor-text-muted)]">Preview only — readers subscribe on the public site.</p>
                       </div>
                     </div>
                   )}
@@ -695,7 +723,7 @@ export default function FooterPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Default Contact */}
                     <div
-                      onClick={() => setContactMode("default")}
+                      onClick={() => { if (isEditing) setContactMode("default"); }}
                       className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 cursor-pointer transition-all duration-300 ${
                         contactMode === "default"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
@@ -723,14 +751,10 @@ export default function FooterPage() {
                           </Label>
                           <Input
                             value={defaultContact.mobile}
-                            onChange={(e) =>
-                              setDefaultContact({
-                                ...defaultContact,
-                                mobile: e.target.value,
-                              })
-                            }
+                            disabled={!isEditing}
+                            onChange={(e) => isEditing && setDefaultContact({ ...defaultContact, mobile: e.target.value })}
                             placeholder="Enter Mobile Number..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                           />
                         </div>
                         <div className="space-y-1">
@@ -739,14 +763,10 @@ export default function FooterPage() {
                           </Label>
                           <Input
                             value={defaultContact.email}
-                            onChange={(e) =>
-                              setDefaultContact({
-                                ...defaultContact,
-                                email: e.target.value.toLowerCase(),
-                              })
-                            }
+                            disabled={!isEditing}
+                            onChange={(e) => isEditing && setDefaultContact({ ...defaultContact, email: e.target.value.toLowerCase() })}
                             placeholder="Enter Email ID..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                           />
                         </div>
                         <div className="space-y-1">
@@ -755,14 +775,10 @@ export default function FooterPage() {
                           </Label>
                           <Textarea
                             value={defaultContact.address}
-                            onChange={(e) =>
-                              setDefaultContact({
-                                ...defaultContact,
-                                address: e.target.value,
-                              })
-                            }
+                            disabled={!isEditing}
+                            onChange={(e) => isEditing && setDefaultContact({ ...defaultContact, address: e.target.value })}
                             placeholder="Enter Address..."
-                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium"
+                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                           />
                         </div>
                       </div>
@@ -770,7 +786,7 @@ export default function FooterPage() {
 
                     {/* Alternative Contact */}
                     <div
-                      onClick={() => setContactMode("alternative")}
+                      onClick={() => { if (isEditing) setContactMode("alternative"); }}
                       className={`group relative p-6 rounded-[var(--vendor-radius-panel)] border-2 cursor-pointer transition-all duration-300 ${
                         contactMode === "alternative"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
@@ -798,14 +814,10 @@ export default function FooterPage() {
                           </Label>
                           <Input
                             value={altContact.mobile}
-                            onChange={(e) =>
-                              setAltContact({
-                                ...altContact,
-                                mobile: e.target.value,
-                              })
-                            }
+                            disabled={!isEditing}
+                            onChange={(e) => isEditing && setAltContact({ ...altContact, mobile: e.target.value })}
                             placeholder="Enter Mobile Number..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                           />
                         </div>
                         <div className="space-y-1">
@@ -814,14 +826,10 @@ export default function FooterPage() {
                           </Label>
                           <Input
                             value={altContact.email}
-                            onChange={(e) =>
-                              setAltContact({
-                                ...altContact,
-                                email: e.target.value.toLowerCase(),
-                              })
-                            }
+                            disabled={!isEditing}
+                            onChange={(e) => isEditing && setAltContact({ ...altContact, email: e.target.value.toLowerCase() })}
                             placeholder="Enter Email ID..."
-                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium"
+                            className="h-10 text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                           />
                         </div>
                         <div className="space-y-1">
@@ -830,14 +838,10 @@ export default function FooterPage() {
                           </Label>
                           <Textarea
                             value={altContact.address}
-                            onChange={(e) =>
-                              setAltContact({
-                                ...altContact,
-                                address: e.target.value,
-                              })
-                            }
+                            disabled={!isEditing}
+                            onChange={(e) => isEditing && setAltContact({ ...altContact, address: e.target.value })}
                             placeholder="Enter Address..."
-                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium"
+                            className="min-h-[80px] text-xs bg-white dark:bg-[#121212] border-[var(--vendor-border)] rounded-[var(--vendor-radius-control)] resize-none leading-relaxed font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                           />
                         </div>
                       </div>
@@ -865,12 +869,14 @@ export default function FooterPage() {
                   </Label>
                   <Input
                     value={copyright}
+                    disabled={!isEditing}
                     onChange={(e) => {
+                      if (!isEditing) return;
                       setCopyright(e.target.value);
                       if (fieldErrors.copyright) setFieldErrors((p) => ({ ...p, copyright: "" }));
                     }}
                     placeholder="Type Copyright Text..."
-                    className={`h-11 dark:border-[var(--vendor-border)] ${fieldErrors.copyright ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                    className={`h-11 dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.copyright ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                   />
                   {fieldErrors.copyright && (
                     <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.copyright}</p>
@@ -882,12 +888,14 @@ export default function FooterPage() {
                   </Label>
                   <Input
                     value={poweredBy}
+                    disabled={!isEditing}
                     onChange={(e) => {
+                      if (!isEditing) return;
                       setPoweredBy(e.target.value);
                       if (fieldErrors.poweredBy) setFieldErrors((p) => ({ ...p, poweredBy: "" }));
                     }}
                     placeholder="Type Powered By text..."
-                    className={`h-11 dark:border-[var(--vendor-border)] ${fieldErrors.poweredBy ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                    className={`h-11 dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.poweredBy ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
                   />
                   {fieldErrors.poweredBy && (
                     <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.poweredBy}</p>

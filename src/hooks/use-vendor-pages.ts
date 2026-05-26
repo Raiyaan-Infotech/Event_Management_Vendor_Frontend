@@ -71,7 +71,10 @@ export const useCreateVendorPage = () => {
     onSuccess: (page) => {
       queryClient.invalidateQueries({ queryKey: VENDOR_PAGES_KEY });
       toast.success(`Page "${page.name}" created successfully`);
-      router.push('/website/pages');
+      // Stay on this page so the vendor can keep editing / hit Preview.
+      // Switch from the /create URL to the /edit/:id URL so subsequent saves
+      // hit the update endpoint and Cancel still goes back to the list.
+      router.replace(`/website/pages/edit/${page.id}`);
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -82,7 +85,6 @@ export const useCreateVendorPage = () => {
 
 export const useUpdateVendorPage = (id: number) => {
   const queryClient = useQueryClient();
-  const router = useRouter();
   return useMutation({
     mutationFn: async (data: { name?: string; description?: string; content?: string }) => {
       const res = await apiClient.put(`/vendors/pages/${id}`, data);
@@ -90,8 +92,9 @@ export const useUpdateVendorPage = (id: number) => {
     },
     onSuccess: (page) => {
       queryClient.invalidateQueries({ queryKey: VENDOR_PAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: [...VENDOR_PAGES_KEY, id] });
       toast.success(`Page "${page.name}" updated successfully`);
-      router.push('/website/pages');
+      // Stay on the edit page so Cancel and Preview remain useful.
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -144,6 +147,10 @@ export const useUpdateVendorTerms = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendor-terms'] });
+      // Backend upserts a vendor_pages row, so refresh the Pages list too
+      queryClient.invalidateQueries({ queryKey: VENDOR_PAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: ['vendor-me'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success('Terms & Conditions updated');
     },
     onError: (error: unknown) => {
@@ -177,6 +184,10 @@ export const useUpdateVendorPrivacy = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendor-privacy'] });
+      // Backend upserts a vendor_pages row, so refresh the Pages list too
+      queryClient.invalidateQueries({ queryKey: VENDOR_PAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: ['vendor-me'] });
+      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success('Privacy Policy updated');
     },
     onError: (error: unknown) => {
