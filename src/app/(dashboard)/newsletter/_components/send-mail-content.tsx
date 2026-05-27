@@ -32,7 +32,9 @@ export default function SendMailContent() {
   const [templateId,  setTemplateId]  = useState<number | null>(null);
 
   const { data: subscriptionData } = useVendorSubscription();
-  const planOptions = subscriptionData?.plans ?? [];
+  // Use all_plans (not the vendor's own subscribed plans) — the filter must
+  // expose every plan a client could be on, regardless of the vendor's tier.
+  const planOptions = subscriptionData?.all_plans ?? subscriptionData?.plans ?? [];
 
   const { data: categories = [], isLoading: catsLoading } = useEmailCategories();
   const { data: templates  = [], isLoading: tmplLoading  } = useEmailTemplatesByCategory(categoryId);

@@ -50,9 +50,14 @@ export default function EmailCategoryContent() {
       label: "Name",
       sortable: true,
       render: (item) => (
-        <span className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">
-          {item.name}
-        </span>
+        <div className="max-w-[260px]">
+          <p
+            title={item.name}
+            className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight truncate"
+          >
+            {item.name}
+          </p>
+        </div>
       ),
     },
     {
@@ -60,7 +65,10 @@ export default function EmailCategoryContent() {
       label: "Description",
       render: (item) => (
         <div className="max-w-[400px] py-1">
-          <p className="text-[12px] font-medium text-[var(--vendor-text-muted)] leading-relaxed line-clamp-2 italic">
+          <p
+            title={item.description || ""}
+            className="text-[12px] font-medium text-[var(--vendor-text-muted)] leading-relaxed line-clamp-2 italic"
+          >
             {item.description || "—"}
           </p>
         </div>

@@ -60,7 +60,9 @@ export default function NewsletterManagementContent({ type }: Props) {
   const isLoading = isSubscribers ? subscribersQuery.isLoading : unsubscribersQuery.isLoading;
 
   const { data: subscriptionData } = useVendorSubscription();
-  const plans = subscriptionData?.plans ?? [];
+  // Use all_plans so each subscriber's badge resolves its own plan's color,
+  // not just the colors of plans the current vendor is subscribed to.
+  const plans = subscriptionData?.all_plans ?? subscriptionData?.plans ?? [];
 
   const bulkUpdate      = useBulkUpdateClientType();
   const bulkUpdateIds   = useBulkUpdateByIds();

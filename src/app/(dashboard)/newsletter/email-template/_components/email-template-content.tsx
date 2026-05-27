@@ -69,9 +69,14 @@ export default function EmailTemplateManagementContent() {
       label: "Name",
       sortable: true,
       render: (item) => (
-        <span className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">
-          {item.name}
-        </span>
+        <div className="max-w-[260px]">
+          <p
+            title={item.name}
+            className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight truncate"
+          >
+            {item.name}
+          </p>
+        </div>
       ),
     },
     {

@@ -51,13 +51,19 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
       const blob = await res.blob();
       const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
       const result = await uploadMedia.mutateAsync({ file, folder: 'vendors' });
-      updateProfile.mutate({ profile: result.url });
+      // Sync both: profile (avatar) AND company_logo (sidebar branding) so a
+      // single upload here reflects in every place the vendor sees themselves.
+      updateProfile.mutate({ profile: result.url, company_logo: result.url });
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
       setUploading(false);
     }
   };
+
+  // Prefer company_logo so an admin-side logo update for this vendor reflects
+  // here even when the vendor already had a personal profile photo on file.
+  const avatarSrc = vendor?.company_logo || vendor?.profile || null;
 
   return (
     <>
@@ -69,10 +75,10 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
                 <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full" />
              </div>
           )}
-          {vendor?.profile ? (
+          {avatarSrc ? (
             <AvatarImage
-              key={vendor.profile}
-              src={resolveMediaUrl(vendor.profile)}
+              key={avatarSrc}
+              src={resolveMediaUrl(avatarSrc)}
               className="object-cover rounded-full"
             />
           ) : null}
