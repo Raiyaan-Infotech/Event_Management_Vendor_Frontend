@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
-import { Plus, Edit2, Trash2, Eye, Upload, Download, FileText, Search, Layout } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Plus, Edit2, Trash2, Eye, Layout } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTable, Column } from "@/components/common/DataTable";
 import { DataTableSearch } from "@/components/common/DataTableSearch";
 import { PaginationControls } from "@/components/common/PaginationControls";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
+import { TableImportExportActions } from "@/components/common/TableImportExportActions";
 import { useVendorPages, useDeleteVendorPage, VendorPage } from "@/hooks/use-vendor-pages";
 
 interface PageRow {
@@ -25,7 +25,6 @@ interface PageRow {
 
 export default function PagesListContent() {
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: string; order: "asc" | "desc" | null }>({ key: "id", order: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,7 +100,8 @@ export default function PagesListContent() {
     toast.info("Export feature needs backend implementation.");
   };
 
-  const handleImport = () => {
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.target.value = "";
     toast.info("Import feature needs backend implementation.");
   };
 
@@ -113,13 +113,11 @@ export default function PagesListContent() {
         total={total}
         rightContent={
           <div className="flex items-center gap-2">
-            <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
-              <Upload size={15} strokeWidth={2.5} /> Import
-            </Button>
-            <Button variant="outline" onClick={handleExport} className="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider">
-              <Download size={15} strokeWidth={2.5} /> Export
-            </Button>
+            <TableImportExportActions
+              onImport={handleImport}
+              onExport={handleExport}
+              buttonClassName="h-10 text-[var(--vendor-control-text)] font-semibold gap-2 border-slate-200 dark:border-[var(--vendor-border)] text-slate-600 hover:bg-slate-50 transition-all rounded-[var(--vendor-radius-control)] shadow-sm uppercase tracking-wider"
+            />
             <Link href="/website/pages/create">
               <ActionButton label="CREATE" variant_type="Client" icon={Plus} />
             </Link>

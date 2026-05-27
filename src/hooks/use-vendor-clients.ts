@@ -44,7 +44,7 @@ export const useVendorClients = (params?: {
   page?: number;
   limit?: number;
   search?: string;
-  is_active?: number;
+  is_active?: number | string;
   plan?: string;
   sort_by?: string;
   sort_order?: 'ASC' | 'DESC';

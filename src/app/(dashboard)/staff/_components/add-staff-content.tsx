@@ -1017,7 +1017,8 @@ export default function AddStaffContent({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name) newErrors.name = "Full name is required";
-    if (!formData.role_id) newErrors.designation = "Designation is required";
+    if (!formData.designation || !String(formData.designation).trim()) newErrors.designation = "Designation is required";
+    if (!formData.role_id) newErrors.role_id = "Role is required";
     if (!formData.department_id) newErrors.department_id = "Department is required";
     const mobileErr = validateMobile(formData.mobile || "");
     if (mobileErr) newErrors.mobile = mobileErr;
@@ -1238,7 +1239,7 @@ export default function AddStaffContent({
               isView={isView}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                {/* Designation */}
+                {/* Designation — free-text title for the staff member */}
                 <FormGroup
                   label="Designation"
                   icon={Briefcase}
@@ -1246,9 +1247,30 @@ export default function AddStaffContent({
                   required
                   isView={isView}
                 >
+                  <Input
+                    value={formData.designation}
+                    onChange={(e) => {
+                      if (isView) return;
+                      setFormData({ ...formData, designation: e.target.value });
+                      if (errors.designation) setErrors((prev) => ({ ...prev, designation: "" }));
+                    }}
+                    readOnly={isView}
+                    placeholder="e.g. Manager, Coordinator"
+                    className={`h-12 pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] transition-all text-sm shadow-sm ${isView ? "focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800" : errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
+                  />
+                </FormGroup>
+
+                {/* Role — RBAC role selection (separate from free-text Designation) */}
+                <FormGroup
+                  label="Role"
+                  icon={Briefcase}
+                  error={errors.role_id}
+                  required
+                  isView={isView}
+                >
                   {isView ? (
                     <Input
-                      value={formData.designation}
+                      value={(rolesData?.data ?? []).find((r) => String(r.id) === String(formData.role_id))?.name || "—"}
                       readOnly
                       className="h-12 pl-12 focus:ring-0 cursor-default border-transparent bg-transparent pl-8 font-black text-gray-800 rounded-[var(--vendor-radius-panel)] text-sm"
                     />
@@ -1256,22 +1278,14 @@ export default function AddStaffContent({
                     <Select
                       value={formData.role_id ? String(formData.role_id) : ""}
                       onValueChange={(val) => {
-                        const selectedRole = rolesData?.data?.find(
-                          (r) => String(r.id) === val,
-                        );
-                        setFormData({
-                          ...formData,
-                          role_id: val,
-                          designation: selectedRole?.name || "",
-                        });
-                        if (errors.designation)
-                          setErrors((prev) => ({ ...prev, designation: "" }));
+                        setFormData({ ...formData, role_id: val });
+                        if (errors.role_id) setErrors((prev) => ({ ...prev, role_id: "" }));
                       }}
                     >
                       <SelectTrigger
-                        className={`h-12 w-full pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.designation ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
+                        className={`h-12 w-full pl-12 border-[var(--vendor-border)] bg-[var(--vendor-panel-bg)]/20 rounded-[var(--vendor-radius-panel)] text-sm shadow-sm ${errors.role_id ? "border-rose-500 ring-4 ring-rose-500/5" : "focus:border-[var(--vendor-primary-btn)]/20 focus:ring-4 focus:ring-[var(--vendor-primary-btn)]/10"}`}
                       >
-                        <SelectValue placeholder="Select designation" />
+                        <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
                         {(rolesData?.data ?? []).map((role) => (

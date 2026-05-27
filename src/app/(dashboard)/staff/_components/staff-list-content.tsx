@@ -5,8 +5,6 @@ import {
   Edit2,
   Trash2,
   Eye,
-  Upload,
-  Download,
   Briefcase,
   Calendar,
   Layout,
@@ -32,6 +30,7 @@ import { DataTable, Column } from "@/components/common/DataTable";
 import { PaginationControls } from "@/components/common/PaginationControls";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
+import { TableImportExportActions } from "@/components/common/TableImportExportActions";
 import { SafeImage } from "@/components/ui/safe-image";
 import { vendorUi } from "@/lib/vendor-ui";
 import {
@@ -163,8 +162,6 @@ export default function StaffListContent() {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumnKeys);
   const [tempColumns, setTempColumns]       = useState<string[]>(allColumnKeys);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
   // Fetch data via hook
   const { data: staffRes, isLoading: loading } = useVendorStaff({
     page:        currentPage,
@@ -229,6 +226,7 @@ export default function StaffListContent() {
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.value = "";
     toast.info("Import feature is currently being migrated to API.");
   };
 
@@ -240,13 +238,7 @@ export default function StaffListContent() {
         total={totalRecords}
         rightContent={
           <div className="flex items-center gap-2">
-            <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Upload size={13} strokeWidth={2.5} /> Import
-            </Button>
-            <Button variant="outline" onClick={handleExport} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Download size={13} strokeWidth={2.5} /> Export
-            </Button>
+            <TableImportExportActions onImport={handleImport} onExport={handleExport} />
             <Link href="/staff/add">
               <ActionButton label="ADD STAFF" variant_type="Staff" />
             </Link>

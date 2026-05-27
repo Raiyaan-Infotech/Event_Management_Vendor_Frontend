@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -17,12 +16,9 @@ import {
   Mail,
   MapPin,
   Image as ImageIcon,
-  Upload,
-  Layout,
   Check,
   Search,
   Copyright,
-  Trash2,
   Share2,
   ExternalLink,
   Link as LinkIcon,
@@ -41,6 +37,7 @@ import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import apiClient from "@/lib/api-client";
 import { validateEmail, validateMobile } from "@/lib/validation";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { CompanyLogoUpload } from "@/components/common/CompanyLogoUpload";
 
 // ─── Social icon renderer ─────────────────────────────────────────────────────
 const lucideIconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = Object.fromEntries(
@@ -142,8 +139,6 @@ export default function FooterPage() {
   // ── Newsletter ────────────────────────────────────
   const [newsletterEnabled, setNewsletterEnabled] = useState(false);
   const [newsletterEmailPreview, setNewsletterEmailPreview] = useState("");
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Footer logo cropper (parity with Header page) ──
   const [cropperOpen, setCropperOpen] = useState(false);
@@ -448,46 +443,8 @@ export default function FooterPage() {
                   </div>
                 </div>
 
-                {/* Logo Upload */}
-                <div className="space-y-2">
-                  <div
-                    onClick={() => { if (isEditing) fileInputRef.current?.click(); }}
-                    className={`h-full min-h-[250px] rounded-[var(--vendor-radius-panel)] border-2 border-dashed border-[var(--vendor-border)] dark:border-[var(--vendor-border)] bg-gray-50/50 dark:bg-white/5 flex flex-col items-center justify-center transition-all p-8 relative group ${
-                      isEditing ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10" : "cursor-not-allowed opacity-70"
-                    }`}
-                  >
-                    {logo ? (
-                      <div className="relative h-32 w-full">
-                        <Image
-                          src={logo}
-                          alt="Logo"
-                          fill
-                          className="object-contain transition-transform group-hover:scale-105"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-[var(--vendor-radius-panel)] bg-white dark:bg-sidebar shadow-sm border border-[var(--vendor-border)] flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                          <Upload size={24} />
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">
-                            UPLOAD LOGO
-                          </p>
-                          <p className="text-[10px] font-semibold text-[var(--vendor-text-muted)] mt-1 uppercase tracking-wider">
-                            PNG, JPG up to 5MB
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                    accept="image/*"
-                  />
+                <div className="md:col-span-2">
+                  <CompanyLogoUpload imageUrl={logo} disabled={!isEditing} onFileChange={handleLogoUpload} />
                 </div>
               </div>
 

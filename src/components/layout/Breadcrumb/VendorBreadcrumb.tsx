@@ -91,6 +91,7 @@ const NON_LINKABLE = new Set([
   "email-template",
   "email-marketing",
   "email-templates",
+  "newsletter",
   "events",
 ]);
 
@@ -119,8 +120,12 @@ export default function VendorBreadcrumb() {
     let segments = pathname.split("/").filter(Boolean);
 
     // ── Virtual segment injections / expansions ─────────────────────────────
-    // /newsletter/* → prepend "email-marketing"
-    if (segments[0] === "newsletter") {
+    // /newsletter/email-template/* is shown as
+    // Email Marketing > Email Templates > Templates/Category.
+    // Other /newsletter/* routes keep Newsletter as a non-linkable child.
+    if (segments[0] === "newsletter" && segments[1] === "email-template") {
+      segments = ["email-marketing", ...segments.slice(1)];
+    } else if (segments[0] === "newsletter") {
       segments = ["email-marketing", ...segments];
     }
 
@@ -174,6 +179,9 @@ export default function VendorBreadcrumb() {
 
       if (SUB_ACTIONS.has(effectiveSeg) && moduleLabel) {
         label = `${label} ${moduleLabel}`;
+        if (effectiveSeg === "create" && moduleLabel === "Department") {
+          label = "Add Department";
+        }
       }
 
       result.push({

@@ -6,8 +6,6 @@ import {
   Trash2,
   Eye,
   Ban,
-  Upload,
-  Download,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +28,7 @@ import { DataTable, Column } from "@/components/common/DataTable";
 import { PaginationControls } from "@/components/common/PaginationControls";
 import { ActionButton } from "@/components/common/ActionButton";
 import { ColumnToggle } from "@/components/common/ColumnToggle";
+import { TableImportExportActions } from "@/components/common/TableImportExportActions";
 import { SafeImage } from "@/components/ui/safe-image";
 import { vendorUi } from "@/lib/vendor-ui";
 import { useVendorClients, useDeleteVendorClient, useToggleVendorClientLoginAccess, useUpdateVendorClientStatus, VendorClient } from "@/hooks/use-vendor-clients";
@@ -183,14 +182,12 @@ export default function ClientsListContent() {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumnKeys);
   const [tempColumns, setTempColumns]       = useState<string[]>(allColumnKeys);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
   // Fetch data via hook
   const { data: clientsRes, isLoading: loading } = useVendorClients({
     page:       currentPage,
     limit:      itemsPerPage,
     search:     searchQuery,
-    is_active:  filterStatus === "All" ? undefined : Number(filterStatus),
+    is_active:  filterStatus === "All" ? undefined : filterStatus,
     plan:       filterPlan === "All" ? undefined : filterPlan,
     sort_by:    sortConfig.key || "created_at",
     sort_order: (sortConfig.order?.toUpperCase() as "ASC" | "DESC") || "DESC",
@@ -242,7 +239,8 @@ export default function ClientsListContent() {
     toast.success("Clients exported successfully");
   };
 
-  const handleImport = () => {
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.target.value = "";
     toast.info("Import feature needs backend implementation for CSV processing.");
   };
 
@@ -254,13 +252,7 @@ export default function ClientsListContent() {
         total={totalRecords}
         rightContent={
           <div className="flex items-center gap-2">
-            <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Upload size={13} strokeWidth={2.5} /> Import
-            </Button>
-            <Button variant="outline" onClick={handleExport} className="h-8 px-3 gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <Download size={13} strokeWidth={2.5} /> Export
-            </Button>
+            <TableImportExportActions onImport={handleImport} onExport={handleExport} />
             <Link href="/clients/add">
               <ActionButton label="ADD CLIENT" variant_type="Client" />
             </Link>
@@ -277,7 +269,7 @@ export default function ClientsListContent() {
           <div className="space-y-4">
             <div className="space-y-2">
               <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Subscription Plan</p>
-              <Select value={filterPlan} onValueChange={setFilterPlan}>
+              <Select value={filterPlan} onValueChange={(value) => { setFilterPlan(value); setCurrentPage(1); }}>
                 <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Plans" />
                 </SelectTrigger>
@@ -292,7 +284,7 @@ export default function ClientsListContent() {
             </div>
             <div className="space-y-2">
               <p className="text-[var(--vendor-form-label-text)] font-semibold uppercase text-[var(--vendor-text-muted)] tracking-wide ml-1">Account Status</p>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <Select value={filterStatus} onValueChange={(value) => { setFilterStatus(value); setCurrentPage(1); }}>
                 <SelectTrigger className="h-10 rounded-[var(--vendor-radius-control)] text-[var(--vendor-control-text)] font-semibold border-[var(--vendor-border)] bg-gray-50/50 focus:ring-0">
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>

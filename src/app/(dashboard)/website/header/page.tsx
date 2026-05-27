@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Image as ImageIcon, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import apiClient from "@/lib/api-client";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { ImageCropper } from "@/components/common/ImageCropper";
+import { CompanyLogoUpload } from "@/components/common/CompanyLogoUpload";
 import { WebsiteSettingsPageSkeleton } from "@/components/boneyard/website-settings-page-skeleton";
 
 export default function HeaderPage() {
@@ -127,38 +127,8 @@ export default function HeaderPage() {
 
           {/* Identity & Branding Card */}
           <div className="bg-white dark:bg-sidebar p-6 rounded-[var(--vendor-radius-panel)] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-none">
-            <div className="mb-8 flex flex-col md:flex-row items-center justify-center gap-6 w-full px-4">
-
-              {/* Current logo preview */}
-              <div className="group relative w-full max-w-[400px] aspect-[4/1] md:aspect-[3/1] rounded-[var(--vendor-radius-panel)] overflow-hidden bg-white dark:bg-[#121212] border-2 border-dashed border-[var(--vendor-border)] dark:border-white/10 shadow-sm flex-grow select-none">
-                {!logoImage ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50/50 dark:bg-white/2">
-                    <div className="w-10 h-10 rounded-[var(--vendor-radius-panel)] bg-white dark:bg-sidebar flex items-center justify-center text-[var(--vendor-text-muted)] dark:text-gray-500 shadow-sm border border-[var(--vendor-border)] dark:border-white/5">
-                      <ImageIcon size={20} />
-                    </div>
-                    <p className="text-[8px] text-[var(--vendor-text-muted)]/60 dark:text-gray-500/60">Recommended: 300 x 100 px</p>
-                  </div>
-                ) : (
-                  <Image src={logoImage} alt="Logo Preview" fill className="object-cover" />
-                )}
-              </div>
-
-              {/* Logo upload */}
-              <div
-                onClick={() => isEditing && document.getElementById("logo-upload")?.click()}
-                className={`group relative w-full max-w-[400px] aspect-[4/1] md:aspect-[3/1] rounded-[var(--vendor-radius-panel)] overflow-hidden transition-all duration-500 bg-white dark:bg-[#121212] flex-grow ${
-                  !isEditing ? "cursor-default brightness-95" : "cursor-pointer"
-                } border-2 border-dashed border-[var(--vendor-border)] dark:border-white/10 shadow-sm hover:border-primary/50`}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50/50 dark:bg-white/2 transition-colors group-hover:bg-primary/5">
-                  <div className="w-10 h-10 rounded-[var(--vendor-radius-panel)] bg-white dark:bg-sidebar flex items-center justify-center text-[var(--vendor-text-muted)] dark:text-gray-500 shadow-sm border border-[var(--vendor-border)] dark:border-white/5 transition-all duration-500 group-hover:scale-110 group-hover:text-primary group-hover:shadow-primary/20">
-                    {logoImage ? <ImageIcon size={20} className="text-primary" /> : <Plus size={20} />}
-                  </div>
-                  <p className="text-[10px] font-black uppercase tracking-wide text-[var(--vendor-text-muted)] dark:text-gray-500">Upload Image</p>
-                  <p className="text-[8px] text-[var(--vendor-text-muted)]/60 dark:text-gray-500/60">Recommended: 300 x 100 px</p>
-                </div>
-                <input id="logo-upload" type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-              </div>
+            <div className="mb-8">
+              <CompanyLogoUpload imageUrl={logoImage} disabled={!isEditing} onFileChange={handleImageUpload} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

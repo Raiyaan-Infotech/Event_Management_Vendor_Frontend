@@ -53,7 +53,7 @@ export default function EmailCategoryContent() {
         <div className="max-w-[260px]">
           <p
             title={item.name}
-            className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight truncate"
+            className="text-[13px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight break-all line-clamp-2"
           >
             {item.name}
           </p>
@@ -67,7 +67,7 @@ export default function EmailCategoryContent() {
         <div className="max-w-[400px] py-1">
           <p
             title={item.description || ""}
-            className="text-[12px] font-medium text-[var(--vendor-text-muted)] leading-relaxed line-clamp-2 italic"
+            className="text-[12px] font-medium text-[var(--vendor-text-muted)] leading-relaxed line-clamp-2 break-all italic"
           >
             {item.description || "—"}
           </p>
