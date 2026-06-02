@@ -102,9 +102,12 @@ export default function EmailTemplateManagementContent() {
       label: "Category",
       sortable: true,
       render: (item) => (
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-          <span className="text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)] uppercase tracking-tight">
+        <div className="flex w-[180px] max-w-[180px] items-center gap-2 overflow-hidden">
+          <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+          <span
+            title={item.category?.name || ""}
+            className="block min-w-0 flex-1 truncate text-[var(--vendor-control-text)] font-semibold text-gray-600 dark:text-[var(--vendor-text-muted)] uppercase tracking-tight"
+          >
             {item.category?.name || "—"}
           </span>
         </div>

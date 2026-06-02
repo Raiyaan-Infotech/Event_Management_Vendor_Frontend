@@ -28,7 +28,7 @@ const navLabels: Record<string, string> = {
   // Website management
   website:                   "Website",
   header:                    "Header",
-  footer:                    "Footer Settings",
+  footer:                    "Footer",
   menu:                      "Menu",
   "about-us":                "About Us",
   "contact-us":              "Contact Us",
@@ -62,6 +62,8 @@ const navLabels: Record<string, string> = {
   "subscription-management": "Subscription",
   "events-management":       "Events",
   "email-template":          "Email Template",
+  "terms-conditions":        "Terms & Conditions",
+  "privacy-policy":          "Privacy Policy",
   "personal-info":           "Personal Info",
   mail:                      "Mail",
   compose:                   "Compose",
@@ -129,6 +131,15 @@ export default function VendorBreadcrumb() {
       segments = ["email-marketing", ...segments];
     }
 
+    // Terms and privacy are configured from Footer Settings, so show that
+    // parent even though their physical routes are siblings of /website/footer.
+    const hasVirtualFooterParent =
+      segments[0] === "website" &&
+      (segments[1] === "terms-conditions" || segments[1] === "privacy-policy");
+    if (hasVirtualFooterParent) {
+      segments = ["website", "footer", ...segments.slice(1)];
+    }
+
     // /roles, /modules, /activity-log, /departments, /permissions
     // → prepend virtual "settings" parent
     if (segments[0] && SETTINGS_ROOTS.has(segments[0])) {
@@ -186,7 +197,7 @@ export default function VendorBreadcrumb() {
 
       result.push({
         label,
-        url: accPath,
+        url: hasVirtualFooterParent && seg === "footer" ? "/website/footer" : accPath,
         isLast: false,
         isLink: !NON_LINKABLE.has(seg) && !!accPath,
       });
