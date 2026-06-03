@@ -12,6 +12,23 @@ const alignMap: Record<string, string> = {
 };
 
 const isPublished = (slide: any) => (slide.status || "published") === "published";
+const normalizeColor = (color?: string | null) => color?.trim().toLowerCase() ?? "";
+const paletteButtonColor = (colors: Record<string, any>, buttonColor?: string | null) => {
+  const primary = colors.primary_color || "#7c3aed";
+  const paletteColors = [
+    colors.primary_color,
+    colors.secondary_color,
+    colors.header_color,
+    colors.footer_color,
+    colors.text_color,
+    colors.hover_color,
+  ].filter(Boolean) as string[];
+
+  if (!paletteColors.length) return buttonColor || primary;
+  return paletteColors.some((color) => normalizeColor(color) === normalizeColor(buttonColor))
+    ? (buttonColor as string)
+    : primary;
+};
 
 const sliderPageHref = (data: any, slide: any) => {
   const pageId = slide?.page_id ? Number(slide.page_id) : null;
@@ -74,7 +91,7 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
   const title = slide.title;
   const desc = slide.description;
   const btnLabel = slide.button_label;
-  const btnColor = slide.button_color;
+  const btnColor = paletteButtonColor(colors, slide.button_color);
   const titleColor = slide.title_color;
   const descColor = slide.description_color;
   const opacity = (slide.overlay_opacity ?? 40) / 100;
@@ -203,6 +220,5 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
     </div>
   );
 }
-
 
 

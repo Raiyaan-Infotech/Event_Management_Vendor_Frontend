@@ -30,6 +30,8 @@ const BUILT_IN_LINKS = [
   { id: -2, name: "Contact Us" },
 ];
 
+const normalizeColor = (color?: string | null) => color?.trim().toLowerCase() ?? "";
+
 function getDefaultForm() {
   return {
     title: "",
@@ -74,15 +76,30 @@ export default function SimpleSliderContent() {
     colorData?.merged?.hover_color,
   ].filter(Boolean) as string[];
   const defaultButtonColor = colorData?.merged?.primary_color || DEFAULT_COLOR;
+  const paletteColorsKey = paletteColors.map(normalizeColor).join("|");
+  const isPaletteButtonColor = paletteColors.some(
+    (color) => normalizeColor(color) === normalizeColor(formData.button_color),
+  );
+  const effectiveButtonColor =
+    paletteColors.length === 0 || isPaletteButtonColor ? formData.button_color : defaultButtonColor;
 
   useEffect(() => {
-    if (isEditing) return;
+    if (isEditing || paletteColors.length === 0) return;
     setFormData((prev) =>
-      prev.button_color === DEFAULT_COLOR && defaultButtonColor !== DEFAULT_COLOR
-        ? { ...prev, button_color: defaultButtonColor }
-        : prev,
+      paletteColors.some((color) => normalizeColor(color) === normalizeColor(prev.button_color))
+        ? prev
+        : { ...prev, button_color: defaultButtonColor },
     );
-  }, [defaultButtonColor, isEditing]);
+  }, [defaultButtonColor, isEditing, paletteColorsKey]);
+
+  useEffect(() => {
+    if (!isEditing || paletteColors.length === 0) return;
+    setFormData((prev) =>
+      paletteColors.some((color) => normalizeColor(color) === normalizeColor(prev.button_color))
+        ? prev
+        : { ...prev, button_color: defaultButtonColor },
+    );
+  }, [defaultButtonColor, isEditing, paletteColorsKey]);
 
   // Populate form when editing
   useEffect(() => {
@@ -145,7 +162,7 @@ export default function SimpleSliderContent() {
       title: formData.title,
       button_label: formData.button_label,
       page_id: formData.page_id,
-      button_color: formData.button_color,
+      button_color: effectiveButtonColor,
       image_path: formData.image_path,
       status: formData.status,
       is_active: formData.is_active ? 1 : 0,
@@ -245,12 +262,11 @@ export default function SimpleSliderContent() {
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Button Color</Label>
                   <div className="flex items-center gap-0 border border-slate-200 dark:border-slate-800 rounded-sm overflow-hidden w-fit bg-slate-50/50 dark:bg-slate-950/50">
                     <div className="relative w-11 h-11 border-r border-slate-200 dark:border-slate-800">
-                      <div className="absolute inset-0 transition-colors" style={{ backgroundColor: formData.button_color }} />
-                      <input type="color" value={formData.button_color} onChange={(e) => setFormData({ ...formData, button_color: e.target.value })} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      <div className="absolute inset-0 transition-colors" style={{ backgroundColor: effectiveButtonColor }} />
                     </div>
                     <Input
-                      value={formData.button_color}
-                      onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
+                      value={effectiveButtonColor}
+                      readOnly
                       className="w-28 border-none h-11 text-[13px] font-mono font-bold uppercase focus-visible:ring-0 bg-transparent text-slate-700 dark:text-slate-300"
                     />
                     <Button variant="ghost" size="icon" onClick={() => setFormData({ ...formData, button_color: defaultButtonColor })} className="h-11 w-11 text-slate-400 border-l border-slate-200 dark:border-slate-800 rounded-none hover:bg-white transition-colors">
@@ -266,7 +282,7 @@ export default function SimpleSliderContent() {
                           aria-label={`Use palette color ${index + 1}`}
                           onClick={() => setFormData({ ...formData, button_color: color })}
                           className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
-                            formData.button_color?.toLowerCase() === color.toLowerCase()
+                            normalizeColor(effectiveButtonColor) === normalizeColor(color)
                               ? "border-slate-900 dark:border-white"
                               : "border-white shadow"
                           }`}
@@ -373,7 +389,7 @@ export default function SimpleSliderContent() {
                 )}
                 {formData.button_label && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/5">
-                    <Button style={{ backgroundColor: formData.button_color }} className="h-9 px-8 rounded-full text-white text-[var(--vendor-control-text)] font-semibold shadow-xl animate-in zoom-in duration-300 tracking-wider uppercase">
+                    <Button style={{ backgroundColor: effectiveButtonColor }} className="h-9 px-8 rounded-full text-white text-[var(--vendor-control-text)] font-semibold shadow-xl animate-in zoom-in duration-300 tracking-wider uppercase">
                       {formData.button_label}
                     </Button>
                   </div>
@@ -396,4 +412,3 @@ export default function SimpleSliderContent() {
     </div>
   );
 }
-

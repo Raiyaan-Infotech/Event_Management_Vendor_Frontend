@@ -34,6 +34,8 @@ const BUILT_IN_LINKS = [
   { id: -2, name: "Contact Us" },
 ];
 
+const normalizeColor = (color?: string | null) => color?.trim().toLowerCase() ?? "";
+
 function getDefaultForm() {
   return {
     title: "",
@@ -86,15 +88,30 @@ export default function AdvanceSliderContent() {
     colorData?.merged?.hover_color,
   ].filter(Boolean) as string[];
   const defaultButtonColor = colorData?.merged?.primary_color || DEFAULT_BTN_COLOR;
+  const paletteColorsKey = paletteColors.map(normalizeColor).join("|");
+  const isPaletteButtonColor = paletteColors.some(
+    (color) => normalizeColor(color) === normalizeColor(formData.button_color),
+  );
+  const effectiveButtonColor =
+    paletteColors.length === 0 || isPaletteButtonColor ? formData.button_color : defaultButtonColor;
 
   useEffect(() => {
-    if (isEditing) return;
+    if (isEditing || paletteColors.length === 0) return;
     setFormData((prev) =>
-      prev.button_color === DEFAULT_BTN_COLOR && defaultButtonColor !== DEFAULT_BTN_COLOR
-        ? { ...prev, button_color: defaultButtonColor }
-        : prev,
+      paletteColors.some((color) => normalizeColor(color) === normalizeColor(prev.button_color))
+        ? prev
+        : { ...prev, button_color: defaultButtonColor },
     );
-  }, [defaultButtonColor, isEditing]);
+  }, [defaultButtonColor, isEditing, paletteColorsKey]);
+
+  useEffect(() => {
+    if (!isEditing || paletteColors.length === 0) return;
+    setFormData((prev) =>
+      paletteColors.some((color) => normalizeColor(color) === normalizeColor(prev.button_color))
+        ? prev
+        : { ...prev, button_color: defaultButtonColor },
+    );
+  }, [defaultButtonColor, isEditing, paletteColorsKey]);
 
   useEffect(() => {
     if (existingSlider) {
@@ -166,7 +183,7 @@ export default function AdvanceSliderContent() {
       description_color: formData.description_color,
       button_label: formData.button_label,
       page_id: formData.page_id,
-      button_color: formData.button_color,
+      button_color: effectiveButtonColor,
       content_alignment: formData.content_alignment,
       image_blur: formData.image_blur,
       image_brightness: formData.image_brightness,
@@ -283,7 +300,7 @@ export default function AdvanceSliderContent() {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Button Color</Label>
-                  <ColorInput value={formData.button_color} onChange={(c) => setFormData({ ...formData, button_color: c })} paletteColors={paletteColors} />
+                  <ColorInput value={effectiveButtonColor} onChange={(c) => setFormData({ ...formData, button_color: c })} paletteColors={paletteColors} paletteOnly />
                 </div>
               </div>
 
@@ -420,7 +437,7 @@ export default function AdvanceSliderContent() {
                     {formData.description || "Description will appear here…"}
                   </p>
                   {formData.button_label && (
-                    <Button style={{ backgroundColor: formData.button_color }} className="h-8 px-6 rounded-full text-white text-[9px] font-black uppercase tracking-wide shadow-xl mt-2">
+                    <Button style={{ backgroundColor: effectiveButtonColor }} className="h-8 px-6 rounded-full text-white text-[9px] font-black uppercase tracking-wide shadow-xl mt-2">
                       {formData.button_label}
                     </Button>
                   )}
@@ -457,7 +474,7 @@ export default function AdvanceSliderContent() {
               <h2 className="text-6xl font-black uppercase tracking-tighter drop-shadow-2xl animate-in slide-in-from-bottom-10 duration-1000" style={{ color: formData.title_color }}>{formData.title}</h2>
               <p className="max-w-3xl text-xl font-medium opacity-90 animate-in slide-in-from-bottom-6 duration-1000 delay-200" style={{ color: formData.description_color }}>{formData.description}</p>
               {formData.button_label && (
-                <Button style={{ backgroundColor: formData.button_color }} className="h-16 px-16 rounded-full text-white font-black text-sm tracking-[0.4em] shadow-2xl hover:scale-105 active:scale-95 transition-all animate-in zoom-in duration-1000 delay-500 uppercase">
+                <Button style={{ backgroundColor: effectiveButtonColor }} className="h-16 px-16 rounded-full text-white font-black text-sm tracking-[0.4em] shadow-2xl hover:scale-105 active:scale-95 transition-all animate-in zoom-in duration-1000 delay-500 uppercase">
                   {formData.button_label}
                 </Button>
               )}
@@ -472,21 +489,34 @@ export default function AdvanceSliderContent() {
   );
 }
 
-function ColorInput({ value, onChange, paletteColors = [] }: { value: string; onChange: (c: string) => void; paletteColors?: string[] }) {
+function ColorInput({
+  value,
+  onChange,
+  paletteColors = [],
+  paletteOnly = false,
+}: {
+  value: string;
+  onChange: (c: string) => void;
+  paletteColors?: string[];
+  paletteOnly?: boolean;
+}) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-0 border border-slate-200 rounded-sm overflow-hidden bg-white shadow-sm w-fit">
         <div className="relative w-11 h-11 border-r border-slate-200">
           <div className="absolute inset-0" style={{ backgroundColor: value }} />
-          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+          {!paletteOnly && (
+            <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+          )}
         </div>
         <Input
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          readOnly={paletteOnly}
+          onChange={(e) => !paletteOnly && onChange(e.target.value)}
           className="w-24 border-none h-11 text-[11px] font-mono font-bold uppercase focus-visible:ring-0 bg-transparent"
         />
       </div>
-      {paletteColors.length > 0 && (
+      {paletteColors.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {paletteColors.map((color, index) => (
             <button
@@ -495,7 +525,7 @@ function ColorInput({ value, onChange, paletteColors = [] }: { value: string; on
               aria-label={`Use palette color ${index + 1}`}
               onClick={() => onChange(color)}
               className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
-                value?.toLowerCase() === color.toLowerCase()
+                normalizeColor(value) === normalizeColor(color)
                   ? "border-slate-900 dark:border-white"
                   : "border-white shadow"
               }`}
@@ -503,7 +533,9 @@ function ColorInput({ value, onChange, paletteColors = [] }: { value: string; on
             />
           ))}
         </div>
-      )}
+      ) : paletteOnly ? (
+        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Loading selected palette colors...</p>
+      ) : null}
     </div>
   );
 }

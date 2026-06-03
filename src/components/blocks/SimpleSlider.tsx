@@ -6,6 +6,23 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { resolveMediaUrl } from "@/lib/utils";
 
 const isPublished = (slide: any) => (slide.status || "published") === "published";
+const normalizeColor = (color?: string | null) => color?.trim().toLowerCase() ?? "";
+const paletteButtonColor = (colors: Record<string, any>, buttonColor?: string | null) => {
+  const primary = colors.primary_color || "#7c3aed";
+  const paletteColors = [
+    colors.primary_color,
+    colors.secondary_color,
+    colors.header_color,
+    colors.footer_color,
+    colors.text_color,
+    colors.hover_color,
+  ].filter(Boolean) as string[];
+
+  if (!paletteColors.length) return buttonColor || primary;
+  return paletteColors.some((color) => normalizeColor(color) === normalizeColor(buttonColor))
+    ? (buttonColor as string)
+    : primary;
+};
 
 const sliderPageHref = (data: any, slide: any) => {
   const pageId = slide?.page_id ? Number(slide.page_id) : null;
@@ -82,7 +99,7 @@ export default function SimpleSlider({ data, settings }: { data?: any; settings?
   const primary = colors.primary_color || "#7c3aed";
   const img = resolveMediaUrl(slide.image_path);
   const btnLabel = slide.button_label;
-  const btnColor = slide.button_color || primary;
+  const btnColor = paletteButtonColor(colors, slide.button_color);
   const pageHref = sliderPageHref(data, slide);
   const next = () => setCurrent((p) => (p + 1) % slides.length);
   const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
