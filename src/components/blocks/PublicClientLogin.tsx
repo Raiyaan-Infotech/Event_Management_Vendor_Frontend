@@ -7,6 +7,7 @@ import { usePublicClientLogin } from "@/hooks/use-public-client";
 import { toPublicSlug } from "@/lib/utils";
 import { validateEmail } from "@/lib/validation";
 import { toast } from "sonner";
+import Loader from "@/components/ui/loader";
 
 const CLIENT_PORTAL_URL = process.env.NEXT_PUBLIC_CLIENT_PORTAL_URL || "http://localhost:3004";
 
@@ -16,11 +17,20 @@ export default function PublicClientLogin({ data }: { data?: any }) {
   const vendor = data?.vendor || {};
   const publicSlug = slug === "preview" ? toPublicSlug(vendor.company_name || "") : slug;
   const primary = colors.primary_color || "#2563eb";
+  const loaderDotColors = [
+    colors.primary_color,
+    colors.secondary_color,
+    colors.header_color,
+    colors.footer_color,
+    colors.text_color,
+    colors.hover_color,
+  ];
   const loginMutation = usePublicClientLogin(publicSlug);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [message, setMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -61,19 +71,32 @@ export default function PublicClientLogin({ data }: { data?: any }) {
       const handoffToken = payload.data?.handoff_token;
       if (!handoffToken) throw new Error("Client portal login handoff is unavailable.");
 
-      if (typeof window !== "undefined") {
-        window.location.assign(
-          `${CLIENT_PORTAL_URL}/api/clients/auth/handoff?token=${encodeURIComponent(handoffToken)}`,
-        );
-      }
+      setRedirecting(true);
       setMessage("Login successful. Redirecting to your client dashboard...");
+
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => {
+          window.location.assign(
+            `${CLIENT_PORTAL_URL}/api/clients/auth/handoff?token=${encodeURIComponent(handoffToken)}`,
+          );
+        }, 100);
+      }
     } catch (err: any) {
+      setRedirecting(false);
       setFieldErrors({ _form: err?.message || "Login failed. Please try again." });
     }
   };
 
   return (
-    <section className="w-full bg-gray-50 px-6 py-16 md:px-10">
+    <section className="relative w-full bg-gray-50 px-6 py-16 md:px-10">
+      {redirecting && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
+          <Loader dotColors={loaderDotColors} label="Opening client dashboard..." />
+          <p className="mt-6 max-w-sm px-6 text-center text-sm font-bold text-white">
+            Please wait. We are securely taking you to your client portal.
+          </p>
+        </div>
+      )}
       <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-stretch">
         <form onSubmit={submit} noValidate className="bg-white p-6 shadow-sm md:p-8">
           <div className="mb-8 flex items-center gap-3">
@@ -93,6 +116,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
                 type="text"
                 inputMode="email"
                 autoCapitalize="none"
+                disabled={redirecting || loginMutation.isPending}
                 value={email}
                 onChange={(e) => updateEmail(e.target.value)}
                 className={`h-12 w-full border bg-white px-4 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-300"}`}
@@ -105,6 +129,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  disabled={redirecting || loginMutation.isPending}
                   value={password}
                   onChange={(e) => updatePassword(e.target.value)}
                   className={`h-12 w-full border bg-white px-4 pr-11 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-300"}`}
@@ -126,9 +151,9 @@ export default function PublicClientLogin({ data }: { data?: any }) {
           {fieldErrors._form && <p className="mt-5 bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{fieldErrors._form}</p>}
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <button disabled={loginMutation.isPending} className="inline-flex h-12 items-center justify-center px-7 text-sm font-black uppercase tracking-widest text-white disabled:opacity-60" style={{ backgroundColor: primary }}>
-              {loginMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Login
+            <button disabled={redirecting || loginMutation.isPending} className="inline-flex h-12 items-center justify-center px-7 text-sm font-black uppercase tracking-widest text-white disabled:opacity-60" style={{ backgroundColor: primary }}>
+              {redirecting || loginMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {redirecting ? "Redirecting..." : "Login"}
             </button>
             <Link href={slug === "preview" ? "/preview?previewPage=register" : `/${slug}/register`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
               New client? Register

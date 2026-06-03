@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Routes always accessible — no auth checks
-const alwaysPublicRoutes = ['/preview', '/public-preview'];
+const alwaysPublicRoutes: string[] = [];
 
 // Guest-only routes (logged-in users → /dashboard)
 const guestOnlyRoutes = ['/login', '/forgot-password', '/reset-password'];
@@ -50,6 +50,10 @@ export async function middleware(request: NextRequest) {
     return isVendorLoggedIn
       ? NextResponse.redirect(new URL('/dashboard', request.url))
       : NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (pathname.startsWith('/website') || pathname.startsWith('/preview') || pathname.startsWith('/public-preview')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Already logged in, redirect away from guest-only pages

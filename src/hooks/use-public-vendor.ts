@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import type { VendorHeroSection } from '@/hooks/use-vendor-hero-section';
 
 // Direct backend call — NO proxy, NO auth cookies needed
 export interface PublicVendorData {
@@ -48,7 +47,7 @@ export interface PublicVendorData {
     hover_color: string | null;
   } | null;
   sliders: any[];
-  heroSection?: VendorHeroSection | null;
+  heroSection?: Record<string, unknown> | null;
   portfolio: { clients: any[]; sponsors: any[]; events: any[] };
   gallery: any[];
   testimonials: any[];

@@ -57,7 +57,6 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { useVendorMe } from "@/hooks/use-vendors";
-import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 
 interface SubChildItem {
   label: string;
@@ -79,6 +78,7 @@ interface NavItem {
   href?: string;
   icon: LucideIcon;
   children?: ChildItem[];
+  hidden?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -134,53 +134,6 @@ const NAV_ITEMS: NavItem[] = [
   },
   { label: "Help", href: "/help", icon: HelpCircle },
   {
-    label: "Website Management",
-    icon: Globe,
-    children: [
-       {
-        label: "Appearance",
-        icon: Palette,
-        children: [
-          { label: "Themes Option", href: "/website/appearance/themes-option", icon: List },
-        ]
-      },
-      { label: "Header",              href: "/website/header",              icon: Building2  },
-      { label: "Contact Information", href: "/website/contact-information", icon: Contact    },
-      { label: "Social Links",        href: "/website/social-links",        icon: Globe                              },
-      { label: "Pages",               href: "/website/pages",               icon: List       },
-      { label: "Menu",                href: "/website/menu",                icon: List       },
-      { label: "Home",                href: "/website/home",                icon: Home       },
-      { label: "Theme",               href: "/website/theme",               icon: Palette    },
-      { label: "Hero Section",        href: "/website/hero-section",        icon: Star,      blockType: "hero_section" },
-      // ─── Footer group (collapsible) ──────────────────────────────────────────
-      { label: "Footer", icon: Layers,
-        children: [
-          { label: "Footer Settings",    href: "/website/footer",             icon: Layers    },
-          { label: "Terms & Conditions", href: "/website/terms-conditions",   icon: FileText, blockType: "terms_conditions" },
-          { label: "Privacy Policy",     href: "/website/privacy-policy",     icon: Shield,   blockType: "privacy_policy"   },
-        ]
-      },
-      // ─── Block-gated items ───────────────────────────────────────────────────
-      { label: "About Us",     href: "/website/about-us",                  icon: Users,     blockType: "about_us"          },
-      { label: "Gallery",      href: "/website/gallery",                   icon: Images,    blockType: "gallery"           },
-      { label: "Subscription", href: "/website/subscription-management",   icon: CreditCard,blockType: "subscription"      },
-      { label: "Testimonial",  href: "/website/testimonial-management",    icon: Star,      blockType: "testimonial"       },
-      { label: "Home Slider", icon: Sliders,
-        children: [
-          { label: "Simple Slider",  href: "/website/home-slider/simple-slider",  icon: Sliders, blockType: "simple_slider"  },
-          { label: "Advance Slider", href: "/website/home-slider/advance-slider", icon: Sliders, blockType: "advance_slider" },
-        ]
-      },
-      { label: "Portfolio", icon: Briefcase,
-        children: [
-          { label: "Clients",  href: "/website/portfolio-management/clients",  icon: Users,      blockType: "portfolio_clients"  },
-          { label: "Sponsors", href: "/website/portfolio-management/sponsors", icon: Handshake,  blockType: "portfolio_sponsors" },
-          { label: "Events",   href: "/website/portfolio-management/events",   icon: Briefcase,  blockType: "portfolio_events"   },
-        ]
-      },
-    ],
-  },
-  {
     label: "Email Marketing",
     icon: Mail,
     children: [
@@ -224,15 +177,11 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
   const isCollapsed = state === "collapsed";
   const [mounted, setMounted] = React.useState(false);
   const { data: vendor } = useVendorMe();
-  const { data: homeBlocks } = useVendorHomeBlocks();
-  const activeBlockTypes = React.useMemo(
-    () => new Set((homeBlocks ?? []).map((b) => b.block_type)),
-    [homeBlocks],
-  );
+  const activeBlockTypes = React.useMemo(() => new Set<string>(), []);
 
   const [openItems, setOpenItems] = React.useState<Set<string>>(() => {
     const initial = new Set<string>();
-    NAV_ITEMS.forEach((item) => {
+    NAV_ITEMS.filter((item) => !item.hidden).forEach((item) => {
       if (item.children && isItemActive(item, pathname)) {
         initial.add(item.label);
         item.children.forEach((child) => {
@@ -360,7 +309,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
       >
         <SidebarGroup className="p-0">
           <SidebarMenu className="gap-1">
-            {NAV_ITEMS.map((item) => {
+            {NAV_ITEMS.filter((item) => !item.hidden).map((item) => {
               const active      = isItemActive(item, pathname);
               const hasChildren = !!item.children?.length;
               const isOpen      = openItems.has(item.label);
