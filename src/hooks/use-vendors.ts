@@ -182,6 +182,7 @@ export const useUpdateVendorAbout = (successMessage?: string) => {
       return res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: VENDOR_ME_KEY });
       queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
       // Clear preview cache so the next preview open reflects the new contact/mode data
       queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });

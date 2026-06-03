@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { resolveMediaUrl } from "@/lib/utils";
 import { useVendorPages } from "@/hooks/use-vendor-pages";
+import { useVendorColors } from "@/hooks/use-vendor-colors";
 import { useUploadMedia } from "@/hooks/use-media";
 import {
   useVendorSlider,
@@ -24,6 +25,10 @@ import {
 import { ImageCropper } from "@/components/common/ImageCropper";
 
 const DEFAULT_COLOR = "#3b82f6";
+const BUILT_IN_LINKS = [
+  { id: -1, name: "About Us" },
+  { id: -2, name: "Contact Us" },
+];
 
 function getDefaultForm() {
   return {
@@ -52,12 +57,32 @@ export default function SimpleSliderContent() {
 
   const { data: existingSlider } = useVendorSlider(editId);
   const { data: pagesData } = useVendorPages({ limit: 100 });
+  const { data: colorData } = useVendorColors();
   const uploadMedia = useUploadMedia();
   const BACK = "/website/home-slider/simple-slider";
   const createMutation = useCreateVendorSlider(() => router.push(BACK));
   const updateMutation = useUpdateVendorSlider(editId ?? 0, () => router.push(BACK));
 
   const pages = pagesData?.data ?? [];
+  const linkOptions = [...BUILT_IN_LINKS, ...pages];
+  const paletteColors = [
+    colorData?.merged?.primary_color,
+    colorData?.merged?.secondary_color,
+    colorData?.merged?.header_color,
+    colorData?.merged?.footer_color,
+    colorData?.merged?.text_color,
+    colorData?.merged?.hover_color,
+  ].filter(Boolean) as string[];
+  const defaultButtonColor = colorData?.merged?.primary_color || DEFAULT_COLOR;
+
+  useEffect(() => {
+    if (isEditing) return;
+    setFormData((prev) =>
+      prev.button_color === DEFAULT_COLOR && defaultButtonColor !== DEFAULT_COLOR
+        ? { ...prev, button_color: defaultButtonColor }
+        : prev,
+    );
+  }, [defaultButtonColor, isEditing]);
 
   // Populate form when editing
   useEffect(() => {
@@ -66,13 +91,13 @@ export default function SimpleSliderContent() {
         title: existingSlider.title ?? "",
         button_label: existingSlider.button_label ?? "",
         page_id: existingSlider.page_id ?? null,
-        button_color: existingSlider.button_color ?? DEFAULT_COLOR,
+        button_color: existingSlider.button_color ?? defaultButtonColor,
         image_path: existingSlider.image_path ?? "",
         status: existingSlider.status ?? "draft",
         is_active: !!existingSlider.is_active,
       });
     }
-  }, [existingSlider]);
+  }, [existingSlider, defaultButtonColor]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,7 +125,7 @@ export default function SimpleSliderContent() {
     }
   };
 
-  const resetForm = () => setFormData(getDefaultForm());
+  const resetForm = () => setFormData({ ...getDefaultForm(), button_color: defaultButtonColor });
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {};
@@ -206,7 +231,7 @@ export default function SimpleSliderContent() {
                     </SelectTrigger>
                     <SelectContent className="rounded-sm border-slate-100">
                       <SelectItem value="none" className="text-[var(--vendor-control-text)] font-semibold text-slate-400">Select linked page</SelectItem>
-                      {pages.map((page) => (
+                      {linkOptions.map((page) => (
                         <SelectItem key={page.id} value={String(page.id)} className="text-[var(--vendor-control-text)] font-semibold">
                           {page.name}
                         </SelectItem>
@@ -228,10 +253,28 @@ export default function SimpleSliderContent() {
                       onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
                       className="w-28 border-none h-11 text-[13px] font-mono font-bold uppercase focus-visible:ring-0 bg-transparent text-slate-700 dark:text-slate-300"
                     />
-                    <Button variant="ghost" size="icon" onClick={() => setFormData({ ...formData, button_color: DEFAULT_COLOR })} className="h-11 w-11 text-slate-400 border-l border-slate-200 dark:border-slate-800 rounded-none hover:bg-white transition-colors">
+                    <Button variant="ghost" size="icon" onClick={() => setFormData({ ...formData, button_color: defaultButtonColor })} className="h-11 w-11 text-slate-400 border-l border-slate-200 dark:border-slate-800 rounded-none hover:bg-white transition-colors">
                       <RotateCcw size={14} />
                     </Button>
                   </div>
+                  {paletteColors.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {paletteColors.map((color, index) => (
+                        <button
+                          key={`${color}-${index}`}
+                          type="button"
+                          aria-label={`Use palette color ${index + 1}`}
+                          onClick={() => setFormData({ ...formData, button_color: color })}
+                          className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                            formData.button_color?.toLowerCase() === color.toLowerCase()
+                              ? "border-slate-900 dark:border-white"
+                              : "border-white shadow"
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -353,5 +396,4 @@ export default function SimpleSliderContent() {
     </div>
   );
 }
-
 

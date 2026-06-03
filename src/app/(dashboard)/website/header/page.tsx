@@ -9,6 +9,7 @@ import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { useVendorAbout, useUpdateVendorAbout } from "@/hooks/use-vendors";
 import apiClient from "@/lib/api-client";
+import { dataUrlToFile } from "@/lib/utils";
 import { PersistenceActions } from "@/components/common/PersistenceActions";
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { CompanyLogoUpload } from "@/components/common/CompanyLogoUpload";
@@ -50,9 +51,8 @@ export default function HeaderPage() {
     setCropperOpen(false);
     setImageToCrop("");
     try {
-      const blob = await fetch(croppedBase64).then((r) => r.blob());
       const fd = new FormData();
-      fd.append("file", new File([blob], "logo.jpg", { type: "image/jpeg" }));
+      fd.append("file", await dataUrlToFile(croppedBase64, "logo"));
       fd.append("folder", "vendors");
       const res = await apiClient.post("/vendors/auth/upload", fd, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -74,9 +74,8 @@ export default function HeaderPage() {
     let logoUrl: string | undefined = logoImage ?? undefined;
     if (logoUrl?.startsWith("data:")) {
       try {
-        const blob = await fetch(logoUrl).then((r) => r.blob());
         const fd = new FormData();
-        fd.append("file", blob, "logo.jpg");
+        fd.append("file", await dataUrlToFile(logoUrl, "logo"));
         fd.append("folder", "vendors");
         const res = await apiClient.post("/vendors/auth/upload", fd, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -204,6 +203,7 @@ export default function HeaderPage() {
         aspectRatio={3}
         outputWidth={900}
         outputHeight={300}
+        outputType="image/png"
       />
     </div>
   );

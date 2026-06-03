@@ -228,21 +228,26 @@ export default function ThemesOptionPage() {
       typeof selectedCard === "number"
         ? palettes?.find((p: ColorPalette) => p.id === selectedCard)
         : null;
-    return (activePalette ?? formData) as any;
+    return (colorsData ? activePalette ?? formData : {}) as any;
   })();
 
-  const loaderColors: string[] = [
-    activeColorSrc.primary_color   || "#2563eb",
-    activeColorSrc.secondary_color || "#1d4ed8",
-    activeColorSrc.header_color    || "#0f172a",
-    activeColorSrc.footer_color    || "#334155",
-    activeColorSrc.text_color      || "#60a5fa",
-    activeColorSrc.hover_color     || "#93c5fd",
+  const loaderColors = [
+    activeColorSrc.primary_color,
+    activeColorSrc.secondary_color,
+    activeColorSrc.header_color,
+    activeColorSrc.footer_color,
+    activeColorSrc.text_color,
+    activeColorSrc.hover_color,
   ];
 
   const handlePreview = () => {
     const themeId = (vendor as any)?.theme_id ?? "";
-    window.open(`/preview?themeId=${themeId}`, "_blank");
+    const params = new URLSearchParams({ themeId: themeId.toString() });
+    COLOR_FIELDS.forEach(({ key }) => {
+      const color = activeColorSrc[key];
+      if (color) params.set(key.replace("_color", ""), color);
+    });
+    window.open(`/preview?${params.toString()}`, "_blank");
   };
 
   return (

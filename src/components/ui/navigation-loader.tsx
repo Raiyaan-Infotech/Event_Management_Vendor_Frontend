@@ -26,12 +26,12 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   const mutationLoadingStartTimeRef = useRef<number>(0);
   const showDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loaderDotColors = [
-    vendorColors?.merged?.primary_color || "#2563eb",
-    vendorColors?.merged?.secondary_color || "#1d4ed8",
-    vendorColors?.merged?.header_color || "#f8fafc",
-    vendorColors?.merged?.footer_color || "#0f172a",
-    vendorColors?.merged?.text_color || "#334155",
-    vendorColors?.merged?.hover_color || "#dbeafe",
+    vendorColors?.merged?.primary_color,
+    vendorColors?.merged?.secondary_color,
+    vendorColors?.merged?.header_color,
+    vendorColors?.merged?.footer_color,
+    vendorColors?.merged?.text_color,
+    vendorColors?.merged?.hover_color,
   ];
 
   // Stop loading when pathname or params change

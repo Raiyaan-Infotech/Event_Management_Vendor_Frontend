@@ -40,6 +40,19 @@ export function resolveMediaUrl(url: string | null | undefined): string {
   return normalizedUrl;
 }
 
+export async function dataUrlToFile(dataUrl: string, baseName: string): Promise<File> {
+  const blob = await fetch(dataUrl).then((response) => response.blob());
+  const mime = blob.type || dataUrl.match(/^data:([^;]+);/)?.[1] || 'image/png';
+  const extension =
+    mime === 'image/jpeg' ? 'jpg' :
+    mime === 'image/webp' ? 'webp' :
+    mime === 'image/gif' ? 'gif' :
+    mime === 'image/svg+xml' ? 'svg' :
+    'png';
+
+  return new File([blob], `${baseName}.${extension}`, { type: mime });
+}
+
 // ── Status toggle ───────────────────────────────────────────────────────────
 // Standard onStatusToggle handler for CommonTable.
 // Usage: onStatusToggle={makeStatusToggle(updateMutation)}

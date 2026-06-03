@@ -12,6 +12,7 @@
 NEXT_PUBLIC_API_URL=https://event-management-admin-backend.onrender.com/api/v1
 NEXT_PUBLIC_APP_NAME=Vendor Portal
 NEXT_PUBLIC_APP_URL=https://event-management-vendor-frontend.vercel.app
+NEXT_PUBLIC_CLIENT_PORTAL_URL=https://<client-portal-domain>
 ```
 
 ## Structure

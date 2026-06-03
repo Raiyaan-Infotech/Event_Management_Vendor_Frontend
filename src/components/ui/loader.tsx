@@ -1,37 +1,19 @@
 "use client";
 
 import React from "react";
+import { normalizeVendorLoaderColors } from "@/lib/vendor-loader-colors";
 
 interface LoaderProps {
-  dotColors?: string[];
-  storageKey?: string;
+  dotColors?: Array<string | null | undefined>;
+  label?: string;
 }
 
-const DEFAULT_DOT_COLORS = [
-  "#2563eb",
-  "#1d4ed8",
-  "#0f172a",
-  "#334155",
-  "#60a5fa",
-  "#93c5fd",
-];
+const Loader = ({ dotColors, label = "Loading" }: LoaderProps) => {
+  const normalizedColors = normalizeVendorLoaderColors(dotColors);
 
-const getStoredDotColors = (storageKey?: string) => {
-  if (!storageKey || typeof window === "undefined") return null;
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(storageKey) || "null");
-    return Array.isArray(parsed) && parsed.length === 6 ? parsed : null;
-  } catch {
-    return null;
-  }
-};
+  if (!normalizedColors) return null;
 
-const Loader = ({ dotColors, storageKey }: LoaderProps) => {
-  const storedColors = getStoredDotColors(storageKey);
-  const colors = dotColors && dotColors.length === 6
-    ? dotColors
-    : storedColors || DEFAULT_DOT_COLORS;
-  const dots = colors.map((color, index) => ({
+  const dots = normalizedColors.map((color, index) => ({
     color,
     delay: `${index * 120}ms`,
   }));
@@ -41,31 +23,33 @@ const Loader = ({ dotColors, storageKey }: LoaderProps) => {
       className="fixed inset-0 z-[9999] flex cursor-wait items-center justify-center bg-white/45 backdrop-blur-[3px] dark:bg-black/45"
       role="status"
       aria-live="polite"
-      aria-label="Loading"
+      aria-label={label}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text-slate-400 dark:text-slate-500">
         {dots.map((dot, index) => (
           <span
             key={index}
-            className="h-5 w-5 rounded-full border border-black/10 shadow-sm dark:border-white/10"
+            className="loader-dot h-5 w-5 rounded-full border border-black/10 bg-current shadow-sm dark:border-white/10"
             style={{
-              backgroundColor: dot.color,
-              animation: "loader-dot 0.95s ease-in-out infinite",
-              animationDelay: dot.delay,
-            }}
+              backgroundColor: dot.color || undefined,
+              "--loader-dot-delay": dot.delay,
+            } as React.CSSProperties}
           />
         ))}
       </div>
 
       <style>{`
+        .loader-dot {
+          animation: loader-dot 0.95s ease-in-out infinite;
+          animation-delay: var(--loader-dot-delay, 0ms);
+        }
+
         @keyframes loader-dot {
           0%, 100% {
             transform: translateY(0);
-            opacity: 0.78;
           }
           50% {
             transform: translateY(-8px);
-            opacity: 1;
           }
         }
       `}</style>

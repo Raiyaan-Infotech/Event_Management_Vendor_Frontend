@@ -17,6 +17,27 @@ const sliderPageHref = (data: any, slide: any) => {
   const pageId = slide?.page_id ? Number(slide.page_id) : null;
   if (!pageId) return "#";
 
+  if (pageId === -1) {
+    if (data?.slug === "preview") {
+      const base = data?.previewBaseUrl || "/preview";
+      const [path, query = ""] = base.split("?");
+      return `${path}${query ? `?${query}` : ""}#about-us`;
+    }
+    return data?.slug ? `/${data.slug}#about-us` : "#about-us";
+  }
+
+  if (pageId === -2) {
+    if (data?.slug === "preview") {
+      const base = data?.previewBaseUrl || "/preview";
+      const [path, query = ""] = base.split("?");
+      const params = new URLSearchParams(query);
+      params.set("previewPage", "contact");
+      params.delete("pageId");
+      return `${path}?${params.toString()}`;
+    }
+    return data?.slug ? `/${data.slug}/contact-us` : "#contact";
+  }
+
   if (data?.slug === "preview") {
     const base = data?.previewBaseUrl || "/preview";
     const [path, query = ""] = base.split("?");
@@ -182,7 +203,6 @@ export default function AdvanceSlider({ data, settings }: { data?: any; settings
     </div>
   );
 }
-
 
 
 

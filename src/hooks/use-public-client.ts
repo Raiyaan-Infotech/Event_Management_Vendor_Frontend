@@ -5,6 +5,7 @@ export interface PublicClientRegisterPayload {
   name: string;
   email: string;
   mobile: string;
+  password: string;
   address?: string | null;
   country?: string | null;
   state?: string | null;

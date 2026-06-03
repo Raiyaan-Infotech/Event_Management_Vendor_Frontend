@@ -11,6 +11,8 @@ interface ImageCropperProps {
   aspectRatio?: number;
   outputWidth?: number;
   outputHeight?: number;
+  outputType?: "image/png" | "image/jpeg" | "image/webp";
+  outputQuality?: number;
 }
 
 export function ImageCropper({
@@ -21,6 +23,8 @@ export function ImageCropper({
   aspectRatio = 1,
   outputWidth = 400,
   outputHeight = 400,
+  outputType = "image/jpeg",
+  outputQuality = 0.92,
 }: ImageCropperProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -156,7 +160,7 @@ export function ImageCropper({
     const ctx = out.getContext("2d");
     if (!ctx) return;
     ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, outputWidth, outputHeight);
-    onCropComplete(out.toDataURL("image/jpeg", 0.88));
+    onCropComplete(out.toDataURL(outputType, outputQuality));
   };
 
   if (!open) return null;

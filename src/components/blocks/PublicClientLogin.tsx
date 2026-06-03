@@ -8,6 +8,8 @@ import { toPublicSlug } from "@/lib/utils";
 import { validateEmail } from "@/lib/validation";
 import { toast } from "sonner";
 
+const CLIENT_PORTAL_URL = process.env.NEXT_PUBLIC_CLIENT_PORTAL_URL || "http://localhost:3004";
+
 export default function PublicClientLogin({ data }: { data?: any }) {
   const slug = data?.slug || "";
   const colors = data?.colors || {};
@@ -56,11 +58,15 @@ export default function PublicClientLogin({ data }: { data?: any }) {
 
     try {
       const payload = await loginMutation.mutateAsync({ email: emailValue, password });
+      const handoffToken = payload.data?.handoff_token;
+      if (!handoffToken) throw new Error("Client portal login handoff is unavailable.");
 
       if (typeof window !== "undefined") {
-        window.localStorage.setItem(`vendor_client_${publicSlug}`, JSON.stringify(payload.data));
+        window.location.assign(
+          `${CLIENT_PORTAL_URL}/api/clients/auth/handoff?token=${encodeURIComponent(handoffToken)}`,
+        );
       }
-      setMessage("Login successful. Your client profile is available with this vendor.");
+      setMessage("Login successful. Redirecting to your client dashboard...");
     } catch (err: any) {
       setFieldErrors({ _form: err?.message || "Login failed. Please try again." });
     }
@@ -76,32 +82,32 @@ export default function PublicClientLogin({ data }: { data?: any }) {
             </div>
             <div>
               <h1 className="text-2xl font-black text-gray-950">Client Login</h1>
-              <p className="text-sm text-gray-500">Use your registered email and mobile number.</p>
+              <p className="text-sm text-gray-700">Use your registered email and password.</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <label className="block space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Email <span className="text-red-500">*</span></span>
               <input
                 type="text"
                 inputMode="email"
                 autoCapitalize="none"
                 value={email}
                 onChange={(e) => updateEmail(e.target.value)}
-                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                className={`h-12 w-full border bg-white px-4 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                 placeholder="Enter email address"
               />
               <FieldError field="email" />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Password <span className="text-red-500">*</span></span>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => updatePassword(e.target.value)}
-                  className={`h-12 w-full border px-4 pr-11 text-sm outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                  className={`h-12 w-full border bg-white px-4 pr-11 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                   placeholder="Enter password"
                 />
                 <button type="button" tabIndex={-1} onClick={() => setShowPassword((p) => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
@@ -124,7 +130,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
               {loginMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Login
             </button>
-            <Link href={slug === "preview" ? "/preview?previewPage=register" : `/${slug}/register`} className="text-sm font-bold text-gray-500 hover:text-gray-950">
+            <Link href={slug === "preview" ? "/preview?previewPage=register" : `/${slug}/register`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
               New client? Register
             </Link>
           </div>
@@ -147,4 +153,3 @@ export default function PublicClientLogin({ data }: { data?: any }) {
     </section>
   );
 }
-

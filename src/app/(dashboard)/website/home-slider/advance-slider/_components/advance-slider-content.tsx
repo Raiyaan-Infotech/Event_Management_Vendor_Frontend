@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { resolveMediaUrl } from "@/lib/utils";
 import { useVendorPages } from "@/hooks/use-vendor-pages";
+import { useVendorColors } from "@/hooks/use-vendor-colors";
 import { useUploadMedia } from "@/hooks/use-media";
 import {
   useVendorSlider,
@@ -28,6 +29,10 @@ import { ImageCropper } from "@/components/common/ImageCropper";
 const DEFAULT_TITLE_COLOR = "#ffffff";
 const DEFAULT_DESC_COLOR = "#e2e8f0";
 const DEFAULT_BTN_COLOR = "#3b82f6";
+const BUILT_IN_LINKS = [
+  { id: -1, name: "About Us" },
+  { id: -2, name: "Contact Us" },
+];
 
 function getDefaultForm() {
   return {
@@ -64,12 +69,32 @@ export default function AdvanceSliderContent() {
 
   const { data: existingSlider } = useVendorSlider(editId);
   const { data: pagesData } = useVendorPages({ limit: 100 });
+  const { data: colorData } = useVendorColors();
   const uploadMedia = useUploadMedia();
   const BACK = "/website/home-slider/advance-slider";
   const createMutation = useCreateVendorSlider(() => router.push(BACK));
   const updateMutation = useUpdateVendorSlider(editId ?? 0, () => router.push(BACK));
 
   const pages = pagesData?.data ?? [];
+  const linkOptions = [...BUILT_IN_LINKS, ...pages];
+  const paletteColors = [
+    colorData?.merged?.primary_color,
+    colorData?.merged?.secondary_color,
+    colorData?.merged?.header_color,
+    colorData?.merged?.footer_color,
+    colorData?.merged?.text_color,
+    colorData?.merged?.hover_color,
+  ].filter(Boolean) as string[];
+  const defaultButtonColor = colorData?.merged?.primary_color || DEFAULT_BTN_COLOR;
+
+  useEffect(() => {
+    if (isEditing) return;
+    setFormData((prev) =>
+      prev.button_color === DEFAULT_BTN_COLOR && defaultButtonColor !== DEFAULT_BTN_COLOR
+        ? { ...prev, button_color: defaultButtonColor }
+        : prev,
+    );
+  }, [defaultButtonColor, isEditing]);
 
   useEffect(() => {
     if (existingSlider) {
@@ -80,7 +105,7 @@ export default function AdvanceSliderContent() {
         description_color: existingSlider.description_color ?? DEFAULT_DESC_COLOR,
         button_label: existingSlider.button_label ?? "",
         page_id: existingSlider.page_id ?? null,
-        button_color: existingSlider.button_color ?? DEFAULT_BTN_COLOR,
+        button_color: existingSlider.button_color ?? defaultButtonColor,
         content_alignment: existingSlider.content_alignment ?? "center",
         image_blur: existingSlider.image_blur ?? 0,
         image_brightness: existingSlider.image_brightness ?? 100,
@@ -90,7 +115,7 @@ export default function AdvanceSliderContent() {
         is_active: !!existingSlider.is_active,
       });
     }
-  }, [existingSlider]);
+  }, [existingSlider, defaultButtonColor]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,7 +143,7 @@ export default function AdvanceSliderContent() {
     }
   };
 
-  const resetForm = () => setFormData(getDefaultForm());
+  const resetForm = () => setFormData({ ...getDefaultForm(), button_color: defaultButtonColor });
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {};
@@ -246,7 +271,7 @@ export default function AdvanceSliderContent() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none" className="text-[var(--vendor-control-text)] font-semibold text-slate-400">No page linked</SelectItem>
-                      {pages.map((page) => (
+                      {linkOptions.map((page) => (
                         <SelectItem key={page.id} value={String(page.id)} className="text-[var(--vendor-control-text)] font-semibold">
                           {page.name}
                         </SelectItem>
@@ -258,7 +283,7 @@ export default function AdvanceSliderContent() {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold text-slate-700 dark:text-slate-300">Button Color</Label>
-                  <ColorInput value={formData.button_color} onChange={(c) => setFormData({ ...formData, button_color: c })} />
+                  <ColorInput value={formData.button_color} onChange={(c) => setFormData({ ...formData, button_color: c })} paletteColors={paletteColors} />
                 </div>
               </div>
 
@@ -447,18 +472,38 @@ export default function AdvanceSliderContent() {
   );
 }
 
-function ColorInput({ value, onChange }: { value: string; onChange: (c: string) => void }) {
+function ColorInput({ value, onChange, paletteColors = [] }: { value: string; onChange: (c: string) => void; paletteColors?: string[] }) {
   return (
-    <div className="flex items-center gap-0 border border-slate-200 rounded-sm overflow-hidden bg-white shadow-sm w-fit">
-      <div className="relative w-11 h-11 border-r border-slate-200">
-        <div className="absolute inset-0" style={{ backgroundColor: value }} />
-        <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+    <div className="space-y-2">
+      <div className="flex items-center gap-0 border border-slate-200 rounded-sm overflow-hidden bg-white shadow-sm w-fit">
+        <div className="relative w-11 h-11 border-r border-slate-200">
+          <div className="absolute inset-0" style={{ backgroundColor: value }} />
+          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+        </div>
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-24 border-none h-11 text-[11px] font-mono font-bold uppercase focus-visible:ring-0 bg-transparent"
+        />
       </div>
-      <Input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-24 border-none h-11 text-[11px] font-mono font-bold uppercase focus-visible:ring-0 bg-transparent"
-      />
+      {paletteColors.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {paletteColors.map((color, index) => (
+            <button
+              key={`${color}-${index}`}
+              type="button"
+              aria-label={`Use palette color ${index + 1}`}
+              onClick={() => onChange(color)}
+              className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                value?.toLowerCase() === color.toLowerCase()
+                  ? "border-slate-900 dark:border-white"
+                  : "border-white shadow"
+              }`}
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

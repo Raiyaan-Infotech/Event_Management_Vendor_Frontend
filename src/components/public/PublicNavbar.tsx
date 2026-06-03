@@ -47,8 +47,9 @@ export function PublicNavbar({ vendor, colors, slug }: PublicNavbarProps) {
                   src={resolveMediaUrl(vendor.company_logo)}
                   alt={vendor.company_name}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority
+                  unoptimized
                 />
               </div>
             )}

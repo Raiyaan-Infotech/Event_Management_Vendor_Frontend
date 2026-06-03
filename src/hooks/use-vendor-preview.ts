@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
+import type { VendorHeroSection } from '@/hooks/use-vendor-hero-section';
 
 export interface PortfolioItem {
   id: number;
@@ -51,6 +52,7 @@ export interface VendorPreviewData {
   };
   theme_id: number | null;
   home_blocks: { block_type: string; is_visible: boolean }[];
+  heroSection?: VendorHeroSection | null;
   colors: {
     primary_color: string | null;
     secondary_color: string | null;

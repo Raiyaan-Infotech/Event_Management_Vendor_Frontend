@@ -325,7 +325,7 @@ export default function Header({ data, settings }: { data?: any; settings?: Reco
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14">
             <Link href={homeHref} className="flex items-center gap-3 no-underline">
-              {logoSrc && <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={36} height={36} className="h-9 w-9 object-contain rounded-md bg-white/10 p-1" unoptimized />}
+              {logoSrc && <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={36} height={36} className="h-9 w-9 object-contain rounded-md" unoptimized />}
               <div>
                 {vendor.company_name && <span className="text-lg font-extrabold tracking-tight text-white leading-none block">{vendor.company_name}</span>}
                 {cityName && (

@@ -1040,7 +1040,7 @@ export function AddClientContent({
       newErrors.password = "Password is required";
     } else if (pwChanged) {
       if (/\s/.test(pw))                  newErrors.password = "Password must not contain spaces";
-      else if (pw.length < 8)             newErrors.password = "Must be at least 8 characters";
+      else if (pw.length !== 8)           newErrors.password = "Must contain exactly 8 characters";
       else if (!/[A-Z]/.test(pw))         newErrors.password = "Must include at least 1 uppercase letter";
       else if (!/[a-z]/.test(pw))         newErrors.password = "Must include at least 1 lowercase letter";
       else if (!/[0-9]/.test(pw))         newErrors.password = "Must include at least 1 number";

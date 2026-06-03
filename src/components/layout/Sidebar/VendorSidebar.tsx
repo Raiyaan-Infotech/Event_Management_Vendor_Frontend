@@ -151,6 +151,7 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Menu",                href: "/website/menu",                icon: List       },
       { label: "Home",                href: "/website/home",                icon: Home       },
       { label: "Theme",               href: "/website/theme",               icon: Palette    },
+      { label: "Hero Section",        href: "/website/hero-section",        icon: Star,      blockType: "hero_section" },
       // ─── Footer group (collapsible) ──────────────────────────────────────────
       { label: "Footer", icon: Layers,
         children: [

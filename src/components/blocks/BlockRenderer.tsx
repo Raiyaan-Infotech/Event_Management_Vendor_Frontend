@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 // Next.js will ONLY download the component code if the Theme dictates it!
 const Header         = dynamic(() => import("./Header").catch(()         => () => <Placeholder name="Header" />));
 const Footer         = dynamic(() => import("./Footer").catch(()         => () => <Placeholder name="Footer" />));
+const HeroSection    = dynamic(() => import("./HeroSection").catch(()    => () => <Placeholder name="Hero Section" />));
 const SimpleSlider   = dynamic(() => import("./SimpleSlider").catch(()   => () => <Placeholder name="Simple Slider" />));
 const AdvanceSlider  = dynamic(() => import("./AdvanceSlider").catch(()  => () => <Placeholder name="Advance Slider" />));
 const AboutUs        = dynamic(() => import("./AboutUs").catch(()        => () => <Placeholder name="About Us" />));
@@ -44,6 +45,9 @@ export default function BlockRenderer({ block_type, visible, settings, vendorDat
 
     case "footer":
       return <Footer data={vendorData} settings={settings} />;
+
+    case "hero_section":
+      return <HeroSection data={vendorData} settings={settings} />;
 
     case "simple_slider":
       return <SimpleSlider data={vendorData} settings={settings} />;

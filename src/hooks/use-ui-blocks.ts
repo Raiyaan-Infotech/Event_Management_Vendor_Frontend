@@ -11,9 +11,9 @@ export function useUiBlocks() {
       return data.data.map((block: any) => ({
         ...block,
         variants: Array.isArray(block.variants) 
-          ? block.variants.map((variantStr: string, index: number) => ({
-              id: `variant_${index + 1}`,
-              label: variantStr
+          ? block.variants.map((variant: string | { key?: string; id?: string; label?: string }, index: number) => ({
+              id: typeof variant === 'string' ? `variant_${index + 1}` : variant.key || variant.id || `variant_${index + 1}`,
+              label: typeof variant === 'string' ? variant : variant.label || variant.key || `Variant ${index + 1}`,
             }))
           : []
       }));

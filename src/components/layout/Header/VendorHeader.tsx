@@ -51,9 +51,7 @@ export default function VendorHeader() {
   const vendorInitialSource =
     [vendor?.name, vendor?.company_name, vendor?.email].find((value) => String(value || "").trim()) || "V";
   const vendorInitial = String(vendorInitialSource).trim().charAt(0).toUpperCase();
-  // Prefer company_logo so admin-side logo updates reflect here even when the
-  // vendor already has a personal profile photo saved.
-  const vendorProfileSrc = resolveMediaUrl(vendor?.company_logo || vendor?.profile || undefined) || undefined;
+  const vendorProfileSrc = resolveMediaUrl(vendor?.profile || undefined) || undefined;
 
   React.useEffect(() => {
     setMounted(true);

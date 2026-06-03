@@ -35,6 +35,7 @@ import { useVendorPages, useVendorTerms, useVendorPrivacy } from "@/hooks/use-ve
 import { useVendorSocialLinks, useToggleSocialLink } from "@/hooks/use-vendor-social-links";
 import { useVendorHomeBlocks } from "@/hooks/use-vendor-home-blocks";
 import apiClient from "@/lib/api-client";
+import { dataUrlToFile } from "@/lib/utils";
 import { validateEmail, validateMobile } from "@/lib/validation";
 import { ImageCropper } from "@/components/common/ImageCropper";
 import { CompanyLogoUpload } from "@/components/common/CompanyLogoUpload";
@@ -231,9 +232,8 @@ export default function FooterPage() {
     setCropperOpen(false);
     setImageToCrop("");
     try {
-      const blob = await fetch(croppedBase64).then((r) => r.blob());
       const fd = new FormData();
-      fd.append("file", new File([blob], "logo.jpg", { type: "image/jpeg" }));
+      fd.append("file", await dataUrlToFile(croppedBase64, "logo"));
       fd.append("folder", "vendors");
       const res = await apiClient.post("/vendors/auth/upload", fd, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -253,8 +253,6 @@ export default function FooterPage() {
     if (!description.trim())           fe.description       = "Short description is required";
     if (!quickLinksHeading.trim())     fe.quickLinksHeading = "Quick Links heading is required";
     if (selectedLinks.length === 0)    fe.quickLinks        = "Select at least one page for Quick Links";
-    if (!copyright.trim())             fe.copyright         = "Copyright text is required";
-    if (!poweredBy.trim())             fe.poweredBy         = "Powered By text is required";
     if (!stripHtml(termsData?.content || "")) fe.terms      = "Terms & Conditions content is required";
     if (!stripHtml(privacyData?.content || "")) fe.privacy  = "Privacy Policy content is required";
 
@@ -273,9 +271,8 @@ export default function FooterPage() {
     // Upload if still base64
     if (logoUrl?.startsWith("data:")) {
       try {
-        const blob = await fetch(logoUrl).then((r) => r.blob());
         const fd = new FormData();
-        fd.append("file", blob, "logo.jpg");
+        fd.append("file", await dataUrlToFile(logoUrl, "logo"));
         fd.append("folder", "vendors");
         const res = await apiClient.post("/vendors/auth/upload", fd, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -302,8 +299,6 @@ export default function FooterPage() {
       alt_email: altContact.email.trim().toLowerCase(),
       address: altContact.address.trim(),
       short_description: description,
-      poweredby: poweredBy,
-      copywrite: copyright,
       contact_mode: contactMode,
       footer_links,
       newsletter_status: newsletterEnabled ? 1 : 0,
@@ -685,7 +680,7 @@ export default function FooterPage() {
                         contactMode === "default"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
                           : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-[var(--vendor-border)]"
-                      }`}
+                      } h-full flex flex-col`}
                     >
                       <div className="flex items-center gap-3 mb-6">
                         <div
@@ -701,7 +696,7 @@ export default function FooterPage() {
                           Default Contact Info
                         </span>
                       </div>
-                      <div className="space-y-4">
+                      <div className="space-y-4 flex-1">
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <Phone size={10} /> MOBILE <span className="text-rose-500">*</span>
@@ -748,7 +743,7 @@ export default function FooterPage() {
                         contactMode === "alternative"
                           ? "border-primary bg-white dark:bg-sidebar shadow-md shadow-primary/5 scale-[1.01]"
                           : "border-[var(--vendor-border)] bg-gray-50/30 dark:bg-white/5 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-[var(--vendor-border)]"
-                      }`}
+                      } h-full flex flex-col`}
                     >
                       <div className="flex items-center gap-3 mb-6">
                         <div
@@ -764,7 +759,7 @@ export default function FooterPage() {
                           Alternative Contact Info
                         </span>
                       </div>
-                      <div className="space-y-4">
+                      <div className="space-y-4 flex-1">
                         <div className="space-y-1">
                           <Label className="text-[10px] font-bold uppercase text-[var(--vendor-text-muted)] tracking-wider flex items-center gap-2">
                             <Phone size={10} /> MOBILE <span className="text-rose-500">*</span>
@@ -822,41 +817,29 @@ export default function FooterPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold">
-                    Copyright Text <span className="text-rose-500 ml-1">*</span>
+                    Copyright Text
                   </Label>
                   <Input
                     value={copyright}
-                    disabled={!isEditing}
-                    onChange={(e) => {
-                      if (!isEditing) return;
-                      setCopyright(e.target.value);
-                      if (fieldErrors.copyright) setFieldErrors((p) => ({ ...p, copyright: "" }));
-                    }}
-                    placeholder="Type Copyright Text..."
-                    className={`h-11 dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.copyright ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                    disabled
+                    readOnly
+                    placeholder="Configured from admin vendor information"
+                    className="h-11 dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed border-[var(--vendor-border)]"
                   />
-                  {fieldErrors.copyright && (
-                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.copyright}</p>
-                  )}
+                  <p className="text-[11px] font-medium text-[var(--vendor-text-muted)]">Managed from Admin Portal vendor information.</p>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold">
-                    Powered By <span className="text-rose-500 ml-1">*</span>
+                    Powered By
                   </Label>
                   <Input
                     value={poweredBy}
-                    disabled={!isEditing}
-                    onChange={(e) => {
-                      if (!isEditing) return;
-                      setPoweredBy(e.target.value);
-                      if (fieldErrors.poweredBy) setFieldErrors((p) => ({ ...p, poweredBy: "" }));
-                    }}
-                    placeholder="Type Powered By text..."
-                    className={`h-11 dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed ${fieldErrors.poweredBy ? "border-rose-500 ring-4 ring-rose-500/5" : "border-[var(--vendor-border)]"}`}
+                    disabled
+                    readOnly
+                    placeholder="Configured from admin vendor information"
+                    className="h-11 dark:border-[var(--vendor-border)] disabled:opacity-70 disabled:cursor-not-allowed border-[var(--vendor-border)]"
                   />
-                  {fieldErrors.poweredBy && (
-                    <p className="text-[11px] font-semibold text-rose-500 mt-1.5">{fieldErrors.poweredBy}</p>
-                  )}
+                  <p className="text-[11px] font-medium text-[var(--vendor-text-muted)]">Managed from Admin Portal vendor information.</p>
                 </div>
               </div>
             </div>
@@ -1001,6 +984,7 @@ export default function FooterPage() {
         aspectRatio={3}
         outputWidth={900}
         outputHeight={300}
+        outputType="image/png"
       />
     </div>
   );

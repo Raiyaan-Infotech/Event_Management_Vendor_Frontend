@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import ContactUs from "@/components/blocks/ContactUs";
@@ -12,8 +12,6 @@ import Loader from "@/components/ui/loader";
 import { useVendorPreviewData } from "@/hooks/use-vendor-preview";
 import { useVendorPage, useVendorPrivacy, useVendorTerms } from "@/hooks/use-vendor-pages";
 import { sanitizeHtml } from "@/lib/sanitize-html";
-
-const PREVIEW_LOADER_COLORS_KEY = "vendor-preview-loader-colors";
 
 function PreviewCustomPage({ data, pageId, pageData }: { data?: any; pageId: number | null; pageData?: any }) {
   const listPage = (data?.pages || []).find((item: any) => Number(item.id) === pageId && item.is_active !== 0);
@@ -70,21 +68,14 @@ function PreviewContent() {
   const { data: termsData, isLoading: isTermsLoading } = useVendorTerms(shouldFetchTerms);
   const { data: privacyData, isLoading: isPrivacyLoading } = useVendorPrivacy(shouldFetchPrivacy);
   const { data: selectedPageData, isLoading: isPageLoading } = useVendorPage(shouldFetchPage ? pageId : null);
-
-  // URL color params are available synchronously — use them for Loader dots
-  // so a new-tab preview shows the vendor's active palette colors immediately
-  const loaderDotColors = React.useMemo(() => {
-    const p = searchParams.get("primary");
-    if (!p) return undefined;
-    return [
-      p,
-      searchParams.get("secondary") || "#1d4ed8",
-      searchParams.get("header")    || "#0f172a",
-      searchParams.get("footer")    || "#334155",
-      searchParams.get("text")      || "#60a5fa",
-      searchParams.get("hover")     || "#93c5fd",
-    ] as string[];
-  }, [searchParams]);
+  const loaderDotColors = [
+    searchParams.get("primary") || vendorData?.colors?.primary_color,
+    searchParams.get("secondary") || vendorData?.colors?.secondary_color,
+    searchParams.get("header") || vendorData?.colors?.header_color,
+    searchParams.get("footer") || vendorData?.colors?.footer_color,
+    searchParams.get("text") || vendorData?.colors?.text_color,
+    searchParams.get("hover") || vendorData?.colors?.hover_color,
+  ];
 
   if (
     isLoading ||
@@ -92,7 +83,7 @@ function PreviewContent() {
     (shouldFetchPrivacy && isPrivacyLoading) ||
     (shouldFetchPage && isPageLoading)
   ) {
-    return <Loader dotColors={loaderDotColors} storageKey={PREVIEW_LOADER_COLORS_KEY} />;
+    return <Loader dotColors={loaderDotColors} label="Loading preview..." />;
   }
 
   const activeColors = {
@@ -332,7 +323,7 @@ function PreviewContent() {
 
 export default function PreviewPage() {
   return (
-    <Suspense fallback={<Loader storageKey={PREVIEW_LOADER_COLORS_KEY} />}>
+    <Suspense fallback={<Loader label="Loading preview..." />}>
       <PreviewContent />
     </Suspense>
   );

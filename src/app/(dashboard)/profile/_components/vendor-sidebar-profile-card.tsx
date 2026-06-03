@@ -5,7 +5,7 @@ import { Camera, Globe, Facebook, Twitter, Linkedin, Youtube, Instagram } from '
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUploadMedia } from '@/hooks/use-media';
 import { useUpdateVendorProfile } from '@/hooks/use-vendors';
-import { resolveMediaUrl } from '@/lib/utils';
+import { dataUrlToFile, resolveMediaUrl } from '@/lib/utils';
 import { ImageCropper } from '@/components/common/ImageCropper';
 import { Vendor } from "@/hooks/use-vendors";
 
@@ -46,14 +46,9 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
     setImageToCrop(null);
     setUploading(true);
     try {
-      // Convert base64 to File blob and upload
-      const res = await fetch(croppedBase64);
-      const blob = await res.blob();
-      const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+      const file = await dataUrlToFile(croppedBase64, 'profile');
       const result = await uploadMedia.mutateAsync({ file, folder: 'vendors' });
-      // Sync both: profile (avatar) AND company_logo (sidebar branding) so a
-      // single upload here reflects in every place the vendor sees themselves.
-      updateProfile.mutate({ profile: result.url, company_logo: result.url });
+      updateProfile.mutate({ profile: result.url });
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
@@ -61,9 +56,7 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
     }
   };
 
-  // Prefer company_logo so an admin-side logo update for this vendor reflects
-  // here even when the vendor already had a personal profile photo on file.
-  const avatarSrc = vendor?.company_logo || vendor?.profile || null;
+  const avatarSrc = vendor?.profile || null;
 
   return (
     <>
@@ -180,6 +173,7 @@ export function VendorSidebarProfileCard({ vendor, isEditMode = false }: VendorS
         aspectRatio={1}
         outputWidth={400}
         outputHeight={400}
+        outputType="image/png"
       />
     )}
     </>

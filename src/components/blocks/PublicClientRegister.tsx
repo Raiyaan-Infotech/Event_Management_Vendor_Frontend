@@ -49,7 +49,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
     const pw = form.password;
     if (!pw) nextErrors.password = "Password is required.";
     else if (/\s/.test(pw)) nextErrors.password = "Password must not contain spaces.";
-    else if (pw.length < 8) nextErrors.password = "Password must be at least 8 characters.";
+    else if (pw.length !== 8) nextErrors.password = "Password must contain exactly 8 characters.";
     else if (!/[A-Z]/.test(pw)) nextErrors.password = "Password must include at least 1 uppercase letter.";
     else if (!/[a-z]/.test(pw)) nextErrors.password = "Password must include at least 1 lowercase letter.";
     else if (!/[0-9]/.test(pw)) nextErrors.password = "Password must include at least 1 number.";
@@ -134,26 +134,26 @@ export default function PublicClientRegister({ data }: { data?: any }) {
             </div>
             <div>
               <h2 className="text-2xl font-black text-gray-950">Register</h2>
-              <p className="text-sm text-gray-500">Only the core client details are required here.</p>
+              <p className="text-sm text-gray-700">Only the core client details are required here.</p>
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             {/* Full Name */}
             <label className="space-y-2 md:col-span-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Full Name <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Full Name <span className="text-red-500">*</span></span>
               <input
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
                 placeholder="Enter full name"
-                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.name ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                className={`h-12 w-full border bg-white px-4 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.name ? "border-red-500 bg-red-50" : "border-gray-300"}`}
               />
               <FieldError field="name" />
             </label>
 
             {/* Email */}
             <label className="space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Email <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Email <span className="text-red-500">*</span></span>
               <input
                 type="text"
                 inputMode="email"
@@ -161,34 +161,34 @@ export default function PublicClientRegister({ data }: { data?: any }) {
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
                 placeholder="Enter email address"
-                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                className={`h-12 w-full border bg-white px-4 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.email ? "border-red-500 bg-red-50" : "border-gray-300"}`}
               />
               <FieldError field="email" />
             </label>
 
             {/* Mobile */}
             <label className="space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Mobile <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Mobile <span className="text-red-500">*</span></span>
               <input
                 type="text"
                 value={form.mobile}
                 onChange={(e) => update("mobile", e.target.value)}
                 placeholder="Enter mobile number"
-                className={`h-12 w-full border px-4 text-sm outline-none focus:border-gray-950 ${fieldErrors.mobile ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                className={`h-12 w-full border bg-white px-4 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.mobile ? "border-red-500 bg-red-50" : "border-gray-300"}`}
               />
               <FieldError field="mobile" />
             </label>
 
             {/* Password */}
             <label className="space-y-2">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Password <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Password <span className="text-red-500">*</span></span>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={form.password}
                   onChange={(e) => update("password", e.target.value)}
                   placeholder="Enter password"
-                  className={`h-12 w-full border px-4 pr-10 text-sm outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                  className={`h-12 w-full border bg-white px-4 pr-10 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.password ? "border-red-500 bg-red-50" : "border-gray-300"}`}
                 />
                 <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -200,13 +200,13 @@ export default function PublicClientRegister({ data }: { data?: any }) {
 
             {/* Confirm Password */}
             <label className="space-y-2 relative">
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">Confirm Password <span className="text-red-500">*</span></span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-700">Confirm Password <span className="text-red-500">*</span></span>
               <input
                 type={showConfirm ? "text" : "password"}
                 value={form.confirm_password}
                 onChange={(e) => update("confirm_password", e.target.value)}
                 placeholder="Confirm password"
-                className={`h-12 w-full border px-4 pr-10 text-sm outline-none focus:border-gray-950 ${fieldErrors.confirm_password ? "border-red-500 bg-red-50" : "border-gray-200"}`}
+                className={`h-12 w-full border bg-white px-4 pr-10 text-sm text-gray-950 placeholder:text-gray-500 outline-none focus:border-gray-950 ${fieldErrors.confirm_password ? "border-red-500 bg-red-50" : "border-gray-300"}`}
               />
               <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-9 text-gray-400 hover:text-gray-700">
                 {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -233,7 +233,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
               {registerMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Register
             </button>
-            <Link href={slug === "preview" ? "/preview?previewPage=login" : `/${slug}/login`} className="text-sm font-bold text-gray-500 hover:text-gray-950">
+            <Link href={slug === "preview" ? "/preview?previewPage=login" : `/${slug}/login`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
               Already registered? Login
             </Link>
           </div>

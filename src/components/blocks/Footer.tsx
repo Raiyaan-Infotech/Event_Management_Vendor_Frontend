@@ -193,7 +193,7 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               {logoSrc && (
-                <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={44} height={44} className="h-11 w-11 object-contain rounded-lg bg-white/10 p-1" unoptimized />
+                <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={44} height={44} className="h-11 w-11 object-contain rounded-lg" unoptimized />
               )}
               <p className="text-lg font-extrabold leading-tight" style={{ color: text }}>{vendor.company_name || ""}</p>
             </div>
@@ -258,7 +258,7 @@ export default function Footer({ data, settings }: { data?: any; settings?: Reco
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-4 text-center">
           <div className="flex items-center justify-center gap-3">
             {logoSrc && (
-              <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={56} height={56} className="h-14 w-14 object-contain rounded-xl bg-white/10 p-1" unoptimized />
+              <Image src={logoSrc} alt={vendor.company_name || "Company logo"} width={56} height={56} className="h-14 w-14 object-contain rounded-xl" unoptimized />
             )}
             <p className="text-2xl font-extrabold leading-tight" style={{ color: text }}>{vendor.company_name || ""}</p>
           </div>

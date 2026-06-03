@@ -250,6 +250,7 @@ retry:     false
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5001/api/v1
+NEXT_PUBLIC_CLIENT_PORTAL_URL=http://localhost:3004
 ```
 
 ---
