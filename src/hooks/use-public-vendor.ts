@@ -25,19 +25,9 @@ export interface PublicVendorData {
     city_id?: number | null;
     pincode_id?: number | null;
     website: string | null;
-    nav_menu: any;
-    footer_links: any;
     copywrite: string | null;
     poweredby: string | null;
-    theme_id: number | null;
-    palette_id: number | null;
   };
-  theme_id: number | null;
-  home_blocks: Array<{
-    block_type: string;
-    variant: string;
-    is_visible: boolean;
-  }>;
   colors: {
     primary_color: string | null;
     secondary_color: string | null;

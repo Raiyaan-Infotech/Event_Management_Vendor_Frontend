@@ -15,18 +15,7 @@ interface PublicNavbarProps {
 export function PublicNavbar({ vendor, colors, slug }: PublicNavbarProps) {
   if (!vendor) return null;
 
-  let navMenu: { label: string; href: string }[] = Array.isArray(vendor.nav_menu) && vendor.nav_menu.length > 0
-    ? vendor.nav_menu
-    : [
-        { label: "Home", href: `/${slug}` },
-        { label: "About", href: `/${slug}#about` },
-        { label: "Services", href: `/${slug}#services` },
-        { label: "Contact", href: `/${slug}#contact` },
-      ];
-
-  if (!navMenu.some(item => item.label.toLowerCase() === 'home')) {
-    navMenu = [{ label: "Home", href: `/${slug}` }, ...navMenu];
-  }
+  const navMenu: { label: string; href: string }[] = [];
 
   const headerBg = colors?.header_color || "#ffffff";
   const textColor = colors?.text_color || "#1f2937";

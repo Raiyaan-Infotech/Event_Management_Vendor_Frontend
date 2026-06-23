@@ -9,9 +9,9 @@ interface LoaderProps {
 }
 
 const Loader = ({ dotColors, label = "Loading" }: LoaderProps) => {
-  const normalizedColors = normalizeVendorLoaderColors(dotColors);
-
-  if (!normalizedColors) return null;
+  const normalizedColors =
+    normalizeVendorLoaderColors(dotColors) ??
+    Array.from({ length: 6 }, () => "var(--vendor-primary-btn)");
 
   const dots = normalizedColors.map((color, index) => ({
     color,

@@ -12,7 +12,7 @@ const guestOnlyRoutes = ['/login', '/forgot-password', '/reset-password'];
 const SYSTEM_PREFIXES = [
   '/dashboard', '/analytics', '/clients', '/staff', '/communication',
   '/reports', '/transactions', '/events', '/payment-management',
-  '/settings', '/appearance', '/help', '/website', '/roles', '/modules',
+  '/settings', '/appearance', '/help', '/website', '/website-builder', '/roles', '/modules',
   '/activity-log', '/newsletter', '/login', '/forgot-password',
   '/reset-password', '/preview', '/public-preview', '/api',
 ];
@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
       : NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (pathname.startsWith('/website') || pathname.startsWith('/preview') || pathname.startsWith('/public-preview')) {
+  if (pathname.startsWith('/preview') || pathname.startsWith('/public-preview')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

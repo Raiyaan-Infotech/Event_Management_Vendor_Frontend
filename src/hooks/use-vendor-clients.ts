@@ -46,6 +46,7 @@ export const useVendorClients = (params?: {
   search?: string;
   is_active?: number | string;
   plan?: string;
+  registration_type?: 'guest' | 'client';
   sort_by?: string;
   sort_order?: 'ASC' | 'DESC';
 }) => {

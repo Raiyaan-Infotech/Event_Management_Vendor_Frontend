@@ -8,7 +8,9 @@ import { Fragment, useMemo } from "react";
 const navLabels: Record<string, string> = {
   dashboard:                 "Dashboard",
   profile:                   "Profile",
+  "user-management":         "User Management",
   clients:                   "Clients",
+  guests:                    "Guest",
   staff:                     "Staff",
   events:                    "Events",
   payments:                  "Payments",
@@ -25,30 +27,6 @@ const navLabels: Record<string, string> = {
   currency:                  "Currency",
   timezone:                  "Timezone",
   help:                      "Help",
-  // Website management
-  website:                   "Website",
-  header:                    "Header",
-  footer:                    "Footer",
-  menu:                      "Menu",
-  "about-us":                "About Us",
-  "contact-us":              "Contact Us",
-  "contact-us-management":   "Contact Us",
-  "contact-information":     "Contact Information",
-  pages:                     "Pages",
-  "home-slider":             "Home Slider",
-  "advance-slider":          "Advance Slider",
-  "simple-slider":           "Simple Slider",
-  gallery:                   "Gallery",
-  testimonial:               "Testimonial",
-  "testimonial-management":  "Testimonials",
-  portfolio:                 "Portfolio",
-  "portfolio-management":    "Portfolio",
-  "social-links":            "Social Links",
-  appearance:                "Appearance",
-  "home-setting":            "Home Blocks",
-  theme:                     "Theme",
-  themes:                    "Themes",
-  "themes-option":           "Theme Options",
   "email-marketing":         "Email Marketing",
   "email-templates":         "Email Templates",
   templates:                 "Templates",
@@ -62,8 +40,6 @@ const navLabels: Record<string, string> = {
   "subscription-management": "Subscription",
   "events-management":       "Events",
   "email-template":          "Email Template",
-  "terms-conditions":        "Terms & Conditions",
-  "privacy-policy":          "Privacy Policy",
   "personal-info":           "Personal Info",
   mail:                      "Mail",
   compose:                   "Compose",
@@ -83,13 +59,9 @@ const navLabels: Record<string, string> = {
 
 // Segments that are group labels with no real page — rendered as plain text
 const NON_LINKABLE = new Set([
-  "website",
   "communication",
+  "user-management",
   "settings",
-  "appearance",
-  "home-slider",
-  "portfolio-management",
-  "portfolio",
   "email-template",
   "email-marketing",
   "email-templates",
@@ -100,9 +72,7 @@ const NON_LINKABLE = new Set([
 // Segments treated as the "main module" for sub-action label construction
 const MAIN_MODULES = new Set([
   "staff", "clients", "events", "payments", "payment-management",
-  "advance-slider", "simple-slider", "gallery", "testimonial",
-  "portfolio", "pages", "social-links", "newsletter", "roles",
-  "departments", "department", "templates", "category",
+  "newsletter", "roles", "departments", "department", "templates", "category",
 ]);
 
 const SUB_ACTIONS = new Set(["add", "edit", "view", "create"]);
@@ -131,19 +101,16 @@ export default function VendorBreadcrumb() {
       segments = ["email-marketing", ...segments];
     }
 
-    // Terms and privacy are configured from Footer Settings, so show that
-    // parent even though their physical routes are siblings of /website/footer.
-    const hasVirtualFooterParent =
-      segments[0] === "website" &&
-      (segments[1] === "terms-conditions" || segments[1] === "privacy-policy");
-    if (hasVirtualFooterParent) {
-      segments = ["website", "footer", ...segments.slice(1)];
-    }
-
     // /roles, /modules, /activity-log, /departments, /permissions
     // → prepend virtual "settings" parent
     if (segments[0] && SETTINGS_ROOTS.has(segments[0])) {
       segments = ["settings", ...segments];
+    }
+
+    // /clients, /clients/guests, /clients/subscribers
+    // → prepend virtual "User Management" parent (matches the sidebar group)
+    if (segments[0] === "clients") {
+      segments = ["user-management", ...segments];
     }
 
     // Replace "email-template" with "email-templates" and append "templates"
@@ -197,7 +164,7 @@ export default function VendorBreadcrumb() {
 
       result.push({
         label,
-        url: hasVirtualFooterParent && seg === "footer" ? "/website/footer" : accPath,
+        url: accPath,
         isLast: false,
         isLink: !NON_LINKABLE.has(seg) && !!accPath,
       });
@@ -210,8 +177,8 @@ export default function VendorBreadcrumb() {
   if (pathname === "/dashboard") return null;
 
   return (
-    <div className="h-[30px] flex items-center bg-card dark:bg-[#09090b] border-b border-border dark:border-[#27272a] w-full px-2 md:px-4 min-w-0 overflow-hidden sticky top-[56px] z-40">
-      <div className="flex-1 flex items-center min-w-0 text-[10px]">
+    <div className="h-[30px] shrink-0 flex items-center bg-card dark:bg-[#09090b] border-b border-border dark:border-[#27272a] w-full px-3 md:px-5 min-w-0 overflow-hidden relative z-30">
+      <div className="flex-1 flex items-center min-w-0 text-[11px]">
         <div className="flex items-center gap-1 font-medium truncate min-w-0">
           {items.map((item, i) => (
             <Fragment key={`${item.url}-${i}`}>

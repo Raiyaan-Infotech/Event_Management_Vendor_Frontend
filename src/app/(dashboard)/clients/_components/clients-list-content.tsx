@@ -45,7 +45,13 @@ const statusLabels: Record<string, string> = {
   "2": "Blocked",
 };
 
-export default function ClientsListContent() {
+export default function ClientsListContent({
+  registrationType,
+}: {
+  registrationType?: "client" | "guest";
+} = {}) {
+  const isGuestView = registrationType === "guest";
+  const entityLabel = isGuestView ? "GUEST" : "CLIENT";
   const router = useRouter();
   const { data: subscriptionData } = useVendorSubscription();
   const plans = subscriptionData?.all_plans ?? subscriptionData?.plans ?? [];
@@ -189,6 +195,7 @@ export default function ClientsListContent() {
     search:     searchQuery,
     is_active:  filterStatus === "All" ? undefined : filterStatus,
     plan:       filterPlan === "All" ? undefined : filterPlan,
+    registration_type: registrationType,
     sort_by:    sortConfig.key || "created_at",
     sort_order: (sortConfig.order?.toUpperCase() as "ASC" | "DESC") || "DESC",
   });
@@ -247,14 +254,18 @@ export default function ClientsListContent() {
   return (
     <div className="h-[calc(100vh-86px)] flex flex-col space-y-4 max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden pt-8 pb-3">
       <PageHeader
-        title="CLIENT"
-        subtitle="View and manage all registered clients and their account details."
+        title={entityLabel}
+        subtitle={
+          isGuestView
+            ? "View and manage guests who registered through your public website."
+            : "View and manage all registered clients and their account details."
+        }
         total={totalRecords}
         rightContent={
           <div className="flex items-center gap-2">
             <TableImportExportActions onImport={handleImport} onExport={handleExport} />
             <Link href="/clients/add">
-              <ActionButton label="ADD CLIENT" variant_type="Client" />
+              <ActionButton label={`ADD ${entityLabel}`} variant_type="Client" />
             </Link>
           </div>
         }

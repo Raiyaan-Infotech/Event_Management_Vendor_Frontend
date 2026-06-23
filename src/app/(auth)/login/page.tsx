@@ -66,7 +66,35 @@ export default function VendorLoginPage() {
       }
 
       toast.success("Login successful! Redirecting...");
-      setTimeout(() => router.push("/dashboard"), 300);
+      const requestedReturnUrl = new URLSearchParams(window.location.search).get(
+        "returnUrl",
+      );
+      const builderOrigin =
+        process.env.NEXT_PUBLIC_WEBSITE_BUILDER_URL || "http://localhost:3005";
+      let nextUrl = "/dashboard";
+
+      if (requestedReturnUrl) {
+        try {
+          const parsedReturnUrl = new URL(
+            requestedReturnUrl,
+            window.location.origin,
+          );
+          const allowedOrigins = new Set([window.location.origin, builderOrigin]);
+          if (allowedOrigins.has(parsedReturnUrl.origin)) {
+            nextUrl = parsedReturnUrl.toString();
+          }
+        } catch {
+          nextUrl = "/dashboard";
+        }
+      }
+
+      setTimeout(() => {
+        if (nextUrl.startsWith("http")) {
+          window.location.href = nextUrl;
+        } else {
+          router.push(nextUrl);
+        }
+      }, 300);
     } catch (err: unknown) {
       document.cookie =
         "vendor_auth_pending=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";

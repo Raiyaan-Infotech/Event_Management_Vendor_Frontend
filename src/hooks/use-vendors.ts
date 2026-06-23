@@ -39,6 +39,10 @@ export interface Vendor {
   alt_email: string | null;
   email: string;
   membership: 'basic' | 'silver' | 'gold' | 'platinum';
+  website_enabled: number | boolean;
+  features?: {
+    website_management?: boolean;
+  };
   bank_name: string | null;
   acc_no: string | null;
   ifsc_code: string | null;
@@ -52,7 +56,6 @@ export interface Vendor {
   short_description: string | null;
   poweredby: string | null;
   copywrite: string | null;
-  theme_id: number | null;
 }
 
 // Get current logged-in vendor profile
@@ -105,12 +108,8 @@ export const useUpdateVendorProfile = () => {
       return res.data;
     },
     onSuccess: () => {
-      // The vendor object surfaces in multiple queries: sidebar (vendor-me),
-      // about/website pages (vendor-about), and the live preview. Invalidate
-      // all of them so a profile/logo update reflects everywhere immediately.
       queryClient.invalidateQueries({ queryKey: VENDOR_ME_KEY });
       queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
-      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success('Profile updated successfully');
     },
     onError: (error: unknown) => {
@@ -133,31 +132,10 @@ export interface SocialVisibility {
   pinterest?: boolean;
 }
 
-export interface FooterLinkColumn {
-  heading: string;
-  page_ids: number[];
-}
-
-export interface NavMenuChild {
-  page_id: number;
-  label: string;
-  order: number;
-}
-
-export interface NavMenuItem {
-  label: string;
-  type?: "home" | "about" | "contact" | "pages"; // fixed nav item types
-  page_ids: number[];
-  order: number;
-  children: NavMenuChild[];
-}
-
 export interface VendorAbout extends Vendor {
   district?: { id: number; name: string } | null;
   locality?: { id: number; name: string; pincode: string } | null;
   social_visibility?: SocialVisibility | null;
-  footer_links?: FooterLinkColumn[] | null;
-  nav_menu?: NavMenuItem[] | null;
   contact_mode?: 'default' | 'alternative' | null;
 }
 
@@ -184,8 +162,6 @@ export const useUpdateVendorAbout = (successMessage?: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: VENDOR_ME_KEY });
       queryClient.invalidateQueries({ queryKey: VENDOR_ABOUT_KEY });
-      // Clear preview cache so the next preview open reflects the new contact/mode data
-      queryClient.invalidateQueries({ queryKey: ['vendor-preview-data'] });
       toast.success(successMessage ?? 'About company updated successfully');
     },
     onError: (error: unknown) => {

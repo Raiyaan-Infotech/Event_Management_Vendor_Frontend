@@ -233,7 +233,7 @@ export default function PublicClientRegister({ data }: { data?: any }) {
               {registerMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Register
             </button>
-            <Link href={slug === "preview" ? "/preview?previewPage=login" : `/${slug}/login`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
+            <Link href={`/${slug}/login`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
               Already registered? Login
             </Link>
           </div>

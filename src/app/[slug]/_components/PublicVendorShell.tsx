@@ -1,13 +1,7 @@
 import React from "react";
-import BlockRenderer from "@/components/blocks/BlockRenderer";
 import type { PublicVendorData } from "@/hooks/use-public-vendor";
-import { normalizeHomeBlocks } from "@/lib/safe-json";
-
-type PublicBlock = {
-  block_type: string;
-  variant?: string;
-  is_visible?: boolean;
-};
+import { PublicNavbar } from "@/components/public/PublicNavbar";
+import { PublicFooter } from "@/components/public/PublicFooter";
 
 interface PublicVendorShellProps {
   data: PublicVendorData;
@@ -21,7 +15,6 @@ export function buildPublicVendorBundle(data: PublicVendorData, slug: string) {
   return {
     ...data,
     pages: data.pages || [],
-    home_blocks: normalizeHomeBlocks(data.home_blocks),
     slug,
   };
 }
@@ -37,10 +30,6 @@ export function publicColorStyle(colors: PublicVendorData["colors"]): React.CSSP
   } as React.CSSProperties;
 }
 
-export function visiblePublicBlocks(data: PublicVendorData): PublicBlock[] {
-  return normalizeHomeBlocks(data.home_blocks).filter((block) => block.is_visible);
-}
-
 export default function PublicVendorShell({
   data,
   slug,
@@ -48,30 +37,19 @@ export default function PublicVendorShell({
   className = "flex-1",
   fallbackShellBlocks = false,
 }: PublicVendorShellProps) {
-  const vendorBundle = buildPublicVendorBundle(data, slug);
-  const visibleBlocks = visiblePublicBlocks(data);
-  const headerBlock = visibleBlocks.find((block) => block.block_type === "header");
-  const footerBlock = visibleBlocks.find((block) => block.block_type === "footer");
-  const shouldRenderHeader = headerBlock || fallbackShellBlocks;
-  const shouldRenderFooter = footerBlock || fallbackShellBlocks;
+  const shouldRenderShell = fallbackShellBlocks;
 
   return (
     <div style={publicColorStyle(data.colors)} className="flex min-h-screen flex-col bg-white">
-      {shouldRenderHeader && (
-        <BlockRenderer
-          block_type="header"
-          visible={true}
-          settings={{ variant: headerBlock?.variant || "variant_1" }}
-          vendorData={vendorBundle}
-        />
+      {shouldRenderShell && (
+        <PublicNavbar vendor={data.vendor} colors={data.colors} slug={slug} />
       )}
       <main className={className}>{children}</main>
-      {shouldRenderFooter && (
-        <BlockRenderer
-          block_type="footer"
-          visible={true}
-          settings={{ variant: footerBlock?.variant || "variant_1" }}
-          vendorData={vendorBundle}
+      {shouldRenderShell && (
+        <PublicFooter
+          vendor={data.vendor}
+          colors={data.colors}
+          socialLinks={[]}
         />
       )}
     </div>

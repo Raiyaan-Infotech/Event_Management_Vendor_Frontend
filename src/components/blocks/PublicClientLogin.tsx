@@ -155,7 +155,7 @@ export default function PublicClientLogin({ data }: { data?: any }) {
               {redirecting || loginMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {redirecting ? "Redirecting..." : "Login"}
             </button>
-            <Link href={slug === "preview" ? "/preview?previewPage=register" : `/${slug}/register`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
+            <Link href={`/${slug}/register`} className="text-sm font-bold text-gray-700 underline underline-offset-4 hover:text-gray-950">
               New client? Register
             </Link>
           </div>

@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
-import { Poppins } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -9,13 +15,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import { QueryProvider } from "@/providers/query-provider";
 import { BoneyardProvider } from "@/components/boneyard/boneyard-provider";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-
-  variable: "--font-poppins",
-});
 
 export const metadata: Metadata = {
   title: "Vendor Portal",
@@ -31,11 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${poppins.variable} ${poppins.className}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="antialiased">
         <ThemeProvider
           attribute="class"

@@ -4,35 +4,22 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useIsMutating } from "@tanstack/react-query";
 import { useEffect, useState, Suspense, useRef } from "react";
 import Loader from "@/components/ui/loader";
-import { useVendorColors } from "@/hooks/use-vendor-colors";
 
 /**
  * Professional Navigation Loader - Snappy & Balanced
  * Optimized to ONLY trigger on actual navigation clicks or pushState calls.
  */
 // Routes that are publicly accessible — never require vendor auth
-const PUBLIC_PATHS = ['/preview', '/public-preview'];
 
 function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeMutations = useIsMutating();
-  const isPublicPage = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
-  const { data: vendorColors } = useVendorColors({ enabled: !isPublicPage });
   const [loading, setLoading] = useState(false);
   const [mutationLoading, setMutationLoading] = useState(false);
-  const pageHandlesOwnMutationLoader = pathname === "/website/appearance/themes-option";
   const loadingStartTimeRef = useRef<number>(0);
   const mutationLoadingStartTimeRef = useRef<number>(0);
   const showDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const loaderDotColors = [
-    vendorColors?.merged?.primary_color,
-    vendorColors?.merged?.secondary_color,
-    vendorColors?.merged?.header_color,
-    vendorColors?.merged?.footer_color,
-    vendorColors?.merged?.text_color,
-    vendorColors?.merged?.hover_color,
-  ];
 
   // Stop loading when pathname or params change
   useEffect(() => {
@@ -55,10 +42,6 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
   }, [pathname, searchParams]);
 
   useEffect(() => {
-    if (pageHandlesOwnMutationLoader) {
-      setMutationLoading(false);
-      return;
-    }
 
     if (activeMutations > 0) {
       mutationLoadingStartTimeRef.current = Date.now();
@@ -74,7 +57,7 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
     }, Math.max(0, MINIMUM_DISPLAY_TIME - elapsed));
 
     return () => clearTimeout(timer);
-  }, [activeMutations, mutationLoading, pageHandlesOwnMutationLoader]);
+  }, [activeMutations, mutationLoading]);
 
   // Intercept links to start loader INSTANTLY
   useEffect(() => {
@@ -132,7 +115,7 @@ function NavigationLoaderInner({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {(loading || mutationLoading) && <Loader dotColors={loaderDotColors} />}
+      {(loading || mutationLoading) && <Loader />}
       <div
         className={`transition-opacity duration-300 ease-in-out ${
           loading || mutationLoading ? "opacity-70 pointer-events-none" : "opacity-100"
