@@ -103,7 +103,7 @@ const NAV_ITEMS: NavItem[] = [
     href: "/staff",
     icon: UserRound,
   },
-  { label: "Sub Domain (Website)", href: "/sub-domain",   icon: Globe },
+  { label: "Website Management", href: "/website-builder", icon: Globe },
   { label: "Templates",            href: "/templates",    icon: FileText },
   { label: "Invitations & Links",  href: "/invitations",  icon: Link2 },
   {
