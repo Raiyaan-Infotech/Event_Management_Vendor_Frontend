@@ -29,6 +29,7 @@ import {
   ClipboardList,
   HelpCircle,
   Globe,
+  Network,
   List,
   Home,
   Images,
@@ -104,6 +105,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: UserRound,
   },
   { label: "Website Management", href: "/website-builder", icon: Globe },
+  { label: "Sub Domain (Website)", href: "/sub-domain",   icon: Network },
   { label: "Templates",            href: "/templates",    icon: FileText },
   { label: "Invitations & Links",  href: "/invitations",  icon: Link2 },
   {
@@ -316,7 +318,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                     <SidebarMenuButton
                       asChild
                       tooltip={item.label}
-                      className={`${btnBase} ${active ? activeClass : inactiveClass} ${
+                      className={`${btnBase}  ${active ? activeClass : inactiveClass} ${
                         isCollapsed ? "px-0 justify-center" : "px-3.5"
                       }`}
                     >
@@ -330,7 +332,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                             }`}
                           />
                         </div>
-                        <span className="font-semibold group-data-[collapsible=icon]:hidden">
+                        <span className="font-semibold text-[14px] group-data-[collapsible=icon]:hidden">
                           {item.label}
                         </span>
                       </Link>
@@ -365,7 +367,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                           }`}
                         />
                       </div>
-                      <span className="font-semibold group-data-[collapsible=icon]:hidden flex-1 text-left">
+                      <span className="font-semibold text-[14px] group-data-[collapsible=icon]:hidden flex-1 text-left">
                         {item.label}
                       </span>
                       <ChevronRight
@@ -422,7 +424,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                                       }`}
                                     />
                                   </div>
-                                  <span className="font-semibold group-data-[collapsible=icon]:hidden">
+                                  <span className="font-semibold text-[14px] group-data-[collapsible=icon]:hidden">
                                     {child.label}
                                   </span>
                                 </Link>
@@ -457,7 +459,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                                     }`}
                                   />
                                 </div>
-                                <span className="font-semibold group-data-[collapsible=icon]:hidden flex-1 text-left">
+                                <span className="font-semibold text-[14px] group-data-[collapsible=icon]:hidden flex-1 text-left">
                                   {child.label}
                                 </span>
                                 <ChevronRight
@@ -491,7 +493,7 @@ export function VendorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                                               }`}
                                             />
                                           </div>
-                                          <span className="font-semibold">{sub.label}</span>
+                                          <span className="font-semibold text-[14px]">{sub.label}</span>
                                         </Link>
                                       </SidebarMenuButton>
                                     </SidebarMenuItem>
